@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react'
-import type { Word, Topic } from '../lib/types'
+import type { Word, Topic } from '../../lib/types'
 
 const POS_OPTIONS = [
   { value: 'noun', label: 'Danh từ' },

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useAdminRoadmaps } from '../hooks/useAdminRoadmaps'
-import RoadmapFormModal from '../components/RoadmapFormModal'
-import ConfirmDialog from '../components/ConfirmDialog'
-import type { Roadmap } from '../lib/types'
+import { useAdminRoadmaps } from '../../hooks/admin/useAdminRoadmaps'
+import RoadmapFormModal from '../../components/admin/RoadmapFormModal'
+import ConfirmDialog from '../../components/ConfirmDialog'
+import type { Roadmap } from '../../lib/types'
 
 function StatusBadge({ active }: { active: boolean }) {
   return (

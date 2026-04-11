@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getAllUsers, getUserProgress } from '../lib/admin-queries'
-import type { UserProfile, UserProgress } from '../lib/types'
+import { getAllUsers, getUserProgress } from '../../lib/admin-queries'
+import type { UserProfile, UserProgress } from '../../lib/types'
 
 function UserRow({
   user,

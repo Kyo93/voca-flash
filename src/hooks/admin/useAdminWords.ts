@@ -7,8 +7,8 @@ import {
   getWordChoices,
   createWordChoices,
   deleteWordChoices,
-} from '../lib/admin-queries'
-import type { Word, WordChoice, Topic } from '../lib/types'
+} from '../../lib/admin-queries'
+import type { Word, WordChoice, Topic } from '../../lib/types'
 
 export function useAdminWords() {
   const [words, setWords] = useState<Word[]>([])

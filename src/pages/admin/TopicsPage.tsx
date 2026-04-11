@@ -10,11 +10,11 @@ import {
   useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useAdminTopics } from '../hooks/useAdminTopics'
-import { getAllRoadmaps } from '../lib/admin-queries'
-import TopicFormModal from '../components/TopicFormModal'
-import ConfirmDialog from '../components/ConfirmDialog'
-import type { Topic, Roadmap } from '../lib/types'
+import { useAdminTopics } from '../../hooks/admin/useAdminTopics'
+import { getAllRoadmaps } from '../../lib/admin-queries'
+import TopicFormModal from '../../components/admin/TopicFormModal'
+import ConfirmDialog from '../../components/ConfirmDialog'
+import type { Topic, Roadmap } from '../../lib/types'
 
 // ── Sortable item ─────────────────────────────────────────────
 function SortableItem({

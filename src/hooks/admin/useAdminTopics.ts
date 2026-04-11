@@ -5,8 +5,8 @@ import {
   updateTopic,
   deleteTopic,
   reorderTopics,
-} from '../lib/admin-queries'
-import type { Topic } from '../lib/types'
+} from '../../lib/admin-queries'
+import type { Topic } from '../../lib/types'
 
 function slugify(name: string): string {
   return name

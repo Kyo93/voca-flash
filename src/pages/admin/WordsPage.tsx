@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useAdminWords } from '../hooks/useAdminWords'
-import { getAllTopics } from '../lib/admin-queries'
-import WordFormModal from '../components/WordFormModal'
-import ConfirmDialog from '../components/ConfirmDialog'
-import type { Word, Topic } from '../lib/types'
+import { useAdminWords } from '../../hooks/admin/useAdminWords'
+import { getAllTopics } from '../../lib/admin-queries'
+import WordFormModal from '../../components/admin/WordFormModal'
+import ConfirmDialog from '../../components/ConfirmDialog'
+import type { Word, Topic } from '../../lib/types'
 
 const POS_LABELS: Record<string, string> = {
   noun: 'DT', verb: 'ĐT', adj: 'TT', adv: 'TrT', phrase: 'CT', other: 'Khác',

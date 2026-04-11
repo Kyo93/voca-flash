@@ -6,12 +6,12 @@ import DashboardPage from './pages/DashboardPage'
 import StudyPage from './pages/StudyPage'
 import LibraryPage from './pages/LibraryPage'
 import LoginPage from './pages/LoginPage'
-import AdminLayout from './components/AdminLayout'
-import AdminWordsPage from './pages/AdminWordsPage'
-import AdminTopicsPage from './pages/AdminTopicsPage'
-import AdminRoadmapsPage from './pages/AdminRoadmapsPage'
-import AdminDashboardPage from './pages/AdminDashboardPage'
-import AdminUsersPage from './pages/AdminUsersPage'
+import AdminLayout from './components/admin/AdminLayout'
+import AdminWordsPage from './pages/admin/WordsPage'
+import AdminTopicsPage from './pages/admin/TopicsPage'
+import AdminRoadmapsPage from './pages/admin/RoadmapsPage'
+import AdminDashboardPage from './pages/admin/DashboardPage'
+import AdminUsersPage from './pages/admin/UsersPage'
 
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {

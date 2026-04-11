@@ -4,8 +4,8 @@ import {
   createRoadmap,
   updateRoadmap,
   deleteRoadmap,
-} from '../lib/admin-queries'
-import type { Roadmap } from '../lib/types'
+} from '../../lib/admin-queries'
+import type { Roadmap } from '../../lib/types'
 
 export function useAdminRoadmaps() {
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>([])

@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react'
-import type { Topic, Roadmap } from '../lib/types'
+import type { Roadmap } from '../../lib/types'
 
 function slugify(name: string): string {
   return name
@@ -14,57 +14,49 @@ function slugify(name: string): string {
 
 interface Props {
   open: boolean
-  topic?: Topic | null
-  roadmaps: Roadmap[]
+  roadmap?: Roadmap | null
   onSave: (data: {
     name: string
     slug: string
-    icon: string
-    color: string
-    roadmap_id: string | null
+    description: string | null
+    is_active: boolean
   }) => Promise<void>
   onClose: () => void
 }
 
-export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose }: Props) {
+export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Props) {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
-  const [icon, setIcon] = useState('📚')
-  const [color, setColor] = useState('#F97316')
-  const [roadmapId, setRoadmapId] = useState('')
+  const [description, setDescription] = useState('')
+  const [isActive, setIsActive] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (topic) {
-      setName(topic.name)
-      setSlug(topic.slug)
-      setIcon(topic.icon ?? '📚')
-      setColor(topic.color ?? '#F97316')
-      setRoadmapId(topic.roadmap_id ?? '')
+    if (roadmap) {
+      setName(roadmap.name)
+      setSlug(roadmap.slug)
+      setDescription(roadmap.description ?? '')
+      setIsActive(roadmap.is_active ?? true)
     } else {
       setName('')
       setSlug('')
-      setIcon('📚')
-      setColor('#F97316')
-      setRoadmapId('')
+      setDescription('')
+      setIsActive(true)
     }
     setError(null)
-  }, [topic, open])
+  }, [roadmap, open])
 
-  // Auto-generate slug from name
   useEffect(() => {
-    if (!topic) {
-      setSlug(slugify(name))
-    }
-  }, [name, topic])
+    if (!roadmap) setSlug(slugify(name))
+  }, [name, roadmap])
 
   if (!open) return null
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!name.trim()) {
-      setError('Tên chủ đề không được trống')
+      setError('Tên lộ trình không được trống')
       return
     }
     setLoading(true)
@@ -72,9 +64,8 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
     await onSave({
       name: name.trim(),
       slug: slug.trim() || slugify(name),
-      icon: icon.trim() || '📚',
-      color,
-      roadmap_id: roadmapId || null,
+      description: description.trim() || null,
+      is_active: isActive,
     })
     setLoading(false)
   }
@@ -91,10 +82,10 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
         <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl">
           <div>
             <h2 className="text-xl font-black text-secondary">
-              {topic ? 'Sửa chủ đề' : 'Thêm chủ đề mới'}
+              {roadmap ? 'Sửa lộ trình' : 'Thêm lộ trình mới'}
             </h2>
             <p className="text-sm text-on-surface-variant mt-1">
-              {topic ? 'Cập nhật thông tin chủ đề' : 'Tạo chủ đề học tập mới'}
+              {roadmap ? 'Cập nhật thông tin lộ trình' : 'Tạo lộ trình học tập mới'}
             </p>
           </div>
           <button
@@ -106,22 +97,18 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Name */}
           <div>
-            <label className="block text-sm font-bold text-secondary mb-2">
-              Tên chủ đề *
-            </label>
+            <label className="block text-sm font-bold text-secondary mb-2">Tên lộ trình *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Giao tiếp hàng ngày"
+              placeholder="English Mastery"
               required
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
             />
           </div>
 
-          {/* Slug */}
           <div>
             <label className="block text-sm font-bold text-secondary mb-2">Slug</label>
             <div className="flex gap-2">
@@ -129,7 +116,7 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
                 type="text"
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                placeholder="giao-tiep-hang-ngay"
+                placeholder="english-mastery"
                 className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-sm outline-none focus:border-primary focus:bg-white transition-all"
               />
               <button
@@ -143,53 +130,45 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
             </div>
           </div>
 
-          {/* Icon + Color row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Icon</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={icon}
-                  onChange={(e) => setIcon(e.target.value)}
-                  maxLength={2}
-                  className="w-16 px-3 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-center text-2xl outline-none focus:border-primary focus:bg-white transition-all"
-                />
-                <span className="text-3xl">{icon || '📚'}</span>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Màu sắc</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-12 h-12 rounded-xl border-2 border-stone-200 cursor-pointer p-1 bg-transparent"
-                />
-                <span
-                  className="w-12 h-12 rounded-xl border-2 border-stone-200 shrink-0"
-                  style={{ backgroundColor: color }}
-                />
-              </div>
-            </div>
+          <div>
+            <label className="block text-sm font-bold text-secondary mb-2">Mô tả</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Mô tả ngắn về lộ trình này..."
+              rows={3}
+              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
+            />
           </div>
 
-          {/* Roadmap assignment */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Lộ trình</label>
-            <select
-              value={roadmapId}
-              onChange={(e) => setRoadmapId(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+          {/* Active toggle */}
+          <div
+            onClick={() => setIsActive(!isActive)}
+            className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+              isActive
+                ? 'border-green-200 bg-green-50'
+                : 'border-stone-200 bg-stone-50'
+            }`}
+          >
+            <div
+              className={`w-12 h-7 rounded-full relative transition-colors ${
+                isActive ? 'bg-green-500' : 'bg-stone-300'
+              }`}
             >
-              <option value="">— Không gán —</option>
-              {roadmaps.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
+              <div
+                className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                  isActive ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </div>
+            <div>
+              <p className="font-bold text-secondary text-sm">
+                {isActive ? 'Đang hoạt động' : 'Tạm dừng'}
+              </p>
+              <p className="text-xs text-stone-400">
+                {isActive ? 'Hiển thị với người dùng' : 'Ẩn với người dùng'}
+              </p>
+            </div>
           </div>
 
           {error && (
@@ -211,7 +190,7 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
               disabled={loading}
               className="flex-1 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? 'Đang lưu...' : topic ? 'Lưu thay đổi' : 'Thêm chủ đề'}
+              {loading ? 'Đang lưu...' : roadmap ? 'Lưu thay đổi' : 'Thêm lộ trình'}
             </button>
           </div>
         </form>

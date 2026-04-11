@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getAdminStats, getRecentWords } from '../lib/admin-queries'
-import type { Word } from '../lib/types'
+import { getAdminStats, getRecentWords } from '../../lib/admin-queries'
+import type { Word } from '../../lib/types'
 
 interface Stats {
   totalWords: number
