@@ -14,7 +14,8 @@ interface AudioButtonProps {
 function AudioButton({ text, slow }: AudioButtonProps) {
   const [speaking, setSpeaking] = useState(false)
 
-  const handleSpeak = () => {
+  const handleSpeak = (e: React.MouseEvent) => {
+    e.stopPropagation()
     speak(text, slow)
     setSpeaking(true)
     setTimeout(() => setSpeaking(false), 1500)
@@ -23,10 +24,10 @@ function AudioButton({ text, slow }: AudioButtonProps) {
   return (
     <button
       onClick={handleSpeak}
-      className="flex items-center justify-center w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-container-highest transition-colors shadow-sm active:scale-95 group"
+      className="tactile-btn p-3 bg-surface-container-high hover:bg-surface-container-highest text-primary rounded-lg transition-all flex items-center justify-center border border-outline-variant/10 active:scale-95 group"
       title={slow ? 'Nghe chậm' : 'Phát âm'}
     >
-      <span className="material-symbols-outlined text-[18px] text-primary">
+      <span className={`material-symbols-outlined text-2xl ${speaking ? 'animate-pulse scale-110' : ''}`}>
         {slow ? 'slow_motion_video' : 'volume_up'}
       </span>
     </button>
@@ -34,42 +35,45 @@ function AudioButton({ text, slow }: AudioButtonProps) {
 }
 
 function FlashcardFront({ card }: { card: Card }) {
+  const imageUrl = card.image_url || `https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80`
+
   return (
-    <div className="w-full aspect-[3/4] bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(26,27,33,0.06)] overflow-hidden flex flex-col border border-outline-variant/10 relative">
-      {/* Visual area */}
-      <div className="w-full aspect-square overflow-hidden bg-surface-container-low relative">
+    <div className="w-full h-full bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(26,27,33,0.06)] overflow-hidden flex flex-col border border-outline-variant/10 relative">
+      {/* 4:3 Visual Context Image */}
+      <div className="aspect-[4/3] w-full overflow-hidden bg-surface-container-low relative">
         <img
           alt={card.front}
           className="w-full h-full object-cover"
-          src={`https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80`}
+          src={imageUrl}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/40 to-transparent" />
       </div>
 
-      {/* Content */}
-      <div className="p-6 space-y-4 flex-grow flex flex-col justify-center">
+      {/* Content Section */}
+      <div className="p-8 space-y-6 flex-grow flex flex-col justify-start">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <h1 className="text-3xl font-headline font-extrabold text-primary tracking-tight line-clamp-1">{card.front}</h1>
-            <p className="text-secondary font-medium tracking-wide text-base">/{card.front}/</p>
+            <h1 className="text-4xl font-headline font-extrabold text-primary tracking-tight">{card.front}</h1>
+            <p className="text-secondary font-medium tracking-wide text-lg">/{card.front}/</p>
           </div>
           <div className="flex gap-2">
             <AudioButton text={card.front} />
+            <AudioButton text={card.front} slow />
           </div>
         </div>
 
-        {/* Asymmetric divider */}
-        <div className="w-12 h-1 bg-secondary-fixed rounded-full" />
+        {/* Asymmetric Divider */}
+        <div className="w-12 h-1 bg-secondary-fixed rounded-full shrink-0" />
 
-        {/* Example */}
+        {/* Contextual Usage */}
         {card.example && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <span className="font-label text-[10px] uppercase tracking-widest text-outline font-bold block">
-              Context
+              Contextual usage
             </span>
-            <p className="text-on-surface-variant leading-relaxed text-sm italic border-l-2 border-surface-container-highest pl-3 py-0.5 line-clamp-3">
-              "{card.example}"
-            </p>
+            <blockquote className="text-on-surface-variant leading-relaxed text-lg italic border-l-2 border-surface-container-highest pl-4 py-1">
+              “{card.example}”
+            </blockquote>
           </div>
         )}
       </div>
@@ -79,7 +83,7 @@ function FlashcardFront({ card }: { card: Card }) {
 
 function FlashcardBack({ card }: { card: Card }) {
   return (
-    <div className="relative w-full aspect-[3/4] bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col items-center text-center p-12 transition-all border border-outline-variant/10">
+    <div className="relative w-full h-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col items-center text-center p-12 transition-all border border-outline-variant/10">
       {/* Background Texture (Subtle) */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -288,7 +292,7 @@ export default function StudyPage() {
           {/* Flashcard — flips between front and back */}
           <div className="group relative mb-4">
             <div
-              onClick={!isFlipped ? flip : undefined}
+              onClick={flip}
               className="perspective-1000 cursor-pointer w-full aspect-[3/4]"
             >
               <div
@@ -315,13 +319,22 @@ export default function StudyPage() {
           {/* Actions */}
           <div className="flex flex-col gap-4 mt-8">
             {!isFlipped ? (
-              <button
-                onClick={flip}
-                className="w-full oceanic-gradient text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
-              >
-                <span className="tracking-wide">{t('flashcard.showAnswer')}</span>
-                <span className="material-symbols-outlined">visibility</span>
-              </button>
+              <>
+                <button
+                  onClick={flip}
+                  className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+                >
+                  <span className="tracking-wide">Show Answer</span>
+                  <span className="material-symbols-outlined">visibility</span>
+                </button>
+                <button
+                  onClick={() => rate(3)}
+                  className="w-full bg-secondary text-on-secondary font-headline font-bold py-4 rounded-lg shadow-md hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+                >
+                  <span className="tracking-wide">Mark as Learned</span>
+                  <span className="material-symbols-outlined">check_circle</span>
+                </button>
+              </>
             ) : (
               <SRSButtons onRate={(rating) => rate((rating as 1 | 2 | 3) as 1 | 2 | 3)} />
             )}

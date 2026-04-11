@@ -139,7 +139,9 @@
   - Fetches stats + topic counts from Supabase
   - Shows loading skeletons while fetching
 - [x] **10.5** Migration: `ALTER TABLE user_profiles ADD last_study_date DATE` ✅
-- [x] Build verify: 128 modules ✅
+- [x] **10.5** Verify: User đăng ký → thấy trong admin users list ✅
+- [x] **10.6** Cập nhật `src/pages/LibraryPage.tsx` (async + Supabase) ✅
+- [x] Build verify: 128 modules, no errors ✅
 
 ---
 
