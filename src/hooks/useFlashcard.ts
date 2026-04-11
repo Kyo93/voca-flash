@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Card, CardProgress, calculateNextReview, createInitialProgress, getDueCards, Rating } from '../lib/srs'
-import { loadCards, loadProgress, saveProgress } from '../lib/storage'
-import { recordStudy } from '../lib/streak'
+import { fetchWords, fetchUserProgress, upsertUserProgress, recordStreak } from '../lib/supabase-storage'
+import { useAuth } from '../contexts/AuthContext'
 
 interface FlashcardState {
   queue: Card[]
@@ -13,6 +13,8 @@ interface FlashcardState {
 }
 
 export function useFlashcard(topicFilter?: string) {
+  const { user } = useAuth()
+
   const [state, setState] = useState<FlashcardState>({
     queue: [],
     currentIndex: 0,
@@ -22,16 +24,17 @@ export function useFlashcard(topicFilter?: string) {
     isLoading: true,
   })
 
-  const initialize = useCallback((topic?: string) => {
-    const cards = loadCards()
-    const progressMap = loadProgress()
+  const initialize = useCallback(async (topic?: string) => {
+    setState((s) => ({ ...s, isLoading: true }))
 
-    const filtered = topic
-      ? cards.filter((c) => c.topic === topic)
-      : cards
+    // Fetch words and progress in parallel
+    const [cards, progressMap] = await Promise.all([
+      fetchWords(topic),
+      user ? fetchUserProgress(user.id) : Promise.resolve(new Map<string, CardProgress>()),
+    ])
 
-    const dueCards = getDueCards(filtered, progressMap)
-    const newCards = filtered.filter((c) => !progressMap.has(c.id))
+    const dueCards = getDueCards(cards, progressMap)
+    const newCards = cards.filter((c) => !progressMap.has(c.id))
     const combined = [...dueCards, ...newCards].slice(0, 20) // Max 20 per session
 
     setState({
@@ -42,13 +45,13 @@ export function useFlashcard(topicFilter?: string) {
       isComplete: combined.length === 0,
       isLoading: false,
     })
-  }, [])
+  }, [user])
 
   const flip = useCallback(() => {
     setState((s) => ({ ...s, isFlipped: !s.isFlipped }))
   }, [])
 
-  const rate = useCallback((rating: Rating) => {
+  const rate = useCallback(async (rating: Rating) => {
     setState((s) => {
       const card = s.queue[s.currentIndex]
       if (!card) return s
@@ -58,13 +61,23 @@ export function useFlashcard(topicFilter?: string) {
 
       const newMap = new Map(s.progressMap)
       newMap.set(card.id, newProgress)
-      saveProgress(newMap)
-
-      // Record study for streak
-      recordStudy()
 
       const nextIndex = s.currentIndex + 1
       const isComplete = nextIndex >= s.queue.length
+
+      // Fire-and-forget Supabase sync (non-blocking)
+      if (user) {
+        const mastered = newProgress.repetitions >= 5
+        const correct = rating >= 3 ? 1 : 0
+        const wrong = rating < 3 ? 1 : 0
+
+        upsertUserProgress(user.id, card.id, correct, wrong, mastered).catch(
+          (err) => console.error('[useFlashcard] upsert progress error:', err)
+        )
+        recordStreak(user.id).catch(
+          (err) => console.error('[useFlashcard] recordStreak error:', err)
+        )
+      }
 
       return {
         ...s,
@@ -74,7 +87,7 @@ export function useFlashcard(topicFilter?: string) {
         isComplete,
       }
     })
-  }, [])
+  }, [user])
 
   const markLearned = useCallback(() => {
     rate(3) // Good rating

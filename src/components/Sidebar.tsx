@@ -30,7 +30,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-3 mb-8 px-2">
         <div className="w-10 h-10 bg-gradient-to-br from-primary-container to-primary rounded-lg flex items-center justify-center text-white shadow-lg">
-          <span className="material-symbols-outlined-filled text-xl">auto_stories</span>
+          <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
         </div>
         <div>
           <h1 className="text-xl font-black text-primary leading-none">VocabMaster</h1>

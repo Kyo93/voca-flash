@@ -264,10 +264,12 @@ export default function StudyPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <Sidebar />
+    <div className="min-h-screen bg-surface" style={{ display: 'grid', gridTemplateColumns: '256px 1fr 280px', gridTemplateAreas: '"sidebar main rightbar"' }}>
+      <div style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: 256 }}>
+        <Sidebar />
+      </div>
 
-      <main className="ml-64 flex-grow flex flex-col items-center justify-center pb-24 px-4 sm:px-6">
+      <main style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', width: '100%', paddingBottom: '6rem' }}>
         <div className="max-w-md w-full space-y-8">
           {/* Session Progress */}
           <div className="flex flex-col gap-2 mb-8">
@@ -326,6 +328,9 @@ export default function StudyPage() {
           </div>
         </div>
       </main>
+
+      {/* Right gutter for balance */}
+      <div style={{ gridArea: 'rightbar', width: 280 }} />
     </div>
   )
 }

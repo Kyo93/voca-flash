@@ -87,30 +87,36 @@ export default function LibraryPage() {
   })
 
   return (
-    <div className="flex min-h-screen bg-surface">
-      <Sidebar />
+    <div className="min-h-screen bg-surface" style={{ display: 'grid', gridTemplateColumns: '256px 1fr 280px', gridTemplateAreas: '"sidebar main rightbar"' }}>
+      <div style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: 256 }}>
+        <Sidebar />
+      </div>
 
-      <main className="ml-64 flex-1 min-w-0">
+      <main style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
         {/* Top Bar */}
-        <header className="bg-stone-50/80 backdrop-blur-md sticky top-0 z-40 flex justify-between items-center px-8 py-4 w-full shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <div className="flex items-center gap-4">
-            <div className="bg-stone-100/50 rounded-full px-4 py-2 flex items-center gap-2">
-              <span className="material-symbols-outlined text-stone-400">search</span>
+        <header className="h-20 px-10 flex items-center justify-between bg-surface/95 backdrop-blur-md sticky top-0 z-40 border-b border-stone-100 shadow-sm shrink-0">
+          <h2 className="text-xl font-black text-on-surface shrink-0">{t('nav.library')}</h2>
+          <div className="flex items-center gap-6">
+            <div className="relative w-72">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-300 text-xl">search</span>
               <input
-                className="bg-transparent border-none focus:ring-0 text-sm w-48 text-stone-800"
-                placeholder="Tìm bài học..."
+                className="w-full pl-12 pr-4 py-2.5 bg-white border-none rounded-2xl text-sm shadow-sm placeholder:text-stone-300 focus:ring-2 focus:ring-secondary transition-all"
+                placeholder={t('nav.searchPlaceholder') || "Tìm bài học..."}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="material-symbols-outlined text-stone-400">notifications</span>
+            <div className="flex items-center gap-4">
+              <button className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all">
+                <span className="material-symbols-outlined text-xl">notifications</span>
+              </button>
+            </div>
           </div>
         </header>
 
-        <div className="p-10 max-w-7xl mx-auto">
+        {/* Scrollable Content */}
+        <div className="flex-1 px-10 py-8 overflow-y-auto" style={{ maxWidth: 1280, margin: '0 auto', width: '100%' }}>
           {/* Hero */}
           <div className="mb-12 relative flex items-end justify-between">
             <div>
@@ -200,6 +206,9 @@ export default function LibraryPage() {
           </div>
         </div>
       </main>
+
+      {/* Right gutter for balance */}
+      <div style={{ gridArea: 'rightbar', width: 280 }} />
     </div>
   )
 }

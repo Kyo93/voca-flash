@@ -1,6 +1,12 @@
 /**
- * Streak calculation — tracks daily study habit
+ * streak.ts — Phase 10
+ *
+ * Streak tracking now supports both:
+ * - localStorage fallback (for non-logged-in users)
+ * - Supabase user_profiles (for logged-in users)
  */
+
+import { supabase } from './supabase'
 
 const STREAK_KEY = 'vocamaster-streak'
 
@@ -9,6 +15,8 @@ export interface StreakData {
   lastStudyDate: string // YYYY-MM-DD
   longestStreak: number
 }
+
+// ── localStorage helpers (offline fallback) ──────────────────
 
 function todayStr(): string {
   return new Date().toISOString().split('T')[0]
@@ -33,12 +41,37 @@ export function saveStreak(data: StreakData): void {
   localStorage.setItem(STREAK_KEY, JSON.stringify(data))
 }
 
+// ── Supabase-backed streak (logged-in users) ────────────────
+
+export async function fetchStreakFromSupabase(userId: string): Promise<StreakData> {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('streak_days, last_study_date')
+    .eq('id', userId)
+    .single()
+
+  if (error || !data) {
+    return { currentStreak: 0, lastStudyDate: '', longestStreak: 0 }
+  }
+
+  return {
+    currentStreak: (data.streak_days as number) ?? 0,
+    lastStudyDate: (data.last_study_date as string) ?? '',
+    longestStreak: (data.streak_days as number) ?? 0, // TODO: add longest_streak column
+  }
+}
+
+// ── recordStudy ──────────────────────────────────────────────
+
+/**
+ * Local fallback: record study in localStorage.
+ * useFlashcard now calls recordStreak() from supabase-storage instead.
+ */
 export function recordStudy(): StreakData {
   const data = loadStreak()
   const today = todayStr()
 
   if (data.lastStudyDate === today) {
-    // Already studied today, no change
     return data
   }
 
@@ -49,13 +82,10 @@ export function recordStudy(): StreakData {
   let newStreak: number
 
   if (daysSinceLastStudy === 1) {
-    // Consecutive day — increment streak
     newStreak = data.currentStreak + 1
   } else if (daysSinceLastStudy === 0) {
-    // Same day (edge case — already handled above)
     newStreak = data.currentStreak
   } else {
-    // No lastStudyDate, or streak broken (missed >1 day) — reset
     newStreak = 1
   }
 
@@ -69,6 +99,20 @@ export function recordStudy(): StreakData {
   return newData
 }
 
+/**
+ * Get streak display — tries Supabase first, falls back to localStorage.
+ */
+export async function getStreakDisplayAsync(userId?: string): Promise<StreakData> {
+  if (userId) {
+    return fetchStreakFromSupabase(userId)
+  }
+  return loadStreak()
+}
+
+/**
+ * Synchronous version — localStorage only.
+ * Use getStreakDisplayAsync(userId) for Supabase data.
+ */
 export function getStreakDisplay(): StreakData {
   return loadStreak()
 }

@@ -125,15 +125,21 @@
 
 ---
 
-## PHASE 10: Student App → Supabase Sync — ⏸ TẠM HOÃN
+## PHASE 10: Student App → Supabase Sync — ✅ HOÀN TẤT
 
-- [ ] **10.1** Cập nhật `src/lib/storage.ts` → `src/lib/supabase-storage.ts`
-- [ ] **10.2** Cập nhật `src/hooks/useFlashcard.ts` (async)
-- [ ] **10.3** Cập nhật `src/lib/streak.ts` (sync với Supabase)
-- [ ] **10.4** Cập nhật `src/pages/DashboardPage.tsx`
-- [ ] **10.5** Verify: User đăng ký → thấy trong admin users list
-
-> **Lý do hoãn:** Student app vẫn hoạt động với localStorage. Chỉ sync khi nào cần tính năng online.
+- [x] **10.1** Tạo `src/lib/supabase-storage.ts` ✅
+  - `fetchWords()`, `fetchUserProgress()`, `upsertUserProgress()`, `fetchUserStats()`, `fetchTopicWordCounts()`
+- [x] **10.2** Cập nhật `src/hooks/useFlashcard.ts` (async + Supabase) ✅
+  - `initialize()` now fetches from Supabase
+  - `rate()` upserts progress + records streak (fire-and-forget)
+- [x] **10.3** Cập nhật `src/lib/streak.ts` (sync với Supabase) ✅
+  - `fetchStreakFromSupabase()`, `getStreakDisplayAsync()`
+  - localStorage fallback preserved for non-logged-in users
+- [x] **10.4** Cập nhật `src/pages/DashboardPage.tsx` ✅
+  - Fetches stats + topic counts from Supabase
+  - Shows loading skeletons while fetching
+- [x] **10.5** Migration: `ALTER TABLE user_profiles ADD last_study_date DATE` ✅
+- [x] Build verify: 128 modules ✅
 
 ---
 
@@ -175,9 +181,9 @@
 ✅ Roadmaps: CRUD hoạt động
 ✅ Users: Admin thấy danh sách user + progress
 ✅ Seed: 15 words, 5 topics, 1 roadmap trong Supabase
+✅ Student sync: User học → progress lưu lên Supabase (phase 10 done)
 ⏸ Deploy: App online tại URL (chờ)
 ⏸ Admin user: Đăng nhập admin → vào được panel (chờ user tạo account)
-⏸ Student sync: User học → progress lưu lên Supabase (chờ phase 10)
 ```
 
 ---

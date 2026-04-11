@@ -1,31 +1,92 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
-import { getStreakDisplay } from '../lib/streak'
-import { getCardStats, loadCards, loadProgress } from '../lib/storage'
+import { useAuth } from '../contexts/AuthContext'
+import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
+import { fetchUserStats, fetchTopicWordCounts } from '../lib/supabase-storage'
+import type { StreakData } from '../lib/streak'
 
 const DAILY_GOAL = 10
 
+interface DashboardStats {
+  totalWords: number
+  mastered: number
+  learning: number
+  topicCounts: Record<string, number>
+}
+
+function StreakBadge({ streak }: { streak: StreakData }) {
+  return (
+    <div className="flex items-center gap-1.5 text-primary font-black px-3 py-1.5 bg-white rounded-xl shadow-sm border border-stone-100">
+      <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
+      <span className="text-sm leading-none">{streak.currentStreak}</span>
+    </div>
+  )
+}
+
 export default function DashboardPage() {
   const { t } = useTranslation()
-  const streak = getStreakDisplay()
-  const cards = loadCards()
-  const progressMap = loadProgress()
-  const stats = getCardStats(cards, progressMap)
+  const { user } = useAuth()
 
-  const totalMastered = [...progressMap.values()].filter((p) => p.repetitions >= 5).length
-  const dailyProgress = Math.min(stats.new + totalMastered, DAILY_GOAL)
-  const progressPct = Math.round((dailyProgress / DAILY_GOAL) * 100)
+  const [streak, setStreak] = useState<StreakData>(loadStreak())
+  const [stats, setStats] = useState<DashboardStats>({
+    totalWords: 0,
+    mastered: 0,
+    learning: 0,
+    topicCounts: {},
+  })
+  const [topicCounts, setTopicCounts] = useState<Record<string, number>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      if (!user) {
+        // Not logged in — use localStorage fallback
+        setStreak(loadStreak())
+        setLoading(false)
+        return
+      }
+
+      // Logged in — fetch from Supabase
+      const [streakData, userStats, topicData] = await Promise.all([
+        fetchStreakFromSupabase(user.id),
+        fetchUserStats(user.id),
+        fetchTopicWordCounts(),
+      ])
+
+      setStreak(streakData)
+      setStats({
+        totalWords: userStats.totalWords,
+        mastered: userStats.mastered,
+        learning: userStats.learning,
+        topicCounts: userStats.totalWords > 0 ? topicData : {},
+      })
+      setTopicCounts(topicData)
+      setLoading(false)
+    }
+
+    load()
+  }, [user])
+
+  const dailyProgress = Math.min(stats.learning + stats.mastered, DAILY_GOAL)
+  const progressPct = stats.totalWords > 0
+    ? Math.round((dailyProgress / DAILY_GOAL) * 100)
+    : 0
+
+  // Topic counts from Supabase
+  const dailyCount = topicCounts['daily'] ?? 0
+  const travelCount = topicCounts['travel'] ?? 0
 
   return (
-    <div className="min-h-screen bg-surface" style={{ display: 'grid', gridTemplateColumns: '256px 1fr 22%', gridTemplateAreas: '"sidebar main rightbar"' }}>
+    <div className="min-h-screen bg-surface" style={{ display: 'grid', gridTemplateColumns: '256px 1fr 280px', gridTemplateAreas: '"sidebar main rightbar"' }}>
       {/* Left sidebar */}
       <div style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: 256 }}>
         <Sidebar />
       </div>
 
       {/* Main content */}
-      <div style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <div style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
 
         {/* Top Bar */}
         <header className="h-20 px-10 flex items-center justify-between bg-surface/95 backdrop-blur-md sticky top-0 z-40 border-b border-stone-100 shadow-sm shrink-0">
@@ -45,19 +106,18 @@ export default function DashboardPage() {
               <button className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all">
                 <span className="material-symbols-outlined text-xl">notifications</span>
               </button>
-              <div className="flex items-center gap-1.5 text-primary font-black px-3 py-1.5 bg-white rounded-xl shadow-sm border border-stone-100">
-                <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
-                <span className="text-sm leading-none">{streak.currentStreak}</span>
+              <StreakBadge streak={streak} />
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                <span className="text-sm font-black text-primary leading-none">
+                  {(user?.email ?? 'A')[0].toUpperCase()}
+                </span>
               </div>
-              <button className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                <span className="text-sm font-black text-primary leading-none">A</span>
-              </button>
             </div>
           </div>
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 px-10 py-8 overflow-y-auto">
+        <div className="flex-1 px-10 py-8 overflow-y-auto" style={{ maxWidth: 1280, margin: '0 auto', width: '100%' }}>
 
           {/* Hero Banner */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-container to-primary px-12 py-12 mb-8 min-h-[260px] flex items-center shadow-lg">
@@ -85,15 +145,27 @@ export default function DashboardPage() {
               <div className="flex-1">
                 <span className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 block">{t('home.currentGoal')}</span>
                 <div className="text-3xl font-black text-on-surface mb-4">
-                  {dailyProgress} <span className="text-stone-300 font-medium text-xl">/ {DAILY_GOAL} {t('home.newWords')}</span>
+                  {loading ? (
+                    <span className="inline-block w-16 h-8 bg-stone-100 rounded animate-pulse" />
+                  ) : (
+                    <>
+                      {dailyProgress} <span className="text-stone-300 font-medium text-xl">/ {DAILY_GOAL} {t('home.newWords')}</span>
+                    </>
+                  )}
                 </div>
                 <div className="h-4 w-full bg-stone-100 rounded-full overflow-hidden">
                   <div className="h-full bg-secondary rounded-full transition-all" style={{ width: `${Math.min(100, progressPct)}%` }} />
                 </div>
               </div>
               <div className="w-32 h-32 rounded-full border-[6px] border-secondary/10 bg-secondary/5 flex flex-col items-center justify-center shrink-0">
-                <span className="text-3xl font-black text-secondary">{Math.min(100, progressPct)}%</span>
-                <span className="text-[9px] font-bold text-secondary/60 uppercase tracking-tighter mt-1">{t('progress.completed')}</span>
+                {loading ? (
+                  <span className="w-12 h-12 bg-stone-100 rounded-full animate-pulse" />
+                ) : (
+                  <>
+                    <span className="text-3xl font-black text-secondary">{Math.min(100, progressPct)}%</span>
+                    <span className="text-[9px] font-bold text-secondary/60 uppercase tracking-tighter mt-1">{t('progress.completed')}</span>
+                  </>
+                )}
               </div>
             </div>
             {/* Rank */}
@@ -116,7 +188,7 @@ export default function DashboardPage() {
               <Link className="text-primary font-bold text-sm hover:underline underline-offset-4 transition-all shrink-0 ml-4" to="/library">{t('home.viewLibrary')}</Link>
             </div>
             <div className="grid grid-cols-2 gap-6">
-              {/* Card 1 */}
+              {/* Card 1 — Daily */}
               <div className="group bg-white rounded-3xl border border-stone-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300">
                 <div className="relative h-48 overflow-hidden">
                   <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Giao tiếp hằng ngày" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80" />
@@ -127,14 +199,16 @@ export default function DashboardPage() {
                   <h5 className="text-xl font-black text-on-surface mb-2">{t('topics.daily')}</h5>
                   <p className="text-sm text-stone-400 mb-5 line-clamp-2">Tăng vốn giao tiếp hàng ngày của bạn.</p>
                   <div className="flex justify-between items-center">
-                    <span className="text-stone-300 text-[11px] font-black uppercase tracking-wider">{cards.filter(c => c.topic === 'daily').length} {t('topics.words')}</span>
+                    <span className="text-stone-300 text-[11px] font-black uppercase tracking-wider">
+                      {loading ? '...' : `${dailyCount} ${t('topics.words')}`}
+                    </span>
                     <Link to="/study?topic=daily" className="text-secondary text-[11px] font-black uppercase tracking-wider flex items-center gap-1 hover:underline underline-offset-2">
                       {t('home.resume')} <span className="material-symbols-outlined text-sm">arrow_forward</span>
                     </Link>
                   </div>
                 </div>
               </div>
-              {/* Card 2 */}
+              {/* Card 2 — Travel */}
               <div className="group bg-white rounded-3xl border border-stone-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300">
                 <div className="relative h-48 overflow-hidden">
                   <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Du lịch" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80" />
@@ -145,7 +219,9 @@ export default function DashboardPage() {
                   <h5 className="text-xl font-black text-on-surface mb-2">{t('topics.travel')}</h5>
                   <p className="text-sm text-stone-400 mb-5 line-clamp-2">Tăng vốn từ vựng du lịch.</p>
                   <div className="flex justify-between items-center">
-                    <span className="text-stone-300 text-[11px] font-black uppercase tracking-wider">{cards.filter(c => c.topic === 'travel').length} {t('topics.words')}</span>
+                    <span className="text-stone-300 text-[11px] font-black uppercase tracking-wider">
+                      {loading ? '...' : `${travelCount} ${t('topics.words')}`}
+                    </span>
                     <Link to="/study?topic=travel" className="text-secondary text-[11px] font-black uppercase tracking-wider flex items-center gap-1 hover:underline underline-offset-2">
                       {t('home.resume')} <span className="material-symbols-outlined text-sm">arrow_forward</span>
                     </Link>
@@ -157,7 +233,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Right sidebar — sticky so it scrolls with page */}
+      {/* Right sidebar */}
       <div style={{ gridArea: 'rightbar', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto', backgroundColor: 'white', borderLeft: '1px solid #f5f5f4', zIndex: 40 }}>
         <div className="p-6 space-y-5">
           {/* Streak Widget */}
@@ -166,7 +242,9 @@ export default function DashboardPage() {
               <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-md">
                 <span className="material-symbols-outlined text-4xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
               </div>
-              <div className="absolute -top-1 -right-1 bg-secondary text-white text-xs font-black w-6 h-6 rounded-full flex items-center justify-center border-4 border-surface-container-high">{streak.currentStreak}</div>
+              <div className="absolute -top-1 -right-1 bg-secondary text-white text-xs font-black w-6 h-6 rounded-full flex items-center justify-center border-4 border-surface-container-high">
+                {streak.currentStreak}
+              </div>
             </div>
             <p className="text-xl font-black text-on-surface">{streak.currentStreak} {t('progress.dayStreak')}</p>
             <p className="text-xs text-stone-400 mt-1 font-medium">{t('progress.topStreak')}</p>
