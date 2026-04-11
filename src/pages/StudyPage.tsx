@@ -35,9 +35,9 @@ function AudioButton({ text, slow }: AudioButtonProps) {
 
 function FlashcardFront({ card }: { card: Card }) {
   return (
-    <div className="bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(26,27,33,0.06)] overflow-hidden flex flex-col border border-outline-variant/10">
+    <div className="w-full aspect-[3/4] bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(26,27,33,0.06)] overflow-hidden flex flex-col border border-outline-variant/10 relative">
       {/* Visual area */}
-      <div className="w-full aspect-[4/3] overflow-hidden bg-surface-container-low relative">
+      <div className="w-full aspect-square overflow-hidden bg-surface-container-low relative">
         <img
           alt={card.front}
           className="w-full h-full object-cover"
@@ -47,15 +47,14 @@ function FlashcardFront({ card }: { card: Card }) {
       </div>
 
       {/* Content */}
-      <div className="p-8 space-y-6">
+      <div className="p-6 space-y-4 flex-grow flex flex-col justify-center">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <h1 className="text-4xl font-headline font-extrabold text-primary tracking-tight">{card.front}</h1>
-            <p className="text-secondary font-medium tracking-wide text-lg">/{card.front}/</p>
+            <h1 className="text-3xl font-headline font-extrabold text-primary tracking-tight line-clamp-1">{card.front}</h1>
+            <p className="text-secondary font-medium tracking-wide text-base">/{card.front}/</p>
           </div>
           <div className="flex gap-2">
             <AudioButton text={card.front} />
-            <AudioButton text={card.front} slow />
           </div>
         </div>
 
@@ -64,27 +63,24 @@ function FlashcardFront({ card }: { card: Card }) {
 
         {/* Example */}
         {card.example && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <span className="font-label text-[10px] uppercase tracking-widest text-outline font-bold block">
-              Contextual Usage
+              Context
             </span>
-            <blockquote className="text-on-surface-variant leading-relaxed text-lg italic border-l-2 border-surface-container-highest pl-4 py-1">
+            <p className="text-on-surface-variant leading-relaxed text-sm italic border-l-2 border-surface-container-highest pl-3 py-0.5 line-clamp-3">
               "{card.example}"
-            </blockquote>
+            </p>
           </div>
         )}
       </div>
-
-      {/* Aesthetic accent */}
-      <div className="absolute -z-10 -bottom-4 -right-4 w-full h-full bg-secondary/5 rounded-xl border border-secondary/10" />
     </div>
   )
 }
 
 function FlashcardBack({ card }: { card: Card }) {
   return (
-    <div className="w-full max-w-md aspect-[3/4] bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col items-center text-center p-8 transition-all border border-outline-variant/10 relative">
-      {/* Background texture */}
+    <div className="relative w-full aspect-[3/4] bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col items-center text-center p-12 transition-all border border-outline-variant/10">
+      {/* Background Texture (Subtle) */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
@@ -92,48 +88,60 @@ function FlashcardBack({ card }: { card: Card }) {
           backgroundSize: '24px 24px',
         }}
       />
-
+      
       <div className="relative z-10 w-full h-full flex flex-col">
-        {/* English Word */}
-        <div className="flex flex-col items-center mb-8">
-          <span className="text-secondary font-label font-bold tracking-widest text-xs uppercase mb-2">English Word</span>
-          <h2 className="text-primary font-headline text-2xl font-bold tracking-tight">{card.front}</h2>
-          <div className="mt-2 text-outline text-sm flex items-center justify-center gap-3">
-            <span>/{card.front}/</span>
-            <div className="flex items-center gap-1.5 ml-2">
-              <AudioButton text={card.front} />
-              <AudioButton text={card.front} slow />
+        {/* English Word (Small, Above) */}
+        <div className="flex flex-col items-center mt-2 mb-4">
+          <span className="text-secondary font-label font-bold tracking-widest text-[10px] uppercase mb-1">English Word</span>
+          <h2 className="text-primary font-headline text-3xl font-bold tracking-tight">{card.front}</h2>
+          <div className="mt-1 text-outline text-xs">
+            <div className="flex items-center justify-center gap-3">
+              <span>/{card.front}/</span>
+              <div className="flex items-center gap-1.5 ml-1">
+                <AudioButton text={card.front} />
+                <AudioButton text={card.front} slow />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Oceanic divider */}
-        <div className="w-12 h-1 oceanic-gradient rounded-full mx-auto mb-8" />
+        {/* Spacer Line */}
+        <div className="w-12 h-1 oceanic-pulse rounded-full mx-auto mb-10"></div>
 
-        {/* Vietnamese meaning */}
-        <div className="flex-grow flex flex-col justify-center">
-          <p className="text-on-surface font-headline text-3xl font-extrabold leading-tight mb-6">
+        {/* Vietnamese Meaning (Prominent) - Center heavily */}
+        <div className="flex-grow flex flex-col items-center">
+          <span className="text-secondary font-label font-bold tracking-widest text-[10px] uppercase mb-2">Meaning</span>
+          <p className="text-on-surface font-headline text-[32px] font-black leading-tight mb-8">
             {card.back}
           </p>
 
-          {/* Context sentence */}
+          {/* Context Sentence */}
           {card.example && (
-            <div className="bg-surface-container-low p-6 rounded-lg text-left">
+            <div className="bg-surface-container-low p-6 rounded-xl text-left w-full mt-auto mb-4">
               <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-secondary text-lg mt-1">format_quote</span>
-                <div className="space-y-3">
+                <span className="material-symbols-outlined text-secondary text-lg mt-0.5 opacity-40">format_quote</span>
+                <div className="space-y-2">
                   <p className="text-on-surface-variant font-body text-sm italic leading-relaxed">
                     "{card.example}"
                   </p>
+                  {card.example_vi && (
+                    <p className="text-on-surface-variant font-body text-xs leading-relaxed border-t border-outline-variant/10 pt-2 opacity-70">
+                      "{card.example_vi}"
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Card footer */}
-        <div className="mt-8 pt-6 border-t border-outline-variant/15 flex justify-between items-center text-outline text-[10px] font-bold uppercase tracking-widest">
-          <span>Deck: {card.topic}</span>
+        {/* Card Footer / Metadata */}
+        <div className="mt-auto pt-6 border-t border-outline-variant/15 flex justify-between items-center text-outline text-[10px] font-bold uppercase tracking-widest">
+          <span>Topic: {card.topic}</span>
+          <span className="flex items-center gap-1">
+            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+            SRS READY
+          </span>
         </div>
       </div>
     </div>
@@ -145,37 +153,37 @@ function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3) => void }) {
 
   return (
     <div className="w-full max-w-md grid grid-cols-3 gap-4 px-2">
-      {/* Hard */}
+      {/* Hard Button */}
       <button
         onClick={() => onRate(1)}
         className="group flex flex-col items-center gap-2"
       >
         <div className="w-full py-4 bg-error-container text-on-error-container font-headline font-bold rounded-lg border border-error/10 group-active:scale-95 transition-all flex items-center justify-center">
-          {t('srs.hard')}
+          Khó
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">{t('srs.interval1d')}</span>
+        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">1 Ngày</span>
       </button>
 
-      {/* Good */}
+      {/* Good/Vừa Button */}
       <button
         onClick={() => onRate(2)}
         className="group flex flex-col items-center gap-2"
       >
         <div className="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center shadow-lg shadow-primary/20">
-          {t('srs.good')}
+          Vừa
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">{t('srs.interval4d')}</span>
+        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">4 Ngày</span>
       </button>
 
-      {/* Easy */}
+      {/* Easy/Dễ Button */}
       <button
         onClick={() => onRate(3)}
         className="group flex flex-col items-center gap-2"
       >
         <div className="w-full py-4 bg-secondary-fixed text-on-secondary-fixed font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center border border-secondary/10">
-          {t('srs.easy')}
+          Dễ
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">{t('srs.interval7d')}</span>
+        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">7 Ngày</span>
       </button>
     </div>
   )
@@ -226,6 +234,13 @@ export default function StudyPage() {
     return () => stop()
   }, [initialize, topic])
 
+  // Tự động phát âm khi thẻ xuất hiện hoặc khi lật thẻ
+  useEffect(() => {
+    if (currentCard && !isLoading && !isComplete) {
+      // Phát âm từ vựng tiếng Anh (mặt trước)
+      speak(currentCard.front);
+    }
+  }, [currentCard?.id, isFlipped, isLoading, isComplete]);
   if (isLoading) {
     return (
       <div className="flex min-h-screen bg-surface">
@@ -272,27 +287,27 @@ export default function StudyPage() {
           <div className="group relative mb-4">
             <div
               onClick={!isFlipped ? flip : undefined}
-              className={`perspective-1000 cursor-pointer ${isFlipped ? '' : 'cursor-pointer'}`}
+              className="perspective-1000 cursor-pointer w-full aspect-[3/4]"
             >
               <div
-                className={`preserve-3d transition-all duration-500 ${
+                className={`preserve-3d transition-all duration-700 w-full h-full relative ${
                   isFlipped ? 'rotate-y-180' : ''
                 }`}
               >
                 {/* Front */}
-                <div className={`backface-hidden ${isFlipped ? 'hidden' : 'block'}`}>
+                <div className="backface-hidden w-full h-full absolute inset-0">
                   <FlashcardFront card={currentCard} />
                 </div>
 
                 {/* Back */}
-                <div className={`backface-hidden ${isFlipped ? 'block' : 'hidden'}`}>
+                <div className="backface-hidden w-full h-full absolute inset-0 rotate-y-180">
                   <FlashcardBack card={currentCard} />
                 </div>
               </div>
             </div>
 
-            {/* Aesthetic accent */}
-            <div className="absolute -z-10 -bottom-4 -right-4 w-full h-full bg-secondary/5 rounded-xl border border-secondary/10" />
+            {/* Aesthetic accent shadow */}
+            <div className="absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 rounded-xl border border-primary/10 pointer-events-none" />
           </div>
 
           {/* Actions */}

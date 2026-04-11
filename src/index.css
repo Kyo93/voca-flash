@@ -96,9 +96,13 @@ body {
   background: linear-gradient(135deg, #e67e22 0%, #944a00 100%);
 }
 
-/* Oceanic gradient (blue — for study mode) */
-.oceanic-gradient {
-  background: linear-gradient(45deg, #1e3a8a 0%, #00236f 100%);
+/* Oceanic pulse gradient (from Stitch design) */
+.oceanic-pulse {
+  background: linear-gradient(45deg, #00236f 0%, #1e3a8a 100%);
+}
+
+.neon-glow {
+  box-shadow: 0 0 12px #2dd4bf;
 }
 
 /* Secondary gradient (Sage green) */

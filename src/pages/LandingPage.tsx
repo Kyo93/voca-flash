@@ -25,7 +25,7 @@ export default function LandingPage() {
             <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Cộng đồng</a>
           </div>
           <div className="flex items-center gap-6">
-            <button className="px-8 py-2.5 rounded-full font-bold text-primary border-2 border-primary hover:bg-primary hover:text-white transition-all duration-300">{t('landing.register')}</button>
+            <a href="/login" className="px-8 py-2.5 rounded-full font-bold text-primary border-2 border-primary hover:bg-primary hover:text-white transition-all duration-300">{t('landing.register')}</a>
           </div>
         </nav>
       </header>
@@ -53,9 +53,9 @@ export default function LandingPage() {
                   {t('landing.startTrial')}
                   <span className="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </a>
-                <button className="px-10 py-4 bg-white text-secondary font-bold rounded-2xl border-2 border-secondary/10 hover:border-primary/30 hover:bg-orange-50 active:scale-95 transition-all">
+                <a href="/login" className="px-10 py-4 bg-white text-secondary font-bold rounded-2xl border-2 border-secondary/10 hover:border-primary/30 hover:bg-orange-50 active:scale-95 transition-all">
                   {t('landing.login')}
-                </button>
+                </a>
               </div>
             </div>
 

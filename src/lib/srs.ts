@@ -3,6 +3,7 @@ export interface Card {
   front: string       // English word
   back: string        // Vietnamese meaning
   example?: string    // Example sentence
+  example_vi?: string // Vietnamese translation of the example
   topic: string       // Topic category
   createdAt: number
 }

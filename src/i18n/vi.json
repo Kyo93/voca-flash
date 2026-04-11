@@ -4,24 +4,24 @@
     "tagline": "Học từ vựng hiệu quả"
   },
   "nav": {
-    "dashboard": "Trang chủ",
+    "dashboard": "Dashboard",
     "library": "Thư viện",
     "progress": "Tiến độ",
     "settings": "Cài đặt",
     "quickStudy": "Học nhanh",
-    "startQuiz": "Bắt đầu Quiz",
+    "startQuiz": "Học nhanh",
     "search": "Tìm kiếm...",
     "searchPlaceholder": "Tìm bài học, từ vựng..."
   },
   "home": {
     "welcome": "Chào mừng trở lại!",
     "subtitle": "Bạn đã học {{count}} từ mới tuần này. Hãy tiếp tục nhé!",
-    "continueChallenge": "Tiếp tục thử thách",
-    "currentGoal": "Mục tiêu hôm nay",
+    "continueChallenge": "Tiếp tục thôi nào",
+    "currentGoal": "MỤC TIÊU HÔM NAY",
     "newWords": "Từ mới",
     "mastered": "Đã thuộc",
     "continueLearning": "Tiếp tục học",
-    "viewLibrary": "Xem thư viện",
+    "viewLibrary": "Xem tất cả",
     "resume": "Tiếp tục"
   },
   "flashcard": {
@@ -72,9 +72,25 @@
   "progress": {
     "title": "Tiến độ",
     "streak": "Ngày liên tiếp",
-    "topStreak": "Bạn thuộc top 5% người học tháng này. Tiếp tục nhé!",
+    "topStreak": "Bạn thuộc top 5% người học siêng năng. Tuyệt vời!",
     "masteredWords": "Từ đã thuộc",
-    "totalWords": "Tổng số từ"
+    "totalWords": "Tổng số từ",
+    "dayStreak": "Ngày liên tiếp",
+    "completed": "hoàn thành"
+  },
+  "rightSidebar": {
+    "updates": "Cập nhật",
+    "seeAll": "Xem tất cả",
+    "studyGood": "Học tập tốt!",
+    "studyGoodDesc": "Bạn đã hoàn thành bài ôn hôm nay.",
+    "reviewReady": "Ôn tập sinh động",
+    "reviewReadyDesc": "Có {{count}} từ cần ôn tập ngay.",
+    "studyReminder": "Lời nhắc",
+    "learnWord": "Học một từ",
+    "dynamicReview": "Ôn tập sinh động",
+    "scheduleTitle": "Hẹn học tập",
+    "scheduleDesc": "Tự tạo ra một thói quen học tập và bạn sẽ thấy. Tập học 5 phút 1 ngày?",
+    "setReminder": "Đặt nhắc"
   },
   "landing": {
     "heroTitle": "Học từ vựng",

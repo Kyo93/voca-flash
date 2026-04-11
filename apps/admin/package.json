@@ -1,34 +1,25 @@
 {
-  "name": "voca-flash",
+  "name": "admin",
   "version": "1.0.0",
-  "description": "Học từ vựng tiếng Anh bằng Flashcard và SRS",
-  "type": "module",
+  "description": "VocaFlash Admin Panel",
+  "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:gate": "vitest run"
+    "test:watch": "vitest"
   },
-  "keywords": [
-    "vocabulary",
-    "english",
-    "flashcard",
-    "srs",
-    "learning"
-  ],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
-    "@types/node": "^25.6.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "i18next": "^26.0.4",
     "jsdom": "^29.0.2",
-    "react-i18next": "^17.0.2",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
     "vite": "^8.0.8",
@@ -39,8 +30,6 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@supabase/supabase-js": "^2.103.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.0"
   }
 }

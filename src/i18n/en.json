@@ -72,9 +72,25 @@
   "progress": {
     "title": "Progress",
     "streak": "Day Streak!",
+    "dayStreak": "Day Streak!",
     "topStreak": "You're in the top 5% of learners this month. Keep going!",
     "masteredWords": "Mastered Words",
-    "totalWords": "Total Words"
+    "totalWords": "Total Words",
+    "completed": "complete"
+  },
+  "rightSidebar": {
+    "updates": "Updates",
+    "seeAll": "See all",
+    "studyGood": "Great work!",
+    "studyGoodDesc": "You completed today's review session.",
+    "reviewReady": "Review ready",
+    "reviewReadyDesc": "{{count}} words are waiting to be reviewed.",
+    "studyReminder": "Reminders",
+    "learnWord": "Learn a word",
+    "dynamicReview": "Dynamic review",
+    "scheduleTitle": "Schedule a study reminder",
+    "scheduleDesc": "Set a daily reminder to maintain your streak and build a lasting habit.",
+    "setReminder": "Set Reminder"
   },
   "landing": {
     "heroTitle": "Learn vocabulary",
