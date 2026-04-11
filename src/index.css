@@ -25,6 +25,22 @@
   --color-on-error: #ffffff;
 
   --color-surface-tint: #D35400;
+  
+  --color-surface-container-low: #f9f3ea;
+  --color-surface-container: #f3ede4;
+  --color-surface-container-high: #ede7df;
+  --color-surface-container-highest: #e8e2d9;
+
+  --color-tertiary: #755a33;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #b49469;
+
+  --color-primary-fixed: #ffdcc5;
+  --color-on-primary-fixed-variant: #713700;
+  --color-secondary-fixed: #d6eaaf;
+  --color-on-secondary-fixed-variant: #3c4c20;
+  --color-tertiary-fixed: #ffddb2;
+  --color-on-tertiary-fixed-variant: #5b421e;
 
   /* Border Radius */
   --radius-sm: 0.5rem;
@@ -145,6 +161,25 @@ body {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+/* Bento-ish Grid Utility */
+.asymmetric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1280px) {
+  .asymmetric-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .asymmetric-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Blob animation for background */
