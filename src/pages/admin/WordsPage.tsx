@@ -47,14 +47,16 @@ export default function AdminWordsPage() {
     return () => clearTimeout(t)
   }, [search])
 
-  // Load words + topics
+  // Load topics once
   useEffect(() => {
-    fetch(topicFilter || undefined, searchDebounce || undefined)
     getAllTopics().then(({ data }) => setTopics((data as Topic[]) ?? []))
   }, [])
 
-  // Reset page on filter change
-  useEffect(() => { setPage(1) }, [topicFilter, searchDebounce])
+  // Fetch words when filters change
+  useEffect(() => {
+    fetch(topicFilter || undefined, searchDebounce || undefined)
+    setPage(1)
+  }, [topicFilter, searchDebounce])
 
   // Sorted words
   const sorted = [...words].sort((a, b) => {
