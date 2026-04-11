@@ -66,6 +66,9 @@ function SortableItem({
       <div className="flex-1 min-w-0">
         <p className="font-black text-secondary truncate">{topic.name}</p>
         <p className="text-xs text-stone-400 font-mono truncate">{topic.slug}</p>
+        {topic.description && (
+          <p className="text-xs text-on-surface-variant truncate mt-1">{topic.description}</p>
+        )}
       </div>
 
       {/* Roadmap badge */}
@@ -119,6 +122,8 @@ export default function AdminTopicsPage() {
   async function handleSave(data: {
     name: string
     slug: string
+    description: string | null
+    image_url: string | null
     icon: string
     color: string
     roadmap_id: string | null
@@ -127,6 +132,8 @@ export default function AdminTopicsPage() {
       const { error: err } = await editTopic(editTopicData.id, {
         name: data.name,
         slug: data.slug,
+        description: data.description,
+        image_url: data.image_url,
         icon: data.icon,
         color: data.color,
         roadmap_id: data.roadmap_id,
@@ -136,6 +143,8 @@ export default function AdminTopicsPage() {
       const { error: err } = await addTopic({
         name: data.name,
         slug: data.slug,
+        description: data.description,
+        image_url: data.image_url,
         icon: data.icon,
         color: data.color,
         roadmap_id: data.roadmap_id,

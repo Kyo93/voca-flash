@@ -6,6 +6,7 @@ export interface Roadmap {
   name: string
   slug: string
   description: string | null
+  image_url: string | null
   is_active: boolean
   created_at: string
   updated_at: string
@@ -17,6 +18,8 @@ export interface Topic {
   roadmap_id: string | null
   name: string
   slug: string
+  description: string | null
+  image_url: string | null
   icon: string
   color: string
   sort_order: number

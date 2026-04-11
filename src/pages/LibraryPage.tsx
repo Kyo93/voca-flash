@@ -142,7 +142,7 @@ export default function LibraryPage() {
             >
               <div className="w-full h-40 bg-secondary-container/30 rounded-xl mb-6 flex items-center justify-center overflow-hidden relative">
                 <img 
-                  src={specs.image} 
+                  src={roadmap.image_url || specs.image} 
                   alt={roadmap.name} 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />

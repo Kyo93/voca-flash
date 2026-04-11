@@ -21,3 +21,6 @@ local-data/
 
 # Working memory
 .cm/
+
+# Supabase temporary files
+supabase/.temp/

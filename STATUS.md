@@ -34,20 +34,20 @@
 
 ## 🔄 ĐANG THỰC HIỆN
 
-### Phase 4: Admin Panel
+### Phase 4: Admin Panel & Integration
 > 📋 **cm-brainstorm-idea** — ✅ Proposal: `openspec/changes/admin-panel/proposal.md`
 
-**User đã xác nhận:**
-1. Admin duy nhất — quản lý user, roadmap, topic, từ vựng
-2. Lưu thông tin cá nhân user (sở thích, tiến độ học)
-3. Tách biệt: Student App (học viên) ≠ Admin Panel (chỉ mình admin)
-4. Logic quản lý từ vựng lấy **từ vựng làm trung tâm** (words → topics → roadmaps)
-5. Chuyển từ localStorage → **Supabase** (backend + auth)
-6. Deploy: **Cloudflare Pages** (miễn phí)
+**User đã xác nhận và hoàn thành:**
+1. Admin duy nhất — quản lý user, roadmap, topic, từ vựng (✅ Done)
+2. Lưu thông tin cá nhân user (sở thích, tiến độ học) (✅ Done)
+3. Tách biệt: Student App (học viên) ≠ Admin Panel (chỉ mình admin) (✅ Done)
+4. Logic quản lý từ vựng lấy **từ vựng làm trung tâm** (words → topics → roadmaps) (✅ Done, đã thêm feature Topic Description)
+5. Chuyển từ localStorage → **Supabase** (backend + auth) (✅ Done - Phase 10 Sync hoàn tất)
+6. AppLayout Centralization: Tối ưu UI thống nhất layout toàn bộ app (Sidebar, Header) (✅ Done)
+7. Deploy: **Cloudflare Pages** (miễn phí) (🔄 Đang chờ - Phase 11)
 
-**Còn thiếu — cần Supabase account mới:**
-- Account mới chưa được kết nối (MCP vẫn thấy account Kyo93 cũ)
-- Cần user đăng nhập account mới → restart Claude Code
+**Còn thiếu — chờ deploy:**
+- Deploy Frontend public URL và thiết lập auth cho Superadmin.
 
 ---
 
@@ -57,16 +57,16 @@
 
 | Phase | Mô tả | Trạng thái |
 |---|---|---|
-| 4.1 | Supabase Setup (BLOCKER) | ⬜ |
-| 4.2 | Scaffold Admin App | ⬜ |
-| 4.3 | Auth Guards + Layout | ⬜ |
-| 4.4 | Words CRUD (TRUNG TÂM) | ⬜ |
-| 4.5 | Topics CRUD + Drag & Drop | ⬜ |
-| 4.6 | Roadmaps CRUD | ⬜ |
-| 4.7 | Users View | ⬜ |
-| 4.8 | Admin Dashboard Stats | ⬜ |
-| 4.9 | Migration: localStorage → Supabase | ⬜ |
-| 4.10 | Student → Supabase Sync | ⬜ |
+| 4.1 | Supabase Setup | ✅ |
+| 4.2 | Scaffold Admin App | ✅ |
+| 4.3 | Auth Guards + Layout | ✅ |
+| 4.4 | Words CRUD (TRUNG TÂM) | ✅ |
+| 4.5 | Topics CRUD + Drag & Drop (+ Description field) | ✅ |
+| 4.6 | Roadmaps CRUD | ✅ |
+| 4.7 | Users View | ✅ |
+| 4.8 | Admin Dashboard Stats | ✅ |
+| 4.9 | Migration: localStorage → Supabase | ✅ |
+| 4.10 | Student → Supabase Sync | ✅ |
 | 4.11 | Deploy Cloudflare Pages | ⬜ |
 
 ---
@@ -76,18 +76,18 @@
 ```
 Phase 1 ✅✅✅✅✅✅  Bootstrap & Setup
 Phase 2 ✅✅✅✅✅✅  Core Learning
-Phase 3 ✅✅✅✅✅✅  Core Pages
-Phase 4 ✅🔄🔄🔄🔄🔄  Admin Panel — ✅ Plan done (design.md + tasks.md)
-Phase 4.1 ⬜⬜⬜⬜⬜⬜  Supabase Setup (BLOCKER)
-Phase 4.2 ⬜⬜⬜⬜⬜⬜  Scaffold Admin App
-Phase 4.3 ⬜⬜⬜⬜⬜⬜  Auth Guards + Layout
-Phase 4.4 ⬜⬜⬜⬜⬜⬜  Words CRUD (TRUNG TÂM)
-Phase 4.5 ⬜⬜⬜⬜⬜⬜  Topics CRUD + Drag & Drop
-Phase 4.6 ⬜⬜⬜⬜⬜⬜  Roadmaps CRUD
-Phase 4.7 ⬜⬜⬜⬜⬜⬜  Users View
-Phase 4.8 ⬜⬜⬜⬜⬜⬜  Admin Dashboard Stats
-Phase 4.9 ⬜⬜⬜⬜⬜⬜  Migration: localStorage → Supabase
-Phase 4.10 ⬜⬜⬜⬜⬜  Student → Supabase Sync
+Phase 3 ✅✅✅✅✅✅  Core Pages & AppLayout Refactor
+Phase 4 ✅✅✅✅✅🔄  Admin Panel & App/DB Sync
+Phase 4.1 ✅✅✅✅✅✅  Supabase Setup
+Phase 4.2 ✅✅✅✅✅✅  Scaffold Admin App
+Phase 4.3 ✅✅✅✅✅✅  Auth Guards + Layout
+Phase 4.4 ✅✅✅✅✅✅  Words CRUD (TRUNG TÂM)
+Phase 4.5 ✅✅✅✅✅✅  Topics CRUD + Drag & Drop (w/ Description)
+Phase 4.6 ✅✅✅✅✅✅  Roadmaps CRUD
+Phase 4.7 ✅✅✅✅✅✅  Users View
+Phase 4.8 ✅✅✅✅✅✅  Admin Dashboard Stats
+Phase 4.9 ✅✅✅✅✅✅  Migration: localStorage → Supabase
+Phase 4.10 ✅✅✅✅✅  Student → Supabase Sync
 Phase 4.11 ⬜⬜⬜⬜⬜  Deploy Cloudflare Pages
 ```
 

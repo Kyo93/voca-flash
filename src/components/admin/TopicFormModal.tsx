@@ -19,6 +19,8 @@ interface Props {
   onSave: (data: {
     name: string
     slug: string
+    description: string | null
+    image_url: string | null
     icon: string
     color: string
     roadmap_id: string | null
@@ -29,6 +31,8 @@ interface Props {
 export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose }: Props) {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
+  const [description, setDescription] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [icon, setIcon] = useState('📚')
   const [color, setColor] = useState('#F97316')
   const [roadmapId, setRoadmapId] = useState('')
@@ -39,12 +43,16 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
     if (topic) {
       setName(topic.name)
       setSlug(topic.slug)
+      setDescription(topic.description ?? '')
+      setImageUrl(topic.image_url ?? '')
       setIcon(topic.icon ?? '📚')
       setColor(topic.color ?? '#F97316')
       setRoadmapId(topic.roadmap_id ?? '')
     } else {
       setName('')
       setSlug('')
+      setDescription('')
+      setImageUrl('')
       setIcon('📚')
       setColor('#F97316')
       setRoadmapId('')
@@ -72,6 +80,8 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
     await onSave({
       name: name.trim(),
       slug: slug.trim() || slugify(name),
+      description: description.trim() || null,
+      image_url: imageUrl.trim() || null,
       icon: icon.trim() || '📚',
       color,
       roadmap_id: roadmapId || null,
@@ -141,6 +151,34 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
                 <span className="material-symbols-outlined text-lg">refresh</span>
               </button>
             </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-bold text-secondary mb-2">Mô tả</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Nhập mô tả ngắn về chủ đề này..."
+              rows={3}
+              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-secondary mb-2">Ảnh đại diện (URL)</label>
+            <input
+              type="text"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
+            />
+            {imageUrl && (
+              <div className="mt-3 aspect-video w-full max-w-[200px] overflow-hidden rounded-xl border border-stone-200">
+                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+URL'; }} />
+              </div>
+            )}
           </div>
 
           {/* Icon + Color row */}

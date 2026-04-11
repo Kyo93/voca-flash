@@ -21,6 +21,12 @@
   --color-outline: #897365;
   --color-outline-variant: #dcc1b1;
 
+  --color-tertiary-fixed-dim: #e4c192;
+  --color-primary-fixed-dim: #ffb783;
+  --color-secondary-fixed-dim: #bbce95;
+  --color-surface-dim: #dfd9d1;
+  --color-surface-bright: #fff8f0;
+
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
 
@@ -105,7 +111,7 @@ body {
 }
 
 .primary-gradient {
-  background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+  background: linear-gradient(135deg, #E67E22 0%, #944a00 100%);
 }
 
 /* Oceanic pulse gradient (from Stitch design) */

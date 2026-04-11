@@ -117,140 +117,212 @@ export default function RoadmapTopicsPage() {
   const overallPercent = stats.total > 0 ? Math.round((stats.mastered / stats.total) * 100) : 0
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto">
-          {/* Breadcrumb / Back button */}
-          <Link to="/library" className="flex items-center gap-2 text-stone-500 hover:text-primary mb-6 group transition-colors">
-            <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
-            <span className="text-sm font-bold uppercase tracking-widest">Back to Roadmaps</span>
-          </Link>
+    <div className="p-10 max-w-7xl mx-auto">
+      {/* Breadcrumb / Back button */}
+      <Link to="/library" className="flex items-center gap-2 text-on-surface-variant hover:text-primary mb-6 group transition-colors">
+        <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        <span className="text-sm font-bold uppercase tracking-widest">Back to Roadmaps</span>
+      </Link>
 
-          {/* Hero Header Section */}
-          <div className="mb-12 relative">
-            <div className="flex items-end gap-6 mb-8">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl primary-gradient flex items-center justify-center sun-drenched-shadow shrink-0">
-                <span className="material-symbols-outlined text-white text-4xl md:text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  {roadmap.slug.includes('kids') ? 'child_care' : roadmap.slug.includes('business') ? 'business_center' : 'history_edu'}
-                </span>
-              </div>
-              <div>
-                <span className="label-md uppercase tracking-widest text-secondary font-bold text-xs">Roadmap Overview</span>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-on-surface text-editorial-asymmetry mt-1 leading-tight">
-                  {roadmap.name}
-                </h2>
-              </div>
+      {/* Hero Header Section */}
+      <div className="mb-12 relative w-full">
+        <div className="flex flex-col md:flex-row md:items-end gap-6 mb-8">
+          <div className="w-24 h-24 rounded-xl primary-gradient flex items-center justify-center sun-drenched-shadow shrink-0">
+            <span className="material-symbols-outlined text-white text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+              {roadmap.slug.includes('kids') ? 'child_care' : roadmap.slug.includes('business') ? 'business_center' : 'history_edu'}
+            </span>
+          </div>
+          <div>
+            <span className="label-md uppercase tracking-widest text-secondary font-bold text-xs block mb-1">Roadmap Overview</span>
+            <h2 className="text-4xl font-extrabold text-on-surface text-editorial-asymmetry mt-1 leading-tight w-full max-w-3xl">
+              {roadmap.name}
+            </h2>
+          </div>
+        </div>
+
+        {/* Progress Board */}
+        <div className="bg-surface-container-low rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
+          <div className="absolute -right-12 -top-12 w-48 h-48 bg-secondary-container opacity-20 rounded-full blur-3xl z-0"></div>
+          <div className="w-full flex-1 relative z-10">
+            <div className="flex justify-between items-end mb-4">
+              <span className="text-lg font-medium text-on-surface-variant">Overall Completion</span>
+              <span className="text-3xl font-black text-secondary">{overallPercent}%</span>
             </div>
-
-            {/* Progress Board */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 relative overflow-hidden shadow-sm border border-stone-100">
-              <div className="absolute -right-12 -top-12 w-48 h-48 bg-orange-100 opacity-20 rounded-full blur-3xl"></div>
-              <div className="w-full flex-1">
-                <div className="flex justify-between items-end mb-4">
-                  <span className="text-base md:text-lg font-medium text-on-surface-variant">Overall Completion</span>
-                  <span className="text-2xl md:text-3xl font-black text-secondary">{overallPercent}%</span>
-                </div>
-                <div className="h-3 w-full bg-stone-100 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-secondary rounded-full transition-all duration-1000" 
-                    style={{ width: `${overallPercent}%` }}
-                  ></div>
-                </div>
-              </div>
-              <div className="flex gap-8 border-t md:border-t-0 md:border-l border-stone-100 w-full md:w-auto pt-6 md:pt-0 md:pl-12">
-                <div className="text-center">
-                  <p className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-tighter mb-1">Total Words</p>
-                  <p className="text-xl md:text-2xl font-black text-on-surface">{stats.total}</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-tighter mb-1">Mastered</p>
-                  <p className="text-xl md:text-2xl font-black text-on-surface">{stats.mastered}</p>
-                </div>
-              </div>
+            <div className="h-3 w-full bg-surface-container-highest rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-secondary rounded-full transition-all duration-1000" 
+                style={{ width: `${overallPercent}%` }}
+              ></div>
             </div>
           </div>
+          <div className="flex gap-8 border-t border-outline-variant/20 md:border-t-0 md:border-l pl-0 md:pl-12 pt-6 md:pt-0 w-full md:w-auto relative z-10">
+            <div className="text-center">
+              <p className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-tighter mb-1">Total Words</p>
+              <p className="text-2xl font-black text-on-surface">{stats.total}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-tighter mb-1">Mastered</p>
+              <p className="text-2xl font-black text-on-surface">{stats.mastered}</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          {/* Topics Grid */}
-          <div className="grid grid-cols-12 gap-6 md:gap-8">
-            {filteredTopics.map((topic, index) => {
-              const topicStats = getTopicStats(topic.id)
-              const isLarge = index === 0 && !searchQuery // First one is larger
-              
-              return (
-                <div 
-                  key={topic.id}
-                  className={`${isLarge ? 'col-span-12 md:col-span-7' : 'col-span-12 md:col-span-5 lg:col-span-4'} group relative bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-stone-100 transition-all hover:bg-orange-50/20 hover:border-orange-200/50 cursor-pointer overflow-hidden flex flex-col justify-between`}
-                >
-                  <div className={`flex ${isLarge ? 'flex-row items-center gap-6' : 'flex-col items-start'}`}>
-                    <div className={`${isLarge ? 'w-16 h-16' : 'w-12 h-12 mb-6'} rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 shrink-0`}>
-                      <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                        {topic.slug.includes('animal') ? 'pets' : 'menu_book'}
-                      </span>
-                    </div>
-                    <div>
-                      <h3 className={`${isLarge ? 'text-2xl' : 'text-xl'} font-bold text-on-surface`}>{topic.name}</h3>
-                      <p className="text-on-surface-variant text-sm mt-1">
-                        {topicStats.total} Words • {topicStats.percent}% mastered
-                      </p>
-                    </div>
-                  </div>
+      {/* Topics Grid */}
+      <div className="grid grid-cols-12 gap-8">
+        {filteredTopics.map((topic, index) => {
+          const topicStats = getTopicStats(topic.id)
+          const isMainLarge = index === 0 && !searchQuery
+          const isUpNext = index === 1 && !searchQuery
 
-                  {!isLarge && (
-                    <div className="mt-8 mb-6">
-                      <div className="h-2 w-full bg-stone-100 rounded-full">
-                        <div 
-                          className="h-full bg-secondary rounded-full" 
-                          style={{ width: `${topicStats.percent}%` }}
-                        ></div>
+          if (isMainLarge) {
+            return (
+              <Link
+                key={topic.id}
+                to={`/study?topic=${topic.slug}`}
+                className="col-span-12 md:col-span-7 group relative bg-surface-container-lowest rounded-xl p-8 sun-drenched-shadow transition-all hover:bg-white cursor-pointer overflow-hidden block"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="space-y-6 flex-1">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+                        <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                          {topic.slug.includes('animal') ? 'pets' : 'menu_book'}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-on-surface">{topic.name}</h3>
+                        <p className="text-on-surface-variant mt-1 text-sm font-medium">
+                          {topicStats.total} Words • {topicStats.percent}% mastered
+                        </p>
                       </div>
                     </div>
-                  )}
-
-                  {isLarge && topic.description && (
-                    <p className="text-on-surface-variant mt-6 mb-8 leading-relaxed max-w-sm">
-                      {topic.description}
-                    </p>
-                  )}
-
-                  <div className="mt-4 flex items-center justify-between">
-                    <Link 
-                      to={`/study?topic=${topic.slug}`}
-                      className={`primary-gradient text-white ${isLarge ? 'px-8 py-3' : 'px-4 py-2 text-sm'} rounded-xl font-bold flex items-center gap-2 group-hover:shadow-lg transition-all active:scale-95`}
-                    >
-                      <span>{topicStats.percent > 0 ? 'Continue' : 'Start'}</span>
-                      <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </Link>
+                    {topic.description && (
+                      <p className="text-on-surface-variant max-w-sm leading-relaxed line-clamp-2 mt-4 text-[15px]">
+                        {topic.description}
+                      </p>
+                    )}
+                    <button className="primary-gradient text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 group-hover:shadow-lg transition-all active:scale-95 mt-6 border-none">
+                      <span>{topicStats.percent > 0 ? 'Continue Learning' : 'Start Learning'}</span>
+                      <span className="material-symbols-outlined">arrow_forward</span>
+                    </button>
                   </div>
+                  <div className="w-48 h-48 relative hidden xl:block select-none pointer-events-none shrink-0 ml-4">
+                    <img 
+                      alt="Topic illustration" 
+                      src={topic.image_url || (roadmap.slug.includes('kids') ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6SSl0_DfKrIsQB0h29CzI6fnBAQ5nRsuNnx8ht2oi9fdDWx9u-W20eWbi1uMrXIb4vmSEKyyDoM_k2nhhkFIDktnKtp6XKtHdwkbgleww6iih-C_RC0c168C6jg1GVNYOnsagnR9GoG6MdkyyV5yZEeg75C7n379Vu91sz7R1dk0vOO6loYAzAuDSFTg7p1QM4RGv4r2XS0p1Cw0NdXJCwCRET5sJ1SOeQ-BKp-y5kPBrhiCjt06uWY5Xlxqc-2MyYrmpZ94RsvA' : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3KhF9uR-xXVpSv6pn_s5MQArtNHLaeqZGVy3Z1o8xNmBkFmfxNnZp7gcv1PSl2Sui7tp_wq30ZFTD0fn4Di9SXLalR56TsGULlKBzBNhuor8gGRyhtlhT4ykI0TLXLG0GD0g0eVkdsZBmGd9j0E9ljzUy2C8l2Ln4HckEqW1xJWd_XvSuD-F5KC4apFAdrroQ-vDle39KLdRXq_NXToCtNeTGGcJGA8r1R4tSVU_cuNJJ0UGhgNE562HfPPztOnlnKIlBAEWioho')} 
+                      className="w-full h-full object-cover rounded-xl shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transform rotate-3 group-hover:rotate-0 transition-transform duration-500" 
+                    />
+                  </div>
+                </div>
+              </Link>
+            )
+          }
 
-                  {/* Icon reflection for flair */}
-                  <span className="absolute -right-4 -bottom-4 text-8xl text-orange-100 opacity-10 material-symbols-outlined group-hover:scale-110 transition-transform select-none pointer-events-none">
-                    {topic.slug.includes('animal') ? 'pets' : 'menu_book'}
+          if (isUpNext) {
+            return (
+              <Link
+                key={topic.id}
+                to={`/study?topic=${topic.slug}`}
+                className="col-span-12 md:col-span-5 bg-secondary-container/30 rounded-xl p-8 transition-all hover:bg-secondary-container/50 flex flex-col justify-between cursor-pointer group block"
+              >
+                <div className="flex justify-between items-start mb-12">
+                  <div className="w-12 h-12 rounded-lg bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                      palette
+                    </span>
+                  </div>
+                  <span className="bg-secondary/10 text-secondary text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">UP NEXT</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-on-surface mb-2">{topic.name}</h3>
+                  <p className="text-on-surface-variant text-sm mb-6">
+                    {topicStats.total} Words • {topicStats.percent}% mastered
+                  </p>
+                  <div className="h-2 w-full bg-surface-container rounded-full mb-6 overflow-hidden">
+                    <div 
+                      className="h-full bg-secondary rounded-full transition-all duration-1000" 
+                      style={{ width: `${topicStats.percent}%` }}
+                    ></div>
+                  </div>
+                  <div className="text-secondary font-bold flex items-center gap-2 group-hover:underline decoration-2 underline-offset-4">
+                    <span>{topicStats.percent > 0 ? 'Continue Module' : 'Start Module'}</span>
+                    <span className="material-symbols-outlined text-sm">play_arrow</span>
+                  </div>
+                </div>
+              </Link>
+            )
+          }
+
+          return (
+            <Link
+              key={topic.id}
+              to={`/study?topic=${topic.slug}`}
+              className="col-span-12 md:col-span-4 bg-surface-container-high rounded-xl p-6 hover:bg-surface-variant transition-colors cursor-pointer group block relative overflow-hidden"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover:bg-white transition-colors">
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
+                    {topic.slug.includes('family') ? 'family_restroom' : topic.slug.includes('food') ? 'restaurant' : 'school'}
                   </span>
                 </div>
-              )
-            })}
-          </div>
-
-          {/* Scholar's Tip Section */}
-          <div className="mt-20 flex flex-col md:flex-row items-center gap-8 md:gap-12 border-t border-stone-100 pt-12">
-            <div className="md:w-1/3 relative">
-              <div className="absolute -top-4 -left-4 w-12 h-12 bg-orange-200 rounded-full opacity-20 blur-xl"></div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600 mb-2">Scholar's Tip</p>
-              <p className="text-lg italic text-on-surface leading-relaxed font-medium">
-                "Visualizing words as objects in your mind creates stronger neural pathways for long-term retention."
-              </p>
-            </div>
-            <div className="flex-1 bg-stone-100/50 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex gap-4 items-center">
-                <span className="material-symbols-outlined text-orange-600 text-4xl">emoji_events</span>
-                <div>
-                  <h5 className="font-bold text-on-surface">Milestone Ahead!</h5>
-                  <p className="text-sm text-on-surface-variant">Complete more topics to unlock new achievements.</p>
+                <div className="flex-1">
+                  <h4 className="font-bold text-on-surface text-[15px]">{topic.name}</h4>
+                  <p className="text-xs text-on-surface-variant font-medium mt-0.5">
+                    {topicStats.total} Words • {topicStats.percent}%
+                  </p>
                 </div>
               </div>
-              <button className="bg-secondary text-white px-6 py-2 rounded-xl text-sm font-bold hover:brightness-110 active:scale-95 transition-all w-full md:w-auto">
-                View Achievements
-              </button>
+              {topic.description && (
+                <p className="text-sm text-on-surface-variant mb-6 leading-snug line-clamp-2">
+                  {topic.description}
+                </p>
+              )}
+              {topicStats.percent > 0 ? (
+                <div className="flex items-center gap-2 text-secondary group-hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">chart_data</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">In Progress</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-outline group-hover:text-primary transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">lock_open</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">Ready to Start</span>
+                </div>
+              )}
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Asymmetric Editorial Quote/Tip Section */}
+      <div className="mt-20 flex flex-col md:flex-row items-center gap-12 border-t border-outline-variant/10 pt-12 mb-10">
+        <div className="w-full md:w-1/3 relative">
+          <div className="absolute -top-4 -left-4 w-12 h-12 bg-tertiary rounded-full opacity-10 blur-xl"></div>
+          <p className="text-sm font-label uppercase tracking-[0.2em] text-tertiary mb-2">Scholar's Tip</p>
+          <p className="text-xl font-headline italic text-on-surface leading-relaxed">
+            "Visualizing words as objects in your mind creates stronger neural pathways for long-term retention."
+          </p>
+        </div>
+        <div className="flex-1 w-full bg-tertiary-container/10 p-8 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-tertiary/10">
+          <div className="flex gap-4 items-center">
+            <span className="material-symbols-outlined text-tertiary text-4xl">emoji_events</span>
+            <div>
+              <h5 className="font-bold text-on-surface">Milestone Ahead!</h5>
+              <p className="text-sm text-on-surface-variant mt-1">Complete more topics to unlock new achievements.</p>
             </div>
           </div>
+          <button className="bg-tertiary text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:brightness-110 active:scale-95 transition-all w-full md:w-auto shadow-sm border-none">
+            View Achievements
+          </button>
+        </div>
+      </div>
+
+      {/* Floating Action Element (Contextual) */}
+      <div className="fixed bottom-8 right-8 z-30">
+        <button className="w-14 h-14 md:w-16 md:h-16 primary-gradient rounded-full sun-drenched-shadow flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform shadow-lg border-none cursor-pointer">
+          <span className="material-symbols-outlined text-2xl md:text-3xl">question_mark</span>
+        </button>
+      </div>
     </div>
   )
 }

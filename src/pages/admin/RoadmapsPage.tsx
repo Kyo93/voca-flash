@@ -36,6 +36,7 @@ export default function AdminRoadmapsPage() {
     name: string
     slug: string
     description: string | null
+    image_url: string | null
     is_active: boolean
   }) {
     if (editData) {
@@ -46,6 +47,7 @@ export default function AdminRoadmapsPage() {
         name: data.name,
         slug: data.slug,
         description: data.description,
+        image_url: data.image_url,
         is_active: data.is_active,
       })
       if (err) { console.error(err); return }

@@ -19,6 +19,7 @@ interface Props {
     name: string
     slug: string
     description: string | null
+    image_url: string | null
     is_active: boolean
   }) => Promise<void>
   onClose: () => void
@@ -28,6 +29,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [isActive, setIsActive] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,11 +39,13 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
       setName(roadmap.name)
       setSlug(roadmap.slug)
       setDescription(roadmap.description ?? '')
+      setImageUrl(roadmap.image_url ?? '')
       setIsActive(roadmap.is_active ?? true)
     } else {
       setName('')
       setSlug('')
       setDescription('')
+      setImageUrl('')
       setIsActive(true)
     }
     setError(null)
@@ -65,6 +69,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
       name: name.trim(),
       slug: slug.trim() || slugify(name),
       description: description.trim() || null,
+      image_url: imageUrl.trim() || null,
       is_active: isActive,
     })
     setLoading(false)
@@ -139,6 +144,22 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
               rows={3}
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-secondary mb-2">Ảnh đại diện (URL)</label>
+            <input
+              type="text"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://example.com/image.jpg"
+              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
+            />
+            {imageUrl && (
+              <div className="mt-3 aspect-video w-full max-w-[200px] overflow-hidden rounded-xl border border-stone-200">
+                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+URL'; }} />
+              </div>
+            )}
           </div>
 
           {/* Active toggle */}
