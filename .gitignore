@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Environment & secrets
+.env
+.env.*
+.dev.vars
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Local data (user-specific)
+local-data/
+*.local.json
+
+# Working memory
+.cm/

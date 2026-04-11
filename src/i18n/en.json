@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "VocaFlash",
+    "tagline": "Smart vocabulary learning"
+  },
+  "nav": {
+    "home": "Home",
+    "learn": "Learn",
+    "review": "Review",
+    "topics": "Topics",
+    "progress": "Progress",
+    "settings": "Settings"
+  },
+  "home": {
+    "welcome": "Welcome to VocaFlash",
+    "subtitle": "Learn English vocabulary with a structured roadmap",
+    "startLearning": "Start Learning",
+    "continueReview": "Continue Review",
+    "todayProgress": "Today's Progress",
+    "cardsLearned": "Cards Learned",
+    "cardsToReview": "Cards to Review",
+    "streak": "Day Streak"
+  },
+  "flashcard": {
+    "showAnswer": "Show Answer",
+    "again": "Again",
+    "hard": "Hard",
+    "good": "Good",
+    "easy": "Easy"
+  },
+  "topics": {
+    "title": "Topics",
+    "daily": "Daily Communication",
+    "travel": "Travel",
+    "business": "Business",
+    "technology": "Technology",
+    "food": "Food & Cuisine"
+  },
+  "progress": {
+    "title": "Progress",
+    "mastered": "Mastered",
+    "learning": "Learning",
+    "new": "New"
+  },
+  "meta": {
+    "title": "VocaFlash — Learn English Vocabulary",
+    "description": "Learn English vocabulary with Flashcards and Spaced Repetition System (SRS). Perfect for Vietnamese learners."
+  }
+}

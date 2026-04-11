@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "VocaFlash",
+    "tagline": "Học từ vựng thông minh"
+  },
+  "nav": {
+    "home": "Trang chủ",
+    "learn": "Học",
+    "review": "Ôn tập",
+    "topics": "Chủ đề",
+    "progress": "Tiến độ",
+    "settings": "Cài đặt"
+  },
+  "home": {
+    "welcome": "Chào mừng đến VocaFlash",
+    "subtitle": "Học từ vựng tiếng Anh theo lộ trình",
+    "startLearning": "Bắt đầu học",
+    "continueReview": "Tiếp tục ôn tập",
+    "todayProgress": "Tiến độ hôm nay",
+    "cardsLearned": "Thẻ đã học",
+    "cardsToReview": "Thẻ cần ôn",
+    "streak": "Ngày liên tiếp"
+  },
+  "flashcard": {
+    "showAnswer": "Lật thẻ",
+    "again": "Chưa nhớ",
+    "hard": "Khó nhớ",
+    "good": "Nhớ rồi",
+    "easy": "Dễ quá"
+  },
+  "topics": {
+    "title": "Chủ đề",
+    "daily": "Giao tiếp hàng ngày",
+    "travel": "Du lịch",
+    "business": "Kinh doanh",
+    "technology": "Công nghệ",
+    "food": "Ẩm thực"
+  },
+  "progress": {
+    "title": "Tiến độ",
+    "mastered": "Đã thuộc",
+    "learning": "Đang học",
+    "new": "Mới"
+  },
+  "meta": {
+    "title": "VocaFlash — Học từ vựng tiếng Anh",
+    "description": "Ứng dụng học từ vựng tiếng Anh bằng Flashcard và phương pháp lặp lại ngắt quãng (SRS). Phù hợp cho người Việt."
+  }
+}

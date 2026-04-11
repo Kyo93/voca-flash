@@ -1,0 +1,22 @@
+{
+  "projectName": "voca-flash",
+  "github": {
+    "org": "personal",
+    "repo": "voca-flash"
+  },
+  "cloudflare": {
+    "accountId": "local",
+    "projectName": "voca-flash",
+    "productionBranch": "production"
+  },
+  "domain": {
+    "production": "localhost",
+    "staging": "localhost"
+  },
+  "i18n": {
+    "primary": "vi",
+    "targets": ["en"]
+  },
+  "createdAt": "2026-04-11",
+  "bootstrapVersion": "2.0"
+}
