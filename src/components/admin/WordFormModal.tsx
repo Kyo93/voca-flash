@@ -33,6 +33,8 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
   const [example, setExample] = useState('')
   const [exampleVi, setExampleVi] = useState('')
   const [topicId, setTopicId] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [imagePosition, setImagePosition] = useState('center')
   const [wrong1, setWrong1] = useState('')
   const [wrong2, setWrong2] = useState('')
   const [wrong3, setWrong3] = useState('')
@@ -47,6 +49,8 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
       setExample(word.example ?? '')
       setExampleVi(word.example_vi ?? '')
       setTopicId(word.topic_id ?? '')
+      setImageUrl(word.image_url ?? '')
+      setImagePosition(word.image_position ?? 'center')
     } else {
       setWordText('')
       setPhonetic('')
@@ -56,6 +60,8 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
       setExample('')
       setExampleVi('')
       setTopicId(topics[0]?.id ?? '')
+      setImageUrl('')
+      setImagePosition('center')
     }
     setError(null)
   }, [word, open, topics])
@@ -84,6 +90,8 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
         example: example.trim() || null,
         example_vi: exampleVi.trim() || null,
         topic_id: topicId || null,
+        image_url: imageUrl.trim() || null,
+        image_position: imagePosition || 'center',
       },
       wrongChoices
     )
@@ -226,6 +234,57 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
               placeholder="Xin chào, bạn khỏe không?"
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
             />
+          </div>
+
+          {/* Image URL + Focal Point + Preview */}
+          <div>
+            <label className="block text-sm font-bold text-secondary mb-2">Ảnh minh họa (URL)</label>
+            <input
+              type="text"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://images.unsplash.com/photo-xxx?w=600&q=80"
+              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
+            />
+            {imageUrl && (
+              <div className="mt-3 space-y-3">
+                {/* Focal point selector */}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-stone-500">Trọng tâm ảnh:</span>
+                  {(['top', 'center', 'bottom'] as const).map((pos) => (
+                    <button
+                      key={pos}
+                      type="button"
+                      onClick={() => setImagePosition(pos)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        imagePosition === pos
+                          ? 'bg-primary text-white shadow-md'
+                          : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                      }`}
+                    >
+                      {pos === 'top' ? '⬆ Trên' : pos === 'center' ? '⬛ Giữa' : '⬇ Dưới'}
+                    </button>
+                  ))}
+                </div>
+                {/* Flashcard simulation (4:3) */}
+                <div className="bg-stone-50 rounded-xl p-3 border border-stone-200">
+                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2">Flashcard Preview (4:3)</p>
+                  <div className="aspect-[4/3] w-full max-w-[280px] rounded-lg overflow-hidden border border-stone-200 shadow-sm relative">
+                    <img
+                      src={imageUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover transition-all duration-300"
+                      style={{ objectPosition: imagePosition }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x450?text=Invalid+URL'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-2 left-3 text-white text-sm font-bold drop-shadow-lg">
+                      {wordText || 'word'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Wrong choices */}

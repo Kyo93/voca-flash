@@ -35,6 +35,8 @@ function mapWordToCard(word: Word, topicSlug?: string): Card {
     front: word.word,
     back: word.definition,
     example: word.example ?? undefined,
+    image_url: word.image_url ?? undefined,
+    image_position: word.image_position ?? 'center',
     topic: topicSlug ?? word.topics?.slug ?? 'general',
     createdAt: new Date(word.created_at).getTime(),
   }

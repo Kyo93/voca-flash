@@ -4,6 +4,8 @@ export interface Card {
   back: string        // Vietnamese meaning
   example?: string    // Example sentence
   example_vi?: string // Vietnamese translation of the example
+  image_url?: string  // Custom image URL for flashcard
+  image_position?: string // CSS object-position for image cropping
   topic: string       // Topic category
   createdAt: number
 }

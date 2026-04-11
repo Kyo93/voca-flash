@@ -38,6 +38,8 @@ export interface Word {
   definition: string
   example: string | null
   example_vi: string | null
+  image_url: string | null
+  image_position: string | null // CSS object-position: 'center' | 'top' | 'bottom'
   created_at: string
   updated_at: string
   // Joined

@@ -36,6 +36,7 @@ function AudioButton({ text, slow }: AudioButtonProps) {
 
 function FlashcardFront({ card }: { card: Card }) {
   const imageUrl = card.image_url || `https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80`
+  const imagePosition = card.image_position || 'center'
 
   return (
     <div className="w-full h-full bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(26,27,33,0.06)] overflow-hidden flex flex-col border border-outline-variant/10 relative">
@@ -45,6 +46,7 @@ function FlashcardFront({ card }: { card: Card }) {
           alt={card.front}
           className="w-full h-full object-cover"
           src={imageUrl}
+          style={{ objectPosition: imagePosition }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/40 to-transparent" />
       </div>
