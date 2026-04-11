@@ -1,49 +1,100 @@
 {
   "app": {
-    "name": "VocaFlash",
-    "tagline": "Học từ vựng thông minh"
+    "name": "VocabMaster",
+    "tagline": "Học từ vựng hiệu quả"
   },
   "nav": {
-    "home": "Trang chủ",
-    "learn": "Học",
-    "review": "Ôn tập",
-    "topics": "Chủ đề",
+    "dashboard": "Trang chủ",
+    "library": "Thư viện",
     "progress": "Tiến độ",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "quickStudy": "Học nhanh",
+    "startQuiz": "Bắt đầu Quiz",
+    "search": "Tìm kiếm...",
+    "searchPlaceholder": "Tìm bài học, từ vựng..."
   },
   "home": {
-    "welcome": "Chào mừng đến VocaFlash",
-    "subtitle": "Học từ vựng tiếng Anh theo lộ trình",
-    "startLearning": "Bắt đầu học",
-    "continueReview": "Tiếp tục ôn tập",
-    "todayProgress": "Tiến độ hôm nay",
-    "cardsLearned": "Thẻ đã học",
-    "cardsToReview": "Thẻ cần ôn",
-    "streak": "Ngày liên tiếp"
+    "welcome": "Chào mừng trở lại!",
+    "subtitle": "Bạn đã học {{count}} từ mới tuần này. Hãy tiếp tục nhé!",
+    "continueChallenge": "Tiếp tục thử thách",
+    "currentGoal": "Mục tiêu hôm nay",
+    "newWords": "Từ mới",
+    "mastered": "Đã thuộc",
+    "continueLearning": "Tiếp tục học",
+    "viewLibrary": "Xem thư viện",
+    "resume": "Tiếp tục"
   },
   "flashcard": {
-    "showAnswer": "Lật thẻ",
-    "again": "Chưa nhớ",
-    "hard": "Khó nhớ",
-    "good": "Nhớ rồi",
-    "easy": "Dễ quá"
+    "showAnswer": "Hiển thị đáp án",
+    "markLearned": "Đánh dấu đã học",
+    "audioNormal": "Phát âm",
+    "audioSlow": "Nghe chậm",
+    "englishWord": "Từ Tiếng Anh",
+    "vietnamese": "Tiếng Việt",
+    "contextUsage": "Cách sử dụng",
+    "deck": "Bộ thẻ",
+    "level": "Cấp độ"
+  },
+  "srs": {
+    "hard": "Khó",
+    "good": "Vừa",
+    "easy": "Dễ",
+    "again": "Lại",
+    "interval1d": "1 ngày",
+    "interval4d": "4 ngày",
+    "interval7d": "7 ngày"
+  },
+  "roadmap": {
+    "title": "Chọn lộ trình của bạn",
+    "subtitle": "Chọn một lộ trình phù hợp với mục tiêu học tập của bạn.",
+    "notSure": "Không chắc bắt đầu từ đâu?",
+    "takeTest": "Làm bài đánh giá",
+    "curatedPaths": "Lộ trình đề xuất"
   },
   "topics": {
     "title": "Chủ đề",
-    "daily": "Giao tiếp hàng ngày",
+    "animals": "Động vật",
+    "colors": "Màu sắc",
+    "schoolLife": "Cuộc sống học đường",
+    "family": "Gia đình",
+    "food": "Đồ ăn & Thức uống",
     "travel": "Du lịch",
     "business": "Kinh doanh",
     "technology": "Công nghệ",
-    "food": "Ẩm thực"
+    "daily": "Giao tiếp hàng ngày",
+    "words": "từ",
+    "mastered": "đã thuộc",
+    "overallCompletion": "Tiến độ tổng thể",
+    "continue": "Tiếp tục học",
+    "startModule": "Bắt đầu",
+    "locked": "Đã khóa"
   },
   "progress": {
     "title": "Tiến độ",
-    "mastered": "Đã thuộc",
-    "learning": "Đang học",
-    "new": "Mới"
+    "streak": "Ngày liên tiếp",
+    "topStreak": "Bạn thuộc top 5% người học tháng này. Tiếp tục nhé!",
+    "masteredWords": "Từ đã thuộc",
+    "totalWords": "Tổng số từ"
+  },
+  "landing": {
+    "heroTitle": "Học từ vựng",
+    "heroTitleAccent": "hiệu quả",
+    "heroSubtitle": "Công nghệ lặp lại ngắt quãng thông minh giúp người Việt ghi nhớ từ vựng tiếng Anh vĩnh viễn.",
+    "startTrial": "Học thử 10 từ ngay",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "feature1Title": "Lặp lại ngắt quãng",
+    "feature1Desc": "Thuật toán tối ưu hóa thời gian ôn tập một cách khoa học.",
+    "feature2Title": "500+ Từ vựng",
+    "feature2Desc": "Kho học liệu đồ sộ biên soạn bởi các chuyên gia hàng đầu.",
+    "solutionTitle": "Giải pháp cho người Việt",
+    "forAllAges": "Thiết kế cho mọi lứa tuổi",
+    "forAllAgesDesc": "Lộ trình cá nhân hóa cho người đi làm và trẻ em.",
+    "ready": "Sẵn sàng chinh phục?",
+    "ctaText": "Bắt đầu hành trình ngay hôm nay!"
   },
   "meta": {
-    "title": "VocaFlash — Học từ vựng tiếng Anh",
-    "description": "Ứng dụng học từ vựng tiếng Anh bằng Flashcard và phương pháp lặp lại ngắt quãng (SRS). Phù hợp cho người Việt."
+    "title": "VocabMaster — Học từ vựng hiệu quả",
+    "description": "Học từ vựng tiếng Anh bằng Flashcard và phương pháp lặp lại ngắt quãng (SRS)."
   }
 }

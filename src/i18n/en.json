@@ -1,49 +1,100 @@
 {
   "app": {
-    "name": "VocaFlash",
+    "name": "VocabMaster",
     "tagline": "Smart vocabulary learning"
   },
   "nav": {
-    "home": "Home",
-    "learn": "Learn",
-    "review": "Review",
-    "topics": "Topics",
+    "dashboard": "Dashboard",
+    "library": "Library",
     "progress": "Progress",
-    "settings": "Settings"
+    "settings": "Settings",
+    "quickStudy": "Quick Study",
+    "startQuiz": "Start Daily Quiz",
+    "search": "Search...",
+    "searchPlaceholder": "Search paths, words, or lessons..."
   },
   "home": {
-    "welcome": "Welcome to VocaFlash",
-    "subtitle": "Learn English vocabulary with a structured roadmap",
-    "startLearning": "Start Learning",
-    "continueReview": "Continue Review",
-    "todayProgress": "Today's Progress",
-    "cardsLearned": "Cards Learned",
-    "cardsToReview": "Cards to Review",
-    "streak": "Day Streak"
+    "welcome": "Welcome back!",
+    "subtitle": "You've learned {{count}} new words this week. Keep the flame burning!",
+    "continueChallenge": "Continue Daily Challenge",
+    "currentGoal": "Current Daily Goal",
+    "newWords": "New Words",
+    "mastered": "Mastered",
+    "continueLearning": "Continue Learning",
+    "viewLibrary": "View Library",
+    "resume": "Resume"
   },
   "flashcard": {
     "showAnswer": "Show Answer",
-    "again": "Again",
+    "markLearned": "Mark as Learned",
+    "audioNormal": "Play Audio",
+    "audioSlow": "Slow Audio",
+    "englishWord": "English Word",
+    "vietnamese": "Vietnamese",
+    "contextUsage": "Contextual Usage",
+    "deck": "Deck",
+    "level": "Level"
+  },
+  "srs": {
     "hard": "Hard",
     "good": "Good",
-    "easy": "Easy"
+    "easy": "Easy",
+    "again": "Again",
+    "interval1d": "1 Day",
+    "interval4d": "4 Days",
+    "interval7d": "7 Days"
+  },
+  "roadmap": {
+    "title": "Choose Your Journey",
+    "subtitle": "Select a roadmap tailored to your goals. Our tactile learning system adapts to your pace and interests.",
+    "notSure": "Not sure where to start?",
+    "takeTest": "Take Assessment",
+    "curatedPaths": "Curated Pathways"
   },
   "topics": {
     "title": "Topics",
-    "daily": "Daily Communication",
+    "animals": "Animals",
+    "colors": "Colors & Shapes",
+    "schoolLife": "School Life",
+    "family": "My Family",
+    "food": "Food & Drinks",
     "travel": "Travel",
     "business": "Business",
     "technology": "Technology",
-    "food": "Food & Cuisine"
+    "daily": "Daily Communication",
+    "words": "words",
+    "mastered": "mastered",
+    "overallCompletion": "Overall Completion",
+    "continue": "Continue Learning",
+    "startModule": "Start Module",
+    "locked": "Locked"
   },
   "progress": {
     "title": "Progress",
-    "mastered": "Mastered",
-    "learning": "Learning",
-    "new": "New"
+    "streak": "Day Streak!",
+    "topStreak": "You're in the top 5% of learners this month. Keep going!",
+    "masteredWords": "Mastered Words",
+    "totalWords": "Total Words"
+  },
+  "landing": {
+    "heroTitle": "Learn vocabulary",
+    "heroTitleAccent": "effectively",
+    "heroSubtitle": "Smart spaced repetition technology helps Vietnamese learners remember English vocabulary forever with minimal effort.",
+    "startTrial": "Try 10 words now",
+    "login": "Log In",
+    "register": "Register",
+    "feature1Title": "Spaced Repetition",
+    "feature1Desc": "Scientific algorithm optimizes review timing.",
+    "feature2Title": "500+ Vocabulary",
+    "feature2Desc": "Extensive content curated by top experts.",
+    "solutionTitle": "Solution for Vietnamese",
+    "forAllAges": "Designed for all ages",
+    "forAllAgesDesc": "Personalized roadmap for professionals and children.",
+    "ready": "Ready to conquer?",
+    "ctaText": "Start your journey with VocabMaster today!"
   },
   "meta": {
-    "title": "VocaFlash — Learn English Vocabulary",
-    "description": "Learn English vocabulary with Flashcards and Spaced Repetition System (SRS). Perfect for Vietnamese learners."
+    "title": "VocabMaster — Learn Vocabulary Effectively",
+    "description": "Learn English vocabulary with Flashcards and Spaced Repetition System (SRS)."
   }
 }

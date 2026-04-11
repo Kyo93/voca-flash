@@ -1,35 +1,20 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import Home from './pages/Home'
+import LandingPage from './pages/LandingPage'
+import DashboardPage from './pages/DashboardPage'
+import StudyPage from './pages/StudyPage'
+import LibraryPage from './pages/LibraryPage'
 
 function App() {
-  const { t } = useTranslation()
-
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-background">
-        <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
-          <div className="container max-w-5xl mx-auto px-4">
-            <div className="flex items-center h-16 gap-8">
-              <span className="text-xl font-bold text-primary">{t('app.name')}</span>
-              <div className="hidden md:flex items-center gap-6">
-                <a href="/" className="text-sm font-medium hover:text-primary">{t('nav.home')}</a>
-                <a href="/learn" className="text-sm font-medium hover:text-primary">{t('nav.learn')}</a>
-                <a href="/review" className="text-sm font-medium hover:text-primary">{t('nav.review')}</a>
-                <a href="/progress" className="text-sm font-medium hover:text-primary">{t('nav.progress')}</a>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/learn" element={<div className="p-8"><h1 className="text-2xl font-bold">{t('nav.learn')}</h1></div>} />
-            <Route path="/review" element={<div className="p-8"><h1 className="text-2xl font-bold">{t('nav.review')}</h1></div>} />
-            <Route path="/progress" element={<div className="p-8"><h1 className="text-2xl font-bold">{t('progress.title')}</h1></div>} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/study" element={<StudyPage />} />
+        <Route path="/library" element={<LibraryPage />} />
+        <Route path="/progress" element={<div className="flex min-h-screen bg-surface"><p className="p-12 text-2xl font-bold">Progress — coming soon</p></div>} />
+        <Route path="/settings" element={<div className="flex min-h-screen bg-surface"><p className="p-12 text-2xl font-bold">Settings — coming soon</p></div>} />
+      </Routes>
     </BrowserRouter>
   )
 }
