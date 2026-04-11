@@ -65,6 +65,24 @@ body {
 
 /* === Design Utilities === */
 
+.text-editorial-asymmetry {
+  letter-spacing: -0.02em;
+}
+
+.label-md {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+/* Glass panel from Stitch */
+.glass-panel {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 248, 240, 0.8);
+}
+
 /* Hero gradient from Stitch */
 .hero-gradient {
   background: linear-gradient(135deg, #F39C12 0%, #E67E22 50%, #D35400 100%);

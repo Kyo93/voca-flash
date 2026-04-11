@@ -41,7 +41,7 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex flex-col gap-1">
         {navItems.map((item) => {
-          const isActive = location.pathname === item.path
+          const isActive = location.pathname.startsWith(item.path)
           return (
             <Link
               key={item.path}

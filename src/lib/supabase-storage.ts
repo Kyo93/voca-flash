@@ -11,7 +11,7 @@
  */
 
 import { supabase } from './supabase'
-import type { Word, UserProgress, Card, CardProgress } from './srs'
+import type { Word, UserProgress, Card, CardProgress, Topic, Roadmap } from './types'
 
 // ── Types for Supabase progress ──────────────────────────────
 
@@ -260,4 +260,91 @@ export async function fetchTopicWordCounts(): Promise<Record<string, number>> {
     counts[topic.slug] = topic.words?.length ?? 0
   }
   return counts
+}
+
+// ── Roadmaps ────────────────────────────────────────────────
+
+/**
+ * Fetch all active roadmaps.
+ */
+export async function fetchRoadmaps(): Promise<Roadmap[]> {
+  const { data, error } = await supabase
+    .from('roadmaps')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at')
+
+  if (error) {
+    console.error('[supabase-storage] fetchRoadmaps error:', error)
+    return []
+  }
+
+  return (data as Roadmap[]) ?? []
+}
+
+/**
+ * Fetch topics for a specific roadmap slug.
+ */
+export async function fetchTopicsByRoadmap(roadmapSlug: string): Promise<Topic[]> {
+  // First get roadmap ID
+  const { data: roadmap } = await supabase
+    .from('roadmaps')
+    .select('id')
+    .eq('slug', roadmapSlug)
+    .single()
+
+  if (!roadmap) return []
+
+  const { data, error } = await supabase
+    .from('topics')
+    .select('*')
+    .eq('roadmap_id', roadmap.id)
+    .order('sort_order')
+
+  if (error) {
+    console.error('[supabase-storage] fetchTopicsByRoadmap error:', error)
+    return []
+  }
+
+  return (data as Topic[]) ?? []
+}
+
+/**
+ * Fetch stats for a roadmap (total words, mastered words).
+ */
+export async function fetchRoadmapStats(roadmapId: string, userId?: string) {
+  // Get all topics for this roadmap
+  const { data: topics } = await supabase
+    .from('topics')
+    .select('id')
+    .eq('roadmap_id', roadmapId)
+
+  if (!topics || topics.length === 0) return { total: 0, mastered: 0 }
+
+  const topicIds = topics.map(t => t.id)
+
+  // Get word count for these topics
+  const { data: words } = await supabase
+    .from('words')
+    .select('id')
+    .in('topic_id', topicIds)
+
+  const total = words?.length ?? 0
+
+  if (!userId || total === 0) return { total, mastered: 0 }
+
+  const wordIds = words!.map(w => w.id)
+
+  // Get mastered count from user_progress
+  const { data: progress } = await supabase
+    .from('user_progress')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('mastered', true)
+    .in('word_id', wordIds)
+
+  return {
+    total,
+    mastered: progress?.length ?? 0
+  }
 }

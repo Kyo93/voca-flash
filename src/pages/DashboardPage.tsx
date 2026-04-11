@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import Sidebar from '../components/Sidebar'
+import { fetchUserStats, fetchTopicWordCounts } from '../lib/supabase-storage'
+import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
-import { fetchUserStats, fetchTopicWordCounts } from '../lib/supabase-storage'
 import type { StreakData } from '../lib/streak'
 
 const DAILY_GOAL = 10
@@ -16,14 +16,7 @@ interface DashboardStats {
   topicCounts: Record<string, number>
 }
 
-function StreakBadge({ streak }: { streak: StreakData }) {
-  return (
-    <div className="flex items-center gap-1.5 text-primary font-black px-3 py-1.5 bg-white rounded-xl shadow-sm border border-stone-100">
-      <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
-      <span className="text-sm leading-none">{streak.currentStreak}</span>
-    </div>
-  )
-}
+
 
 export default function DashboardPage() {
   const { t } = useTranslation()
@@ -79,45 +72,9 @@ export default function DashboardPage() {
   const travelCount = topicCounts['travel'] ?? 0
 
   return (
-    <div className="min-h-screen bg-surface" style={{ display: 'grid', gridTemplateColumns: '256px 1fr 280px', gridTemplateAreas: '"sidebar main rightbar"' }}>
-      {/* Left sidebar */}
-      <div style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: 256 }}>
-        <Sidebar />
-      </div>
-
-      {/* Main content */}
-      <div style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
-
-        {/* Top Bar */}
-        <header className="h-20 px-10 flex items-center justify-between bg-surface/95 backdrop-blur-md sticky top-0 z-40 border-b border-stone-100 shadow-sm shrink-0">
-          <h2 className="text-xl font-black text-on-surface shrink-0">{t('nav.dashboard')}</h2>
-          <div className="flex items-center gap-6">
-            {/* Search */}
-            <div className="relative w-72">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-300 text-xl">search</span>
-              <input
-                className="w-full pl-12 pr-4 py-2.5 bg-white border-none rounded-2xl text-sm shadow-sm placeholder:text-stone-300 focus:ring-2 focus:ring-secondary transition-all"
-                placeholder={t('nav.searchPlaceholder')}
-                type="text"
-              />
-            </div>
-            {/* Actions */}
-            <div className="flex items-center gap-4">
-              <button className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all">
-                <span className="material-symbols-outlined text-xl">notifications</span>
-              </button>
-              <StreakBadge streak={streak} />
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                <span className="text-sm font-black text-primary leading-none">
-                  {(user?.email ?? 'A')[0].toUpperCase()}
-                </span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 px-10 py-8 overflow-y-auto" style={{ maxWidth: 1280, margin: '0 auto', width: '100%' }}>
+    <>
+      {/* Scrollable Content */}
+      <div className="flex-1 px-10 py-8 overflow-y-auto" style={{ maxWidth: 1280, margin: '0 auto', width: '100%' }}>
 
           {/* Hero Banner */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-container to-primary px-12 py-12 mb-8 min-h-[260px] flex items-center shadow-lg">
@@ -229,12 +186,11 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </div>
 
-      {/* Right sidebar */}
-      <div style={{ gridArea: 'rightbar', position: 'sticky', top: 0, height: '100vh', overflowY: 'auto', backgroundColor: 'white', borderLeft: '1px solid #f5f5f4', zIndex: 40 }}>
+      {/* Right sidebar content - Portaled to AppLayout */}
+      {document.getElementById('right-sidebar-container') && createPortal(
         <div className="p-6 space-y-5">
           {/* Streak Widget */}
           <div className="bg-surface-container-high rounded-[20px] p-6 text-center">
@@ -295,8 +251,9 @@ export default function DashboardPage() {
               {t('rightSidebar.setReminder')}
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+        </div>,
+        document.getElementById('right-sidebar-container')!
+      )}
+    </>
   )
 }

@@ -5,7 +5,9 @@ import LandingPage from './pages/LandingPage'
 import DashboardPage from './pages/DashboardPage'
 import StudyPage from './pages/StudyPage'
 import LibraryPage from './pages/LibraryPage'
+import RoadmapTopicsPage from './pages/RoadmapTopicsPage'
 import LoginPage from './pages/LoginPage'
+import AppLayout from './components/AppLayout'
 import AdminLayout from './components/admin/AdminLayout'
 import AdminWordsPage from './pages/admin/WordsPage'
 import AdminTopicsPage from './pages/admin/TopicsPage'
@@ -57,12 +59,17 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Auth required */}
-          <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
+          {/* Auth required — Standard App Layout */}
+          <Route element={<RequireAuth><AppLayout /></RequireAuth>}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/library" element={<LibraryPage />} />
+            <Route path="/library/:roadmapSlug" element={<RoadmapTopicsPage />} />
+            <Route path="/progress" element={<div className="p-12 text-2xl font-bold">Progress — coming soon</div>} />
+            <Route path="/settings" element={<div className="p-12 text-2xl font-bold">Settings — coming soon</div>} />
+          </Route>
+
+          {/* Special immersive routes */}
           <Route path="/study" element={<RequireAuth><StudyPage /></RequireAuth>} />
-          <Route path="/library" element={<RequireAuth><LibraryPage /></RequireAuth>} />
-          <Route path="/progress" element={<RequireAuth><div className="flex min-h-screen bg-surface"><p className="p-12 text-2xl font-bold">Progress — coming soon</p></div></RequireAuth>} />
-          <Route path="/settings" element={<RequireAuth><div className="flex min-h-screen bg-surface"><p className="p-12 text-2xl font-bold">Settings — coming soon</p></div></RequireAuth>} />
 
           {/* Admin routes */}
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
