@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { SidebarProvider } from './contexts/SidebarContext'
 import LandingPage from './pages/LandingPage'
 import DashboardPage from './pages/DashboardPage'
 import StudyPage from './pages/StudyPage'
@@ -53,6 +54,7 @@ function AdminComingSoon({ title }: { title: string }) {
 function App() {
   return (
     <AuthProvider>
+      <SidebarProvider>
       <BrowserRouter>
         <Routes>
           {/* Public */}
@@ -84,6 +86,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      </SidebarProvider>
     </AuthProvider>
   )
 }

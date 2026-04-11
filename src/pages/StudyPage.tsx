@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
 import Sidebar from '../components/Sidebar'
+import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 import type { Card } from '../lib/srs'
 
 interface AudioButtonProps {
@@ -247,11 +248,15 @@ export default function StudyPage() {
       speak(currentCard.front);
     }
   }, [currentCard?.id, isFlipped, isLoading, isComplete]);
+  const { collapsed, rightCollapsed } = useSidebar()
+  const sidebarW = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
+  const rightbarW = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen bg-surface">
         <Sidebar />
-        <main className="ml-64 flex-1 flex items-center justify-center">
+        <main className="flex-1 flex items-center justify-center transition-all duration-300" style={{ marginLeft: sidebarW }}>
           <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
         </main>
       </div>
@@ -262,7 +267,7 @@ export default function StudyPage() {
     return (
       <div className="flex min-h-screen bg-surface">
         <Sidebar />
-        <main className="ml-64 flex-1">
+        <main className="flex-1 transition-all duration-300" style={{ marginLeft: sidebarW }}>
           <StudyComplete total={total} />
         </main>
       </div>
@@ -270,8 +275,8 @@ export default function StudyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface" style={{ display: 'grid', gridTemplateColumns: '256px 1fr 280px', gridTemplateAreas: '"sidebar main rightbar"' }}>
-      <div style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: 256 }}>
+    <div className="min-h-screen bg-surface transition-all duration-300" style={{ display: 'grid', gridTemplateColumns: `${sidebarW}px 1fr ${rightbarW}px`, gridTemplateAreas: '"sidebar main rightbar"' }}>
+      <div style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: sidebarW }} className="transition-all duration-300">
         <Sidebar />
       </div>
 
@@ -345,7 +350,7 @@ export default function StudyPage() {
       </main>
 
       {/* Right gutter for balance */}
-      <div style={{ gridArea: 'rightbar', width: 280 }} />
+      <div style={{ gridArea: 'rightbar', width: rightbarW }} className="transition-all duration-300" />
     </div>
   )
 }

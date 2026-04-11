@@ -1,16 +1,19 @@
-import { ReactNode } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import RightSidebar from './RightSidebar'
 import Header from './Header'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
-
-
+import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 
 export default function AppLayout() {
   const { t } = useTranslation()
   const location = useLocation()
   const [searchQuery, setSearchQuery] = useState('')
+  const { collapsed, rightCollapsed } = useSidebar()
+
+  const sidebarW = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
+  const rightbarW = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
 
   // Determine title based on path
   const getPageTitle = () => {
@@ -28,15 +31,15 @@ export default function AppLayout() {
 
   return (
     <div 
-      className="min-h-screen bg-surface" 
+      className="min-h-screen bg-surface transition-all duration-300" 
       style={{ 
         display: 'grid', 
-        gridTemplateColumns: `256px 1fr ${hasRightSidebar ? '280px' : '0px'}`, 
+        gridTemplateColumns: `${sidebarW}px 1fr ${rightbarW}px`, 
         gridTemplateAreas: '"sidebar main rightbar"' 
       }}
     >
       {/* Left sidebar */}
-      <aside style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: 256 }}>
+      <aside style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: sidebarW }} className="transition-all duration-300">
         <Sidebar />
       </aside>
 
@@ -53,24 +56,10 @@ export default function AppLayout() {
         </main>
       </div>
 
-      {/* Right sidebar area (only if needed) */}
-      {hasRightSidebar && (
-        <aside 
-          id="right-sidebar-container"
-          style={{ 
-            gridArea: 'rightbar', 
-            position: 'sticky', 
-            top: 0, 
-            height: '100vh', 
-            overflowY: 'auto', 
-            backgroundColor: 'white', 
-            borderLeft: '1px solid #f5f5f4', 
-            zIndex: 40 
-          }}
-        >
-          {/* Content will be injected via slot or handled in DashboardPage for now */}
-        </aside>
-      )}
+      {/* Right sidebar area - Global */}
+      <div style={{ gridArea: 'rightbar', height: '100vh', position: 'sticky', top: 0 }}>
+        <RightSidebar />
+      </div>
     </div>
   )
 }

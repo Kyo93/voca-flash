@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { fetchUserStats, fetchTopicWordCounts } from '../lib/supabase-storage'
-import { createPortal } from 'react-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
@@ -189,71 +188,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Right sidebar content - Portaled to AppLayout */}
-      {document.getElementById('right-sidebar-container') && createPortal(
-        <div className="p-6 space-y-5">
-          {/* Streak Widget */}
-          <div className="bg-surface-container-high rounded-[20px] p-6 text-center">
-            <div className="relative inline-block mb-3">
-              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-md">
-                <span className="material-symbols-outlined text-4xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
-              </div>
-              <div className="absolute -top-1 -right-1 bg-secondary text-white text-xs font-black w-6 h-6 rounded-full flex items-center justify-center border-4 border-surface-container-high">
-                {streak.currentStreak}
-              </div>
-            </div>
-            <p className="text-xl font-black text-on-surface">{streak.currentStreak} {t('progress.dayStreak')}</p>
-            <p className="text-xs text-stone-400 mt-1 font-medium">{t('progress.topStreak')}</p>
-            <div className="flex justify-between mt-5 px-1">
-              {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, i) => {
-                const heights = [40, 60, 50, 70, 80, 0, 0]
-                const isToday = i === 4
-                return (
-                  <div key={i} className="flex flex-col items-center gap-1.5">
-                    <span className="text-[9px] font-black text-stone-300">{day}</span>
-                    <div className={`w-2 rounded-full ${isToday ? 'bg-primary' : 'bg-secondary/50'}`} style={{ height: `${heights[i]}%`, minHeight: '4px', maxHeight: '28px' }} />
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Reminders */}
-          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5">
-            <p className="text-[11px] font-black uppercase tracking-widest text-stone-400 mb-4">{t('rightSidebar.studyReminder')}</p>
-            <div className="space-y-3">
-              <div className="flex gap-3 items-start">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-base text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
-                </div>
-                <div>
-                  <p className="text-xs font-black text-on-surface">{t('rightSidebar.learnWord')}</p>
-                  <p className="text-[10px] text-stone-400 font-medium mt-0.5">Nhắc học từ mới mỗi ngày.</p>
-                </div>
-              </div>
-              <div className="flex gap-3 items-start">
-                <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-base text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>replay</span>
-                </div>
-                <div>
-                  <p className="text-xs font-black text-on-surface">{t('rightSidebar.dynamicReview')}</p>
-                  <p className="text-[10px] text-stone-400 font-medium mt-0.5">Ôn tập từ đã học theo lịch.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Schedule */}
-          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5">
-            <p className="text-[11px] font-black uppercase tracking-widest text-stone-400 mb-3">{t('rightSidebar.scheduleTitle')}</p>
-            <p className="text-[11px] text-stone-500 leading-relaxed mb-4">{t('rightSidebar.scheduleDesc')}</p>
-            <button className="w-full py-2.5 bg-primary/5 border border-primary/20 text-primary text-[11px] font-black rounded-xl hover:bg-primary hover:text-white transition-all">
-              {t('rightSidebar.setReminder')}
-            </button>
-          </div>
-        </div>,
-        document.getElementById('right-sidebar-container')!
-      )}
     </>
   )
 }

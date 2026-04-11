@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { getStreakDisplay } from '../lib/streak'
 import { useAuth } from '../contexts/AuthContext'
+import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 
 interface NavItem {
   path: string
@@ -21,21 +22,28 @@ export default function Sidebar() {
   const location = useLocation()
   const streak = getStreakDisplay()
   const { profile, signOut } = useAuth()
+  const { collapsed, toggleSidebar } = useSidebar()
 
   const displayName = profile?.display_name ?? profile?.email?.split('@')[0] ?? 'User'
   const avatarChar = displayName[0].toUpperCase()
+  const w = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
 
   return (
-    <aside className="fixed left-0 top-0 h-full flex flex-col p-4 gap-2 bg-stone-50 w-64 z-50">
+    <aside
+      className="fixed left-0 top-0 h-full flex flex-col p-4 gap-2 bg-stone-50 z-50 transition-all duration-300 ease-in-out overflow-hidden"
+      style={{ width: w }}
+    >
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-8 px-2">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary-container to-primary rounded-lg flex items-center justify-center text-white shadow-lg">
+      <div className="flex items-center gap-3 mb-8 px-2 relative">
+        <div className="w-10 h-10 bg-gradient-to-br from-primary-container to-primary rounded-lg flex items-center justify-center text-white shadow-lg shrink-0">
           <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
         </div>
-        <div>
-          <h1 className="text-xl font-black text-primary leading-none">VocabMaster</h1>
-          <p className="text-[10px] text-stone-500 font-medium tracking-widest uppercase">The Tactile Scholar</p>
-        </div>
+        {!collapsed && (
+          <div className="overflow-hidden">
+            <h1 className="text-xl font-black text-primary leading-none whitespace-nowrap">VocabMaster</h1>
+            <p className="text-[10px] text-stone-500 font-medium tracking-widest uppercase whitespace-nowrap">The Tactile Scholar</p>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
@@ -46,61 +54,80 @@ export default function Sidebar() {
             <Link
               key={item.path}
               to={item.path}
+              title={collapsed ? t(item.labelKey) : undefined}
               className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all text-sm ${
                 isActive
                   ? 'bg-white text-primary shadow-sm border border-stone-100'
                   : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
-              }`}
+              } ${collapsed ? 'justify-center px-0' : ''}`}
             >
-              <span className="material-symbols-outlined">{item.icon}</span>
-              <span>{t(item.labelKey)}</span>
+              <span className="material-symbols-outlined shrink-0">{item.icon}</span>
+              {!collapsed && <span className="whitespace-nowrap overflow-hidden">{t(item.labelKey)}</span>}
             </Link>
           )
         })}
 
-        {/* Admin link — only shown if user is admin */}
+        {/* Admin link */}
         <Link
           to="/admin"
+          title={collapsed ? 'Quản trị' : undefined}
           className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all text-sm ${
             location.pathname.startsWith('/admin')
               ? 'bg-white text-primary shadow-sm border border-stone-100'
               : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
-          }`}
+          } ${collapsed ? 'justify-center px-0' : ''}`}
         >
-          <span className="material-symbols-outlined">admin_panel_settings</span>
-          <span>Quản trị</span>
+          <span className="material-symbols-outlined shrink-0">admin_panel_settings</span>
+          {!collapsed && <span className="whitespace-nowrap overflow-hidden">Quản trị</span>}
         </Link>
       </nav>
 
       {/* Bottom section */}
       <div className="mt-auto space-y-3">
+        {/* Collapse Toggle Button - PLACED AT BOTTOM */}
+        <button
+          onClick={toggleSidebar}
+          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-stone-400 hover:text-primary hover:bg-stone-100 transition-all cursor-pointer ${collapsed ? 'justify-center px-0' : ''}`}
+          title={collapsed ? 'Mở rộng menu' : 'Thu nhỏ menu'}
+        >
+          <span className="material-symbols-outlined text-lg transition-transform duration-300 shrink-0" style={{ transform: collapsed ? 'rotate(180deg)' : 'none' }}>
+            menu_open
+          </span>
+          {!collapsed && <span className="text-xs font-bold whitespace-nowrap">Thu nhỏ</span>}
+        </button>
+
         {/* Quick Study CTA */}
         <Link
           to="/study"
-          className="w-full py-4 primary-gradient text-white font-black text-sm rounded-2xl shadow-lg shadow-primary-container/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+          title={collapsed ? t('nav.startQuiz') : undefined}
+          className={`w-full py-4 primary-gradient text-white font-black text-sm rounded-2xl shadow-lg shadow-primary-container/20 active:scale-95 transition-all flex items-center justify-center gap-2 ${collapsed ? 'px-0' : ''}`}
         >
-          <span className="material-symbols-outlined text-sm">bolt</span>
-          {t('nav.startQuiz')}
+          <span className="material-symbols-outlined text-sm shrink-0">bolt</span>
+          {!collapsed && <span className="whitespace-nowrap">{t('nav.startQuiz')}</span>}
         </Link>
 
         {/* User Profile Card */}
-        <div className="flex items-center gap-3 p-3 bg-white rounded-2xl shadow-sm border border-stone-100">
+        <div className={`flex items-center gap-3 p-3 bg-white rounded-2xl shadow-sm border border-stone-100 ${collapsed ? 'justify-center' : ''}`}>
           <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
             <span className="text-sm font-black text-primary">{avatarChar}</span>
           </div>
-          <div className="overflow-hidden flex-1">
-            <p className="text-[13px] font-black truncate">{displayName}</p>
-            <p className="text-[10px] text-stone-400 font-bold uppercase truncate">
-              {profile?.streak_days ? `${streak.currentStreak} 🔥 ngày` : 'Học viên'}
-            </p>
-          </div>
-          <button
-            onClick={signOut}
-            title="Đăng xuất"
-            className="material-symbols-outlined text-stone-300 text-lg hover:text-red-400 transition-colors cursor-pointer"
-          >
-            logout
-          </button>
+          {!collapsed && (
+            <>
+              <div className="overflow-hidden flex-1">
+                <p className="text-[13px] font-black truncate">{displayName}</p>
+                <p className="text-[10px] text-stone-400 font-bold uppercase truncate">
+                  {profile?.streak_days ? `${streak.currentStreak} 🔥 ngày` : 'Học viên'}
+                </p>
+              </div>
+              <button
+                onClick={signOut}
+                title="Đăng xuất"
+                className="material-symbols-outlined text-stone-300 text-lg hover:text-red-400 transition-colors cursor-pointer"
+              >
+                logout
+              </button>
+            </>
+          )}
         </div>
       </div>
     </aside>
