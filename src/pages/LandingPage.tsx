@@ -20,7 +20,8 @@ export default function LandingPage() {
             VocabMaster
           </div>
           <div className="hidden md:flex items-center gap-10">
-            <a className="text-primary font-bold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-primary after:rounded-full" href="#">{t('nav.dashboard')}</a>
+            <a className="text-primary font-bold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-primary after:rounded-full" href="#">Bài học</a>
+            <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Trắc nghiệm</a>
             <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">{t('nav.library')}</a>
             <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Cộng đồng</a>
           </div>
@@ -63,14 +64,14 @@ export default function LandingPage() {
             <div className="grid grid-cols-2 gap-6 mt-auto">
               <div className="group bg-white p-6 rounded-3xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] border border-orange-50 hover:border-primary/20 hover:shadow-xl transition-all duration-300">
                 <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mb-5 group-hover:rotate-6 transition-transform">
-                  <span className="material-symbols-outlined text-primary text-3xl">update</span>
+                  <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>update</span>
                 </div>
                 <h3 className="text-lg font-black text-secondary mb-2">{t('landing.feature1Title')}</h3>
                 <p className="text-sm text-on-surface-variant leading-snug">{t('landing.feature1Desc')}</p>
               </div>
               <div className="group bg-white p-6 rounded-3xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] border border-orange-50 hover:border-primary/20 hover:shadow-xl transition-all duration-300">
                 <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-5 group-hover:-rotate-6 transition-transform">
-                  <span className="material-symbols-outlined text-blue-600 text-3xl">library_books</span>
+                  <span className="material-symbols-outlined text-blue-600 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>library_books</span>
                 </div>
                 <h3 className="text-lg font-black text-secondary mb-2">{t('landing.feature2Title')}</h3>
                 <p className="text-sm text-on-surface-variant leading-snug">{t('landing.feature2Desc')}</p>
@@ -88,13 +89,13 @@ export default function LandingPage() {
                   <img
                     alt="3D Language Learning"
                     className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-1000"
-                    src="https://images.unsplash.com/photo-1546410531-bb4caa6b724d?w=800&q=80"
+                    src="/images/hero-3d.png"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   <div className="absolute top-10 left-10 animate-float">
                     <div className="bg-white/90 backdrop-blur p-4 rounded-2xl shadow-xl flex items-center gap-3">
                       <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
-                        <span className="material-symbols-outlined-filled text-sm">check_circle</span>
+                        <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                       </div>
                       <div className="text-xs">
                         <div className="font-bold">Mastered!</div>
@@ -146,7 +147,7 @@ export default function LandingPage() {
                     </button>
                   </div>
                   <div className="absolute -right-10 -bottom-10 opacity-10 rotate-12 pointer-events-none">
-                    <span className="material-symbols-outlined text-[15rem]">language</span>
+                    <span className="material-symbols-outlined text-[15rem]" style={{ fontVariationSettings: "'FILL' 1" }}>language</span>
                   </div>
                 </div>
               </div>

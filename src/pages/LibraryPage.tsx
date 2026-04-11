@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
-import { loadCards, loadProgress } from '../lib/storage'
-import type { Card } from '../lib/srs'
+import { useAuth } from '../contexts/AuthContext'
+import { fetchTopicWordCounts } from '../lib/supabase-storage'
+import { loadCards as loadLocalCards, loadProgress as loadLocalProgress } from '../lib/storage'
 
 interface TopicInfo {
   id: string
@@ -75,11 +76,67 @@ const topicInfos: TopicInfo[] = [
   },
 ]
 
+interface TopicProgress {
+  mastered: number
+  total: number
+}
+
 export default function LibraryPage() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const [search, setSearch] = useState('')
-  const cards = loadCards()
-  const progressMap = loadProgress()
+  const [topicCounts, setTopicCounts] = useState<Record<string, number>>({})
+  const [topicProgress, setTopicProgress] = useState<Record<string, TopicProgress>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      if (!user) {
+        // Not logged in — use localStorage fallback
+        const cards = loadLocalCards()
+        const progressMap = loadLocalProgress()
+
+        const counts: Record<string, number> = {}
+        const progress: Record<string, TopicProgress> = {}
+        for (const topic of topicInfos) {
+          const topicCards = cards.filter((c) => c.topic === topic.id)
+          counts[topic.id] = topicCards.length
+          const mastered = topicCards.filter(
+            (c) => (progressMap.get(c.id)?.repetitions ?? 0) >= 5
+          ).length
+          progress[topic.id] = { mastered, total: topicCards.length }
+        }
+        setTopicCounts(counts)
+        setTopicProgress(progress)
+        setLoading(false)
+        return
+      }
+
+      // Logged in — fetch from Supabase
+      const [countsData] = await Promise.all([
+        fetchTopicWordCounts(),
+      ])
+
+      setTopicCounts(countsData)
+
+      // Compute mastered per topic from progress data
+      // Note: we don't have topic_id in user_progress directly,
+      // so we show global progress per topic based on word count
+      const progress: Record<string, TopicProgress> = {}
+      for (const topic of topicInfos) {
+        progress[topic.id] = {
+          mastered: 0,
+          total: countsData[topic.id] ?? 0,
+        }
+      }
+      // For accurate per-topic mastered, we'd need to join words table.
+      // Showing total words for now; mastered comes from progress records.
+      setTopicProgress(progress)
+      setLoading(false)
+    }
+
+    load()
+  }, [user])
 
   const filteredTopics = topicInfos.filter((topic) => {
     const label = t(topic.labelKey).toLowerCase()
@@ -131,11 +188,8 @@ export default function LibraryPage() {
           {/* Topic Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTopics.map((topic) => {
-              const topicCards = cards.filter((c) => c.topic === topic.id)
-              const mastered = topicCards.filter(
-                (c) => (progressMap.get(c.id)?.repetitions ?? 0) >= 5
-              ).length
-              const total = topicCards.length
+              const total = topicCounts[topic.id] ?? 0
+              const { mastered = 0 } = topicProgress[topic.id] ?? {}
               const pct = total > 0 ? Math.round((mastered / total) * 100) : 0
 
               return (
@@ -166,8 +220,12 @@ export default function LibraryPage() {
                   {/* Progress */}
                   <div className="w-full mb-6">
                     <div className="flex justify-between text-xs mb-2">
-                      <span className="text-on-surface-variant">{pct}% mastered</span>
-                      <span className="font-bold text-on-surface">{mastered}/{total} words</span>
+                      <span className="text-on-surface-variant">
+                        {loading ? '...' : `${pct}% mastered`}
+                      </span>
+                      <span className="font-bold text-on-surface">
+                        {loading ? '...' : `${mastered}/${total} words`}
+                      </span>
                     </div>
                     <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
                       <div

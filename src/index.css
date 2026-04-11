@@ -3,54 +3,28 @@
 @theme {
   /* === VocabMaster Design System — The Tactile Scholar === */
 
-  /* Colors */
-  --color-primary: #944a00;
+  /* Colors synced with Stitch precisely */
+  --color-primary: #D35400;
   --color-on-primary: #ffffff;
-  --color-primary-fixed: #ffdcc5;
-  --color-primary-fixed-dim: #ffb783;
-  --color-primary-container: #e67e22;
+  --color-primary-container: #FAD7A0;
   --color-on-primary-container: #502600;
 
-  --color-secondary: #546435;
+  --color-secondary: #2E4053;
   --color-on-secondary: #ffffff;
-  --color-secondary-fixed: #d6eaaf;
-  --color-secondary-fixed-dim: #bbce95;
-  --color-secondary-container: #d4e7ac;
-  --color-on-secondary-container: #586839;
+  --color-secondary-container: #D5DBDB;
 
-  --color-tertiary: #755a33;
-  --color-on-tertiary: #ffffff;
-  --color-tertiary-fixed: #ffddb2;
-  --color-tertiary-fixed-dim: #e4c192;
-  --color-tertiary-container: #b49469;
-  --color-on-tertiary-container: #432d0b;
+  --color-surface: #FFFBF2;
+  --color-on-surface: #2C3E50;
+  --color-on-surface-variant: #566573;
+  --color-background: #FFFBF2;
 
-  --color-surface: #fff8f0;
-  --color-surface-bright: #fff8f0;
-  --color-surface-dim: #dfd9d1;
-  --color-surface-container: #f3ede4;
-  --color-surface-container-low: #f9f3ea;
-  --color-surface-container-high: #ede7df;
-  --color-surface-container-highest: #e8e2d9;
-  --color-surface-container-lowest: #ffffff;
-
-  --color-background: #fff8f0;
-  --color-on-background: #1d1b16;
-  --color-on-surface: #1d1b16;
-  --color-on-surface-variant: #564337;
   --color-outline: #897365;
   --color-outline-variant: #dcc1b1;
 
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
 
-  --color-inverse-surface: #33302b;
-  --color-inverse-on-surface: #f6f0e7;
-  --color-inverse-primary: #ffb783;
-
-  --color-surface-tint: #944a00;
+  --color-surface-tint: #D35400;
 
   /* Border Radius */
   --radius-sm: 0.5rem;
@@ -91,9 +65,13 @@ body {
 
 /* === Design Utilities === */
 
-/* Primary gradient (Terracotta) */
+/* Hero gradient from Stitch */
+.hero-gradient {
+  background: linear-gradient(135deg, #F39C12 0%, #E67E22 50%, #D35400 100%);
+}
+
 .primary-gradient {
-  background: linear-gradient(135deg, #e67e22 0%, #944a00 100%);
+  background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
 }
 
 /* Oceanic pulse gradient (from Stitch design) */
