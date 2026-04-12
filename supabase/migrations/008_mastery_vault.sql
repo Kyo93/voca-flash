@@ -55,7 +55,7 @@ BEGIN
   WHERE s.user_id = p_user_id
   GROUP BY 
     w.id, w.word, w.definition, w.phonetic, w.pos, w.image_url, w.example, w.example_vi,
-    s.ease_factor, s.interval_days, s.repetitions, s.lapse_count, s.next_review_at, s.last_reviewed, s.created_at
+    s.ease_factor, s.interval_days, s.repetitions, s.lapse_count, s.next_review_at, s.last_reviewed, s.mastered, s.created_at
   ORDER BY s.created_at DESC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
