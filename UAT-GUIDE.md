@@ -58,9 +58,46 @@ This document provides step-by-step flows for manual verification of the VocaFla
 
 ---
 
-## Flow 4: Responsive Design Check
-**Objective**: Ensure the premium UI holds up on different viewports.
-
-1.  **Window Resize**: Drag the browser window to a narrower width.
-2.  **Auto-Collapse**: Verify sidebars auto-collapse or provide an accessible toggle on smaller screens.
 3.  **Card Layout**: Verify the study flashcard remains centered and readable even when sidebars are open.
+
+---
+
+## Flow 5: Review Arena (Active Recall Testing)
+**Objective**: Verify the immersive testing experience and challenge stability.
+
+1.  **Launch Arena**:
+    - On the Dashboard, identify the **"Review Arena"** card.
+    - Click **"Bắt đầu ôn tập"**.
+2.  **Challenge Verification**:
+    - **Recognition**: Verify that definition choices (1 correct, 3 distractors) appear and respond to number keys (1-4).
+    - **Construction**: Verify that clicking word fragments re-orders them correctly.
+    - **Ghost Recall**: Verify that typing the word and pressing **Enter** submits the answer.
+3.  **Audio Stability (Poltergeist Test)**:
+    - Rapidly skip through 3-4 challenges.
+    - **Pass Criteria**: Audio for the previous word must stop immediately when the next one starts. Zero audio overlap or phantom voices.
+4.  **Zen Exit flow**:
+    - Click the **"Thoát"** button in the top left.
+    - Verify the custom **ConfirmExitModal** appears (dark backdrop, glassmorphic card).
+    - Click **"Ở lại"** to resume. Click **"Thoát ngay"** to return to Dashboard.
+5.  **Session Progress**:
+    - Complete a session.
+    - Verify the **Session Summary** screen shows correct stats and progress marks.
+
+---
+
+## Flow 6: Kinetic UX & Habit Rewards (Arena 2.0)
+**Objective**: Verify the "WOW" factor and reward mechanisms.
+
+1.  **Kinetic Motion Test**:
+    - Start a Review Session.
+    - **Construction**: Click alphabet blocks. Verify they **slide smoothly** (Layout animation) into the word slot rather than jumping.
+    - **Recognition**: Verify choices enter with a **staggered effect** (one after another).
+2.  **Reward Mechanism**:
+    - Complete all challenges in a batch.
+    - **XP Counter**: Observe the XP number on the Summary screen. Verify it **counts up** from 0 to the final points (e.g., 0 → 50) within 1.5 seconds.
+    - **Mistakes Audit**: Intentionally get 1-2 words wrong during the session.
+    - **Verification**: On the final screen, verify the **"Mistakes Audit"** section is visible and correctly lists the words you failed.
+3.  **Visual Polish**:
+    - Verify the "military_tech" icon has a soft pulsing glow and the summary card has a scale-in animation.
+
+

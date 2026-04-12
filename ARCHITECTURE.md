@@ -21,26 +21,34 @@ graph TD
         H[i18next]
     end
 
-    subgraph "Infrastructure"
+    subgraph "Logic & Infrastructure"
+        G[SM-2 Algorithm]
+        H[Speech Utility]
         I[Supabase DB/Auth]
-        J[GitHub Actions/Deploy]
     end
 
     A <--> F
     F <--> I
     A --> G
+    A --> H
 ```
 
 ## Core Architectural Pillars
 
-### 1. Dynamic Layout System
-The application uses a unified `AppLayout` component that manages a three-column grid.
-- **Left Sidebar**: Navigation and branding.
-- **Main Content**: Scrollable area for Dashboard, Library, etc.
-- **Right Sidebar**: Global status bar for streaks, XP, and reminders.
+### 1. Pedagogical Routing Split
+VocaFlash separates learning into two distinct domains:
+- **Study Mode (`/study`)**: Passive/Contextual learning using Flashcards. Focuses on input.
+- **Review Arena (`/review`)**: Active Recall testing. Uses a varied challenge-response loop to build retrieval strength.
 
-**Sidebar Logic**:
-Persistence is handled via `SidebarContext`, allowing the app to calculate content margins dynamically when sidebars are collapsed.
+### 2. Review Arena Challenge Engine
+The `ChallengeManager` orchestrates 5 types of challenges based on a word's mastery level:
+- **Recognition**: Multiple choice (True/False + Distractors).
+- **Phonetics**: Auditory recognition.
+- **Construction**: Word fragment re-ordering.
+- **Context Gap**: Sentence-level fill-in-the-blanks.
+- **Ghost Recall**: Full word retrieval from thin air.
+
+**Adaptive Logic**: Challenges are chosen dynamically using `useReviewSession` which checks for the presence of examples, choices, and current SM-2 `repetitions`.
 
 ### 2. Spaced Repetition (SRS)
 We implement the **SM-2 algorithm** (`src/lib/srs.ts`).
@@ -57,6 +65,11 @@ The project includes a secure `/admin` section with CRUD capabilities for:
 - **Roadmaps**: High-level learning paths.
 - **Topics**: Modular units of study.
 - **Words**: Flashcard content with image support and preview logic.
+
+### 5. Media & Accessibility
+- **Robust Audio**: All speech is managed through `src/lib/speech.ts` to clear global browser buffers before each utterance, preventing audio bleeding and duplication.
+- **Zen Navigation**: Exiting immersive sessions is handled by internal custom modals (`ConfirmExitModal`) to bypass browser-native dialog limitations.
+
 
 ## Layout Configuration Tokens
 Defined in `SidebarContext.tsx`:

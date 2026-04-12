@@ -30,6 +30,14 @@
 - [x] Settings (`/settings`)
 - [x] Study Session (`/study`)
 
+### Phase 4: Active Recall (Review Arena)
+- [x] Framework: `ChallengeManager` adaptive orchestration
+- [x] Challenges: Recognition, Construction, Context Gap, Phonetics, Ghost Recall
+- [x] Stability: Robust speech utility (no doubling)
+- [x] UI: ConfirmExitModal & Zen aesthetic
+- [x] Git: Pushed to production branch (Kyo93)
+
+
 ---
 
 ## 🔄 ĐANG THỰC HIỆN
@@ -44,7 +52,9 @@
 4. Logic quản lý từ vựng lấy **từ vựng làm trung tâm** (words → topics → roadmaps) (✅ Done, đã thêm feature Topic Description)
 5. Chuyển từ localStorage → **Supabase** (backend + auth) (✅ Done - Phase 10 Sync hoàn tất)
 6. AppLayout Centralization: Tối ưu UI thống nhất layout toàn bộ app (Sidebar, Header) (✅ Done)
-7. Deploy: **Cloudflare Pages** (miễn phí) (🔄 Đang chờ - Phase 11)
+7.  Review Arena (Active Recall): Trải nghiệm ôn tập chuyên sâu (✅ Done)
+8.  Deploy: **Cloudflare Pages** (miễn phí) (🔄 Đang chờ - Phase 12)
+
 
 **Còn thiếu — chờ deploy:**
 - Deploy Frontend public URL và thiết lập auth cho Superadmin.
@@ -67,7 +77,8 @@
 | 4.8 | Admin Dashboard Stats | ✅ |
 | 4.9 | Migration: localStorage → Supabase | ✅ |
 | 4.10 | Student → Supabase Sync | ✅ |
-| 4.11 | Deploy Cloudflare Pages | ⬜ |
+| 4.11 | Review Arena (Active Recall) | ✅ |
+| 4.12 | Deploy Cloudflare Pages | ⬜ |
 
 ---
 
@@ -132,4 +143,5 @@ voca-flash/
 
 ---
 
-_Cập nhật lần cuối: 2026-04-11_
+_Cập nhật lần cuối: 2026-04-12_
+

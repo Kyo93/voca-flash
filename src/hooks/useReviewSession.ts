@@ -20,7 +20,12 @@ export function useReviewSession() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isComplete, setIsComplete] = useState(false)
-  const [stats, setStats] = useState({ correct: 0, wrong: 0, points: 0 })
+  const [stats, setStats] = useState({ 
+    correct: 0, 
+    wrong: 0, 
+    points: 0, 
+    mistakes: [] as Word[] 
+  })
 
   /**
    * Adaptive Quadrant Selection
@@ -98,7 +103,8 @@ export function useReviewSession() {
     setStats(prev => ({
       correct: prev.correct + (isCorrect ? 1 : 0),
       wrong: prev.wrong + (isCorrect ? 0 : 1),
-      points: prev.points + (isCorrect ? (current.quadrant === 'ghost_recall' ? 20 : 10) : 0)
+      points: prev.points + (isCorrect ? (current.quadrant === 'ghost_recall' ? 20 : 10) : 0),
+      mistakes: isCorrect ? prev.mistakes : [...prev.mistakes, current.word]
     }))
 
     // Move to next
