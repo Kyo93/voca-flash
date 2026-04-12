@@ -21,7 +21,7 @@ interface AuthContextValue {
   loading: boolean
   isAdmin: boolean
   activeRoadmapSlug: string | null
-  refreshActiveRoadmap: () => Promise<void>
+  refreshActiveRoadmap: (targetRoadmapId?: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
@@ -132,18 +132,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  async function refreshActiveRoadmap() {
+  async function refreshActiveRoadmap(targetRoadmapId?: string) {
     if (!user) return
     
-    const { data } = await supabase.from('user_resume_pointers')
-      .select('roadmap_id, roadmaps(slug)')
-      .eq('user_id', user.id)
-      .order('last_accessed_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+    let roadmapId = targetRoadmapId
+    
+    // 1. Nếu không truyền ID, tìm roadmap học gần nhất từ DB
+    if (!roadmapId) {
+      const { data } = await supabase.from('user_resume_pointers')
+        .select('roadmap_id')
+        .eq('user_id', user.id)
+        .order('last_accessed_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      
+      roadmapId = data?.roadmap_id
+    }
 
-    if (data && (data as any).roadmaps?.slug) {
-      setActiveRoadmapSlug((data as any).roadmaps.slug)
+    // 2. Lấy slug từ roadmapId (tránh join phức tạp)
+    if (roadmapId) {
+      const { data: roadmap } = await supabase.from('roadmaps')
+        .select('slug')
+        .eq('id', roadmapId)
+        .single()
+      
+      setActiveRoadmapSlug(roadmap?.slug ?? null)
     } else {
       setActiveRoadmapSlug(null)
     }

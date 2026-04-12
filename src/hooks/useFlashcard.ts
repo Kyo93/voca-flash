@@ -84,7 +84,7 @@ export function useFlashcard(topicFilter?: string) {
       if (user && roadmapId) {
         // Optimistically save resume state
         saveResumePointer(user.id, roadmapId, topicId).then(() => {
-          refreshActiveRoadmap()
+          refreshActiveRoadmap(roadmapId)
         }).catch(err => console.error(err))
       }
 
