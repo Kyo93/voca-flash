@@ -100,20 +100,29 @@ export function useReviewSession() {
     }).catch(err => console.error('[useReviewSession] sync error:', err))
 
     // Update session stats
-    setStats(prev => ({
-      correct: prev.correct + (isCorrect ? 1 : 0),
-      wrong: prev.wrong + (isCorrect ? 0 : 1),
-      points: prev.points + (isCorrect ? (current.quadrant === 'ghost_recall' ? 20 : 10) : 0),
-      mistakes: isCorrect ? prev.mistakes : [...prev.mistakes, current.word]
-    }))
+    setStats(prev => {
+      // Avoid duplicate mistakes if somehow called twice for the same word
+      const updatedMistakes = isCorrect 
+        ? prev.mistakes 
+        : [...prev.mistakes, current.word]
+      
+      return {
+        correct: prev.correct + (isCorrect ? 1 : 0),
+        wrong: prev.wrong + (isCorrect ? 0 : 1),
+        points: prev.points + (isCorrect ? (current.quadrant === 'ghost_recall' ? 20 : 10) : 0),
+        mistakes: updatedMistakes
+      }
+    })
 
-    // Move to next
-    const nextIndex = currentIndex + 1
-    if (nextIndex >= queue.length) {
-      setIsComplete(true)
-    } else {
-      setCurrentIndex(nextIndex)
-    }
+    // Move to next with functional update to avoid race conditions
+    setCurrentIndex(prev => {
+      const nextIndex = prev + 1
+      if (nextIndex >= queue.length) {
+        setIsComplete(true)
+        return prev
+      }
+      return nextIndex
+    })
   }, [currentIndex, queue, user])
 
   const currentChallenge = useMemo(() => queue[currentIndex] || null, [queue, currentIndex])

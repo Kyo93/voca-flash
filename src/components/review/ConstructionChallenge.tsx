@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
+import { shuffleArray } from '../../lib/utils'
 
 interface ConstructionChallengeProps {
   word: Word
@@ -24,7 +25,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
       char,
       used: false
     }))
-    setBlocks(chars.sort(() => Math.random() - 0.5))
+    setBlocks(shuffleArray(chars))
     setBuilt([])
   }, [word])
 
@@ -59,6 +60,17 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
     setBuilt(prev => prev.slice(0, -1))
     setBlocks(prev => prev.map(b => b.id === lastBlock.id ? { ...b, used: false } : b))
   }
+
+  // Keyboard support
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Backspace') {
+        undo()
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [built])
 
   return (
     <div className="w-full max-w-lg mx-auto">

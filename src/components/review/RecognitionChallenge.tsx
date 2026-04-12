@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
 import { speakWord, cancelSpeech } from '../../lib/speech'
+import { shuffleArray } from '../../lib/utils'
 
 interface RecognitionChallengeProps {
   word: Word
@@ -15,13 +16,17 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
   const [isLocked, setIsLocked] = useState(false)
 
   useEffect(() => {
-    // Combine correct answer with wrong ones and shuffle
+    // Combine correct answer with wrong ones (filtered to be unique and not the correct answer)
+    const distractors = [...new Set(choices)]
+      .filter(c => c && c.toLowerCase() !== word.definition.toLowerCase())
+      .slice(0, 3)
+
     const all = [
       { text: word.definition, isCorrect: true },
-      ...choices.slice(0, 3).map(c => ({ text: c, isCorrect: false }))
+      ...distractors.map(c => ({ text: c, isCorrect: false }))
     ]
     
-    setShuffled(all.filter(c => c.text).sort(() => Math.random() - 0.5))
+    setShuffled(shuffleArray(all))
     setSelected(null)
     setIsLocked(false)
     

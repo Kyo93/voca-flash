@@ -23,14 +23,21 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
     let start = 0
     const end = stats.points
     const duration = 1500
-    const stepTime = Math.abs(Math.floor(duration / end))
+    // Safeguard: Ensure stepTime is at least 20ms to prevent browser lag for high point values
+    const stepTime = Math.max(Math.floor(duration / end), 20)
     
     if (end === 0) return
 
     const timer = setInterval(() => {
-      start += 1
-      setDisplayXP(start)
-      if (start === end) clearInterval(timer)
+      setDisplayXP(prev => {
+        if (prev >= end) {
+          clearInterval(timer)
+          return end
+        }
+        // If stepTime was capped at 20ms, we might need to increment by more than 1 to finish in 1.5s
+        const increment = Math.ceil(end / (duration / stepTime))
+        return Math.min(prev + increment, end)
+      })
     }, stepTime)
 
     return () => clearInterval(timer)
