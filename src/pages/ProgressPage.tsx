@@ -24,6 +24,7 @@ interface MemoryHealth {
   learning: number
   newToday: number
   mastered: number
+  masteredToday: number
   due: number
   orphaned: number
   weak: number
@@ -62,12 +63,13 @@ export default function ProgressPage() {
             learning: vocabData.filter(w => !w.mastered).length,
             newToday: vocabData.filter(w => new Date(w.first_encountered) >= today).length,
             mastered: vocabData.filter(w => w.mastered).length,
+            masteredToday: vocabData.filter(w => w.mastered && w.last_reviewed && new Date(w.last_reviewed) >= today).length,
             due: vocabData.filter(w => w.next_review_at && new Date(w.next_review_at) <= now).length,
             orphaned: vocabData.filter(w => w.is_orphaned).length,
             weak: vocabData.filter(w => w.lapse_count > 2).length,
           })
         } else {
-          setMemoryHealth({ learning: 0, newToday: 0, mastered: 0, due: 0, orphaned: 0, weak: 0 })
+          setMemoryHealth({ learning: 0, newToday: 0, mastered: 0, masteredToday: 0, due: 0, orphaned: 0, weak: 0 })
         }
 
         // Parallel fetch for each roadmap's stats
@@ -138,7 +140,7 @@ export default function ProgressPage() {
                    <span className="material-symbols-outlined text-2xl font-variation-fill">military_tech</span>
                  </div>
                  <span className="px-3 py-1.5 bg-orange-50 text-orange-600 font-bold text-[10px] uppercase tracking-widest rounded-full">
-                   +{memoryHealth?.newToday ?? 0} hôm nay
+                   +{memoryHealth?.masteredToday ?? 0} hôm nay
                  </span>
               </div>
               <div className="space-y-1">
@@ -175,17 +177,17 @@ export default function ProgressPage() {
                     <p className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em] w-24">Mục tiêu ngày</p>
                     <div className="flex items-baseline gap-1">
                       <p className="text-5xl font-black text-secondary tracking-tight">
-                         {profile?.daily_target ? Math.min(100, Math.round(((memoryHealth?.newToday ?? 0) / profile.daily_target) * 100)) : 0}
+                         {profile?.daily_target ? Math.min(100, Math.round((((stats?.mastered ?? 0) % profile.daily_target) / profile.daily_target) * 100)) : 0}
                       </p>
                       <span className="text-2xl font-black text-stone-300">%</span>
                     </div>
-                    <p className="text-[10px] font-bold text-stone-400 italic mt-2">{memoryHealth?.newToday ?? 0}/{profile?.daily_target || 20} thẻ mới</p>
+                    <p className="text-[10px] font-bold text-stone-400 italic mt-2">{(stats?.mastered ?? 0) % (profile?.daily_target || 20)}/{profile?.daily_target || 20} từ</p>
                  </div>
                  {/* Progress Ring Placeholder (Mock) */}
                  <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                       <circle cx="50" cy="50" r="40" className="stroke-stone-100" strokeWidth="12" fill="none" />
-                      <circle cx="50" cy="50" r="40" className="stroke-[#D35400] drop-shadow-sm transition-all duration-1000 ease-out" strokeWidth="12" fill="none" strokeDasharray="251" strokeDashoffset={251 - (251 * (profile?.daily_target ? Math.min(100, Math.round(((memoryHealth?.newToday ?? 0) / profile.daily_target) * 100)) : 0)) / 100} strokeLinecap="round" />
+                      <circle cx="50" cy="50" r="40" className="stroke-[#D35400] drop-shadow-sm transition-all duration-1000 ease-out" strokeWidth="12" fill="none" strokeDasharray="251" strokeDashoffset={251 - (251 * (profile?.daily_target ? Math.min(100, Math.round((((stats?.mastered ?? 0) % profile.daily_target) / profile.daily_target) * 100)) : 0)) / 100} strokeLinecap="round" />
                     </svg>
                     <span className="material-symbols-outlined text-[#D35400] absolute text-xl font-variation-fill">flag</span>
                  </div>
