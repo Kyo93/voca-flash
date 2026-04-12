@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
 
@@ -56,7 +57,18 @@ export default function Header({ title, searchQuery, onSearchChange, searchPlace
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <button className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all">
+          <Link 
+            to="/methodology" 
+            title={t('nav.methodology')}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all"
+          >
+            <span className="material-symbols-outlined text-xl">psychology</span>
+          </Link>
+
+          <button 
+            className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all"
+            title="Thông báo"
+          >
             <span className="material-symbols-outlined text-xl">notifications</span>
           </button>
           

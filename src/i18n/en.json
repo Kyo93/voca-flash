@@ -11,7 +11,8 @@
     "quickStudy": "Quick Study",
     "startQuiz": "Start Daily Quiz",
     "search": "Search...",
-    "searchPlaceholder": "Search paths, words, or lessons..."
+    "searchPlaceholder": "Search paths, words, or lessons...",
+    "mastery": "Mastery Vault"
   },
   "home": {
     "welcome": "Welcome back!",

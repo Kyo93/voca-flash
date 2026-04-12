@@ -27,6 +27,7 @@ export default function Sidebar() {
       icon: 'menu_book' 
     },
     { path: '/progress', labelKey: 'nav.progress', icon: 'bar_chart' },
+    { path: '/mastery', labelKey: 'nav.mastery', icon: 'inventory_2' },
     { path: '/settings', labelKey: 'nav.settings', icon: 'settings' },
   ], [activeRoadmapSlug])
 

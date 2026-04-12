@@ -18,6 +18,9 @@ import AdminRoadmapsPage from './pages/admin/RoadmapsPage'
 import AdminDashboardPage from './pages/admin/DashboardPage'
 import AdminUsersPage from './pages/admin/UsersPage'
 import ProgressPage from './pages/ProgressPage'
+import MethodologyPage from './pages/MethodologyPage'
+import MasteryPage from './pages/MasteryPage'
+import FreeStudyPage from './pages/FreeStudyPage'
 
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -62,11 +65,14 @@ function App() {
             <Route path="/library/:roadmapSlug" element={<RoadmapTopicsPage />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/methodology" element={<MethodologyPage />} />
+            <Route path="/mastery" element={<MasteryPage />} />
           </Route>
 
           {/* Special immersive routes */}
           <Route path="/study" element={<RequireAuth><StudyPage /></RequireAuth>} />
           <Route path="/review" element={<RequireAuth><ReviewPage /></RequireAuth>} />
+          <Route path="/free-study" element={<RequireAuth><FreeStudyPage /></RequireAuth>} />
 
           {/* Admin routes */}
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>

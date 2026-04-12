@@ -11,7 +11,7 @@
  */
 
 import { supabase } from './supabase'
-import type { Topic, Roadmap, Word, SrsRecord, UserProfile, WordChoice, ResumePointer } from './types'
+import type { Topic, Roadmap, Word, SrsRecord, UserProfile, WordChoice, ResumePointer, MasteryWord } from './types'
 import type { Card, CardProgress } from './srs'
 
 // ── Mapping: Word (Supabase) → Card (student app) ────────────
@@ -617,4 +617,66 @@ export async function fetchAllTopics(): Promise<Topic[]> {
     
   if (error) throw error
   return data || []
+}
+
+// ── Mastery Vault Logic ──────────────────────────────────────
+
+/**
+ * Fetches all vocabulary studied by the user.
+ * Uses get_user_vocabulary RPC and handles Supabase 1000-row limit.
+ */
+export async function fetchUserVocabulary(userId: string): Promise<MasteryWord[]> {
+  const PAGE_SIZE = 1000
+  let allWords: MasteryWord[] = []
+  let from = 0
+  let hasMore = true
+
+  try {
+    while (hasMore) {
+      const { data, error } = await supabase
+        .rpc('get_user_vocabulary', { p_user_id: userId })
+        .range(from, from + PAGE_SIZE - 1)
+
+      if (error) throw error
+      
+      if (data && data.length > 0) {
+        allWords = [...allWords, ...data]
+        from += PAGE_SIZE
+        if (data.length < PAGE_SIZE) hasMore = false
+      } else {
+        hasMore = false
+      }
+    }
+    return allWords
+  } catch (err) {
+    console.error('[supabase-storage] fetchUserVocabulary error:', err)
+    throw err
+  }
+}
+
+/**
+ * Resets a word's progress when failed during Free Study (Option B).
+ * Resets repetitions, interval, and updates next_review_at to tomorrow.
+ */
+export async function upsertFreeStudyFail(userId: string, wordId: string): Promise<void> {
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  tomorrow.setHours(0, 0, 0, 0)
+
+  // We only update if the record exists (it should, since it's in the Vault)
+  const { error } = await supabase
+    .from('user_srs_records')
+    .update({
+      repetitions: 0,
+      interval_days: 1,
+      next_review_at: tomorrow.toISOString(),
+      mastered: false,
+      last_reviewed: new Date().toISOString()
+    })
+    .match({ user_id: userId, word_id: wordId })
+
+  if (error) {
+    console.error('[supabase-storage] upsertFreeStudyFail error:', error)
+    throw error
+  }
 }

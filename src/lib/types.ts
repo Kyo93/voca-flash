@@ -113,3 +113,25 @@ export interface AuthSession {
   id: string
   email: string
 }
+
+// ── Mastery Vault Types ─────────────────────────────────────
+export interface MasteryWord {
+  word_id: string
+  word: string
+  definition: string
+  phonetic: string | null
+  pos: string | null
+  image_url: string | null
+  example: string | null
+  example_vi: string | null
+  ease_factor: number
+  interval_days: number
+  repetitions: number
+  lapse_count: number
+  next_review_at: string | null
+  last_reviewed: string | null
+  mastered: boolean
+  first_encountered: string
+  topic_name: string | null
+  is_orphaned: boolean
+}
