@@ -199,6 +199,11 @@ function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3) => void }) {
 
 function StudyComplete({ total }: { total: number }) {
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
+  
+  // Preserve current topic/roadmap context
+  const currentQuery = searchParams.toString()
+  const studyLink = currentQuery ? `/study?${currentQuery}` : '/study'
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
@@ -212,7 +217,7 @@ function StudyComplete({ total }: { total: number }) {
         <a href="/dashboard" className="px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
           Về Dashboard
         </a>
-        <a href="/study" className="px-8 py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
+        <a href={studyLink} className="px-8 py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
           Học thêm
         </a>
       </div>

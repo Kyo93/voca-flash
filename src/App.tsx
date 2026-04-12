@@ -16,6 +16,7 @@ import AdminTopicsPage from './pages/admin/TopicsPage'
 import AdminRoadmapsPage from './pages/admin/RoadmapsPage'
 import AdminDashboardPage from './pages/admin/DashboardPage'
 import AdminUsersPage from './pages/admin/UsersPage'
+import ProgressPage from './pages/ProgressPage'
 
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -67,7 +68,7 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/library/:roadmapSlug" element={<RoadmapTopicsPage />} />
-            <Route path="/progress" element={<div className="p-12 text-2xl font-bold">Progress — coming soon</div>} />
+            <Route path="/progress" element={<ProgressPage />} />
             <Route path="/settings" element={<div className="p-12 text-2xl font-bold">Settings — coming soon</div>} />
           </Route>
 
