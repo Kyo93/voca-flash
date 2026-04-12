@@ -21,7 +21,7 @@ interface AuthContextValue {
   loading: boolean
   isAdmin: boolean
   activeRoadmapSlug: string | null
-  refreshActiveRoadmap: (targetRoadmapId?: string) => Promise<void>
+  refreshActiveRoadmap: (targetRoadmapId?: string, forcedUserId?: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .then(({ data }) => setProfile(data ?? null))
 
       // 3. Lấy active roadmap slug từ resume pointer cuối cùng
-      refreshActiveRoadmap()
+      refreshActiveRoadmap(undefined, userId)
 
     } catch (err) {
       console.error('UserData loading error:', err)
@@ -132,8 +132,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  async function refreshActiveRoadmap(targetRoadmapId?: string) {
-    if (!user) return
+  async function refreshActiveRoadmap(targetRoadmapId?: string, forcedUserId?: string) {
+    const currentUserId = forcedUserId || user?.id
+    if (!currentUserId) return
     
     let roadmapId = targetRoadmapId
     
@@ -141,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!roadmapId) {
       const { data } = await supabase.from('user_resume_pointers')
         .select('roadmap_id')
-        .eq('user_id', user.id)
+        .eq('user_id', currentUserId)
         .order('last_accessed_at', { ascending: false })
         .limit(1)
         .maybeSingle()
