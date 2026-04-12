@@ -208,6 +208,12 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
+/* Zen Wave Animation */
+@keyframes wave {
+  0%, 100% { transform: translateX(0) scaleY(1) rotate(0deg); }
+  50% { transform: translateX(-15px) scaleY(1.02) rotate(1deg); }
+}
+
 /* Bento-ish Grid Utility */
 .asymmetric-grid {
   display: grid;

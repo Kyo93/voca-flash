@@ -6,7 +6,16 @@ import type { DashboardSummary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
-import WelcomeReminder from '../components/WelcomeReminder'
+
+const QUOTES = [
+  "Hành trình vạn dặm bắt đầu từ một bước chân.",
+  "Học một ngoại ngữ là có thêm một cửa sổ để nhìn ra thế giới.",
+  "Sự kiên trì là chìa khóa của thành công.",
+  "Mỗi ngày một chút, kiến thức sẽ đong đầy.",
+  "Đừng dừng lại cho đến khi bạn tự hào về bản thân.",
+  "Kỹ năng ngôn ngữ là bản đồ của một nền văn hóa.",
+  "Học tập là kho báu sẽ đi theo chủ nhân của nó khắp mọi nơi."
+]
 
 interface DashboardStats {
   totalWords: number
@@ -21,7 +30,7 @@ export default function DashboardPage() {
   const { t } = useTranslation()
   const { user, profile } = useAuth()
 
-  const [, setStreak] = useState<StreakData>(loadStreak())
+  const [streak, setStreak] = useState<StreakData>(loadStreak())
   const [stats, setStats] = useState<DashboardStats>({
     totalWords: 0,
     mastered: 0,
@@ -31,6 +40,11 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<DashboardSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [showBanner, setShowBanner] = useState(false)
+  const [currentQuote, setCurrentQuote] = useState("")
+
+  useEffect(() => {
+    setCurrentQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)])
+  }, [])
 
   useEffect(() => {
     async function load() {
@@ -84,38 +98,78 @@ export default function DashboardPage() {
   const card1 = resumeTopic || fallback1
   const isResume = !!resumeTopic
 
+  // Growth Stage Logic
+  const currentStreak = streak?.currentStreak ?? 0
+  const getGrowthStage = () => {
+    if (currentStreak === 0) return { icon: 'potted_plant', label: 'Hạt mầm' }
+    if (currentStreak < 3) return { icon: 'local_florist', label: 'Đang lớn' }
+    return { icon: 'nature', label: 'Cây cổ thụ' }
+  }
+  const growth = getGrowthStage()
+
   return (
     <>
       {/* Scrollable Content */}
       <div className="flex-1 px-10 py-8 overflow-y-auto" style={{ maxWidth: 1280, margin: '0 auto', width: '100%' }}>
           
-          {/* Welcome Reminder Banner */}
-          {showBanner && (
-            <WelcomeReminder 
-              userName={profile?.display_name} 
-              onDismiss={() => {
-                setShowBanner(false)
-                sessionStorage.setItem('welcome_banner_dismissed', 'true')
-              }} 
-            />
-          )}
+          {/* Hero Banner (Zen Hybrid Refined) */}
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary-container to-primary px-10 py-8 mb-8 flex items-center shadow-2xl group border border-white/10">
+            <div className="relative z-10 max-w-2xl animate-fade-in">
+              <h3 className="text-2xl md:text-3xl font-black text-white mb-4 tracking-tight leading-tight">
+                Sẵn sàng bứt phá hôm nay chưa, <span className="text-amber-200">{profile?.display_name || 'Scholar'}</span>?
+              </h3>
+              
+              <div className="pl-4 border-l-2 border-amber-200/50 mb-6 transform transition-all group-hover:translate-x-1 duration-500">
+                <p className="text-lg text-white/80 font-medium italic leading-relaxed">
+                  "{currentQuote || '...'}"
+                </p>
+              </div>
 
-          {/* Hero Banner */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-container to-primary px-12 py-12 mb-8 min-h-[260px] flex items-center shadow-lg">
-            <div className="relative z-10 max-w-lg">
-              <h3 className="text-5xl font-black text-white mb-3 tracking-tight leading-tight">{t('home.welcome')}</h3>
-              <p className="text-lg text-white/80 font-medium mb-8 max-w-sm">
-                Bắt đầu học tập hôm nay. Hãy tiếp tục!
-              </p>
-              <Link
-                to="/study"
-                className="inline-block px-8 py-3.5 bg-white text-primary font-black rounded-2xl hover:bg-stone-50 transition-all shadow-xl"
-              >
-                {t('home.continueChallenge')}
-              </Link>
+              <div className="flex items-center gap-6">
+                <Link
+                  to="/study"
+                  className="flex items-center gap-2 px-8 py-3 bg-white text-primary font-black rounded-xl hover:bg-stone-50 transition-all shadow-lg active:scale-95 group/btn text-sm"
+                >
+                  {t('home.continueChallenge')}
+                  <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">bolt</span>
+                </Link>
+                
+                {showBanner && (
+                  <button 
+                    onClick={() => {
+                      setShowBanner(false)
+                      sessionStorage.setItem('welcome_banner_dismissed', 'true')
+                    }}
+                    className="text-white/40 font-bold hover:text-white transition-colors text-xs"
+                  >
+                    Để sau
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="absolute right-8 top-0 bottom-0 w-1/4 flex items-center justify-center opacity-10">
-              <span className="material-symbols-outlined text-[280px] text-white rotate-12" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
+            
+            {/* Visual Decor - Zen Wave & Seed (Idea 3) */}
+            <div className="absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden pointer-events-none group">
+              {/* Waves */}
+              <svg className="absolute inset-0 w-full h-full opacity-10" preserveAspectRatio="none" viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+                <path className="animate-[wave_8s_ease-in-out_infinite]" fill="white" d="M400,0 L400,320 L200,320 C300,200 100,100 200,0 L400,0 Z" />
+                <path className="animate-[wave_12s_ease-in-out_infinite] opacity-50" fill="white" d="M400,40 L400,280 L250,280 C320,180 180,100 250,40 L400,40 Z" />
+              </svg>
+
+              {/* Seed/Plant Icon */}
+              <div className="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center animate-fade-in">
+                <div className="relative">
+                  <span className="material-symbols-outlined text-[120px] text-white opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-700">
+                    {growth.icon}
+                  </span>
+                  {/* Subtle Glow */}
+                  <div className="absolute inset-0 bg-amber-200/20 blur-3xl rounded-full scale-150 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                </div>
+                
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
+                  {growth.label}
+                </span>
+              </div>
             </div>
           </div>
 
