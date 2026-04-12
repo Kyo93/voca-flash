@@ -12,10 +12,11 @@
 - [x] 2.4 Create `src/components/ActivityHeatmap.tsx` with a minimalist grid, stubbing past data but reflecting the actual `streak_days`.
 
 ## Phase 3: Polish & Refinement
-- [ ] 3.1 Verify typography is exclusively "Be Vietnam Pro" with bold headers.
-- [ ] 3.2 Ensure colors strictly follow `primary` (#D35400) and `surface` (#FFFBF2).
-- [ ] 3.3 Add hover/active tactile effects to buttons.
+- [x] 3.1 Verify typography is exclusively "Be Vietnam Pro" with bold headers.
+- [x] 3.2 Ensure colors strictly follow `primary` (#D35400) and `surface` (#FFFBF2).
+- [x] 3.3 Add hover/active tactile effects to buttons.
 
-## Phase 5: Topic-Aware Study Loop
-- [x] 5.1 Update `StudyComplete` to preserve URL parameters for 'Học thêm' button.
-- [x] 5.2 Verify that the session re-initializes with the correct filtered words.
+## Phase 6: Smart 'UP NEXT' Logic
+- [x] 6.1 Refactor `RoadmapTopicsPage.tsx` logic to pre-calculate `featuredTopicId` and `upNextTopicId`.
+- [x] 6.2 Update the rendering loop to use the calculated IDs instead of hardcoded indices.
+- [x] 6.3 Verify that perfected topics are skipped when suggesting 'UP NEXT'.

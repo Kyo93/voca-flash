@@ -19,6 +19,8 @@ export default function RoadmapTopicsPage() {
   const [topics, setTopics] = useState<Topic[]>([])
   const [stats, setStats] = useState({ total: 0, mastered: 0 })
   const [topicProgress, setTopicProgress] = useState<Record<string, { total: number, learned: number, percent: number }>>({})
+  const [featuredId, setFeaturedId] = useState<string | null>(null)
+  const [upNextId, setUpNextId] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(true)
 
@@ -28,7 +30,7 @@ export default function RoadmapTopicsPage() {
       setLoading(true)
       
       try {
-        // 1. Fetch Roadster and its topics
+        // 1. Fetch Roadmap and its topics
         const [allRoadmaps, roadmapTopics] = await Promise.all([
           fetchRoadmaps(),
           fetchTopicsByRoadmap(roadmapSlug)
@@ -41,7 +43,6 @@ export default function RoadmapTopicsPage() {
         }
         
         setRoadmap(currentRoadmap)
-        setTopics(roadmapTopics)
         
         // 2. Fetch stats and progress
         const [roadmapStats, topicProgMap, learningStates] = await Promise.all([
@@ -53,20 +54,33 @@ export default function RoadmapTopicsPage() {
         setStats(roadmapStats)
         setTopicProgress(topicProgMap)
         
-        // 3. Sort topics (last_topic_id first)
+        // 3. Determine Featured and Up Next topics
         const lastTopicId = learningStates.get(currentRoadmap.id)?.last_topic_id
-        if (lastTopicId) {
-          const lastIndex = roadmapTopics.findIndex(t => t.id === lastTopicId)
-          if (lastIndex > -1) {
-            const lastTopic = roadmapTopics[lastIndex]
-            const others = roadmapTopics.filter((_, i) => i !== lastIndex)
-            setTopics([lastTopic, ...others])
-            return
-          }
+        
+        // featured is always the one you just studied, or the first one
+        let fId = lastTopicId || roadmapTopics[0]?.id
+        setFeaturedId(fId)
+        
+        // upNext is the first one in curriculum order that is:
+        // - not the featured one
+        // - not 100% perfected (learned < total)
+        const nextTopic = roadmapTopics.find(t => {
+          if (t.id === fId) return false
+          const p = topicProgMap[t.id]
+          if (!p) return true // No progress yet = unstudied
+          return p.learned < p.total
+        })
+        setUpNextId(nextTopic?.id || null)
+
+        // 4. Sort topics (featured first)
+        const featuredIndex = roadmapTopics.findIndex(t => t.id === fId)
+        if (featuredIndex > -1) {
+          const featuredTopic = roadmapTopics[featuredIndex]
+          const others = roadmapTopics.filter((_, i) => i !== featuredIndex)
+          setTopics([featuredTopic, ...others])
+        } else {
+          setTopics(roadmapTopics)
         }
-        
-        setTopics(roadmapTopics)
-        
         
       } catch (err) {
         console.error('Error loading roadmap topics:', err)
@@ -170,13 +184,13 @@ export default function RoadmapTopicsPage() {
 
       {/* Topics Grid */}
       <div className="grid grid-cols-12 gap-8">
-        {filteredTopics.map((topic, index) => {
+        {filteredTopics.map((topic) => {
           const topicStats = getTopicStats(topic.id)
           const isCompleted = topicStats.total > 0 && topicStats.learned >= topicStats.total
           const isStarted = topicStats.percent > 0
           
-          const isMainLarge = index === 0 && !searchQuery
-          const isUpNext = index === 1 && !searchQuery
+          const isMainLarge = topic.id === featuredId && !searchQuery
+          const isUpNext = topic.id === upNextId && !searchQuery
 
           if (isMainLarge) {
             return (
@@ -194,7 +208,7 @@ export default function RoadmapTopicsPage() {
                         </span>
                       </div>
                       <div>
-                        {index === 0 && isStarted && !isCompleted && (
+                        {isStarted && !isCompleted && (
                           <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest mb-1 inline-block">ĐANG HỌC</span>
                         )}
                         <h3 className="text-2xl font-bold text-on-surface">{topic.name}</h3>
