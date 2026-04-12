@@ -103,14 +103,13 @@ export async function fetchSrsStates(userId: string): Promise<Map<string, CardPr
 
     const progressList = (data as SrsRecord[]) ?? []
     for (const p of progressList) {
-      // Convert Supabase progress → SRS CardProgress
       map.set(p.word_id, {
         cardId: p.word_id,
-        ease: 2.5, // default; Supabase doesn't store ease yet
-        interval: p.mastered ? 99 : 0,
-        repetitions: p.mastered ? 5 : p.repetitions,
-        nextReview: p.last_reviewed
-          ? new Date(p.last_reviewed).getTime()
+        ease: p.ease_factor,
+        interval: p.interval_days,
+        repetitions: p.repetitions,
+        nextReview: p.next_review_at
+          ? new Date(p.next_review_at).getTime()
           : Date.now(),
         lastReview: p.last_reviewed
           ? new Date(p.last_reviewed).getTime()
@@ -132,7 +131,14 @@ export async function fetchSrsStates(userId: string): Promise<Map<string, CardPr
 export async function upsertSrsRecord(
   userId: string,
   cardId: string,
-  update: { repetitions: number; incrementWrong: number; mastered: boolean }
+  update: { 
+    repetitions: number; 
+    incrementWrong: number; 
+    mastered: boolean;
+    ease: number;
+    interval: number;
+    nextReview: number;
+  }
 ): Promise<void> {
   // First try to get existing record
   const { data: existing } = await supabase
@@ -151,6 +157,9 @@ export async function upsertSrsRecord(
       word_id: cardId,
       repetitions: update.repetitions,
       lapse_count: newLapse,
+      ease_factor: update.ease,
+      interval_days: update.interval,
+      next_review_at: new Date(update.nextReview).toISOString(),
       mastered: update.mastered,
       last_reviewed: new Date().toISOString(),
     }, {
@@ -162,6 +171,67 @@ export async function upsertSrsRecord(
   }
 }
 
+/**
+ * Fetch due words for the global Review Mode.
+ * Filters by next_review_at <= now AND mastered = false.
+ * Limits to 20 words, prioritizing those with higher lapse_count.
+ */
+export async function fetchReviewWords(userId: string): Promise<{ word: Word; progress: CardProgress; choices: string[] }[]> {
+  // 1. Get due records
+  const { data: records, error: srsError } = await supabase
+    .from('user_srs_records')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('mastered', false)
+    .lte('next_review_at', new Date().toISOString())
+    .order('lapse_count', { ascending: false })
+    .limit(20)
+
+  if (srsError || !records) {
+    console.error('[supabase-storage] fetchReviewWords error:', srsError)
+    return []
+  }
+
+  const wordIds = records.map(r => r.word_id)
+  if (wordIds.length === 0) return []
+
+  // 2. Fetch word details + choices in parallel
+  const [wordsRes, choicesRes] = await Promise.all([
+    supabase.from('words').select('*, topics(id, name, slug, color)').in('id', wordIds),
+    supabase.from('word_choices').select('*').in('word_id', wordIds)
+  ])
+
+  if (wordsRes.error) {
+    console.error('[supabase-storage] fetch words error:', wordsRes.error)
+    return []
+  }
+
+  const words = wordsRes.data as Word[]
+  const choicesData = (choicesRes.data as WordChoice[]) ?? []
+
+  // 3. Assemble
+  return words.map(w => {
+    const record = records.find(r => r.word_id === w.id)!
+    const wordChoices = choicesData
+      .filter(c => c.word_id === w.id)
+      .sort((a, b) => a.sort - b.sort)
+      .map(c => c.choice)
+
+    return {
+      word: w,
+      progress: {
+        cardId: record.word_id,
+        ease: record.ease_factor,
+        interval: record.interval_days,
+        repetitions: record.repetitions,
+        nextReview: new Date(record.next_review_at!).getTime(),
+        lastReview: record.last_reviewed ? new Date(record.last_reviewed).getTime() : 0,
+      },
+      choices: wordChoices
+    }
+  })
+}
+
 // ── Stats (for Dashboard) ───────────────────────────────────
 
 export interface UserStats {
@@ -169,6 +239,79 @@ export interface UserStats {
   mastered: number
   learning: number
   streakDays: number
+}
+
+export interface DashboardSummary {
+  resumeTopic: Topic | null
+  fallbackTopics: Topic[]
+  globalReviewCount: number
+}
+
+/**
+ * Summarizes dashboard data for a user:
+ * 1. The last topic they were studying (Resume)
+ * 2. Fallback topics (first 2 topics in the first roadmap)
+ * 3. Total count of words currently in learning pool (Global Review)
+ */
+export async function fetchDashboardSummary(userId: string): Promise<DashboardSummary> {
+  // 1. Fetch Global Review Count (Words actually DUE via SRS)
+  const { count: globalReviewCount } = await supabase
+    .from('user_srs_records')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('mastered', false)
+    .lte('next_review_at', new Date().toISOString())
+
+  // 2. Fetch Resume Topic
+  const { data: pointer } = await supabase
+    .from('user_resume_pointers')
+    .select('last_topic_id, roadmap_id')
+    .eq('user_id', userId)
+    .order('last_accessed_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  let resumeTopic: Topic | null = null
+  if (pointer?.last_topic_id) {
+    const { data: topic } = await supabase
+      .from('topics')
+      .select('*')
+      .eq('id', pointer.last_topic_id)
+      .single()
+    
+    if (topic) {
+      resumeTopic = topic as Topic
+    }
+  }
+
+  // 3. Fetch Fallback Topics (Roadmap 1st -> Topics 1,2)
+  const { data: roadmap } = await supabase
+    .from('roadmaps')
+    .select('id')
+    .eq('is_active', true)
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  let fallbackTopics: Topic[] = []
+  if (roadmap) {
+    const { data: topics } = await supabase
+      .from('topics')
+      .select('*')
+      .eq('roadmap_id', roadmap.id)
+      .order('sort_order', { ascending: true })
+      .limit(2)
+    
+    if (topics) {
+      fallbackTopics = topics as Topic[]
+    }
+  }
+
+  return {
+    resumeTopic,
+    fallbackTopics,
+    globalReviewCount: globalReviewCount ?? 0
+  }
 }
 
 export async function fetchDashboardStats(userId: string): Promise<UserStats> {

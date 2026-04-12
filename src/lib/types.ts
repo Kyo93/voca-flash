@@ -82,6 +82,9 @@ export interface SrsRecord {
   word_id: string
   repetitions: number
   lapse_count: number
+  ease_factor: number
+  interval_days: number
+  next_review_at: string | null
   mastered: boolean
   last_reviewed: string | null
   created_at: string

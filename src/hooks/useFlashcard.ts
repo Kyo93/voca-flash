@@ -121,7 +121,10 @@ export function useFlashcard(topicFilter?: string) {
         upsertSrsRecord(user.id, card.id, {
           repetitions: newProgress.repetitions,
           incrementWrong: wrong,
-          mastered
+          mastered,
+          ease: newProgress.ease,
+          interval: newProgress.interval,
+          nextReview: newProgress.nextReview
         }).catch(
           (err) => console.error('[useFlashcard] upsert progress error:', err)
         )

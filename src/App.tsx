@@ -9,6 +9,7 @@ import LibraryPage from './pages/LibraryPage'
 import RoadmapTopicsPage from './pages/RoadmapTopicsPage'
 import LoginPage from './pages/LoginPage'
 import AppLayout from './components/AppLayout'
+import ReviewPage from './pages/ReviewPage'
 import AdminLayout from './components/admin/AdminLayout'
 import AdminWordsPage from './pages/admin/WordsPage'
 import AdminTopicsPage from './pages/admin/TopicsPage'
@@ -72,6 +73,7 @@ function App() {
 
           {/* Special immersive routes */}
           <Route path="/study" element={<RequireAuth><StudyPage /></RequireAuth>} />
+          <Route path="/review" element={<RequireAuth><ReviewPage /></RequireAuth>} />
 
           {/* Admin routes */}
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { fetchDashboardStats, fetchTopicWordCounts } from '../lib/supabase-storage'
+import { fetchDashboardStats, fetchDashboardSummary } from '../lib/supabase-storage'
+import type { DashboardSummary } from '../lib/supabase-storage'
+import type { Topic } from '../lib/types'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
@@ -28,7 +30,7 @@ export default function DashboardPage() {
     learning: 0,
     topicCounts: {},
   })
-  const [topicCounts, setTopicCounts] = useState<Record<string, number>>({})
+  const [dashboardData, setDashboardData] = useState<DashboardSummary | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -41,10 +43,10 @@ export default function DashboardPage() {
       }
 
       // Logged in — fetch from Supabase
-      const [streakData, userStats, topicData] = await Promise.all([
+      const [streakData, userStats, summary] = await Promise.all([
         fetchStreakFromSupabase(user.id),
         fetchDashboardStats(user.id),
-        fetchTopicWordCounts(),
+        fetchDashboardSummary(user.id),
       ])
 
       setStreak(streakData)
@@ -52,9 +54,9 @@ export default function DashboardPage() {
         totalWords: userStats.totalWords,
         mastered: userStats.mastered,
         learning: userStats.learning,
-        topicCounts: userStats.totalWords > 0 ? topicData : {},
+        topicCounts: {}, // No longer used for cards
       })
-      setTopicCounts(topicData)
+      setDashboardData(summary)
       setLoading(false)
     }
 
@@ -66,9 +68,14 @@ export default function DashboardPage() {
     ? Math.round((dailyProgress / DAILY_GOAL) * 100)
     : 0
 
-  // Topic counts from Supabase
-  const dailyCount = topicCounts['daily'] ?? 0
-  const travelCount = topicCounts['travel'] ?? 0
+  // Master Hub Data Resolution
+  const resumeTopic = dashboardData?.resumeTopic
+  const fallback1 = dashboardData?.fallbackTopics[0]
+  const fallback2 = dashboardData?.fallbackTopics[1]
+  const reviewCount = dashboardData?.globalReviewCount ?? 0
+
+  const card1 = resumeTopic || fallback1
+  const isResume = !!resumeTopic
 
   return (
     <>
@@ -144,42 +151,59 @@ export default function DashboardPage() {
               <Link className="text-primary font-bold text-sm hover:underline underline-offset-4 transition-all shrink-0 ml-4" to="/library">{t('home.viewLibrary')}</Link>
             </div>
             <div className="grid grid-cols-2 gap-6">
-              {/* Card 1 — Daily */}
-              <div className="group bg-white rounded-3xl border border-stone-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div className="relative h-48 overflow-hidden">
-                  <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Giao tiếp hằng ngày" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                  <span className="absolute bottom-4 left-4 px-3 py-1 bg-primary text-white text-[9px] font-black rounded-lg uppercase tracking-widest">BẢN TIN</span>
-                </div>
-                <div className="p-6">
-                  <h5 className="text-xl font-black text-on-surface mb-2">{t('topics.daily')}</h5>
-                  <p className="text-sm text-stone-400 mb-5 line-clamp-2">Tăng vốn giao tiếp hàng ngày của bạn.</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-stone-300 text-[11px] font-black uppercase tracking-wider">
-                      {loading ? '...' : `${dailyCount} ${t('topics.words')}`}
+              {/* Card 1 — Resume or First Topic */}
+              {card1 ? (
+                <div className="group bg-white rounded-3xl border border-stone-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300">
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      alt={card1.name} 
+                      src={card1.image_url || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80"} 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <span className="absolute bottom-4 left-4 px-3 py-1 bg-primary text-white text-[9px] font-black rounded-lg uppercase tracking-widest">
+                      {isResume ? 'ĐANG THEO DÕI' : 'GỢI Ý'}
                     </span>
-                    <Link to="/study?topic=daily" className="text-secondary text-[11px] font-black uppercase tracking-wider flex items-center gap-1 hover:underline underline-offset-2">
-                      {t('home.resume')} <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </Link>
+                  </div>
+                  <div className="p-6">
+                    <h5 className="text-xl font-black text-on-surface mb-2">{card1.name}</h5>
+                    <p className="text-sm text-stone-400 mb-5 line-clamp-2">{card1.description || 'Tiếp tục lộ trình chinh phục từ vựng của bạn.'}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-stone-300 text-[11px] font-black uppercase tracking-wider">
+                        {isResume ? 'Bài học dở' : 'Bài học mới'}
+                      </span>
+                      <Link 
+                        to={`/study?topic=${card1.slug}&topicId=${card1.id}&roadmapId=${card1.roadmap_id}`} 
+                        className="text-secondary text-[11px] font-black uppercase tracking-wider flex items-center gap-1 hover:underline underline-offset-2"
+                      >
+                        {isResume ? 'Học tiếp' : 'Khám phá'} <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* Card 2 — Travel */}
+              ) : (
+                <div className="h-48 bg-stone-50 rounded-3xl animate-pulse" />
+              )}
+
+              {/* Card 2 — Global Review */}
               <div className="group bg-white rounded-3xl border border-stone-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div className="relative h-48 overflow-hidden">
-                  <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Du lịch" src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                  <span className="absolute bottom-4 left-4 px-3 py-1 bg-secondary text-white text-[9px] font-black rounded-lg uppercase tracking-widest">P3.5</span>
+                <div className="relative h-48 overflow-hidden bg-secondary-container flex items-center justify-center">
+                  <span className="material-symbols-outlined text-7xl text-white opacity-40 group-hover:scale-110 transition-transform duration-500" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 to-transparent" />
+                  <span className="absolute bottom-4 left-4 px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-[9px] font-black rounded-lg uppercase tracking-widest">ACTIVE RECALL</span>
                 </div>
                 <div className="p-6">
-                  <h5 className="text-xl font-black text-on-surface mb-2">{t('topics.travel')}</h5>
-                  <p className="text-sm text-stone-400 mb-5 line-clamp-2">Tăng vốn từ vựng du lịch.</p>
+                  <h5 className="text-xl font-black text-on-surface mb-2">Bảo trì Kiến thức</h5>
+                  <p className="text-sm text-stone-400 mb-5 line-clamp-2">Ôn tập tập trung không phân biệt chủ đề để ghi nhớ vĩnh viễn.</p>
                   <div className="flex justify-between items-center">
-                    <span className="text-stone-300 text-[11px] font-black uppercase tracking-wider">
-                      {loading ? '...' : `${travelCount} ${t('topics.words')}`}
-                    </span>
-                    <Link to="/study?topic=travel" className="text-secondary text-[11px] font-black uppercase tracking-wider flex items-center gap-1 hover:underline underline-offset-2">
-                      {t('home.resume')} <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+                      <span className="text-secondary text-[11px] font-black uppercase tracking-wider">
+                        {loading ? '...' : `${reviewCount} từ cần ôn tập`}
+                      </span>
+                    </div>
+                    <Link to="/review" className="text-secondary text-[11px] font-black uppercase tracking-wider flex items-center gap-1 hover:underline underline-offset-2">
+                       Ôn tập ngay <span className="material-symbols-outlined text-sm">arrow_forward</span>
                     </Link>
                   </div>
                 </div>
