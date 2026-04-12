@@ -130,42 +130,66 @@ export default function ProgressPage() {
         <div className="lg:col-span-2 space-y-8">
           
           {/* Metrics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-6 bg-white rounded-3xl border border-stone-100 shadow-sm flex flex-col items-center text-center gap-3 hover:border-primary/20 transition-all hover:-translate-y-1">
-              <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500">
-                <span className="material-symbols-outlined text-2xl font-variation-fill">military_tech</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Mastered Card */}
+            <div className="p-8 bg-white rounded-[2.5rem] border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all relative overflow-hidden group">
+              <div className="flex justify-between items-start mb-6">
+                 <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 shrink-0">
+                   <span className="material-symbols-outlined text-2xl font-variation-fill">military_tech</span>
+                 </div>
+                 <span className="px-3 py-1.5 bg-orange-50 text-orange-600 font-bold text-[10px] uppercase tracking-widest rounded-full">
+                   +{memoryHealth?.newToday ?? 0} hôm nay
+                 </span>
               </div>
-              <div className="space-y-0.5">
-                <div className="flex items-baseline justify-center gap-1.5">
-                  <span className="text-3xl font-black text-secondary">{stats?.mastered ?? 0}</span>
-                </div>
-                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Từ đã thuộc</p>
-              </div>
-            </div>
-
-            <div className="p-6 bg-white rounded-3xl border border-stone-100 shadow-sm flex flex-col items-center text-center gap-3 hover:border-primary/20 transition-all hover:-translate-y-1">
-              <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
-                <span className="material-symbols-outlined text-2xl font-variation-fill">local_fire_department</span>
-              </div>
-              <div className="space-y-0.5">
-                <div className="flex items-center justify-center gap-1.5">
-                  <span className="text-3xl font-black text-secondary">{stats?.streakDays ?? 0}</span>
-                </div>
-                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Ngày chuỗi</p>
+              <div className="space-y-1">
+                <p className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em]">Từ đã thuộc</p>
+                <p className="text-5xl font-black text-secondary tracking-tight">{(stats?.mastered ?? 0).toLocaleString()}</p>
               </div>
             </div>
 
-            <div className="p-6 bg-white rounded-3xl border border-stone-100 shadow-sm flex flex-col items-center text-center gap-3 hover:border-primary/20 transition-all hover:-translate-y-1">
-              <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500">
-                <span className="material-symbols-outlined text-2xl font-variation-fill">track_changes</span>
+            {/* Streak Card */}
+            <div className="p-8 bg-white rounded-[2.5rem] border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all relative overflow-hidden group">
+              <div className="flex justify-between items-start mb-6">
+                 <div className="w-12 h-12 bg-[#F3ECE1] rounded-2xl flex items-center justify-center text-[#A67C52] shrink-0">
+                   <span className="material-symbols-outlined text-2xl font-variation-fill">calendar_month</span>
+                 </div>
+                 <div className="flex gap-1">
+                   {['M', 'T', 'W'].map((day) => (
+                      <span key={day} className="w-6 h-6 rounded-full bg-[#E5B551] text-white flex items-center justify-center text-[9px] font-black">{day}</span>
+                   ))}
+                 </div>
               </div>
-              <div className="space-y-0.5">
-                <div className="flex items-baseline justify-center gap-1.5">
-                  <span className="text-3xl font-black text-secondary">{(stats?.mastered ?? 0) % (profile?.daily_target || 20)}</span>
-                  <span className="text-stone-400 font-bold text-lg">/ {profile?.daily_target || 20}</span>
+              <div className="space-y-1">
+                <p className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em]">Chuỗi ngày</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-5xl font-black text-secondary tracking-tight">{stats?.streakDays ?? 0}</p>
+                  <span className="text-xl font-bold text-stone-300">ngày</span>
                 </div>
-                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Mục tiêu ngày</p>
               </div>
+            </div>
+
+            {/* Daily Target Card */}
+            <div className="p-8 bg-white rounded-[2.5rem] border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all relative overflow-hidden group">
+               <div className="flex justify-between items-start mb-6">
+                 <div className="space-y-1">
+                    <p className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em] w-24">Mục tiêu ngày</p>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-5xl font-black text-secondary tracking-tight">
+                         {profile?.daily_target ? Math.min(100, Math.round(((memoryHealth?.newToday ?? 0) / profile.daily_target) * 100)) : 0}
+                      </p>
+                      <span className="text-2xl font-black text-stone-300">%</span>
+                    </div>
+                    <p className="text-[10px] font-bold text-stone-400 italic mt-2">{memoryHealth?.newToday ?? 0}/{profile?.daily_target || 20} thẻ mới</p>
+                 </div>
+                 {/* Progress Ring Placeholder (Mock) */}
+                 <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" className="stroke-stone-100" strokeWidth="12" fill="none" />
+                      <circle cx="50" cy="50" r="40" className="stroke-[#D35400] drop-shadow-sm transition-all duration-1000 ease-out" strokeWidth="12" fill="none" strokeDasharray="251" strokeDashoffset={251 - (251 * (profile?.daily_target ? Math.min(100, Math.round(((memoryHealth?.newToday ?? 0) / profile.daily_target) * 100)) : 0)) / 100} strokeLinecap="round" />
+                    </svg>
+                    <span className="material-symbols-outlined text-[#D35400] absolute text-xl font-variation-fill">flag</span>
+                 </div>
+               </div>
             </div>
           </div>
 
