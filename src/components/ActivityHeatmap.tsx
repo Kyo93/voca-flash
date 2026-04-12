@@ -5,57 +5,67 @@ interface HeatmapProps {
 }
 
 export default function ActivityHeatmap({ streakDays }: HeatmapProps) {
-  // Generate mock data for the last 8 weeks (56 days)
-  // In a real app, this would come from a study_logs table
+  // Generate mock data for the last 15 weeks (105 days) for a denser look
   const days = useMemo(() => {
-    const totalDays = 56
-    const data = Array.from({ length: totalDays }, (_, i) => {
-      // Logic: The most recent 'streakDays' are active
+    const totalDays = 105 
+    return Array.from({ length: totalDays }, (_, i) => {
       const isStreakDay = i >= totalDays - streakDays
-      // Randomly populate some older days to look "lived in"
-      const isRandomActive = Math.random() > 0.7 && i < totalDays - streakDays
+      const isRandomActive = Math.random() > 0.65 && i < totalDays - streakDays
       
-      const level = isStreakDay ? 3 : (isRandomActive ? Math.floor(Math.random() * 2) + 1 : 0)
-      
+      const level = isStreakDay ? 3 : (isRandomActive ? Math.floor(Math.random() * 3) : 0)
       return { level }
     })
-    return data
   }, [streakDays])
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-stone-100 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-black text-secondary tracking-tight">TẦN SUẤT HỌC TẬP</h3>
+    <div className="bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-stone-400 font-black uppercase tracking-wider">Ít hơn</span>
+          <span className="material-symbols-outlined text-orange-400 text-lg">grid_view</span>
+          <h3 className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em]">Tần suất học tập</h3>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] text-stone-300 font-black uppercase tracking-widest">Ít</span>
           <div className="flex gap-1">
-            <div className="w-2.5 h-2.5 rounded-[3px] bg-stone-100"></div>
-            <div className="w-2.5 h-2.5 rounded-[3px] bg-primary/20"></div>
-            <div className="w-2.5 h-2.5 rounded-[3px] bg-primary/50"></div>
-            <div className="w-2.5 h-2.5 rounded-[3px] bg-primary"></div>
+            <div className="w-3 h-3 rounded-[4px] bg-stone-50 border border-stone-100"></div>
+            <div className="w-3 h-3 rounded-[4px] bg-orange-100/50"></div>
+            <div className="w-3 h-3 rounded-[4px] bg-orange-300/70"></div>
+            <div className="w-3 h-3 rounded-[4px] bg-primary shadow-sm shadow-primary/20"></div>
           </div>
-          <span className="text-[10px] text-stone-400 font-black uppercase tracking-wider">Nhiều hơn</span>
+          <span className="text-[10px] text-stone-300 font-black uppercase tracking-widest">Nhiều</span>
         </div>
       </div>
 
-      <div className="grid grid-flow-col grid-rows-7 gap-1.5 h-32">
+      <div className="grid grid-flow-col grid-rows-7 gap-1.5 h-36">
         {days.map((day, i) => (
           <div
             key={i}
-            className={`w-full h-full rounded-sm transition-colors duration-500 ${
-              day.level === 0 ? 'bg-stone-50' :
-              day.level === 1 ? 'bg-primary/20' :
-              day.level === 2 ? 'bg-primary/50' :
-              'bg-primary shadow-[0_0_8px_rgba(211,84,0,0.3)]'
+            className={`w-full h-full rounded-[4px] transition-all duration-700 cursor-help ${
+              day.level === 0 ? 'bg-stone-50 border border-stone-100/50' :
+              day.level === 1 ? 'bg-orange-100/40' :
+              day.level === 2 ? 'bg-orange-300/60' :
+              'bg-primary shadow-[0_0_12px_rgba(211,84,0,0.25)] scale-105 z-10'
             }`}
-            title={`Level ${day.level}`}
+            title={`Cường độ: ${day.level}`}
           ></div>
         ))}
       </div>
       
-      <p className="mt-4 text-[11px] text-stone-400 font-medium italic">
-        * Dữ liệu mô phỏng dựa trên chuỗi học tập {streakDays} ngày của bạn.
-      </p>
+      <div className="mt-6 flex items-center justify-between">
+         <p className="text-[10px] text-stone-400 font-bold italic opacity-60">
+           * Ghi nhận dựa trên chuỗi {streakDays} ngày liên tục.
+         </p>
+         <div className="flex gap-4">
+            <div className="flex items-center gap-1.5">
+               <div className="w-1.5 h-1.5 rounded-full bg-orange-400"></div>
+               <span className="text-[9px] font-black text-stone-500 uppercase tracking-widest">Duy trì</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+               <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+               <span className="text-[9px] font-black text-stone-500 uppercase tracking-widest">Đỉnh cao</span>
+            </div>
+         </div>
+      </div>
     </div>
   )
 }

@@ -233,3 +233,18 @@ src/
 - Why It Failed: `JOIN topic_words` created a row for every topic-word association.
 - How to Prevent: Use `GROUP BY` and `string_agg(t.name, ', ')` to aggregate many-to-many associations into a single row.
 - Scope: `module:database:rpc`
+
+- What Failed: Progress UI badgettes displayed illogical context (`+5 hôm nay` for "Từ đã thuộc", `5/35 thẻ mới` for "Mục tiêu ngày").
+- Why It Failed: Blindly applied `newToday` (words first encountered today) to UI components that structurally meant `masteredToday` (words mastered today) or progress towards daily mastery targets.
+- How to Prevent: Distinguish carefully between UI text labels vs actual data domains when replacing mockups with dynamic values. Ensure daily targets correspond correctly to app logic (mastery vs learning).
+- Scope: `module:ui:dashboard`
+- What Failed: Users studying at 2 AM saw their progress reset at midnight, splitting single study sessions across two calendar days.
+- Why It Failed: Used standard midnight reset (`setHours(0,0,0,0)`) which doesn't align with human night-owl study habits.
+- How to Prevent: Use a 4:00 AM "Session Boundary" for all daily metrics (`getTodayBoundary()`). This groups late-night sessions into the previous "day" logically.
+- Scope: `module:logic:time`
+
+### Pattern: Daily Goal vs Total Vocabulary
+- What Failed: Dashboard showed "10/35" where 10 was the total word count and 35 was the goal, making it impossible to "reach" the goal without adding 25 more words.
+- Why It Failed: Calculated daily progress as `Math.min(totalWords, dailyGoal)` instead of `Math.min(newWordsToday, dailyGoal)`.
+- How to Prevent: Clearly define "Daily Goal" as "New words encountered during today's sessions" to make it an achievable activity-based metric.
+- Scope: `module:ui:dashboard`

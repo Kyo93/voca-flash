@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchUserVocabulary } from '../lib/supabase-storage'
+import { fetchUserVocabulary, getTodayBoundary } from '../lib/supabase-storage'
 import { MasteryWord } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -47,8 +47,7 @@ export default function MasteryPage() {
     const due = words.filter(w => w.next_review_at && new Date(w.next_review_at) <= now).length
     const weak = words.filter(w => w.lapse_count > 2).length
     const learning = words.filter(w => !w.mastered).length
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const today = getTodayBoundary()
     const newlyLearned = words.filter(w => (new Date(w.first_encountered)) >= today).length
     
     return { total, mastered, orphaned, due, weak, learning, newlyLearned }

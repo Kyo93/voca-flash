@@ -6,6 +6,7 @@ import {
   fetchRoadmaps, 
   fetchRoadmapStats,
   fetchUserVocabulary,
+  getTodayBoundary,
   UserStats
 } from '../lib/supabase-storage'
 import { useNavigate, Link } from 'react-router-dom'
@@ -56,8 +57,7 @@ export default function ProgressPage() {
         // Calculate Memory Health
         if (vocabData.length > 0) {
           const now = new Date()
-          const today = new Date()
-          today.setHours(0, 0, 0, 0)
+          const today = getTodayBoundary()
           
           setMemoryHealth({
             learning: vocabData.filter(w => !w.mastered).length,
@@ -173,21 +173,21 @@ export default function ProgressPage() {
             {/* Daily Target Card */}
             <div className="p-8 bg-white rounded-[2.5rem] border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition-all relative overflow-hidden group">
                <div className="flex justify-between items-start mb-6">
-                 <div className="space-y-1">
+                  <div className="space-y-1">
                     <p className="text-[11px] font-black text-stone-400 uppercase tracking-[0.2em] w-24">Mục tiêu ngày</p>
                     <div className="flex items-baseline gap-1">
                       <p className="text-5xl font-black text-secondary tracking-tight">
-                         {profile?.daily_target ? Math.min(100, Math.round((((stats?.mastered ?? 0) % profile.daily_target) / profile.daily_target) * 100)) : 0}
+                         {profile?.daily_target ? Math.min(100, Math.round(((memoryHealth?.newToday ?? 0) / profile.daily_target) * 100)) : 0}
                       </p>
                       <span className="text-2xl font-black text-stone-300">%</span>
                     </div>
-                    <p className="text-[10px] font-bold text-stone-400 italic mt-2">{(stats?.mastered ?? 0) % (profile?.daily_target || 20)}/{profile?.daily_target || 20} từ</p>
-                 </div>
+                    <p className="text-[10px] font-bold text-stone-400 italic mt-2">{memoryHealth?.newToday ?? 0}/{profile?.daily_target || 20} từ</p>
+                  </div>
                  {/* Progress Ring Placeholder (Mock) */}
                  <div className="relative w-20 h-20 shrink-0 flex items-center justify-center">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                       <circle cx="50" cy="50" r="40" className="stroke-stone-100" strokeWidth="12" fill="none" />
-                      <circle cx="50" cy="50" r="40" className="stroke-[#D35400] drop-shadow-sm transition-all duration-1000 ease-out" strokeWidth="12" fill="none" strokeDasharray="251" strokeDashoffset={251 - (251 * (profile?.daily_target ? Math.min(100, Math.round((((stats?.mastered ?? 0) % profile.daily_target) / profile.daily_target) * 100)) : 0)) / 100} strokeLinecap="round" />
+                      <circle cx="50" cy="50" r="40" className="stroke-[#D35400] drop-shadow-sm transition-all duration-1000 ease-out" strokeWidth="12" fill="none" strokeDasharray="251" strokeDashoffset={251 - (251 * (profile?.daily_target ? Math.min(100, Math.round(((memoryHealth?.newToday ?? 0) / profile.daily_target) * 100)) : 0)) / 100} strokeLinecap="round" />
                     </svg>
                     <span className="material-symbols-outlined text-[#D35400] absolute text-xl font-variation-fill">flag</span>
                  </div>
@@ -286,22 +286,31 @@ export default function ProgressPage() {
                 <h3 className="text-sm font-black text-secondary tracking-tight uppercase">Lộ trình học tập</h3>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-4">
               {roadmapProgress.map((rm) => (
                 <div 
                   key={rm.id}
-                  className="space-y-3 group cursor-pointer"
+                  className="p-4 rounded-2xl border border-stone-50 bg-stone-50/30 hover:bg-white hover:border-primary/20 hover:shadow-md hover:-translate-y-0.5 transition-all group cursor-pointer"
                   onClick={() => navigate(`/library/${rm.slug}`)}
                 >
-                  <div className="flex justify-between items-end">
-                    <h4 className="font-black text-secondary text-sm group-hover:text-primary transition-colors">{rm.name}</h4>
-                    <span className="text-xs font-black text-primary">{rm.percent}%</span>
+                  <div className="flex justify-between items-center mb-3">
+                    <div className="flex items-center gap-3">
+                       <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-secondary group-hover:text-primary transition-colors">
+                          <span className="material-symbols-outlined text-sm">bookmark</span>
+                       </div>
+                       <h4 className="font-black text-secondary text-[13px] tracking-tight">{rm.name}</h4>
+                    </div>
+                    <span className="text-[11px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full">{rm.percent}%</span>
                   </div>
-                  <div className="w-full h-2.5 bg-stone-100 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-stone-200/50 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-secondary rounded-full transition-all duration-1000 ease-out" 
+                      className="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full transition-all duration-1000 ease-out" 
                       style={{ width: `${rm.percent}%` }}
                     ></div>
+                  </div>
+                  <div className="flex justify-between mt-2">
+                     <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">{rm.mastered} / {rm.total} từ</p>
+                     <p className="text-[9px] font-bold text-stone-300 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Khám phá &rarr;</p>
                   </div>
                 </div>
               ))}
@@ -309,7 +318,7 @@ export default function ProgressPage() {
 
             <button 
                onClick={() => navigate('/library')}
-               className="w-full mt-10 py-4 bg-stone-50 text-stone-500 font-bold text-xs rounded-2xl border border-stone-100 hover:bg-stone-100 hover:text-secondary transition-all flex items-center justify-center gap-2"
+               className="w-full mt-6 py-4 bg-white text-secondary font-black text-[10px] rounded-2xl border border-stone-100 shadow-sm hover:border-primary/30 hover:bg-orange-50/30 transition-all flex items-center justify-center gap-2 uppercase tracking-[0.15em]"
             >
               Xem tất cả lộ trình
               <span className="material-symbols-outlined text-sm">arrow_forward</span>

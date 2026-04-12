@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { fetchDashboardStats, fetchDashboardSummary } from '../lib/supabase-storage'
+import { fetchDashboardStats, fetchDashboardSummary, fetchUserVocabulary, getTodayBoundary } from '../lib/supabase-storage'
 import type { DashboardSummary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
@@ -41,6 +41,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [showBanner, setShowBanner] = useState(false)
   const [currentQuote, setCurrentQuote] = useState("")
+  const [newTodayTotal, setNewTodayTotal] = useState(0)
 
   useEffect(() => {
     setCurrentQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)])
@@ -56,10 +57,11 @@ export default function DashboardPage() {
       }
 
       // Logged in — fetch from Supabase
-      const [streakData, userStats, summary] = await Promise.all([
+      const [streakData, userStats, summary, vocabData] = await Promise.all([
         fetchStreakFromSupabase(user.id),
         fetchDashboardStats(user.id),
         fetchDashboardSummary(user.id),
+        fetchUserVocabulary(user.id).catch(() => [])
       ])
 
       setStreak(streakData)
@@ -70,6 +72,11 @@ export default function DashboardPage() {
         topicCounts: {}, // No longer used for cards
       })
       setDashboardData(summary)
+
+      // Calculate new words today with 4 AM reset
+      const todayBoundary = getTodayBoundary()
+      const newToday = vocabData.filter(w => new Date(w.first_encountered) >= todayBoundary).length
+      setNewTodayTotal(newToday)
       
       // Banner logic: check if last_study_date is NOT today
       const today = new Date().toISOString().split('T')[0]
@@ -85,7 +92,7 @@ export default function DashboardPage() {
   }, [user, profile?.last_study_date])
 
   const dailyGoal = profile?.daily_target ?? 20
-  const dailyProgress = Math.min(stats.learning + stats.mastered, dailyGoal)
+  const dailyProgress = Math.min(newTodayTotal, dailyGoal)
   const progressPct = stats.totalWords > 0
     ? Math.round((dailyProgress / dailyGoal) * 100)
     : 0
@@ -176,40 +183,51 @@ export default function DashboardPage() {
           {/* Stats Row */}
           <div className="grid grid-cols-12 gap-6 mb-8">
             {/* Daily Goal */}
-            <div className="col-span-8 bg-white p-8 rounded-3xl border border-stone-100 shadow-sm flex items-center gap-8">
+            <div className="col-span-8 bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm flex items-center gap-8 hover:shadow-md transition-all">
               <div className="flex-1">
-                <span className="text-[10px] font-black uppercase tracking-widest text-secondary mb-2 block">{t('home.currentGoal')}</span>
-                <div className="text-3xl font-black text-on-surface mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="material-symbols-outlined text-orange-400 text-sm">target</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 block">{t('home.currentGoal')}</span>
+                </div>
+                <div className="text-4xl font-black text-secondary tracking-tight mb-4">
                   {loading ? (
                     <span className="inline-block w-16 h-8 bg-stone-100 rounded animate-pulse" />
                   ) : (
                     <>
-                      {dailyProgress} <span className="text-stone-300 font-medium text-xl">/ {dailyGoal} {t('home.newWords')}</span>
+                      {dailyProgress} <span className="text-stone-300 font-medium text-2xl">/ {dailyGoal}</span>
                     </>
                   )}
                 </div>
-                <div className="h-4 w-full bg-stone-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-secondary rounded-full transition-all" style={{ width: `${Math.min(100, progressPct)}%` }} />
+                <div className="h-2 w-full bg-stone-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, progressPct)}%` }} />
                 </div>
+                <p className="text-[10px] font-bold text-stone-400 italic mt-3">{t('home.newWords')} hôm nay</p>
               </div>
-              <div className="w-32 h-32 rounded-full border-[6px] border-secondary/10 bg-secondary/5 flex flex-col items-center justify-center shrink-0">
+              <div className="w-32 h-32 rounded-full border-[8px] border-orange-50 bg-orange-50/30 flex flex-col items-center justify-center shrink-0 relative">
                 {loading ? (
                   <span className="w-12 h-12 bg-stone-100 rounded-full animate-pulse" />
                 ) : (
                   <>
-                    <span className="text-3xl font-black text-secondary">{Math.min(100, progressPct)}%</span>
-                    <span className="text-[9px] font-bold text-secondary/60 uppercase tracking-tighter mt-1">{t('progress.completed')}</span>
+                    <svg className="absolute inset-0 w-full h-full -rotate-90 p-[2px]" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="46" className="stroke-primary/10" strokeWidth="8" fill="none" />
+                      <circle cx="50" cy="50" r="46" className="stroke-primary" strokeWidth="8" fill="none" strokeDasharray="289" strokeDashoffset={289 - (289 * Math.min(100, progressPct)) / 100} strokeLinecap="round" />
+                    </svg>
+                    <span className="text-3xl font-black text-secondary relative z-10">{Math.min(100, progressPct)}%</span>
+                    <span className="text-[9px] font-black text-primary uppercase tracking-tighter mt-1 relative z-10">{t('progress.completed')}</span>
                   </>
                 )}
               </div>
             </div>
             {/* Rank */}
-            <div className="col-span-4 bg-secondary-container px-8 py-8 rounded-3xl flex flex-col justify-center items-center border border-secondary/10 shadow-sm">
-              <div className="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center mb-4">
-                <span className="material-symbols-outlined text-4xl text-on-secondary-container" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
+            <div className="col-span-4 bg-secondary px-8 py-8 rounded-[2.5rem] flex flex-col justify-center items-center border border-white/10 shadow-lg shadow-secondary/20 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary to-stone-900 opacity-90"></div>
+              <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-4xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
+                </div>
+                <p className="font-black text-xl text-white tracking-tight">Cấp độ Newcomer</p>
+                <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.15em] mt-2">{Math.max(0, dailyGoal - dailyProgress)} từ nữa để thăng hạng</p>
               </div>
-              <p className="font-black text-xl text-on-secondary-container">Newcomer Rank</p>
-              <p className="text-xs font-medium text-on-secondary-container/70 mt-1 opacity-70">{Math.max(0, dailyGoal - dailyProgress)} XP đến cấp kế</p>
             </div>
           </div>
 

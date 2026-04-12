@@ -680,3 +680,22 @@ export async function upsertFreeStudyFail(userId: string, wordId: string): Promi
     throw error
   }
 }
+
+// ── Utils ───────────────────────────────────────────────────
+
+/**
+ * Returns the boundary for "today" based on a 4:00 AM reset.
+ * Used to ensure late-night study sessions count towards the correct day.
+ */
+export function getTodayBoundary(): Date {
+  const now = new Date()
+  const boundary = new Date(now)
+  boundary.setHours(4, 0, 0, 0)
+  
+  // If current time is before 4 AM, "today" started at 4 AM yesterday
+  if (now < boundary) {
+    boundary.setDate(boundary.getDate() - 1)
+  }
+  
+  return boundary
+}
