@@ -44,7 +44,7 @@ BEGIN
     s.lapse_count,
     s.next_review_at,
     s.last_reviewed,
-    (s.ease_factor >= 2.5) AS mastered,
+    s.mastered AS mastered,
     s.created_at AS first_encountered,
     COALESCE(string_agg(t.name, ', '), 'N/A') AS topic_name,
     (COUNT(tw.topic_id) = 0) AS is_orphaned
