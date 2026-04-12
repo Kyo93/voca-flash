@@ -72,15 +72,28 @@ export default function RoadmapTopicsPage() {
         })
         setUpNextId(nextTopic?.id || null)
 
-        // 4. Sort topics (featured first)
+        // 4. Sort topics (featured first, upNext second)
         const featuredIndex = roadmapTopics.findIndex(t => t.id === fId)
+        let finalTopics = [...roadmapTopics]
+        
         if (featuredIndex > -1) {
           const featuredTopic = roadmapTopics[featuredIndex]
           const others = roadmapTopics.filter((_, i) => i !== featuredIndex)
-          setTopics([featuredTopic, ...others])
-        } else {
-          setTopics(roadmapTopics)
+          
+          // Find nextTopic in others
+          const nextId = nextTopic?.id
+          const nextIndexInOthers = others.findIndex(t => t.id === nextId)
+          
+          if (nextIndexInOthers > -1) {
+            const nextT = others[nextIndexInOthers]
+            const remaining = others.filter((_, i) => i !== nextIndexInOthers)
+            finalTopics = [featuredTopic, nextT, ...remaining]
+          } else {
+            finalTopics = [featuredTopic, ...others]
+          }
         }
+        
+        setTopics(finalTopics)
         
       } catch (err) {
         console.error('Error loading roadmap topics:', err)
