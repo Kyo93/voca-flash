@@ -165,7 +165,12 @@
     "microlearning": "Học tập tinh gọn",
     "microlearningDesc": "10 phút mỗi ngày là chìa khóa. Thói quen nhỏ tạo ra kết quả lớn.",
     "intensityTitle": "Cá nhân hóa cường độ",
-    "intensityDesc": "Bạn có thể điều chỉnh tốc độ học trong phần Cài đặt để phù hợp với bản thân."
+    "intensityDesc": "Bạn có thể điều chỉnh tốc độ học trong phần Cài đặt để phù hợp với bản thân.",
+    "faqTitle": "Câu hỏi thường gặp",
+    "faqQ1": "Tại sao tôi vừa học thêm từ mà Arena không có từ ôn tập?",
+    "faqA1": "Từ bạn vừa học sẽ không xuất hiện ngay. Theo thuật toán Spaced Repetition, não bộ cần khoảng nghỉ để 'thấm' kiến thức. Lần ôn tập đầu tiên thường đến sau 24 giờ kể từ khi bạn học xong.",
+    "faqQ2": "Hệ thống Cấp độ (Rank) được tính như thế nào?",
+    "faqA2": "Hiện tại cấp độ phản ánh sự chăm chỉ của bạn dựa trên Mục tiêu hằng ngày. Khi bạn hoàn thành số từ mới đặt ra trong ngày, bạn sẽ 'thăng hạng' hoàn thành mục tiêu. Trong tương lai, hệ thống sẽ mở rộng dựa trên tổng số từ bạn đã làm chủ (Mastered)."
   },
   "meta": {
     "title": "VocabMaster — Học từ vựng hiệu quả",

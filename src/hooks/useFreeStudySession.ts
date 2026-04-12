@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
 import { QuadrantType, ReviewChallenge } from './useReviewSession'
 
-export function useFreeStudySession(initialWords: MasteryWord[]) {
+export function useFreeStudySession(deckId: string = 'all', wordsOverride?: MasteryWord[]) {
   const { user } = useAuth()
   const [queue, setQueue] = useState<ReviewChallenge[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -18,9 +18,8 @@ export function useFreeStudySession(initialWords: MasteryWord[]) {
     mistakes: [] as Word[] 
   })
 
+  // Quadrant selection logic (kept for consistency)
   const selectQuadrant = (word: MasteryWord): QuadrantType => {
-    // We can't reuse the logic directly because input type is different, 
-    // but the logic stays the same based on repetitions.
     const hasExample = !!word.example
     const reps = word.repetitions
 
@@ -38,54 +37,67 @@ export function useFreeStudySession(initialWords: MasteryWord[]) {
     }
   }
 
-  const initialize = useCallback(() => {
+  const initialize = useCallback(async () => {
+    if (!user) return
     setIsLoading(true)
     
-    // Convert MasteryWord to ReviewChallenge
-    // Note: We don't have choices pre-fetched, so we might need a simpler recognition challenge 
-    // or fetch choices. For Free Study, let's assume we use what's available.
-    // Actually, ChallengeManager handles most UI. 
-    // BUT recognition needs choices. 
-    // For now, let's stick to ghosts and construction if no choices.
-    
-    const challenges: ReviewChallenge[] = initialWords.map(w => {
-      // Create a dummy CardProgress for compatibility
-      const progress: CardProgress = {
-        repetitions: w.repetitions,
-        ease: w.ease_factor,
-        interval: w.interval_days,
-        nextReview: w.next_review_at ? new Date(w.next_review_at) : new Date()
+    try {
+      let sourceWords: MasteryWord[] = []
+      
+      if (wordsOverride && wordsOverride.length > 0) {
+        sourceWords = wordsOverride
+      } else {
+        const allWords = await fetchUserVocabulary(user.id)
+        if (deckId === 'all') {
+          // Default: Take 20 random words for free study if none selected
+          sourceWords = allWords.sort(() => Math.random() - 0.5).slice(0, 20)
+        } else {
+          // Filter by topic if deckId looks like a topic slug
+          sourceWords = allWords.filter(w => w.topics?.slug === deckId)
+        }
       }
 
-      // Map MasteryWord back to Word type
-      const wordObj: Word = {
-        id: w.word_id,
-        word: w.word,
-        definition: w.definition,
-        phonetic: w.phonetic,
-        pos: w.pos as any,
-        difficulty: 3,
-        image_url: w.image_url,
-        example: w.example,
-        example_vi: w.example_vi,
-        created_at: w.first_encountered,
-        updated_at: w.first_encountered
-      }
+      const challenges: ReviewChallenge[] = sourceWords.map(w => {
+        // Create a dummy CardProgress for compatibility
+        const progress: CardProgress = {
+          repetitions: w.repetitions,
+          ease: w.ease_factor,
+          interval: w.interval_days,
+          nextReview: w.next_review_at ? new Date(w.next_review_at) : new Date()
+        }
 
-      return {
-        id: w.word_id,
-        word: wordObj,
-        progress: progress,
-        choices: [], // We'll just skip recognition for now in Free Study if it's too complex to fetch choices
-        quadrant: selectQuadrant(w)
-      }
-    })
+        const wordObj: Word = {
+          id: w.word_id,
+          word: w.word,
+          definition: w.definition,
+          phonetic: w.phonetic,
+          pos: w.pos as any,
+          difficulty: 3,
+          image_url: w.image_url,
+          example: w.example,
+          example_vi: w.example_vi,
+          created_at: w.first_encountered,
+          updated_at: w.first_encountered
+        }
 
-    // Shuffle
-    setQueue(challenges.sort(() => Math.random() - 0.5))
-    setIsLoading(false)
-    setIsComplete(challenges.length === 0)
-  }, [initialWords])
+        return {
+          id: w.word_id,
+          word: wordObj,
+          progress: progress,
+          choices: [], // We'll skip recognition for now in Free Study for simplicity
+          quadrant: selectQuadrant(w)
+        }
+      })
+
+      setQueue(challenges.sort(() => Math.random() - 0.5))
+      setCurrentIndex(0)
+      setIsComplete(challenges.length === 0)
+    } catch (err) {
+      console.error('[useFreeStudySession] initialization failed:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user, deckId, wordsOverride])
 
   const submitAnswer = useCallback(async (isCorrect: boolean) => {
     if (currentIndex >= queue.length) return

@@ -1,4 +1,4 @@
-
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface ConfirmExitModalProps {
   isOpen: boolean
@@ -7,35 +7,42 @@ interface ConfirmExitModalProps {
 }
 
 export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: ConfirmExitModalProps) {
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="bg-[#16161a] border border-white/10 rounded-[2.5rem] w-full max-w-sm p-10 text-center shadow-2xl animate-in zoom-in-95 duration-300">
-        <div className="w-20 h-20 rounded-3xl bg-red-500/10 text-red-500 flex items-center justify-center mb-8 mx-auto">
-          <span className="material-symbols-outlined text-4xl">exit_to_app</span>
-        </div>
-        
-        <h2 className="text-2xl font-black text-white mb-4">Bạn muốn thoát?</h2>
-        <p className="text-white/40 mb-10 text-sm leading-relaxed">
-          Tiến độ hiện tại của buổi ôn tập sẽ được lưu lại. Bạn có thể quay lại bất cứ lúc nào.
-        </p>
-
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={onConfirm}
-            className="w-full py-4 bg-white text-black font-black rounded-2xl hover:bg-white/90 active:scale-95 transition-all"
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="glass-arena-container w-full max-w-sm p-12 text-center shadow-[0_0_100px_rgba(0,0,0,0.8)] border-white/20"
           >
-            Thoát ngay
-          </button>
-          <button
-            onClick={onClose}
-            className="w-full py-4 bg-white/5 text-white font-black rounded-2xl hover:bg-white/10 active:scale-95 transition-all"
-          >
-            Ở lại luyện tập
-          </button>
+            <div className="w-24 h-24 rounded-[2rem] bg-red-500/10 text-red-500 flex items-center justify-center mb-10 mx-auto border border-red-500/20 shadow-2xl">
+              <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>logout</span>
+            </div>
+            
+            <h2 className="text-3xl font-black text-white mb-6 text-shadow-glow tracking-tight">Thoát đấu trường?</h2>
+            <p className="text-white/40 mb-12 text-base font-medium leading-[1.6]">
+              Tiến độ của bạn sẽ luôn được bảo lưu. Bạn có muốn tạm dừng và quay lại sau không?
+            </p>
+    
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={onConfirm}
+                className="w-full py-5 bg-white text-black font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+              >
+                Thoát ngay
+              </button>
+              <button
+                onClick={onClose}
+                className="w-full py-5 glass-arena-item text-white font-black rounded-2xl hover:bg-white/10 active:scale-95 transition-all border-white/10"
+              >
+                Ở lại luyện tập
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   )
 }

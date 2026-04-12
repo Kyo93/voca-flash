@@ -1,131 +1,107 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
-import { speakWord, cancelSpeech } from '../../lib/tts'
-import { shuffleArray } from '../../lib/utils'
 
 interface RecognitionChallengeProps {
   word: Word
-  choices: string[] // Wrong choices from word_choices table
+  choices: string[]
   onSubmit: (isCorrect: boolean) => void
 }
 
 export default function RecognitionChallenge({ word, choices, onSubmit }: RecognitionChallengeProps) {
-  const [shuffled, setShuffled] = useState<{ text: string, isCorrect: boolean }[]>([])
-  const [selected, setSelected] = useState<number | null>(null)
-  const [isLocked, setIsLocked] = useState(false)
+  const [selected, setSelected] = useState<string | null>(null)
+  const [isDone, setIsDone] = useState(false)
+  const [feedback, setFeedback] = useState<'none' | 'correct' | 'wrong'>('none')
 
-  useEffect(() => {
-    // Combine correct answer with wrong ones (filtered to be unique and not the correct answer)
-    const distractors = [...new Set(choices)]
-      .filter(c => c && c.toLowerCase() !== word.definition.toLowerCase())
-      .slice(0, 3)
+  const handleChoice = (choice: string) => {
+    if (isDone) return
+    setSelected(choice)
+    setIsDone(true)
 
-    const all = [
-      { text: word.definition, isCorrect: true },
-      ...distractors.map(c => ({ text: c, isCorrect: false }))
-    ]
-    
-    setShuffled(shuffleArray(all))
-    setSelected(null)
-    setIsLocked(false)
-    
-    // Auto-play word
-    speakWord(word.word)
+    const isCorrect = choice === word.definition
+    setFeedback(isCorrect ? 'correct' : 'wrong')
 
-    return () => {
-      cancelSpeech()
-    }
-  }, [word, choices])
+    setTimeout(() => {
+      onSubmit(isCorrect)
+    }, 1200)
+  }
 
-  // Keyboard support (1-4)
+  // Handle keyboard shortcuts (A, B, C, D)
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (isLocked) return
-      const num = parseInt(e.key)
-      if (num >= 1 && num <= shuffled.length) {
-        handleSelect(num - 1)
+      if (isDone) return
+      const index = ['a', 'b', 'c', 'd'].indexOf(e.key.toLowerCase())
+      if (index !== -1 && index < choices.length) {
+        handleChoice(choices[index])
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [shuffled, isLocked])
-
-  const handleSelect = (index: number) => {
-    if (isLocked) return
-    setSelected(index)
-    setIsLocked(true)
-
-    // Delay slightly for visual feedback
-    setTimeout(() => {
-      onSubmit(shuffled[index].isCorrect)
-    }, 1000)
-  }
+  }, [choices, isDone])
 
   return (
-    <div className="w-full">
-      <motion.div 
-        key={word.word}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="text-center mb-12"
-      >
-        <span className="text-primary/60 uppercase tracking-[0.3em] text-[10px] font-black block mb-4">Chọn nghĩa đúng nhất</span>
-        <h2 className="text-6xl font-black text-white mb-2 tracking-tight">{word.word}</h2>
-        <p className="text-white/20 italic font-medium">{word.phonetic}</p>
-      </motion.div>
+    <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
+      <div className="text-center mb-16 w-full">
+        <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] block mb-8 text-shadow-glow">
+          Chọn nghĩa đúng nhất
+        </span>
+        
+        <h2 className="text-8xl font-black text-white tracking-tighter mb-8 text-shadow-glow">
+          {word.word}
+        </h2>
+        
+        <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mb-12">
+          {word.phonetic || '/.../'} • {word.pos}
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 gap-3">
-        <AnimatePresence mode="popLayout">
-          {shuffled.map((item, idx) => {
-            let stateClass = 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10'
-            let isSelected = selected === idx
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4">
+        {choices.map((choice, i) => (
+          <motion.button
+            key={i}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleChoice(choice)}
+            disabled={isDone}
+            className={`
+              glass-arena-item p-6 text-left relative overflow-hidden transition-all duration-300 min-h-[100px] flex items-center
+              ${selected === choice ? (feedback === 'correct' ? 'border-primary ring-2 ring-primary/20' : 'border-red-500 ring-2 ring-red-500/20') : 'border-white/5 hover:border-white/20'}
+              ${isDone && choice === word.definition && feedback === 'wrong' ? 'border-primary/50 text-primary' : ''}
+              ${isDone && choice !== word.definition && selected !== choice ? 'opacity-40' : ''}
+            `}
+          >
+            <div className="flex items-start gap-4">
+              <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-black text-xs transition-colors ${selected === choice ? 'bg-white text-black' : 'bg-white/5 text-white/40'}`}>
+                {String.fromCharCode(65 + i)}
+              </span>
+              <span className={`text-lg font-bold leading-tight ${selected === choice ? 'text-white' : 'text-white/70'}`}>
+                {choice}
+              </span>
+            </div>
             
-            if (isSelected) {
-              stateClass = item.isCorrect 
-                ? 'bg-primary/20 border-primary text-primary shadow-[0_0_30px_rgba(var(--primary-rgb),0.2)]' 
-                : 'bg-red-500/20 border-red-500 text-red-500'
-            } else if (isLocked && item.isCorrect) {
-              stateClass = 'bg-primary/10 border-primary/40 text-primary/80'
-            }
-
-            return (
-              <motion.button
-                key={`${word.word}-${item.text}`}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ 
-                  opacity: 1, 
-                  x: 0,
-                  scale: isSelected ? 1.02 : 1
-                }}
-                transition={{ delay: idx * 0.08 }}
-                whileHover={!isLocked ? { x: 8, backgroundColor: "rgba(255,255,255,0.08)" } : {}}
-                whileTap={!isLocked ? { scale: 0.98 } : {}}
-                onClick={() => handleSelect(idx)}
-                disabled={isLocked}
-                className={`w-full p-6 rounded-2xl border-2 text-left transition-colors flex items-center justify-between group ${stateClass}`}
-              >
-                <span className="font-bold text-lg">{item.text}</span>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-black opacity-20 uppercase tracking-widest group-hover:opacity-100 transition-opacity">Nhấn {idx + 1}</span>
-                  <div className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-all ${isSelected ? 'border-current' : 'border-white/10'}`}>
-                    <AnimatePresence>
-                      {isSelected && (
-                        <motion.span 
-                          initial={{ scale: 0, rotate: -45 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          className="material-symbols-outlined text-sm font-black"
-                        >
-                          {item.isCorrect ? 'done' : 'close'}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              </motion.button>
-            )
-          })}
-        </AnimatePresence>
+            {/* Feedback Overlays */}
+            <AnimatePresence>
+              {selected === choice && feedback === 'correct' && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }} 
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="absolute inset-0 bg-primary/10 flex items-center justify-end pr-6 pointer-events-none"
+                >
+                  <span className="material-symbols-outlined text-primary text-3xl font-black">check_circle</span>
+                </motion.div>
+              )}
+              {selected === choice && feedback === 'wrong' && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }} 
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="absolute inset-0 bg-red-500/10 flex items-center justify-end pr-6 pointer-events-none"
+                >
+                  <span className="material-symbols-outlined text-red-500 text-3xl font-black">cancel</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        ))}
       </div>
     </div>
   )

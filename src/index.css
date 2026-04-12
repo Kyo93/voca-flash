@@ -86,6 +86,12 @@
   --glass-bg: rgba(15, 23, 42, 0.8);
   --glass-border: rgba(255, 255, 255, 0.1);
 
+  /* Arena Vibrant Tokens */
+  --arena-primary: #FF8C42; /* Lighter primary for better dark contrast */
+  --arena-cyan: #0891B2;
+  --arena-slate: #1E293B;
+  --primary-rgb: 211, 84, 0;
+
   /* Override Tailwind colors for dark mode */
   --color-surface: #0f172a;
   --color-on-surface: #f8fafc;
@@ -212,6 +218,54 @@ body {
 @keyframes wave {
   0%, 100% { transform: translateX(0) scaleY(1) rotate(0deg); }
   50% { transform: translateX(-15px) scaleY(1.02) rotate(1deg); }
+}
+
+/* Glassmorphism 2.0 - Arena Specific */
+.glass-arena-container {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.glass-arena-item {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-arena-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.text-shadow-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.primary-glow {
+  box-shadow: 0 0 30px rgba(var(--primary-rgb), 0.4);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob, .animate-float, .animate-shake {
+    animation: none !important;
+  }
 }
 
 /* Bento-ish Grid Utility */

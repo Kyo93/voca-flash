@@ -61,11 +61,13 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
     setBlocks(prev => prev.map(b => b.id === lastBlock.id ? { ...b, used: false } : b))
   }
 
-  // Keyboard support
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Backspace') {
         undo()
+      } else if (e.key === 'r' && e.ctrlKey) {
+        e.preventDefault()
+        reset()
       }
     }
     window.addEventListener('keydown', handleKey)
@@ -73,18 +75,31 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
   }, [built])
 
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-12"
+        className="text-center mb-16 w-full"
       >
-        <span className="text-primary/60 uppercase tracking-[0.3em] text-[10px] font-black block mb-4">Sắp xếp các ký tự</span>
-        <h2 className="text-4xl font-black text-white mb-2">{word.definition}</h2>
+        <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] block mb-8 text-shadow-glow">
+          Sắp xếp các ký tự
+        </span>
+        <div className="glass-arena-container p-12 mb-8 relative overflow-hidden group">
+          <h2 className="text-4xl font-black text-white text-shadow-glow tracking-tight leading-relaxed px-4">
+            {word.definition}
+          </h2>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-primary/40 rounded-full" />
+        </div>
       </motion.div>
 
-      {/* Rebuilt Word Area */}
-      <div className={`flex flex-wrap justify-center gap-2 mb-12 border-b-2 py-4 min-h-[80px] transition-all duration-300 ${isWrong ? 'border-red-500 bg-red-500/5' : 'border-white/10'}`}>
+      {/* Built Word Area */}
+      <div className={`w-full flex flex-wrap justify-center gap-3 p-10 min-h-[140px] rounded-[2.5rem] border-2 transition-all duration-300 mb-16 ${
+        isWrong 
+          ? 'border-red-500 bg-red-500/10 animate-shake' 
+          : built.length > 0 
+            ? 'border-primary/40 bg-primary/5 primary-glow' 
+            : 'border-white/5 bg-white/5'
+      }`}>
          <AnimatePresence mode="popLayout">
             {built.map((block) => (
               <motion.div 
@@ -93,26 +108,23 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="w-12 h-14 bg-primary text-white text-3xl font-black rounded-xl flex items-center justify-center shadow-lg shadow-primary/20"
+                transition={{ type: "spring", stiffness: 600, damping: 25 }}
+                className="w-16 h-20 glass-arena-item text-primary text-4xl font-black rounded-2xl flex items-center justify-center shadow-2xl border-primary/20"
               >
                 {block.char}
               </motion.div>
             ))}
          </AnimatePresence>
          {built.length === 0 && (
-            <motion.span 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-white/10 text-4xl font-black self-center tracking-widest uppercase"
-            >
-              Building...
-            </motion.span>
+            <div className="flex flex-col items-center justify-center opacity-10">
+              <span className="material-symbols-outlined text-4xl mb-2">construction</span>
+              <span className="text-xs font-black uppercase tracking-[0.4em]">Đang xây dựng...</span>
+            </div>
          )}
       </div>
 
       {/* Source Blocks */}
-      <div className="flex flex-wrap justify-center gap-3 mb-12">
+      <div className="flex flex-wrap justify-center gap-3 mb-16 px-4">
         <AnimatePresence>
           {blocks.map((block) => !block.used && (
             <motion.button
@@ -120,38 +132,34 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
               layoutId={`block-${block.id}`}
               onClick={() => handleAdd(block)}
               disabled={isWrong}
-              whileHover={{ scale: 1.1, y: -4 }}
+              whileHover={{ scale: 1.15, y: -8, backgroundColor: "rgba(255,255,255,0.12)" }}
               whileTap={{ scale: 0.9 }}
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              className="w-12 h-12 rounded-xl bg-white/5 border-2 border-white/10 text-white text-xl font-black hover:bg-white/10 transition-colors"
+              className="w-16 h-16 rounded-2xl glass-arena-item border-white/10 text-white text-2xl font-black shadow-xl"
             >
-              {block.char}
+              {block.char.toUpperCase()}
             </motion.button>
           ))}
         </AnimatePresence>
       </div>
 
-      <div className="flex justify-center gap-4">
-         <motion.button 
-           whileHover={{ scale: 1.05 }}
-           whileTap={{ scale: 0.95 }}
+      <div className="flex justify-center gap-6">
+         <button 
            onClick={undo}
-           disabled={built.length === 0}
-           className="px-6 py-2 bg-white/5 text-white/40 rounded-full font-bold text-[10px] uppercase tracking-widest hover:text-white transition-all flex items-center gap-2 disabled:opacity-30"
+           disabled={built.length === 0 || isWrong}
+           className="px-10 h-14 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
-           <span className="material-symbols-outlined text-sm">undo</span> Quay lại
-         </motion.button>
-         <motion.button 
-           whileHover={{ scale: 1.05 }}
-           whileTap={{ scale: 0.95 }}
+           <span className="material-symbols-outlined text-lg">undo</span> Quay lại
+         </button>
+         <button 
            onClick={reset}
-           disabled={built.length === 0}
-           className="px-6 py-2 bg-white/5 text-white/40 rounded-full font-bold text-[10px] uppercase tracking-widest hover:text-white transition-all flex items-center gap-2 disabled:opacity-30"
+           disabled={built.length === 0 || isWrong}
+           className="px-10 h-14 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
-           <span className="material-symbols-outlined text-sm">refresh</span> Reset
-         </motion.button>
+           <span className="material-symbols-outlined text-lg">refresh</span> Reset
+         </button>
       </div>
     </div>
   )

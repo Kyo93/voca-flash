@@ -200,6 +200,38 @@ const MethodologyPage: React.FC = () => {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="space-y-12">
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4">{t('methodology.faqTitle')}</h2>
+          <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
+        </div>
+
+        <div className="grid gap-6 max-w-4xl mx-auto">
+          {/* Q1 */}
+          <div className="p-8 rounded-[2rem] bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
+            <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
+              {t('methodology.faqQ1')}
+            </h3>
+            <p className="text-on-surface-variant leading-relaxed pl-11">
+              {t('methodology.faqA1')}
+            </p>
+          </div>
+
+          {/* Q2 */}
+          <div className="p-8 rounded-[2rem] bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
+            <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
+              {t('methodology.faqQ2')}
+            </h3>
+            <p className="text-on-surface-variant leading-relaxed pl-11">
+              {t('methodology.faqA2')}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="text-center py-12">
         <h2 className="text-2xl font-bold mb-6">Bạn đã sẵn sàng chinh phục tiếng Anh?</h2>
