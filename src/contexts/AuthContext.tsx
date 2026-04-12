@@ -20,6 +20,7 @@ interface AuthContextValue {
   profile: UserProfile | null
   loading: boolean
   isAdmin: boolean
+  activeRoadmapSlug: string | null
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
@@ -36,12 +37,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [activeRoadmapSlug, setActiveRoadmapSlug] = useState<string | null>(null)
 
   // Hàm fetch đồng nhất tránh tranh chấp Lock của Supabase
   async function loadUserData(currentSession: Session | null) {
     if (!currentSession?.user) {
       setProfile(null)
       setIsAdmin(false)
+      setActiveRoadmapSlug(null)
       return
     }
 
@@ -64,6 +67,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('id', userId)
         .single()
         .then(({ data }) => setProfile(data ?? null))
+
+      // 3. Lấy active roadmap slug từ resume pointer cuối cùng
+      supabase.from('user_resume_pointers')
+        .select('roadmap_id, roadmaps(slug)')
+        .eq('user_id', userId)
+        .order('last_accessed_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data && (data as any).roadmaps?.slug) {
+            setActiveRoadmapSlug((data as any).roadmaps.slug)
+          } else {
+            setActiveRoadmapSlug(null)
+          }
+        })
 
     } catch (err) {
       console.error('UserData loading error:', err)
@@ -113,6 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setProfile(null)
           setIsAdmin(false)
+          setActiveRoadmapSlug(null)
         }
         setLoading(false)
       }
@@ -146,6 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         loading,
         isAdmin,
+        activeRoadmapSlug,
         signIn: handleSignIn,
         signUp: handleSignUp,
         signOut: handleSignOut,

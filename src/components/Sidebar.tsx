@@ -1,28 +1,28 @@
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { getStreakDisplay } from '../lib/streak'
 import { useAuth } from '../contexts/AuthContext'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 
-interface NavItem {
-  path: string
-  labelKey: string
-  icon: string
-}
-
-const navItems: NavItem[] = [
-  { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard' },
-  { path: '/library', labelKey: 'nav.library', icon: 'menu_book' },
-  { path: '/progress', labelKey: 'nav.progress', icon: 'bar_chart' },
-  { path: '/settings', labelKey: 'nav.settings', icon: 'settings' },
-]
-
 export default function Sidebar() {
   const { t } = useTranslation()
   const location = useLocation()
   const streak = getStreakDisplay()
-  const { profile, signOut } = useAuth()
+  const { profile, activeRoadmapSlug, signOut } = useAuth()
   const { collapsed, toggleSidebar } = useSidebar()
+
+  const navItems = useMemo(() => [
+    { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard' },
+    { 
+      path: activeRoadmapSlug ? `/library/${activeRoadmapSlug}` : '/library', 
+      basePath: '/library',
+      labelKey: 'nav.library', 
+      icon: 'menu_book' 
+    },
+    { path: '/progress', labelKey: 'nav.progress', icon: 'bar_chart' },
+    { path: '/settings', labelKey: 'nav.settings', icon: 'settings' },
+  ], [activeRoadmapSlug])
 
   const displayName = profile?.display_name ?? profile?.email?.split('@')[0] ?? 'User'
   const avatarChar = displayName[0].toUpperCase()
@@ -49,7 +49,7 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex flex-col gap-1">
         {navItems.map((item) => {
-          const isActive = location.pathname.startsWith(item.path)
+          const isActive = location.pathname.startsWith((item as any).basePath || item.path)
           return (
             <Link
               key={item.path}
