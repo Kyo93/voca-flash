@@ -5,6 +5,7 @@ import {
   fetchDashboardSummary, 
   fetchRoadmaps, 
   fetchRoadmapStats,
+  fetchUserVocabulary,
   UserStats
 } from '../lib/supabase-storage'
 import { useNavigate, Link } from 'react-router-dom'
@@ -19,26 +20,55 @@ interface RoadmapProgress {
   percent: number
 }
 
+interface MemoryHealth {
+  learning: number
+  newToday: number
+  mastered: number
+  due: number
+  orphaned: number
+  weak: number
+}
+
 export default function ProgressPage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState<UserStats | null>(null)
   const [reviewCount, setReviewCount] = useState<number>(0)
   const [roadmapProgress, setRoadmapProgress] = useState<RoadmapProgress[]>([])
+  const [memoryHealth, setMemoryHealth] = useState<MemoryHealth | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadData() {
       if (!user) return
       try {
-        const [userStats, summary, allRoadmaps] = await Promise.all([
+        const [userStats, summary, allRoadmaps, vocabData] = await Promise.all([
           fetchDashboardStats(user.id),
           fetchDashboardSummary(user.id),
-          fetchRoadmaps()
+          fetchRoadmaps(),
+          fetchUserVocabulary(user.id).catch(() => []) // Fallback to empty array on error
         ])
 
         setStats(userStats)
         setReviewCount(summary.globalReviewCount)
+
+        // Calculate Memory Health
+        if (vocabData.length > 0) {
+          const now = new Date()
+          const today = new Date()
+          today.setHours(0, 0, 0, 0)
+          
+          setMemoryHealth({
+            learning: vocabData.filter(w => !w.mastered).length,
+            newToday: vocabData.filter(w => new Date(w.first_encountered) >= today).length,
+            mastered: vocabData.filter(w => w.mastered).length,
+            due: vocabData.filter(w => w.next_review_at && new Date(w.next_review_at) <= now).length,
+            orphaned: vocabData.filter(w => w.is_orphaned).length,
+            weak: vocabData.filter(w => w.lapse_count > 2).length,
+          })
+        } else {
+          setMemoryHealth({ learning: 0, newToday: 0, mastered: 0, due: 0, orphaned: 0, weak: 0 })
+        }
 
         // Parallel fetch for each roadmap's stats
         const progressList = await Promise.all(
@@ -59,6 +89,7 @@ export default function ProgressPage() {
         setRoadmapProgress(progressList)
       } catch (err) {
         console.error('Failed to load progress data:', err)
+        setMemoryHealth({ learning: 0, newToday: 0, mastered: 0, due: 0, orphaned: 0, weak: 0 })
       } finally {
         setLoading(false)
       }
@@ -136,6 +167,40 @@ export default function ProgressPage() {
                 <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Mục tiêu ngày</p>
               </div>
             </div>
+          </div>
+
+          {/* Memory Health Section */}
+          <div className="space-y-4">
+             <div className="flex items-center justify-between px-2">
+               <div className="flex items-center gap-2">
+                 <span className="material-symbols-outlined text-stone-400 text-lg">monitor_heart</span>
+                 <h3 className="text-sm font-black text-secondary tracking-tight uppercase">Sức khỏe ghi nhớ</h3>
+               </div>
+               <Link to="/mastery" className="text-xs font-bold text-primary hover:text-orange-600 transition-colors">
+                 Tới Kho từ vựng &rarr;
+               </Link>
+             </div>
+             
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+               {[
+                 { label: 'Đang học', value: memoryHealth?.learning ?? 0, icon: 'school', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-100/50' },
+                 { label: 'Mới hôm nay', value: memoryHealth?.newToday ?? 0, icon: 'new_releases', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100/50' },
+                 { label: 'Đã thuộc', value: memoryHealth?.mastered ?? 0, icon: 'military_tech', color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-100/50' },
+                 { label: 'Đến hạn', value: memoryHealth?.due ?? 0, icon: 'history_toggle_off', color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-100/50' },
+                 { label: 'Mồ côi', value: memoryHealth?.orphaned ?? 0, icon: 'broken_image', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-100/50' },
+                 { label: 'Yếu', value: memoryHealth?.weak ?? 0, icon: 'trending_down', color: 'text-purple-500', bg: 'bg-purple-50', border: 'border-purple-100/50' }
+               ].map(s => (
+                 <div key={s.label} className={`p-4 bg-white/60 backdrop-blur-md rounded-2xl border ${s.border} shadow-sm flex flex-col justify-center items-center gap-2 group hover:bg-white hover:border-primary/20 hover:-translate-y-0.5 transition-all`}>
+                   <div className={`w-8 h-8 ${s.bg} ${s.color} rounded-xl flex items-center justify-center shrink-0`}>
+                     <span className="material-symbols-outlined text-[18px] font-variation-fill">{s.icon}</span>
+                   </div>
+                   <div className="text-center">
+                     <p className="text-xl font-black text-secondary leading-none">{s.value}</p>
+                     <p className="text-[9px] font-black text-stone-500 uppercase tracking-widest mt-1 opacity-80">{s.label}</p>
+                   </div>
+                 </div>
+               ))}
+             </div>
           </div>
 
           {/* Arena Hero Card */}
