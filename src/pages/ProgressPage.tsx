@@ -19,8 +19,6 @@ interface RoadmapProgress {
   percent: number
 }
 
-const DAILY_TARGET = 20 // Placeholder target as requested by user
-
 export default function ProgressPage() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
@@ -132,8 +130,8 @@ export default function ProgressPage() {
               </div>
               <div className="space-y-0.5">
                 <div className="flex items-baseline justify-center gap-1.5">
-                  <span className="text-3xl font-black text-secondary">{(stats?.mastered ?? 0) % DAILY_TARGET}</span>
-                  <span className="text-stone-400 font-bold text-lg">/ {DAILY_TARGET}</span>
+                  <span className="text-3xl font-black text-secondary">{(stats?.mastered ?? 0) % (profile?.daily_target || 20)}</span>
+                  <span className="text-stone-400 font-bold text-lg">/ {profile?.daily_target || 20}</span>
                 </div>
                 <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Mục tiêu ngày</p>
               </div>

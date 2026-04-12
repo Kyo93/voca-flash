@@ -3,12 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { fetchDashboardStats, fetchDashboardSummary } from '../lib/supabase-storage'
 import type { DashboardSummary } from '../lib/supabase-storage'
-import type { Topic } from '../lib/types'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
-
-const DAILY_GOAL = 10
+import WelcomeReminder from '../components/WelcomeReminder'
 
 interface DashboardStats {
   totalWords: number
@@ -21,9 +19,9 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { t } = useTranslation()
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
 
-  const [streak, setStreak] = useState<StreakData>(loadStreak())
+  const [, setStreak] = useState<StreakData>(loadStreak())
   const [stats, setStats] = useState<DashboardStats>({
     totalWords: 0,
     mastered: 0,
@@ -32,6 +30,7 @@ export default function DashboardPage() {
   })
   const [dashboardData, setDashboardData] = useState<DashboardSummary | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showBanner, setShowBanner] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -57,21 +56,29 @@ export default function DashboardPage() {
         topicCounts: {}, // No longer used for cards
       })
       setDashboardData(summary)
+      
+      // Banner logic: check if last_study_date is NOT today
+      const today = new Date().toISOString().split('T')[0]
+      const dismissed = sessionStorage.getItem('welcome_banner_dismissed') === 'true'
+      if (profile?.last_study_date !== today && !dismissed) {
+        setShowBanner(true)
+      }
+
       setLoading(false)
     }
 
     load()
-  }, [user])
+  }, [user, profile?.last_study_date])
 
-  const dailyProgress = Math.min(stats.learning + stats.mastered, DAILY_GOAL)
+  const dailyGoal = profile?.daily_target ?? 20
+  const dailyProgress = Math.min(stats.learning + stats.mastered, dailyGoal)
   const progressPct = stats.totalWords > 0
-    ? Math.round((dailyProgress / DAILY_GOAL) * 100)
+    ? Math.round((dailyProgress / dailyGoal) * 100)
     : 0
 
   // Master Hub Data Resolution
   const resumeTopic = dashboardData?.resumeTopic
   const fallback1 = dashboardData?.fallbackTopics[0]
-  const fallback2 = dashboardData?.fallbackTopics[1]
   const reviewCount = dashboardData?.globalReviewCount ?? 0
 
   const card1 = resumeTopic || fallback1
@@ -81,6 +88,17 @@ export default function DashboardPage() {
     <>
       {/* Scrollable Content */}
       <div className="flex-1 px-10 py-8 overflow-y-auto" style={{ maxWidth: 1280, margin: '0 auto', width: '100%' }}>
+          
+          {/* Welcome Reminder Banner */}
+          {showBanner && (
+            <WelcomeReminder 
+              userName={profile?.display_name} 
+              onDismiss={() => {
+                setShowBanner(false)
+                sessionStorage.setItem('welcome_banner_dismissed', 'true')
+              }} 
+            />
+          )}
 
           {/* Hero Banner */}
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-container to-primary px-12 py-12 mb-8 min-h-[260px] flex items-center shadow-lg">
@@ -112,7 +130,7 @@ export default function DashboardPage() {
                     <span className="inline-block w-16 h-8 bg-stone-100 rounded animate-pulse" />
                   ) : (
                     <>
-                      {dailyProgress} <span className="text-stone-300 font-medium text-xl">/ {DAILY_GOAL} {t('home.newWords')}</span>
+                      {dailyProgress} <span className="text-stone-300 font-medium text-xl">/ {dailyGoal} {t('home.newWords')}</span>
                     </>
                   )}
                 </div>
@@ -137,7 +155,7 @@ export default function DashboardPage() {
                 <span className="material-symbols-outlined text-4xl text-on-secondary-container" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
               </div>
               <p className="font-black text-xl text-on-secondary-container">Newcomer Rank</p>
-              <p className="text-xs font-medium text-on-secondary-container/70 mt-1 opacity-70">{DAILY_GOAL - dailyProgress} XP đến cấp kế</p>
+              <p className="text-xs font-medium text-on-secondary-container/70 mt-1 opacity-70">{Math.max(0, dailyGoal - dailyProgress)} XP đến cấp kế</p>
             </div>
           </div>
 

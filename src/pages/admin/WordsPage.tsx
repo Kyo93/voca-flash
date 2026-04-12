@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useAdminWords } from '../../hooks/admin/useAdminWords'
 import { getAllTopics } from '../../lib/admin-queries'
 import WordFormModal from '../../components/admin/WordFormModal'
@@ -40,7 +40,6 @@ export default function AdminWordsPage() {
   const [editWordTopicIds, setEditWordTopicIds] = useState<string[]>([])
   const [editWordWrongChoices, setEditWordWrongChoices] = useState<string[]>([])
   const [deleteTarget, setDeleteTarget] = useState<Word | null>(null)
-  const [deleting, setDeleting] = useState(false)
   const [searchDebounce, setSearchDebounce] = useState('')
 
   // Debounce search
@@ -88,9 +87,7 @@ export default function AdminWordsPage() {
 
   async function handleDelete() {
     if (!deleteTarget) return
-    setDeleting(true)
     await removeWord(deleteTarget.id)
-    setDeleting(false)
     setDeleteTarget(null)
   }
 

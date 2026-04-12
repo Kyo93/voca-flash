@@ -62,6 +62,43 @@
   --font-label: "Be Vietnam Pro", system-ui, sans-serif;
 }
 
+/* === Variable Master Foundations === */
+:root {
+  --bg-app: #FFFBF2;
+  --bg-sidebar: #ffffff;
+  --surface-card: #ffffff;
+  --surface-mixed: #f9f3ea;
+  --text-main: #2C3E50;
+  --text-muted: #566573;
+  --border-subtle: #f3ede4;
+  --glass-bg: rgba(255, 248, 240, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.5);
+}
+
+.dark {
+  --bg-app: #0f172a;
+  --bg-sidebar: #1e293b;
+  --surface-card: #1e293b;
+  --surface-mixed: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-subtle: #334155;
+  --glass-bg: rgba(15, 23, 42, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  /* Override Tailwind colors for dark mode */
+  --color-surface: #0f172a;
+  --color-on-surface: #f8fafc;
+  --color-background: #0f172a;
+  --color-surface-container-lowest: #0f172a;
+  --color-surface-container-low: #1e293b;
+  --color-surface-container: #1e293b;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  --color-on-surface-variant: #94a3b8;
+  --color-outline-variant: #334155;
+}
+
 /* === Global Styles === */
 html {
   scroll-behavior: smooth;
@@ -69,9 +106,10 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-surface);
-  color: var(--color-on-surface);
+  background-color: var(--bg-app);
+  color: var(--text-main);
   min-height: 100dvh;
+  transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -102,7 +140,8 @@ body {
 .glass-panel {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  background: rgba(255, 248, 240, 0.8);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
 }
 
 /* Hero gradient from Stitch */

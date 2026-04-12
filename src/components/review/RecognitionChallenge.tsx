@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
-import { speakWord, cancelSpeech } from '../../lib/speech'
+import { speakWord, cancelSpeech } from '../../lib/tts'
 import { shuffleArray } from '../../lib/utils'
 
 interface RecognitionChallengeProps {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Word } from '../../lib/types'
-import { speakWord, cancelSpeech } from '../../lib/speech'
+import { speakWord, cancelSpeech } from '../../lib/tts'
 
 interface GhostRecallChallengeProps {
   word: Word

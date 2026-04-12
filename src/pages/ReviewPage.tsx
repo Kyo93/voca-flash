@@ -1,15 +1,12 @@
-import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useReviewSession } from '../hooks/useReviewSession'
 import SessionSummary from '../components/review/SessionSummary'
 import ChallengeManager from '../components/review/ChallengeManager'
 import ConfirmExitModal from '../components/review/ConfirmExitModal'
-import { useState } from 'react'
-import { cancelSpeech } from '../lib/speech'
+import { cancelSpeech } from '../lib/tts'
 
 export default function ReviewPage() {
-  const { t } = useTranslation()
   const navigate = useNavigate()
   const session = useReviewSession()
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)

@@ -109,6 +109,29 @@
     "ready": "Sẵn sàng chinh phục?",
     "ctaText": "Bắt đầu hành trình ngay hôm nay!"
   },
+  "settings": {
+    "title": "Cài đặt & Hồ sơ",
+    "profile": "Hồ sơ cá nhân",
+    "displayName": "Tên hiển thị",
+    "email": "Email tài khoản",
+    "learning": "Học tập & Ôn luyện",
+    "dailyTarget": "Mục tiêu hàng ngày (Từ mới)",
+    "srsIntensity": "Cường độ SRS (1.0 = Chuẩn)",
+    "audio": "Âm thanh & Giao diện",
+    "voice": "Giọng đọc (Text-to-Speech)",
+    "speed": "Tốc độ đọc mặc định",
+    "autoPlay": "Tự động phát phát âm",
+    "language": "Ngôn ngữ hệ thống",
+    "dangerZone": "Cảnh báo nguy hiểm",
+    "resetProgress": "Xóa tiến độ chủ đề",
+    "selectTopic": "Chọn chủ đề cần xóa",
+    "resetConfirm": "Bạn có thực sự muốn xóa toàn bộ tiến độ của chủ đề này?",
+    "resetDesc": "Hành động này không thể hoàn tác. Mọi điểm số và dữ liệu ôn tập của chủ đề sẽ bị xóa sạch.",
+    "logout": "Đăng xuất",
+    "save": "Lưu cài đặt",
+    "saving": "Đang lưu...",
+    "saveSuccess": "Đã cập nhật cài đặt!"
+  },
   "meta": {
     "title": "VocabMaster — Học từ vựng hiệu quả",
     "description": "Học từ vựng tiếng Anh bằng Flashcard và phương pháp lặp lại ngắt quãng (SRS)."

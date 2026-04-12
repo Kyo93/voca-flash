@@ -45,12 +45,13 @@ export default function RoadmapTopicsPage() {
         setRoadmap(currentRoadmap)
         
         // 2. Fetch stats and progress
-        const [roadmapStats, topicProgMap, learningStates] = await Promise.all([
+        const [roadmapStats, topicProgMapRaw, learningStates] = await Promise.all([
           fetchRoadmapStats(currentRoadmap.id, user?.id),
-          user?.id ? fetchTopicCompletionMap(user.id, roadmapTopics.map(t => t.id)) : Promise.resolve({}),
+          user?.id ? fetchTopicCompletionMap(user.id, roadmapTopics.map(t => t.id)) : Promise.resolve({} as Record<string, { total: number, learned: number, percent: number }>),
           user?.id ? fetchResumePointers(user.id) : Promise.resolve(new Map())
         ])
         
+        const topicProgMap = topicProgMapRaw as Record<string, { total: number, learned: number, percent: number }>
         setStats(roadmapStats)
         setTopicProgress(topicProgMap)
         
@@ -243,7 +244,7 @@ export default function RoadmapTopicsPage() {
                   <div className="w-48 h-48 relative hidden xl:block select-none pointer-events-none shrink-0 ml-4">
                     <img 
                       alt="Topic illustration" 
-                      src={topic.image_url || (roadmap.slug.includes('kids') ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuC6SSl0_DfKrIsQB0h29CzI6fnBAQ5nRsuNnx8ht2oi9fdDWx9u-W20eWbi1uMrXIb4vmSEKyyDoM_k2nhhkFIDktnKtp6XKtHdwkbgleww6iih-C_RC0c168C6jg1GVNYOnsagnR9GoG6MdkyyV5yZEeg75C7n379Vu91sz7R1dk0vOO6loYAzAuDSFTg7p1QM4RGv4r2XS0p1Cw0NdXJCwCRET5sJ1SOeQ-BKp-y5kPBrhiCjt06uWY5Xlxqc-2MyYrmpZ94RsvA' : 'https://lh3.googleusercontent.com/aida-public/AB6AXuA3KhF9uR-xXVpSv6pn_s5MQArtNHLaeqZGVy3Z1o8xNmBkFmfxNnZp7gcv1PSl2Sui7tp_wq30ZFTD0fn4Di9SXLalR56TsGULlKBzBNhuor8gGRyhtlhT4ykI0TLXLG0GD0g0eVkdsZBmGd9j0E9ljzUy2C8l2Ln4HckEqW1xJWd_XvSuD-F5KC4apFAdrroQ-vDle39KLdRXq_NXToCtNeTGGcJGA8r1R4tSVU_cuNJJ0UGhgNE562HfPPztOnlnKIlBAEWioho')} 
+                      src={topic.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80'} 
                       className="w-full h-full object-cover rounded-xl shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transform rotate-3 group-hover:rotate-0 transition-transform duration-500" 
                     />
                   </div>

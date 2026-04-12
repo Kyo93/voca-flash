@@ -62,6 +62,15 @@ export interface UserProfile {
   avatar_url: string | null
   streak_days: number
   total_words: number
+  // Settings
+  daily_target: number
+  srs_intensity: number
+  tts_voice: string | null
+  tts_rate: number
+  auto_play_audio: boolean
+  app_language: string
+  theme_mode: string
+  last_study_date: string | null
   created_at: string
   updated_at: string
 }

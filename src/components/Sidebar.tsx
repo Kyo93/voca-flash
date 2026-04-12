@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { getStreakDisplay } from '../lib/streak'
@@ -11,6 +11,12 @@ export default function Sidebar() {
   const streak = getStreakDisplay()
   const { profile, activeRoadmapSlug, signOut } = useAuth()
   const { collapsed, toggleSidebar } = useSidebar()
+  
+  const [avatarError, setAvatarError] = useState(false)
+  
+  useEffect(() => {
+    setAvatarError(false)
+  }, [profile?.avatar_url])
 
   const navItems = useMemo(() => [
     { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard' },
@@ -108,8 +114,17 @@ export default function Sidebar() {
 
         {/* User Profile Card */}
         <div className={`flex items-center gap-3 p-3 bg-white rounded-2xl shadow-sm border border-stone-100 ${collapsed ? 'justify-center' : ''}`}>
-          <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="text-sm font-black text-primary">{avatarChar}</span>
+          <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0 relative group">
+            {profile?.avatar_url && !avatarError ? (
+              <img 
+                src={profile.avatar_url} 
+                alt={displayName} 
+                className="w-full h-full object-cover"
+                onError={() => setAvatarError(true)}
+              />
+            ) : (
+              <span className="text-sm font-black text-primary">{avatarChar}</span>
+            )}
           </div>
           {!collapsed && (
             <>

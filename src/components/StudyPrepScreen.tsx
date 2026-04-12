@@ -1,5 +1,4 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+
 import type { Card } from '../lib/srs'
 
 interface StudyPrepScreenProps {

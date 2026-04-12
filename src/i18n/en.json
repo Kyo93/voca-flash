@@ -109,6 +109,29 @@
     "ready": "Ready to conquer?",
     "ctaText": "Start your journey with VocabMaster today!"
   },
+  "settings": {
+    "title": "Settings & Profile",
+    "profile": "Profile Info",
+    "displayName": "Display Name",
+    "email": "Account Email",
+    "learning": "Learning Preferences",
+    "dailyTarget": "Daily Target (New Words)",
+    "srsIntensity": "SRS Intensity (1.0 = Normal)",
+    "audio": "Audio & Interface",
+    "voice": "Voice (TTS)",
+    "speed": "Speech Rate",
+    "autoPlay": "Auto-play Audio",
+    "language": "Interface Language",
+    "dangerZone": "Danger Zone",
+    "resetProgress": "Reset Topic Progress",
+    "selectTopic": "Select Topic to Reset",
+    "resetConfirm": "Are you sure you want to reset all progress for this topic?",
+    "resetDesc": "This action cannot be undone. All SRS data will be wiped.",
+    "logout": "Log Out",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "saveSuccess": "Settings successfully saved!"
+  },
   "meta": {
     "title": "VocabMaster — Learn Vocabulary Effectively",
     "description": "Learn English vocabulary with Flashcards and Spaced Repetition System (SRS)."

@@ -11,7 +11,8 @@
  */
 
 import { supabase } from './supabase'
-import type { Word, SrsRecord, Card, CardProgress, Topic, Roadmap, ResumePointer } from './types'
+import type { Topic, Roadmap, Word, SrsRecord, UserProfile, WordChoice, ResumePointer } from './types'
+import type { Card, CardProgress } from './srs'
 
 // ── Mapping: Word (Supabase) → Card (student app) ────────────
 
@@ -584,4 +585,36 @@ export async function fetchTopicCompletionMap(
   }
 
   return result
+}
+
+// ── Settings & Profile ────────────────────────────────────────
+
+export async function updateUserSettings(userId: string, settings: Partial<UserProfile>): Promise<void> {
+  const { error } = await supabase
+    .from('user_profiles')
+    .update(settings)
+    .eq('id', userId)
+
+  if (error) {
+    console.error('[supabase-storage] updateUserSettings error:', error)
+    throw error
+  }
+}
+
+export async function resetTopicProgress(topicId: string): Promise<void> {
+  const { error } = await supabase.rpc('reset_topic_progress', { p_topic_id: topicId })
+  if (error) {
+    console.error('[supabase-storage] resetTopicProgress error:', error)
+    throw error
+  }
+}
+
+export async function fetchAllTopics(): Promise<Topic[]> {
+  const { data, error } = await supabase
+    .from('topics')
+    .select('*')
+    .order('name')
+    
+  if (error) throw error
+  return data || []
 }

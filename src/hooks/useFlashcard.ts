@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
-import { Card, CardProgress, calculateNextReview, createInitialProgress, getDueCards, Rating } from '../lib/srs'
+import { useState, useCallback } from 'react'
+import { Card, CardProgress, calculateNextReview, createInitialProgress, Rating } from '../lib/srs'
 import { fetchWords, fetchSrsStates, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -14,8 +14,8 @@ interface FlashcardState {
   prepStats: { unlearned: Card[], learning: Card[], mastered: Card[] } | null
 }
 
-export function useFlashcard(topicFilter?: string) {
-  const { user, refreshActiveRoadmap } = useAuth()
+export function useFlashcard() {
+  const { user, profile, refreshActiveRoadmap } = useAuth()
 
   const [state, setState] = useState<FlashcardState>({
     queue: [],
@@ -71,15 +71,15 @@ export function useFlashcard(topicFilter?: string) {
       if (!s.prepStats) return s
       const { unlearned, learning, mastered } = s.prepStats
       
-      const dueLearning = getDueCards(learning, s.progressMap) // filter only due learning cards? 
-      // Actually, unlearned + ALL learning is fine, or just due learning. Let's use unlearned + leaning.
+      // unlearned + ALL learning is fine, or just due learning. Let's use unlearned + leaning.
       // Wait, getDueCards only gets DUE cards. Let's combine unlearned and due cards.
       let combined = [...unlearned, ...learning]
       if (includeMastered) {
         combined = [...combined, ...mastered]
       }
       
-      combined = combined.slice(0, 20)
+      const limit = profile?.daily_target ?? 20
+      combined = combined.slice(0, limit)
 
       if (user && roadmapId) {
         // Optimistically save resume state
@@ -107,7 +107,8 @@ export function useFlashcard(topicFilter?: string) {
       if (!card) return s
 
       const prevProgress = s.progressMap.get(card.id) || createInitialProgress(card.id)
-      const newProgress = calculateNextReview(prevProgress, rating)
+      const intensity = profile?.srs_intensity ?? 1.0
+      const newProgress = calculateNextReview(prevProgress, rating, intensity)
 
       const newMap = new Map(s.progressMap)
       newMap.set(card.id, newProgress)

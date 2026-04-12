@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -112,7 +112,6 @@ export default function AdminTopicsPage() {
   const [showModal, setShowModal] = useState(false)
   const [editTopicData, setEditTopicData] = useState<Topic | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Topic | null>(null)
-  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     fetch()
@@ -158,9 +157,7 @@ export default function AdminTopicsPage() {
 
   async function handleDelete() {
     if (!deleteTarget) return
-    setDeleting(true)
     await removeTopic(deleteTarget.id)
-    setDeleting(false)
     setDeleteTarget(null)
   }
 

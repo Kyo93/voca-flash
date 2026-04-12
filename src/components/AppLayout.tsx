@@ -26,8 +26,6 @@ export default function AppLayout() {
     return 'VocabMaster'
   }
 
-  // Dashboard usually has the right sidebar
-  const hasRightSidebar = location.pathname === '/dashboard'
 
   return (
     <div 

@@ -13,6 +13,7 @@ import {
 } from '../lib/auth'
 import type { User, Session } from '@supabase/supabase-js'
 import type { UserProfile } from '../lib/types'
+import { setTtsConfig } from '../lib/tts'
 
 interface AuthContextValue {
   user: User | null
@@ -22,6 +23,7 @@ interface AuthContextValue {
   isAdmin: boolean
   activeRoadmapSlug: string | null
   refreshActiveRoadmap: (targetRoadmapId?: string, forcedUserId?: string) => Promise<void>
+  refreshProfile: () => Promise<void>
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
@@ -132,6 +134,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  // Sync TTS config whenever profile changes
+  useEffect(() => {
+    if (profile) {
+      setTtsConfig(
+        profile.tts_voice || null,
+        profile.tts_rate ?? 0.85
+      )
+    }
+  }, [profile])
+
+  // Sync Theme mode whenever profile changes
+  useEffect(() => {
+    if (!profile) return
+
+    const applyTheme = (mode: string) => {
+      const root = window.document.documentElement
+      root.classList.remove('light', 'dark')
+
+      if (mode === 'dark') {
+        root.classList.add('dark')
+      } else if (mode === 'light') {
+        root.classList.add('light')
+      } else {
+        // System preference
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        root.classList.add(systemDark ? 'dark' : 'light')
+      }
+    }
+
+    applyTheme(profile.theme_mode || 'light')
+  }, [profile?.theme_mode])
+
   async function refreshActiveRoadmap(targetRoadmapId?: string, forcedUserId?: string) {
     const currentUserId = forcedUserId || user?.id
     if (!currentUserId) return
@@ -163,6 +197,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function refreshProfile() {
+    if (!user) return
+    const { data } = await supabase.from('user_profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+    if (data) setProfile(data)
+  }
+
   async function handleSignIn(email: string, password: string) {
     const { error } = await authSignIn(email, password)
     return { error: error ? new Error(error.message) : null }
@@ -187,6 +230,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         activeRoadmapSlug,
         refreshActiveRoadmap,
+        refreshProfile,
         signIn: handleSignIn,
         signUp: handleSignUp,
         signOut: handleSignOut,

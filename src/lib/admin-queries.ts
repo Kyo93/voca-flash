@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Word, WordChoice, Topic, Roadmap, UserProfile, SrsRecord } from './types'
+import type { Word, WordChoice, Topic, Roadmap } from './types'
 
 // ─── Words ──────────────────────────────────────────────────
 export async function getAllWords(topicFilter?: string, search?: string) {

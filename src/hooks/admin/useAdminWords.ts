@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import {
   getAllWords,
   createWord,
@@ -9,7 +9,7 @@ import {
   deleteWordChoices,
   getWordTopicIds,
 } from '../../lib/admin-queries'
-import type { Word, WordChoice, Topic } from '../../lib/types'
+import type { Word, WordChoice } from '../../lib/types'
 
 export function useAdminWords() {
   const [words, setWords] = useState<Word[]>([])

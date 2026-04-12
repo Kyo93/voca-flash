@@ -15,7 +15,7 @@ export interface ReviewChallenge {
 }
 
 export function useReviewSession() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [queue, setQueue] = useState<ReviewChallenge[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
@@ -87,7 +87,8 @@ export function useReviewSession() {
     if (isCorrect && current.quadrant === 'ghost_recall') rating = 5
     if (ratingFallback !== undefined) rating = ratingFallback
 
-    const newProgress = calculateNextReview(current.progress, rating)
+    const intensity = profile?.srs_intensity ?? 1.0
+    const newProgress = calculateNextReview(current.progress, rating, intensity)
 
     // Fire-and-forget DB update
     upsertSrsRecord(user.id, current.word.id, {

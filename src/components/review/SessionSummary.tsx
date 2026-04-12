@@ -20,7 +20,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
 
   useEffect(() => {
     // Count up animation for XP
-    let start = 0
+
     const end = stats.points
     const duration = 1500
     // Safeguard: Ensure stepTime is at least 20ms to prevent browser lag for high point values

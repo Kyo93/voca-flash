@@ -28,7 +28,8 @@ export type Rating = 0 | 1 | 2 | 3 | 4 | 5
  */
 export function calculateNextReview(
   progress: CardProgress,
-  rating: Rating
+  rating: Rating,
+  intensity: number = 1.0
 ): CardProgress {
   const q = Math.max(1, Math.min(5, Math.round((rating / 5) * 5)))
 
@@ -46,6 +47,8 @@ export function calculateNextReview(
     } else {
       interval = Math.round(interval * ease)
     }
+    // Apply user intensity preference (0.6 = frequent, 1.4 = relaxed)
+    interval = Math.max(1, Math.round(interval * intensity))
     repetitions += 1
   }
 

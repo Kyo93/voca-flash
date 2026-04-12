@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
+import { useAuth } from '../contexts/AuthContext'
 import Sidebar from '../components/Sidebar'
 import StudyPrepScreen from '../components/StudyPrepScreen'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
@@ -133,7 +133,7 @@ function FlashcardBack({ card }: { card: Card }) {
                     "{card.example}"
                   </p>
                   {card.example_vi && (
-                    <p className="text-on-surface-variant font-body text-xs leading-relaxed border-t border-outline-variant/10 pt-2 opacity-70">
+                    <p className="text-on-surface-variant font-body text-xs leading-relaxed border-t border-outline-variant/10 pt-2 oceanic-pulse oceanic-glow opacity-70">
                       "{card.example_vi}"
                     </p>
                   )}
@@ -157,8 +157,6 @@ function FlashcardBack({ card }: { card: Card }) {
 }
 
 function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3) => void }) {
-  const { t } = useTranslation()
-
   return (
     <div className="w-full max-w-md grid grid-cols-3 gap-4 px-2">
       {/* Hard Button */}
@@ -198,7 +196,6 @@ function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3) => void }) {
 }
 
 function StudyComplete({ total }: { total: number }) {
-  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   
   // Preserve current topic/roadmap context
@@ -226,7 +223,7 @@ function StudyComplete({ total }: { total: number }) {
 }
 
 export default function StudyPage() {
-  const { t } = useTranslation()
+  const { profile } = useAuth()
   const [searchParams] = useSearchParams()
   const topic = searchParams.get('topic') || undefined
   const topicId = searchParams.get('topicId') || undefined
@@ -255,13 +252,19 @@ export default function StudyPage() {
   // Tự động phát âm khi thẻ xuất hiện hoặc khi lật thẻ
   useEffect(() => {
     if (currentCard && !isLoading && !isComplete) {
-      // Phát âm từ vựng tiếng Anh (mặt trước)
-      speak(currentCard.front);
+      if (profile?.auto_play_audio !== false) {
+        speak(currentCard.front);
+      }
     }
-  }, [currentCard?.id, isFlipped, isLoading, isComplete]);
+  }, [currentCard?.id, isFlipped, isLoading, isComplete, profile?.auto_play_audio]);
+
   const { collapsed, rightCollapsed } = useSidebar()
   const sidebarW = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
   const rightbarW = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
+
+  const onStartCallback = useCallback((includeMastered: boolean) => {
+    startSession(roadmapId, topicId || '', includeMastered)
+  }, [startSession, roadmapId, topicId])
 
   if (isLoading) {
     return (
@@ -282,7 +285,7 @@ export default function StudyPage() {
           <StudyPrepScreen 
             stats={prepStats}
             loading={isLoading}
-            onStart={(includeMastered) => startSession(roadmapId, topicId || '', includeMastered)}
+            onStart={onStartCallback}
             onBack={() => window.history.back()}
           />
         </main>
