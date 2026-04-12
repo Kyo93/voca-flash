@@ -21,6 +21,7 @@ interface AuthContextValue {
   loading: boolean
   isAdmin: boolean
   activeRoadmapSlug: string | null
+  refreshActiveRoadmap: () => Promise<void>
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
@@ -69,19 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .then(({ data }) => setProfile(data ?? null))
 
       // 3. Lấy active roadmap slug từ resume pointer cuối cùng
-      supabase.from('user_resume_pointers')
-        .select('roadmap_id, roadmaps(slug)')
-        .eq('user_id', userId)
-        .order('last_accessed_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data && (data as any).roadmaps?.slug) {
-            setActiveRoadmapSlug((data as any).roadmaps.slug)
-          } else {
-            setActiveRoadmapSlug(null)
-          }
-        })
+      refreshActiveRoadmap()
 
     } catch (err) {
       console.error('UserData loading error:', err)
@@ -143,6 +132,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  async function refreshActiveRoadmap() {
+    if (!user) return
+    
+    const { data } = await supabase.from('user_resume_pointers')
+      .select('roadmap_id, roadmaps(slug)')
+      .eq('user_id', user.id)
+      .order('last_accessed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (data && (data as any).roadmaps?.slug) {
+      setActiveRoadmapSlug((data as any).roadmaps.slug)
+    } else {
+      setActiveRoadmapSlug(null)
+    }
+  }
+
   async function handleSignIn(email: string, password: string) {
     const { error } = await authSignIn(email, password)
     return { error: error ? new Error(error.message) : null }
@@ -166,6 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         isAdmin,
         activeRoadmapSlug,
+        refreshActiveRoadmap,
         signIn: handleSignIn,
         signUp: handleSignUp,
         signOut: handleSignOut,

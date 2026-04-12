@@ -15,7 +15,7 @@ interface FlashcardState {
 }
 
 export function useFlashcard(topicFilter?: string) {
-  const { user } = useAuth()
+  const { user, refreshActiveRoadmap } = useAuth()
 
   const [state, setState] = useState<FlashcardState>({
     queue: [],
@@ -83,7 +83,9 @@ export function useFlashcard(topicFilter?: string) {
 
       if (user && roadmapId) {
         // Optimistically save resume state
-        saveResumePointer(user.id, roadmapId, topicId).catch(err => console.error(err))
+        saveResumePointer(user.id, roadmapId, topicId).then(() => {
+          refreshActiveRoadmap()
+        }).catch(err => console.error(err))
       }
 
       return {
