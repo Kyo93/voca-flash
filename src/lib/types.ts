@@ -66,13 +66,22 @@ export interface UserProfile {
   updated_at: string
 }
 
-// ── User Progress ───────────────────────────────────────────
-export interface UserProgress {
+// ── User Resume Pointer ─────────────────────────────────────
+export interface ResumePointer {
+  id: string
+  user_id: string
+  roadmap_id: string
+  last_topic_id: string | null
+  last_accessed_at: string
+}
+
+// ── User SRS Record ───────────────────────────────────────────
+export interface SrsRecord {
   id: string
   user_id: string
   word_id: string
-  correct_count: number
-  wrong_count: number
+  repetitions: number
+  lapse_count: number
   mastered: boolean
   last_reviewed: string | null
   created_at: string

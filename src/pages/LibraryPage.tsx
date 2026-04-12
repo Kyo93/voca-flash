@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchRoadmaps, fetchRoadmapStats } from '../lib/supabase-storage'
-import type { Roadmap } from '../lib/types'
+import { fetchRoadmaps, fetchRoadmapStats, fetchResumePointers } from '../lib/supabase-storage'
+import type { Roadmap, ResumePointer } from '../lib/types'
 
 export default function LibraryPage() {
   const { user } = useAuth()
@@ -10,6 +10,7 @@ export default function LibraryPage() {
   const [roadmapStats, setRoadmapStats] = useState<Record<string, { total: number, mastered: number }>>({})
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState<'All' | 'Kids' | 'Casual' | 'Professional' | 'Academic'>('All')
+  const [learningStates, setLearningStates] = useState<Map<string, ResumePointer>>(new Map())
 
   useEffect(() => {
     async function loadRoadmaps() {
@@ -25,6 +26,12 @@ export default function LibraryPage() {
           stats[r.id] = s
         }))
         setRoadmapStats(stats)
+
+        // Fetch learning states
+        if (user?.id) {
+          const states = await fetchResumePointers(user.id)
+          setLearningStates(states)
+        }
       } catch (err) {
         console.error('Error fetching roadmaps:', err)
       } finally {
@@ -45,6 +52,20 @@ export default function LibraryPage() {
       return true
     })
   }, [roadmaps, activeFilter])
+
+  const sortedRoadmaps = useMemo(() => {
+    return [...filteredRoadmaps].sort((a, b) => {
+      const stateA = learningStates.get(a.id)
+      const stateB = learningStates.get(b.id)
+      
+      if (stateA && stateB) {
+        return new Date(stateB.last_accessed_at).getTime() - new Date(stateA.last_accessed_at).getTime()
+      }
+      if (stateA) return -1
+      if (stateB) return 1
+      return 0
+    })
+  }, [filteredRoadmaps, learningStates])
 
   if (loading) {
     return (
@@ -131,8 +152,11 @@ export default function LibraryPage() {
 
       {/* Roadmaps Grid */}
       <div className="asymmetric-grid">
-        {filteredRoadmaps.map(roadmap => {
+        {sortedRoadmaps.map(roadmap => {
           const specs = getCardSpecs(roadmap)
+          const isResuming = learningStates.has(roadmap.id)
+          const stats = roadmapStats[roadmap.id]
+          const isCompleted = stats && stats.total > 0 && stats.mastered >= stats.total
           
           return (
             <Link 
@@ -147,17 +171,24 @@ export default function LibraryPage() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />
               </div>
-              <span className={`${specs.badgeClass} text-[9px] font-bold px-2 py-1 rounded mb-3 uppercase tracking-wider`}>
-                {specs.badge}
-              </span>
+              <div className="flex justify-between w-full mb-3">
+                <span className={`${specs.badgeClass} text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider`}>
+                  {specs.badge}
+                </span>
+                {stats && stats.total > 0 && (
+                  <span className="text-xs font-bold text-stone-500">
+                    {stats.mastered} / {stats.total}
+                  </span>
+                )}
+              </div>
               <h3 className="text-xl font-bold mb-2 text-on-surface">{roadmap.name}</h3>
               <p className="text-on-surface-variant mb-6 text-xs leading-relaxed line-clamp-3">
                 {roadmap.description || 'Chương trình học bài bản được thiết kế để tối ưu lộ trình học tập của bạn.'}
               </p>
               
-              <button className={`mt-auto w-full py-3 ${specs.btnClass} text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95`}>
-                Start Journey
-                <span className="material-symbols-outlined text-xs">arrow_forward</span>
+              <button className={`mt-auto w-full py-3 ${isCompleted ? 'bg-green-100 text-green-700' : specs.btnClass} text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95`}>
+                {isCompleted ? 'Hoàn thành' : isResuming ? 'Học tiếp' : 'Start Journey'}
+                {!isCompleted && <span className="material-symbols-outlined text-xs">arrow_forward</span>}
               </button>
             </Link>
           )

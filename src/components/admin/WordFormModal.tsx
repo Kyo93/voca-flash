@@ -15,12 +15,14 @@ const DIFFICULTY_LABELS = ['Rất dễ', 'Dễ', 'Trung bình', 'Khó', 'Rất k
 interface Props {
   open: boolean
   word?: Word | null
+  initialTopicIds?: string[]
+  initialWrongChoices?: string[]
   topics: Topic[]
-  onSave: (word: Omit<Word, 'id' | 'created_at' | 'updated_at'>, wrongChoices: string[]) => Promise<void>
+  onSave: (word: Omit<Word, 'id' | 'created_at' | 'updated_at'>, wrongChoices: string[], topicIds: string[]) => Promise<void>
   onClose: () => void
 }
 
-export default function WordFormModal({ open, word, topics, onSave, onClose }: Props) {
+export default function WordFormModal({ open, word, topics, initialTopicIds, initialWrongChoices, onSave, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -32,7 +34,7 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
   const [definition, setDefinition] = useState('')
   const [example, setExample] = useState('')
   const [exampleVi, setExampleVi] = useState('')
-  const [topicId, setTopicId] = useState('')
+  const [topicIds, setTopicIds] = useState<string[]>([])
   const [imageUrl, setImageUrl] = useState('')
   const [imagePosition, setImagePosition] = useState('center')
   const [wrong1, setWrong1] = useState('')
@@ -41,16 +43,34 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
 
   useEffect(() => {
     if (word) {
-      setWordText(word.word)
+      setWordText(word.word ?? '')
       setPhonetic(word.phonetic ?? '')
       setPos(word.pos ?? 'noun')
       setDifficulty(word.difficulty ?? 3)
-      setDefinition(word.definition)
+      setDefinition(word.definition ?? '')
       setExample(word.example ?? '')
       setExampleVi(word.example_vi ?? '')
-      setTopicId(word.topic_id ?? '')
+      
+      // Khôi phục topicIds từ DB, nếu rỗng thì fallback về topic_id cũ nếu có
+      if (initialTopicIds && initialTopicIds.length > 0) {
+        setTopicIds(initialTopicIds)
+      } else if (word.topic_id) {
+        setTopicIds([word.topic_id])
+      } else {
+        setTopicIds([])
+      }
+
       setImageUrl(word.image_url ?? '')
       setImagePosition(word.image_position ?? 'center')
+      if (initialWrongChoices) {
+        setWrong1(initialWrongChoices[0] || '')
+        setWrong2(initialWrongChoices[1] || '')
+        setWrong3(initialWrongChoices[2] || '')
+      } else {
+        setWrong1('')
+        setWrong2('')
+        setWrong3('')
+      }
     } else {
       setWordText('')
       setPhonetic('')
@@ -59,12 +79,15 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
       setDefinition('')
       setExample('')
       setExampleVi('')
-      setTopicId(topics[0]?.id ?? '')
+      setTopicIds([])
       setImageUrl('')
       setImagePosition('center')
+      setWrong1('')
+      setWrong2('')
+      setWrong3('')
     }
     setError(null)
-  }, [word, open, topics])
+  }, [word, open, topics, initialTopicIds, initialWrongChoices])
 
   if (!open) return null
 
@@ -89,11 +112,12 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
         definition: definition.trim(),
         example: example.trim() || null,
         example_vi: exampleVi.trim() || null,
-        topic_id: topicId || null,
+        topic_id: topicIds.length > 0 ? topicIds[0] : null, // backward compat
         image_url: imageUrl.trim() || null,
         image_position: imagePosition || 'center',
       },
-      wrongChoices
+      wrongChoices,
+      topicIds
     )
 
     setLoading(false)
@@ -184,19 +208,31 @@ export default function WordFormModal({ open, word, topics, onSave, onClose }: P
             </div>
           </div>
 
-          {/* Topic */}
+          {/* Topics (Multiple Checkboxes) */}
           <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Chủ đề</label>
-            <select
-              value={topicId}
-              onChange={(e) => setTopicId(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-            >
-              <option value="">— Không chọn —</option>
+            <label className="block text-sm font-bold text-secondary mb-2">Chủ đề (có thể chọn nhiều)</label>
+            <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl border-2 border-orange-100 bg-orange-50/30">
               {topics.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
+                <label key={t.id} className="flex items-center gap-3 cursor-pointer p-1">
+                  <input
+                    type="checkbox"
+                    checked={topicIds.includes(t.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setTopicIds(prev => [...prev, t.id])
+                      } else {
+                        setTopicIds(prev => prev.filter(id => id !== t.id))
+                      }
+                    }}
+                    className="w-5 h-5 accent-primary rounded cursor-pointer"
+                  />
+                  <span className="text-secondary font-medium text-sm">{t.name}</span>
+                </label>
               ))}
-            </select>
+              {topics.length === 0 && (
+                <div className="col-span-2 text-sm text-stone-500 italic">Chưa có chủ đề nào.</div>
+              )}
+            </div>
           </div>
 
           {/* Definition */}

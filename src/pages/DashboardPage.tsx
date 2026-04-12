@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { fetchUserStats, fetchTopicWordCounts } from '../lib/supabase-storage'
+import { fetchDashboardStats, fetchTopicWordCounts } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
@@ -43,7 +43,7 @@ export default function DashboardPage() {
       // Logged in — fetch from Supabase
       const [streakData, userStats, topicData] = await Promise.all([
         fetchStreakFromSupabase(user.id),
-        fetchUserStats(user.id),
+        fetchDashboardStats(user.id),
         fetchTopicWordCounts(),
       ])
 

@@ -25,7 +25,7 @@ function DifficultyDots({ value }: { value: number }) {
 const PAGE_SIZE = 20
 
 export default function AdminWordsPage() {
-  const { words, loading, error, fetch, addWord, editWord, removeWord, loadChoices } = useAdminWords()
+  const { words, loading, error, fetch, addWord, editWord, removeWord, loadChoices, loadTopicIds } = useAdminWords()
   const [topics, setTopics] = useState<Topic[]>([])
 
   // Filters
@@ -37,6 +37,8 @@ export default function AdminWordsPage() {
   // Modal state
   const [showModal, setShowModal] = useState(false)
   const [editWordData, setEditWordData] = useState<Word | null>(null)
+  const [editWordTopicIds, setEditWordTopicIds] = useState<string[]>([])
+  const [editWordWrongChoices, setEditWordWrongChoices] = useState<string[]>([])
   const [deleteTarget, setDeleteTarget] = useState<Word | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [searchDebounce, setSearchDebounce] = useState('')
@@ -70,13 +72,14 @@ export default function AdminWordsPage() {
 
   async function handleSave(
     wordData: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
-    wrongChoices: string[]
+    wrongChoices: string[],
+    topicIds: string[]
   ) {
     if (editWordData) {
-      const { error } = await editWord(editWordData.id, wordData, wrongChoices)
+      const { error } = await editWord(editWordData.id, wordData, wrongChoices, topicIds)
       if (error) { console.error(error); return }
     } else {
-      const { error } = await addWord(wordData, wrongChoices)
+      const { error } = await addWord(wordData, wrongChoices, topicIds)
       if (error) { console.error(error); return }
     }
     setShowModal(false)
@@ -102,7 +105,7 @@ export default function AdminWordsPage() {
           </p>
         </div>
         <button
-          onClick={() => { setEditWordData(null); setShowModal(true) }}
+          onClick={() => { setEditWordData(null); setEditWordTopicIds([]); setEditWordWrongChoices([]); setShowModal(true) }}
           className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
         >
           <span className="material-symbols-outlined text-sm">add</span>
@@ -220,9 +223,14 @@ export default function AdminWordsPage() {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={async () => {
-                          const choices = await loadChoices(w.id)
+                          const [choices, tIds] = await Promise.all([
+                            loadChoices(w.id),
+                            loadTopicIds(w.id)
+                          ])
                           // pass current wrong choices to edit
                           setEditWordData(w)
+                          setEditWordTopicIds(tIds)
+                          setEditWordWrongChoices(choices.map(c => c.choice))
                           setShowModal(true)
                         }}
                         className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-orange-100 transition-colors cursor-pointer"
@@ -275,9 +283,11 @@ export default function AdminWordsPage() {
       <WordFormModal
         open={showModal}
         word={editWordData}
+        initialTopicIds={editWordTopicIds}
+        initialWrongChoices={editWordWrongChoices}
         topics={topics}
         onSave={handleSave}
-        onClose={() => { setShowModal(false); setEditWordData(null) }}
+        onClose={() => { setShowModal(false); setEditWordData(null); setEditWordTopicIds([]); setEditWordWrongChoices([]) }}
       />
 
       <ConfirmDialog

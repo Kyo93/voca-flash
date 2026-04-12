@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
 import Sidebar from '../components/Sidebar'
+import StudyPrepScreen from '../components/StudyPrepScreen'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 import type { Card } from '../lib/srs'
 
@@ -223,6 +224,8 @@ export default function StudyPage() {
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const topic = searchParams.get('topic') || undefined
+  const topicId = searchParams.get('topicId') || undefined
+  const roadmapId = searchParams.get('roadmapId') || undefined
 
   const {
     currentCard,
@@ -231,7 +234,10 @@ export default function StudyPage() {
     isFlipped,
     isComplete,
     isLoading,
+    isPrepScreen,
+    prepStats,
     initialize,
+    startSession,
     flip,
     rate,
   } = useFlashcard()
@@ -258,6 +264,22 @@ export default function StudyPage() {
         <Sidebar />
         <main className="flex-1 flex items-center justify-center transition-all duration-300" style={{ marginLeft: sidebarW }}>
           <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
+        </main>
+      </div>
+    )
+  }
+
+  if (isPrepScreen) {
+    return (
+      <div className="flex min-h-screen bg-surface">
+        <Sidebar />
+        <main className="flex-1 flex transition-all duration-300" style={{ marginLeft: sidebarW, marginRight: rightbarW }}>
+          <StudyPrepScreen 
+            stats={prepStats}
+            loading={isLoading}
+            onStart={(includeMastered) => startSession(roadmapId, topicId || '', includeMastered)}
+            onBack={() => window.history.back()}
+          />
         </main>
       </div>
     )

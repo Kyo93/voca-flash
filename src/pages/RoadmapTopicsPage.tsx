@@ -5,10 +5,10 @@ import {
   fetchRoadmaps, 
   fetchTopicsByRoadmap, 
   fetchRoadmapStats, 
-  fetchUserProgress,
-  fetchWords
+  fetchTopicCompletionMap,
+  fetchResumePointers
 } from '../lib/supabase-storage'
-import type { Topic, Roadmap, CardProgress } from '../lib/types'
+import type { Topic, Roadmap } from '../lib/types'
 
 export default function RoadmapTopicsPage() {
   const { roadmapSlug } = useParams<{ roadmapSlug: string }>()
@@ -18,8 +18,8 @@ export default function RoadmapTopicsPage() {
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
   const [topics, setTopics] = useState<Topic[]>([])
   const [stats, setStats] = useState({ total: 0, mastered: 0 })
-  const [userProgress, setUserProgress] = useState<Map<string, CardProgress>>(new Map())
-  const [topicWords, setTopicWords] = useState<Record<string, string[]>>({}) // topicId -> wordIds
+  const [topicProgress, setTopicProgress] = useState<Record<string, { total: number, learned: number, percent: number }>>({})
+
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -44,21 +44,29 @@ export default function RoadmapTopicsPage() {
         setTopics(roadmapTopics)
         
         // 2. Fetch stats and progress
-        const [roadmapStats, progress] = await Promise.all([
+        const [roadmapStats, topicProgMap, learningStates] = await Promise.all([
           fetchRoadmapStats(currentRoadmap.id, user?.id),
-          user?.id ? fetchUserProgress(user.id) : Promise.resolve(new Map())
+          user?.id ? fetchTopicCompletionMap(user.id, roadmapTopics.map(t => t.id)) : Promise.resolve({}),
+          user?.id ? fetchResumePointers(user.id) : Promise.resolve(new Map())
         ])
         
         setStats(roadmapStats)
-        setUserProgress(progress)
+        setTopicProgress(topicProgMap)
         
-        // 3. Fetch words for each topic to calculate per-topic progress
-        const wordsByTopic: Record<string, string[]> = {}
-        await Promise.all(roadmapTopics.map(async (topic) => {
-          const cards = await fetchWords(topic.slug)
-          wordsByTopic[topic.id] = cards.map(c => c.id)
-        }))
-        setTopicWords(wordsByTopic)
+        // 3. Sort topics (last_topic_id first)
+        const lastTopicId = learningStates.get(currentRoadmap.id)?.last_topic_id
+        if (lastTopicId) {
+          const lastIndex = roadmapTopics.findIndex(t => t.id === lastTopicId)
+          if (lastIndex > -1) {
+            const lastTopic = roadmapTopics[lastIndex]
+            const others = roadmapTopics.filter((_, i) => i !== lastIndex)
+            setTopics([lastTopic, ...others])
+            return
+          }
+        }
+        
+        setTopics(roadmapTopics)
+        
         
       } catch (err) {
         console.error('Error loading roadmap topics:', err)
@@ -81,15 +89,7 @@ export default function RoadmapTopicsPage() {
 
   // Helper to get stats for a specific topic
   const getTopicStats = (topicId: string) => {
-    const wordIds = topicWords[topicId] || []
-    if (wordIds.length === 0) return { total: 0, mastered: 0, percent: 0 }
-    
-    const mastered = wordIds.filter(id => userProgress.get(id)?.mastered).length
-    return {
-      total: wordIds.length,
-      mastered,
-      percent: Math.round((mastered / wordIds.length) * 100)
-    }
+    return topicProgress[topicId] || { total: 0, learned: 0, percent: 0 }
   }
 
   if (loading) {
@@ -172,6 +172,9 @@ export default function RoadmapTopicsPage() {
       <div className="grid grid-cols-12 gap-8">
         {filteredTopics.map((topic, index) => {
           const topicStats = getTopicStats(topic.id)
+          const isCompleted = topicStats.total > 0 && topicStats.learned >= topicStats.total
+          const isStarted = topicStats.percent > 0
+          
           const isMainLarge = index === 0 && !searchQuery
           const isUpNext = index === 1 && !searchQuery
 
@@ -179,18 +182,21 @@ export default function RoadmapTopicsPage() {
             return (
               <Link
                 key={topic.id}
-                to={`/study?topic=${topic.slug}`}
+                to={`/study?topic=${topic.slug}&topicId=${topic.id}&roadmapId=${roadmap.id}`}
                 className="col-span-12 md:col-span-7 group relative bg-surface-container-lowest rounded-xl p-8 sun-drenched-shadow transition-all hover:bg-white cursor-pointer overflow-hidden block"
               >
                 <div className="flex justify-between items-start">
                   <div className="space-y-6 flex-1">
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+                      <div className={`w-16 h-16 rounded-lg ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-primary-fixed text-primary'} flex items-center justify-center`}>
                         <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                          {topic.slug.includes('animal') ? 'pets' : 'menu_book'}
+                          {isCompleted ? 'check_circle' : topic.slug.includes('animal') ? 'pets' : 'menu_book'}
                         </span>
                       </div>
                       <div>
+                        {index === 0 && isStarted && !isCompleted && (
+                          <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest mb-1 inline-block">ĐANG HỌC</span>
+                        )}
                         <h3 className="text-2xl font-bold text-on-surface">{topic.name}</h3>
                         <p className="text-on-surface-variant mt-1 text-sm font-medium">
                           {topicStats.total} Words • {topicStats.percent}% mastered
@@ -202,9 +208,9 @@ export default function RoadmapTopicsPage() {
                         {topic.description}
                       </p>
                     )}
-                    <button className="primary-gradient text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 group-hover:shadow-lg transition-all active:scale-95 mt-6 border-none">
-                      <span>{topicStats.percent > 0 ? 'Continue Learning' : 'Start Learning'}</span>
-                      <span className="material-symbols-outlined">arrow_forward</span>
+                    <button className={`${isCompleted ? 'bg-green-600' : 'primary-gradient'} text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 group-hover:shadow-lg transition-all active:scale-95 mt-6 border-none`}>
+                      <span>{isCompleted ? 'Hoàn thành' : isStarted ? 'Học tiếp (Resume)' : 'Bắt đầu học'}</span>
+                      {!isCompleted && <span className="material-symbols-outlined">arrow_forward</span>}
                     </button>
                   </div>
                   <div className="w-48 h-48 relative hidden xl:block select-none pointer-events-none shrink-0 ml-4">
@@ -223,13 +229,13 @@ export default function RoadmapTopicsPage() {
             return (
               <Link
                 key={topic.id}
-                to={`/study?topic=${topic.slug}`}
+                to={`/study?topic=${topic.slug}&topicId=${topic.id}&roadmapId=${roadmap.id}`}
                 className="col-span-12 md:col-span-5 bg-secondary-container/30 rounded-xl p-8 transition-all hover:bg-secondary-container/50 flex flex-col justify-between cursor-pointer group block"
               >
                 <div className="flex justify-between items-start mb-12">
-                  <div className="w-12 h-12 rounded-lg bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+                  <div className={`w-12 h-12 rounded-lg ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-secondary text-on-secondary'} flex items-center justify-center shrink-0`}>
                     <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      palette
+                      {isCompleted ? 'task_alt' : 'palette'}
                     </span>
                   </div>
                   <span className="bg-secondary/10 text-secondary text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">UP NEXT</span>
@@ -245,9 +251,9 @@ export default function RoadmapTopicsPage() {
                       style={{ width: `${topicStats.percent}%` }}
                     ></div>
                   </div>
-                  <div className="text-secondary font-bold flex items-center gap-2 group-hover:underline decoration-2 underline-offset-4">
-                    <span>{topicStats.percent > 0 ? 'Continue Module' : 'Start Module'}</span>
-                    <span className="material-symbols-outlined text-sm">play_arrow</span>
+                  <div className={`${isCompleted ? 'text-green-600' : 'text-secondary'} font-bold flex items-center gap-2 group-hover:underline decoration-2 underline-offset-4`}>
+                    <span>{isCompleted ? 'Hoàn thành' : isStarted ? 'Học tiếp (Resume)' : 'Bắt đầu học'}</span>
+                    {!isCompleted && <span className="material-symbols-outlined text-sm">play_arrow</span>}
                   </div>
                 </div>
               </Link>
@@ -257,13 +263,13 @@ export default function RoadmapTopicsPage() {
           return (
             <Link
               key={topic.id}
-              to={`/study?topic=${topic.slug}`}
+              to={`/study?topic=${topic.slug}&topicId=${topic.id}&roadmapId=${roadmap.id}`}
               className="col-span-12 md:col-span-4 bg-surface-container-high rounded-xl p-6 hover:bg-surface-variant transition-colors cursor-pointer group block relative overflow-hidden"
             >
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-lg bg-surface-container-lowest flex items-center justify-center text-on-surface-variant group-hover:bg-white transition-colors">
+                <div className={`w-12 h-12 rounded-lg ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-surface-container-lowest text-on-surface-variant'} flex items-center justify-center group-hover:bg-white transition-colors`}>
                   <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
-                    {topic.slug.includes('family') ? 'family_restroom' : topic.slug.includes('food') ? 'restaurant' : 'school'}
+                    {isCompleted ? 'done_all' : topic.slug.includes('family') ? 'family_restroom' : topic.slug.includes('food') ? 'restaurant' : 'school'}
                   </span>
                 </div>
                 <div className="flex-1">
@@ -278,15 +284,20 @@ export default function RoadmapTopicsPage() {
                   {topic.description}
                 </p>
               )}
-              {topicStats.percent > 0 ? (
+              {isCompleted ? (
+                <div className="flex items-center gap-2 text-green-600 transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">verified</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">Completed</span>
+                </div>
+              ) : isStarted ? (
                 <div className="flex items-center gap-2 text-secondary group-hover:text-primary transition-colors">
                   <span className="material-symbols-outlined text-[18px]">chart_data</span>
-                  <span className="text-xs font-bold uppercase tracking-widest">In Progress</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">Học tiếp</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-outline group-hover:text-primary transition-colors">
                   <span className="material-symbols-outlined text-[18px]">lock_open</span>
-                  <span className="text-xs font-bold uppercase tracking-widest">Ready to Start</span>
+                  <span className="text-xs font-bold uppercase tracking-widest">Bắt đầu học</span>
                 </div>
               )}
             </Link>

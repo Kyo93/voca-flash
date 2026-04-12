@@ -11,21 +11,7 @@
  */
 
 import { supabase } from './supabase'
-import type { Word, UserProgress, Card, CardProgress, Topic, Roadmap } from './types'
-
-// ── Types for Supabase progress ──────────────────────────────
-
-export interface SupabaseCardProgress {
-  id: string
-  user_id: string
-  word_id: string
-  correct_count: number
-  wrong_count: number
-  mastered: boolean
-  last_reviewed: string | null
-  created_at: string
-  updated_at: string
-}
+import type { Word, SrsRecord, Card, CardProgress, Topic, Roadmap, ResumePointer } from './types'
 
 // ── Mapping: Word (Supabase) → Card (student app) ────────────
 
@@ -49,36 +35,46 @@ function mapWordToCard(word: Word, topicSlug?: string): Card {
  * Optionally filter by topic slug.
  */
 export async function fetchWords(topicSlug?: string): Promise<Card[]> {
-  let query = supabase
-    .from('words')
-    .select('*, topics(id, name, slug, color)')
-
   if (topicSlug) {
-    // Filter by topic slug — join topics first
+    // 1. Lấy topic ID
     const { data: topicData } = await supabase
       .from('topics')
-      .select('id')
+      .select('id, slug')
       .eq('slug', topicSlug)
       .single()
+    if (!topicData) return []
 
-    if (topicData) {
-      query = query.eq('topic_id', topicData.id)
-    } else {
-      return [] // topic not found
+    // 2. Lấy word IDs qua junction table
+    const { data: junctionRows } = await supabase
+      .from('topic_words')
+      .select('word_id')
+      .eq('topic_id', topicData.id)
+      .order('sort_order')
+
+    if (!junctionRows?.length) return []
+
+    // 3. Lấy word details
+    const wordIds = junctionRows.map(r => r.word_id)
+    const { data: words, error } = await supabase
+      .from('words')
+      .select('*')
+      .in('id', wordIds)
+
+    if (error) {
+      console.error('[supabase-storage] fetchWords error:', error)
+      return []
     }
+
+    return (words ?? []).map(w => mapWordToCard(w, topicSlug))
   }
 
-  const { data, error } = await query
-
+  // Fallback: all words (no topic filter)
+  const { data, error } = await supabase.from('words').select('*')
   if (error) {
     console.error('[supabase-storage] fetchWords error:', error)
     return []
   }
-
-  const words = (data as Word[]) ?? []
-  return words.map((w) =>
-    mapWordToCard(w, w.topics?.slug)
-  )
+  return (data ?? []).map(w => mapWordToCard(w))
 }
 
 // ── Progress ─────────────────────────────────────────────────
@@ -87,34 +83,43 @@ export async function fetchWords(topicSlug?: string): Promise<Card[]> {
  * Fetch user's progress from Supabase.
  * Returns a Map<cardId, CardProgress> matching the SRS algorithm.
  */
-export async function fetchUserProgress(userId: string): Promise<Map<string, CardProgress>> {
-  const { data, error } = await supabase
-    .from('user_progress')
-    .select('*')
-    .eq('user_id', userId)
-
-  if (error) {
-    console.error('[supabase-storage] fetchUserProgress error:', error)
-    return new Map()
-  }
-
-  const progressList = (data as SupabaseCardProgress[]) ?? []
+export async function fetchSrsStates(userId: string): Promise<Map<string, CardProgress>> {
+  const PAGE_SIZE = 1000
   const map = new Map<string, CardProgress>()
+  let from = 0
+  let hasMore = true
 
-  for (const p of progressList) {
-    // Convert Supabase progress → SRS CardProgress
-    map.set(p.word_id, {
-      cardId: p.word_id,
-      ease: 2.5, // default; Supabase doesn't store ease yet
-      interval: p.mastered ? 99 : 0,
-      repetitions: p.mastered ? 5 : (p.correct_count > 0 ? 1 : 0),
-      nextReview: p.last_reviewed
-        ? new Date(p.last_reviewed).getTime()
-        : Date.now(),
-      lastReview: p.last_reviewed
-        ? new Date(p.last_reviewed).getTime()
-        : 0,
-    })
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from('user_srs_records')
+      .select('*')
+      .eq('user_id', userId)
+      .range(from, from + PAGE_SIZE - 1)
+
+    if (error) {
+      console.error('[supabase-storage] fetchSrsStates error:', error)
+      break
+    }
+
+    const progressList = (data as SrsRecord[]) ?? []
+    for (const p of progressList) {
+      // Convert Supabase progress → SRS CardProgress
+      map.set(p.word_id, {
+        cardId: p.word_id,
+        ease: 2.5, // default; Supabase doesn't store ease yet
+        interval: p.mastered ? 99 : 0,
+        repetitions: p.mastered ? 5 : p.repetitions,
+        nextReview: p.last_reviewed
+          ? new Date(p.last_reviewed).getTime()
+          : Date.now(),
+        lastReview: p.last_reviewed
+          ? new Date(p.last_reviewed).getTime()
+          : 0,
+      })
+    }
+
+    hasMore = progressList.length === PAGE_SIZE
+    from += PAGE_SIZE
   }
 
   return map
@@ -124,28 +129,36 @@ export async function fetchUserProgress(userId: string): Promise<Map<string, Car
  * Upsert a single word's progress to Supabase.
  * Called after each SRS rating in useFlashcard.
  */
-export async function upsertUserProgress(
+export async function upsertSrsRecord(
   userId: string,
   cardId: string,
-  correctCount: number,
-  wrongCount: number,
-  mastered: boolean
+  update: { repetitions: number; incrementWrong: number; mastered: boolean }
 ): Promise<void> {
+  // First try to get existing record
+  const { data: existing } = await supabase
+    .from('user_srs_records')
+    .select('lapse_count')
+    .eq('user_id', userId)
+    .eq('word_id', cardId)
+    .maybeSingle()
+
+  const newLapse = (existing?.lapse_count ?? 0) + update.incrementWrong
+
   const { error } = await supabase
-    .from('user_progress')
+    .from('user_srs_records')
     .upsert({
       user_id: userId,
       word_id: cardId,
-      correct_count: correctCount,
-      wrong_count: wrongCount,
-      mastered,
+      repetitions: update.repetitions,
+      lapse_count: newLapse,
+      mastered: update.mastered,
       last_reviewed: new Date().toISOString(),
     }, {
       onConflict: 'user_id,word_id',
     })
 
   if (error) {
-    console.error('[supabase-storage] upsertUserProgress error:', error)
+    console.error('[supabase-storage] upsertSrsRecord error:', error)
   }
 }
 
@@ -158,11 +171,11 @@ export interface UserStats {
   streakDays: number
 }
 
-export async function fetchUserStats(userId: string): Promise<UserStats> {
+export async function fetchDashboardStats(userId: string): Promise<UserStats> {
   const [progressRes, profileRes] = await Promise.all([
     supabase
-      .from('user_progress')
-      .select('mastered, correct_count, wrong_count')
+      .from('user_srs_records')
+      .select('mastered, repetitions, lapse_count')
       .eq('user_id', userId),
     supabase
       .from('user_profiles')
@@ -171,10 +184,10 @@ export async function fetchUserStats(userId: string): Promise<UserStats> {
       .single(),
   ])
 
-  const progress = (progressRes.data ?? []) as SupabaseCardProgress[]
+  const progress = (progressRes.data ?? []) as SrsRecord[]
   const mastered = progress.filter((p) => p.mastered).length
   const learning = progress.filter(
-    (p) => !p.mastered && (p.correct_count > 0 || p.wrong_count > 0)
+    (p) => !p.mastered && (p.repetitions > 0 || p.lapse_count > 0)
   ).length
 
   return {
@@ -248,18 +261,14 @@ export async function recordStreak(userId: string): Promise<number> {
 // ── Fetch topic words (for dashboard topic cards) ─────────────
 
 export async function fetchTopicWordCounts(): Promise<Record<string, number>> {
-  const { data, error } = await supabase
-    .from('topics')
-    .select('slug, words(id)')
-
-  if (error) {
-    console.error('[supabase-storage] fetchTopicWordCounts error:', error)
-    return {}
-  }
-
+  const { data } = await supabase
+    .from('topic_words')
+    .select('topic_id, topics(slug)')
+  
   const counts: Record<string, number> = {}
-  for (const topic of (data ?? [])) {
-    counts[topic.slug] = topic.words?.length ?? 0
+  for (const row of (data ?? [])) {
+    const slug = (row as any).topics?.slug
+    if (slug) counts[slug] = (counts[slug] ?? 0) + 1
   }
   return counts
 }
@@ -315,38 +324,121 @@ export async function fetchTopicsByRoadmap(roadmapSlug: string): Promise<Topic[]
  * Fetch stats for a roadmap (total words, mastered words).
  */
 export async function fetchRoadmapStats(roadmapId: string, userId?: string) {
-  // Get all topics for this roadmap
+  // 1. Lấy tất cả topics thuộc roadmap
   const { data: topics } = await supabase
-    .from('topics')
-    .select('id')
-    .eq('roadmap_id', roadmapId)
+    .from('topics').select('id').eq('roadmap_id', roadmapId)
+  if (!topics?.length) return { total: 0, mastered: 0 }
 
-  if (!topics || topics.length === 0) return { total: 0, mastered: 0 }
-
+  // 2. Lấy word IDs qua topic_words junction
   const topicIds = topics.map(t => t.id)
+  const { data: junctions } = await supabase
+    .from('topic_words').select('word_id').in('topic_id', topicIds)
 
-  // Get word count for these topics
-  const { data: words } = await supabase
-    .from('words')
-    .select('id')
-    .in('topic_id', topicIds)
-
-  const total = words?.length ?? 0
+  // Deduplicate word IDs (1 word có thể nằm trong nhiều topics cùng roadmap)
+  const wordIds = [...new Set((junctions ?? []).map(j => j.word_id))]
+  const total = wordIds.length
 
   if (!userId || total === 0) return { total, mastered: 0 }
 
-  const wordIds = words!.map(w => w.id)
-
-  // Get mastered count from user_progress
+  // 3. Count mastered
   const { data: progress } = await supabase
-    .from('user_progress')
+    .from('user_srs_records')
     .select('id')
     .eq('user_id', userId)
     .eq('mastered', true)
     .in('word_id', wordIds)
 
-  return {
-    total,
-    mastered: progress?.length ?? 0
+  return { total, mastered: progress?.length ?? 0 }
+}
+
+// ── User Resume Pointers ────────────────────────────────────
+
+export async function fetchResumePointers(
+  userId: string
+): Promise<Map<string, ResumePointer>> {
+  const { data } = await supabase
+    .from('user_resume_pointers')
+    .select('*')
+    .eq('user_id', userId)
+
+  const map = new Map<string, ResumePointer>()
+  for (const state of (data ?? [])) {
+    map.set(state.roadmap_id, state as ResumePointer)
   }
+  return map
+}
+
+export async function saveResumePointer(
+  userId: string,
+  roadmapId: string,
+  topicId?: string
+): Promise<void> {
+  const payload: Record<string, any> = {
+    user_id: userId,
+    roadmap_id: roadmapId,
+    last_accessed_at: new Date().toISOString(),
+  }
+  if (topicId) payload.last_topic_id = topicId
+
+  await supabase.from('user_resume_pointers').upsert(payload, {
+    onConflict: 'user_id,roadmap_id',
+  })
+}
+
+// ── Bulk Topic Progress ──────────────────────────────────────
+
+/**
+ * Tính progress cho nhiều topics cùng lúc.
+ * Strategy: 2 bulk queries + client-side join.
+ * "learned" = mastered === true trong user_srs_records.
+ */
+export async function fetchTopicCompletionMap(
+  userId: string,
+  topicIds: string[]
+): Promise<Record<string, { total: number; learned: number; percent: number }>> {
+  // 1. Bulk fetch: tất cả word assignments cho các topics này
+  const { data: junctions } = await supabase
+    .from('topic_words')
+    .select('topic_id, word_id')
+    .in('topic_id', topicIds)
+
+  if (!junctions?.length) {
+    return Object.fromEntries(topicIds.map(id => [id, { total: 0, learned: 0, percent: 0 }]))
+  }
+
+  // 2. Collect tất cả unique word IDs
+  const allWordIds = [...new Set(junctions.map(j => j.word_id))]
+
+  // 3. Bulk fetch: progress cho tất cả words này
+  const { data: progressRows } = await supabase
+    .from('user_srs_records')
+    .select('word_id')
+    .eq('user_id', userId)
+    .eq('mastered', true)
+    .in('word_id', allWordIds)
+
+  const masteredSet = new Set((progressRows ?? []).map(p => p.word_id))
+
+  // 4. Client-side join: tính per-topic
+  const result: Record<string, { total: number; learned: number; percent: number }> = {}
+  
+  // Group junctions by topic
+  const wordsByTopic = new Map<string, string[]>()
+  for (const j of junctions) {
+    if (!wordsByTopic.has(j.topic_id)) wordsByTopic.set(j.topic_id, [])
+    wordsByTopic.get(j.topic_id)!.push(j.word_id)
+  }
+
+  for (const topicId of topicIds) {
+    const topicWordIds = wordsByTopic.get(topicId) ?? []
+    const learned = topicWordIds.filter(wid => masteredSet.has(wid)).length
+    const total = topicWordIds.length
+    result[topicId] = {
+      total,
+      learned,
+      percent: total > 0 ? Math.round((learned / total) * 100) : 0,
+    }
+  }
+
+  return result
 }
