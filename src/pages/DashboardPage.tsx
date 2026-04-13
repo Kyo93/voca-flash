@@ -51,11 +51,12 @@ export default function DashboardPage() {
   useEffect(() => {
     if (initialData) {
       setStats({
-        totalWords: initialData.stats.total_words,
-        mastered: initialData.stats.mastered,
-        learning: initialData.stats.learning,
+        totalWords: 0, // Legacy - not in health
+        mastered: initialData.health.mastered_today, // repurposed
+        learning: initialData.health.due_today, // repurposed
         topicCounts: {},
       })
+      setNewTodayTotal(initialData.health.new_today)
       
       // Map initialData to DashboardSummary legacy structure
       setDashboardData(prev => ({
@@ -94,11 +95,10 @@ export default function DashboardPage() {
 
         setDashboardData(summary)
 
-        // Calculate new words today with 4 AM reset
-        const todayBoundary = getTodayBoundary()
-        const vocabData = vocabResponse.data || []
-        const newToday = vocabData.filter((w: any) => new Date(w.first_encountered) >= todayBoundary).length
-        setNewTodayTotal(newToday)
+        // Use new_today from initialData (pre-calculated by DB)
+        if (initialData?.health) {
+          setNewTodayTotal(initialData.health.new_today)
+        }
         
         // Banner logic
         const today = new Date().toISOString().split('T')[0]
@@ -118,7 +118,7 @@ export default function DashboardPage() {
 
   const dailyGoal = profile?.daily_target ?? 20
   const dailyProgress = Math.min(newTodayTotal, dailyGoal)
-  const progressPct = stats.totalWords > 0
+  const progressPct = dailyGoal > 0
     ? Math.round((dailyProgress / dailyGoal) * 100)
     : 0
 
@@ -205,53 +205,88 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Stats Row */}
+          {/* Stats Row (Memory Health & Mission) */}
           <div className="grid grid-cols-12 gap-6 mb-8">
-            {/* Daily Goal */}
-            <div className="col-span-8 bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm flex items-center gap-8 hover:shadow-md transition-all">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="material-symbols-outlined text-orange-400 text-sm">target</span>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 block">{t('home.currentGoal')}</span>
-                </div>
-                <div className="text-4xl font-black text-secondary tracking-tight mb-4">
-                  {loading ? (
-                    <span className="inline-block w-16 h-8 bg-stone-100 rounded animate-pulse" />
-                  ) : (
-                    <>
-                      {dailyProgress} <span className="text-stone-300 font-medium text-2xl">/ {dailyGoal}</span>
-                    </>
-                  )}
-                </div>
-                <div className="h-2 w-full bg-stone-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, progressPct)}%` }} />
-                </div>
-                <p className="text-[10px] font-bold text-stone-400 italic mt-3">{t('home.newWords')} hôm nay</p>
+            {/* 1. Retention & Stability (Memory Strength) */}
+            <div className="col-span-5 bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="material-symbols-outlined text-primary text-sm">psychology</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 block">Sức khỏe bộ nhớ</span>
               </div>
-              <div className="w-32 h-32 rounded-full border-[8px] border-orange-50 bg-orange-50/30 flex flex-col items-center justify-center shrink-0 relative">
-                {loading ? (
-                  <span className="w-12 h-12 bg-stone-100 rounded-full animate-pulse" />
-                ) : (
-                  <>
-                    <svg className="absolute inset-0 w-full h-full -rotate-90 p-[2px]" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="46" className="stroke-primary/10" strokeWidth="8" fill="none" />
-                      <circle cx="50" cy="50" r="46" className="stroke-primary" strokeWidth="8" fill="none" strokeDasharray="289" strokeDashoffset={289 - (289 * Math.min(100, progressPct)) / 100} strokeLinecap="round" />
-                    </svg>
-                    <span className="text-3xl font-black text-secondary relative z-10">{Math.min(100, progressPct)}%</span>
-                    <span className="text-[9px] font-black text-primary uppercase tracking-tighter mt-1 relative z-10">{t('progress.completed')}</span>
-                  </>
-                )}
+              
+              <div className="flex gap-6 items-center">
+                <div className="relative w-24 h-24 shrink-0">
+                  <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" className="stroke-stone-50" strokeWidth="12" fill="none" />
+                    <circle 
+                      cx="50" cy="50" r="44" 
+                      className="stroke-primary" 
+                      strokeWidth="12" 
+                      fill="none" 
+                      strokeDasharray="276" 
+                      strokeDashoffset={276 - (276 * (initialData?.health.retention_rate ?? 0.9))} 
+                      strokeLinecap="round" 
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-xl font-black text-secondary">{Math.round((initialData?.health.retention_rate ?? 0.9) * 100)}%</span>
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <div className="mb-3">
+                    <p className="text-[10px] font-black text-stone-400 uppercase tracking-tighter">Khả năng ghi nhớ</p>
+                    <p className="text-sm font-bold text-secondary mt-0.5">Xuất sắc</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-stone-400 uppercase tracking-tighter">Độ bền trung bình</p>
+                    <p className="text-sm font-bold text-primary mt-0.5">{initialData?.health.avg_stability.toFixed(1)} ngày</p>
+                  </div>
+                </div>
               </div>
             </div>
-            {/* Rank */}
-            <div className="col-span-4 bg-secondary px-8 py-8 rounded-[2.5rem] flex flex-col justify-center items-center border border-white/10 shadow-lg shadow-secondary/20 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-secondary to-stone-900 opacity-90"></div>
-              <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-4xl text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
+
+            {/* 2. Daily Mission (Workload) */}
+            <div className="col-span-4 bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="material-symbols-outlined text-orange-400 text-sm">target</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 block">Nhiệm vụ hôm nay</span>
+              </div>
+
+              <div className="text-3xl font-black text-secondary tracking-tight mb-2">
+                {newTodayTotal} <span className="text-stone-300 font-medium text-xl">/ {dailyGoal}</span>
+              </div>
+              
+              <div className="h-2 w-full bg-stone-50 rounded-full overflow-hidden mb-2">
+                <div className="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full" style={{ width: `${progressPct}%` }} />
+              </div>
+              
+              <p className="text-[10px] font-bold text-stone-400">Đã học {newTodayTotal} từ mới</p>
+            </div>
+
+            {/* 3. Review Forecast (Mini Chart) */}
+            <div className="col-span-3 bg-secondary p-8 rounded-[2.5rem] flex flex-col text-white shadow-lg shadow-secondary/20 relative overflow-hidden group">
+              <div className="relative z-10 h-full flex flex-col">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="material-symbols-outlined text-primary-fixed text-sm">event_repeat</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block">Dự báo ôn tập</span>
                 </div>
-                <p className="font-black text-xl text-white tracking-tight">Cấp độ Newcomer</p>
-                <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.15em] mt-2">{Math.max(0, dailyGoal - dailyProgress)} từ nữa để thăng hạng</p>
+                
+                <div className="flex-1 flex items-end gap-2 px-1">
+                  {(initialData?.health.forecast || [2, 5, 3, 8, 4, 6, 2]).slice(0, 5).map((count, i) => {
+                    const max = Math.max(...(initialData?.health.forecast || [10])) || 1
+                    const height = Math.max(15, (count / max) * 100)
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                        <div 
+                          className="w-full bg-white/10 rounded-t-lg group-hover:bg-primary/40 transition-all duration-500"
+                          style={{ height: `${height}%` }}
+                        />
+                        <span className="text-[8px] font-bold text-white/30">{i === 0 ? 'T2' : i === 1 ? 'T3' : i === 2 ? 'T4' : i === 3 ? 'T5' : 'T6'}</span>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
           </div>

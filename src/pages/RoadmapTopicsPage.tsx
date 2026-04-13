@@ -120,6 +120,17 @@ export default function RoadmapTopicsPage() {
     return topicProgress[topicId] || { total: 0, learned: 0, percent: 0 }
   }
 
+  // --- Aesthetic Helpers ---
+  const getPastelStyles = (hexColor: string | null) => {
+    const color = hexColor || '#D35400'
+    // Slightly more visible pastel for the whole block
+    return {
+      bg: `${color}12`, // ~7% opacity - noticeable but soft
+      border: `${color}25`, // ~15% opacity
+      accent: color
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center p-20">
@@ -202,6 +213,7 @@ export default function RoadmapTopicsPage() {
           const topicStats = getTopicStats(topic.id)
           const isCompleted = topicStats.total > 0 && topicStats.learned >= topicStats.total
           const isStarted = topicStats.percent > 0
+          const styles = getPastelStyles(topic.color)
           
           const isMainLarge = topic.id === featuredId && !searchQuery
           const isUpNext = topic.id === upNextId && !searchQuery
@@ -211,41 +223,42 @@ export default function RoadmapTopicsPage() {
               <Link
                 key={topic.id}
                 to={`/study?topic=${topic.slug}&topicId=${topic.id}&roadmapId=${roadmap.id}`}
-                className="col-span-12 md:col-span-7 group relative bg-surface-container-lowest rounded-xl p-8 sun-drenched-shadow transition-all hover:bg-white cursor-pointer overflow-hidden block"
+                className="col-span-12 md:col-span-7 group relative bg-white rounded-3xl p-8 sun-drenched-shadow-lg transition-all hover:scale-[1.01] cursor-pointer overflow-hidden block border border-stone-100"
               >
                 <div className="flex justify-between items-start">
                   <div className="space-y-6 flex-1">
                     <div className="flex items-center gap-4">
-                      <div className={`w-16 h-16 rounded-lg ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-primary-fixed text-primary'} flex items-center justify-center`}>
+                      <div className={`w-16 h-16 rounded-2xl ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-primary-fixed text-primary'} flex items-center justify-center shadow-inner`}>
                         <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                          {isCompleted ? 'check_circle' : topic.slug.includes('animal') ? 'pets' : 'menu_book'}
+                          {isCompleted ? 'check_circle' : (topic.icon || (topic.slug.includes('animal') ? 'pets' : 'menu_book'))}
                         </span>
                       </div>
                       <div>
                         {isStarted && !isCompleted && (
                           <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest mb-1 inline-block">ĐANG HỌC</span>
                         )}
-                        <h3 className="text-2xl font-bold text-on-surface">{topic.name}</h3>
-                        <p className="text-on-surface-variant mt-1 text-sm font-medium">
+                        <h3 className="text-2xl font-black text-secondary tracking-tight">{topic.name}</h3>
+                        <p className="text-on-surface-variant mt-1 text-sm font-bold opacity-70">
                           {topicStats.total} Words • {topicStats.percent}% mastered
                         </p>
                       </div>
                     </div>
                     {topic.description && (
-                      <p className="text-on-surface-variant max-w-sm leading-relaxed line-clamp-2 mt-4 text-[15px]">
+                      <p className="text-on-surface-variant max-w-sm leading-relaxed line-clamp-2 mt-4 text-[15px] font-medium italic">
                         {topic.description}
                       </p>
                     )}
-                    <button className={`${isCompleted ? 'bg-green-600' : 'primary-gradient'} text-white px-8 py-3 rounded-lg font-bold flex items-center gap-2 group-hover:shadow-lg transition-all active:scale-95 mt-6 border-none`}>
+                    <button className={`${isCompleted ? 'bg-green-600' : 'primary-gradient'} text-white px-8 py-3.5 rounded-2xl font-black text-sm flex items-center gap-2 group-hover:shadow-2xl transition-all active:scale-95 mt-6 border-none uppercase tracking-widest `}>
                       <span>{isCompleted ? 'Hoàn thành' : isStarted ? 'Học tiếp (Resume)' : 'Bắt đầu học'}</span>
-                      {!isCompleted && <span className="material-symbols-outlined">arrow_forward</span>}
+                      {!isCompleted && <span className="material-symbols-outlined font-variation-fill">bolt</span>}
                     </button>
                   </div>
-                  <div className="w-48 h-48 relative hidden xl:block select-none pointer-events-none shrink-0 ml-4">
+                  <div className="w-56 h-56 relative hidden xl:block select-none pointer-events-none shrink-0 ml-4 group">
+                    <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75 group-hover:scale-100 transition-transform duration-700"></div>
                     <img 
                       alt="Topic illustration" 
                       src={topic.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80'} 
-                      className="w-full h-full object-cover rounded-xl shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transform rotate-3 group-hover:rotate-0 transition-transform duration-500" 
+                      className="w-full h-full object-cover rounded-[2rem] shadow-2xl relative z-10 transform -rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-700" 
                     />
                   </div>
                 </div>
@@ -258,76 +271,117 @@ export default function RoadmapTopicsPage() {
               <Link
                 key={topic.id}
                 to={`/study?topic=${topic.slug}&topicId=${topic.id}&roadmapId=${roadmap.id}`}
-                className="col-span-12 md:col-span-5 bg-secondary-container/30 rounded-xl p-8 transition-all hover:bg-secondary-container/50 flex flex-col justify-between cursor-pointer group block"
+                className="col-span-12 md:col-span-5 relative group overflow-hidden rounded-3xl"
               >
-                <div className="flex justify-between items-start mb-12">
-                  <div className={`w-12 h-12 rounded-lg ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-secondary text-on-secondary'} flex items-center justify-center shrink-0`}>
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      {isCompleted ? 'task_alt' : 'palette'}
-                    </span>
+                {/* Dynamic Wow Border */}
+                <div className="absolute inset-0 border-gradient-wow z-0"></div>
+                
+                <div className="absolute inset-[2px] glass-wow-card rounded-[calc(1.5rem-2px)] z-10 p-8 flex flex-col justify-between transition-all group-hover:bg-white/60">
+                  <div className="flex justify-between items-start mb-12">
+                    <div className="flex items-center justify-center">
+                      <div className="relative">
+                        {/* Kinetic Glow Aura (Behind) */}
+                        <div className="absolute -inset-4 primary-gradient rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-all duration-500 scale-50 group-hover:scale-100"></div>
+                        
+                        {/* Main Interaction Circle */}
+                        <div 
+                          className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl animate-float relative z-10 primary-gradient text-white transition-all duration-500 group-hover:rotate-[10deg]"
+                        >
+                          {/* Topic Icon: Dissolves on Hover */}
+                          <div className="absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:opacity-0 group-hover:scale-0">
+                            <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                              {topic.icon || 'palette'}
+                            </span>
+                          </div>
+
+                          {/* Play Trigger: Appears on Hover */}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-110">
+                            <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                              play_arrow
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                       <span className="bg-secondary/10 text-secondary text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-sm">UP NEXT</span>
+                       <span className="text-[10px] font-black text-stone-400">TARGET: 100%</span>
+                    </div>
                   </div>
-                  <span className="bg-secondary/10 text-secondary text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest whitespace-nowrap">UP NEXT</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-on-surface mb-2">{topic.name}</h3>
-                  <p className="text-on-surface-variant text-sm mb-6">
-                    {topicStats.total} Words • {topicStats.percent}% mastered
-                  </p>
-                  <div className="h-2 w-full bg-surface-container rounded-full mb-6 overflow-hidden">
-                    <div 
-                      className="h-full bg-secondary rounded-full transition-all duration-1000" 
-                      style={{ width: `${topicStats.percent}%` }}
-                    ></div>
-                  </div>
-                  <div className={`${isCompleted ? 'text-green-600' : 'text-secondary'} font-bold flex items-center gap-2 group-hover:underline decoration-2 underline-offset-4`}>
-                    <span>{isCompleted ? 'Hoàn thành' : isStarted ? 'Học tiếp (Resume)' : 'Bắt đầu học'}</span>
-                    {!isCompleted && <span className="material-symbols-outlined text-sm">play_arrow</span>}
+
+                  <div>
+                    <h3 className="text-2xl font-black text-secondary tracking-tight mb-2">{topic.name}</h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest opacity-60">
+                        {topicStats.total} Words Progress
+                      </p>
+                      <span className="text-sm font-black text-secondary">{topicStats.percent}%</span>
+                    </div>
+                    
+                    <div className="h-4 w-full bg-stone-100 rounded-full overflow-hidden border border-stone-100 shadow-inner p-[2px]">
+                      <div 
+                        className="h-full rounded-full transition-all duration-1000 liquid-progress primary-gradient" 
+                        style={{ width: `${topicStats.percent}%` }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </Link>
             )
           }
 
+          {/* Standard Topic: Pastel Card Logic */}
           return (
             <Link
               key={topic.id}
               to={`/study?topic=${topic.slug}&topicId=${topic.id}&roadmapId=${roadmap.id}`}
-              className="col-span-12 md:col-span-4 bg-surface-container-high rounded-xl p-6 hover:bg-surface-variant transition-colors cursor-pointer group block relative overflow-hidden"
+              className="col-span-12 md:col-span-4 rounded-3xl p-6 transition-all hover:scale-[1.03] hover:shadow-2xl cursor-pointer group block relative overflow-hidden border border-transparent shadow-sm"
+              style={{ backgroundColor: styles.bg }}
             >
-              <div className="flex items-center gap-4 mb-6">
-                <div className={`w-12 h-12 rounded-lg ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-surface-container-lowest text-on-surface-variant'} flex items-center justify-center group-hover:bg-white transition-colors`}>
-                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
-                    {isCompleted ? 'done_all' : topic.slug.includes('family') ? 'family_restroom' : topic.slug.includes('food') ? 'restaurant' : 'school'}
+              <div className="flex items-center gap-5 mb-8">
+                <div 
+                  className="w-14 h-14 rounded-[1.2rem] flex items-center justify-center shadow-lg transition-transform group-hover:rotate-12 bg-white"
+                >
+                  <span className="material-symbols-outlined text-2xl text-secondary" style={{ fontVariationSettings: "'FILL' 0" }}>
+                    {isCompleted ? 'verified' : (topic.icon || 'school')}
                   </span>
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-bold text-on-surface text-[15px]">{topic.name}</h4>
-                  <p className="text-xs text-on-surface-variant font-medium mt-0.5">
-                    {topicStats.total} Words • {topicStats.percent}%
-                  </p>
+                  <h4 className="font-black text-secondary text-[16px] tracking-tight leading-none mb-1.5">{topic.name}</h4>
+                  <div className="flex items-center gap-2">
+                    <span 
+                      className="w-1.5 h-1.5 rounded-full" 
+                      style={{ backgroundColor: styles.accent }}
+                    ></span>
+                    <p className="text-[10px] text-stone-400 font-black uppercase tracking-widest">
+                      {topicStats.total} Từ • {topicStats.percent}%
+                    </p>
+                  </div>
                 </div>
               </div>
+
               {topic.description && (
-                <p className="text-sm text-on-surface-variant mb-6 leading-snug line-clamp-2">
+                <p className="text-xs text-on-surface-variant/80 mb-6 leading-relaxed line-clamp-2 font-medium">
                   {topic.description}
                 </p>
               )}
-              {isCompleted ? (
-                <div className="flex items-center gap-2 text-green-600 transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">verified</span>
-                  <span className="text-xs font-bold uppercase tracking-widest">Completed</span>
-                </div>
-              ) : isStarted ? (
-                <div className="flex items-center gap-2 text-secondary group-hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">chart_data</span>
-                  <span className="text-xs font-bold uppercase tracking-widest">Học tiếp</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 text-outline group-hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">lock_open</span>
-                  <span className="text-xs font-bold uppercase tracking-widest">Bắt đầu học</span>
-                </div>
-              )}
+
+              <div className="flex items-center justify-between mt-auto">
+                {isCompleted ? (
+                  <div className="flex items-center gap-2 text-green-600 transition-colors">
+                    <span className="material-symbols-outlined text-[18px] font-variation-fill">check_circle</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Mastered</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-stone-400 group-hover:text-secondary transition-colors">
+                    <span className="material-symbols-outlined text-[18px] font-variation-fill">bolt</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                      {isStarted ? 'Tiếp tục' : 'Bắt đầu'}
+                    </span>
+                  </div>
+                )}
+              </div>
             </Link>
           )
         })}

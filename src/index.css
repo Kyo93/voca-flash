@@ -348,3 +348,45 @@ body {
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
+/* === Aesthetic Roadmap Utilities === */
+.glass-wow-card {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(211, 84, 0, 0.1);
+}
+
+.liquid-progress {
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: liquid-slide 2s infinite ease-in-out;
+}
+
+@keyframes liquid-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.border-gradient-wow {
+  padding: 1px;
+  background: linear-gradient(135deg, var(--color-primary), #fff, var(--color-primary));
+  background-size: 200% 200%;
+  animation: gradient-rotate 4s linear infinite;
+}
+
+@keyframes gradient-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

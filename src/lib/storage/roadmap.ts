@@ -17,7 +17,14 @@ export async function fetchInitialAppData(userId: string): Promise<InitialAppDat
   const result = data || {}
   return {
     profile: result.profile || null,
-    stats: result.stats || { total_words: 0, mastered: 0, learning: 0 },
+    health: result.health || { 
+      retention_rate: 1, 
+      avg_stability: 0, 
+      new_today: 0, 
+      due_today: 0, 
+      mastered_today: 0, 
+      stability_distribution: result.health?.stability_distribution || { fresh: 0, stable: 0, rooted: 0 }
+    },
     active_roadmap: result.active_roadmap || null,
     global_review_count: result.global_review_count || 0
   } as InitialAppData

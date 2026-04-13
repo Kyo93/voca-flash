@@ -155,10 +155,16 @@ export interface MasteryWord {
 
 export interface InitialAppData {
   profile: UserProfile | null
-  stats: {
-    total_words: number
-    mastered: number
-    learning: number
+  health: {
+    retention_rate: number
+    avg_stability: number
+    new_today: number
+    due_today: number
+    stability_distribution: {
+      fresh: number
+      stable: number
+      rooted: number
+    }
   }
   active_roadmap: {
     id: string

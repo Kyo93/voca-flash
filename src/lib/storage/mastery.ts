@@ -56,7 +56,8 @@ export async function fetchUserVocabulary(
     fsrs_reps: r.fsrs_reps,
     fsrs_lapses: r.fsrs_lapses,
     is_orphaned: r.is_orphaned,
-    topic_names: r.topic_names
+    topic_names: r.topic_names,
+    first_encountered: r.first_encountered
   }))
 
   return { data: mappedData, total }
