@@ -17,10 +17,6 @@ const QUOTES = [
   "Học tập là kho báu sẽ đi theo chủ nhân của nó khắp mọi nơi."
 ]
 
-// Replaced local DashboardStats with global MasteryStats
-
-
-
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { user, profile, initialData } = useAuth()
