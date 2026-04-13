@@ -295,18 +295,18 @@ export default function SettingsPage() {
             
             <div>
               <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-2">
-                {t('settings.srsIntensity')}
+                FSRS Retention (Mức độ ghi nhớ)
               </label>
               <select 
                 value={formData.srs_intensity}
                 onChange={(e) => setFormData({...formData, srs_intensity: Number(e.target.value)})}
                 className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-secondary font-medium outline-none focus:border-primary transition-colors cursor-pointer appearance-none"
               >
-                <option value={0.8}>0.8x - Relaxed (Ít ép ôn tập)</option>
-                <option value={1.0}>1.0x - Normal (Tiêu chuẩn)</option>
-                <option value={1.2}>1.2x - Intense (Ôn tập nhiều hơn)</option>
-                <option value={1.5}>1.5x - Hardcore (Khắt khe)</option>
+                <option value={0.8}>80% - Relaxed (Ít ôn tập hơn)</option>
+                <option value={0.9}>90% - Standard (Tiêu chuẩn tối ưu)</option>
+                <option value={0.95}>95% - Intense (Ghi nhớ cực tốt)</option>
               </select>
+              <p className="text-[10px] text-stone-400 mt-2 italic px-1">Mức càng cao, bạn sẽ phải ôn tập thường xuyên hơn để đạt được độ ghi nhớ mong muốn.</p>
             </div>
           </div>
         </section>

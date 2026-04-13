@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
-import { CardProgress, Rating, calculateNextReview } from '../lib/srs'
+import { CardProgress, SrsRating, calculateFSRSReview, isMastered, mapIntensityToRetention } from '../lib/srs'
 import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word } from '../lib/types'
@@ -36,14 +36,14 @@ export function useReviewSession() {
     const hasExample = !!word.example
     const hasChoices = choices.length >= 3
 
-    // Logic based on SM-2 repetitions
-    if (progress.repetitions < 2) {
+    // Logic based on FSRS stability (days)
+    if (progress.stability < 3) {
       // Beginner: Recognition or Construction
       const options: QuadrantType[] = ['construction']
       if (hasChoices) options.push('recognition')
       if (hasExample) options.push('context_gap')
       return options[Math.floor(Math.random() * options.length)]
-    } else if (progress.repetitions < 4) {
+    } else if (progress.stability < 14) {
       // Intermediate: Phonetics, Construction or Context Gap
       const options: QuadrantType[] = ['construction', 'phonetics']
       if (hasExample) options.push('context_gap')
@@ -75,29 +75,26 @@ export function useReviewSession() {
     setIsComplete(challenges.length === 0)
   }, [user])
 
-  const submitAnswer = useCallback(async (isCorrect: boolean, ratingFallback?: Rating) => {
+  const submitAnswer = useCallback(async (isCorrect: boolean, ratingFallback?: SrsRating) => {
     if (currentIndex >= queue.length) return
     if (!user) return
 
     const current = queue[currentIndex]
     
     // Calculate new SRS rating
-    // If correct in hard mode (ghost_recall), give higher rating
-    let rating: Rating = isCorrect ? 4 : 1
-    if (isCorrect && current.quadrant === 'ghost_recall') rating = 5
+    // FSRS: Again=1, Hard=2, Good=3, Easy=4
+    let rating: SrsRating = isCorrect ? 3 : 1
+    if (isCorrect && current.quadrant === 'ghost_recall') rating = 4 // Extra boost for Ghost Recall
     if (ratingFallback !== undefined) rating = ratingFallback
 
     const intensity = profile?.srs_intensity ?? 1.0
-    const newProgress = calculateNextReview(current.progress, rating, intensity)
+    const retention = mapIntensityToRetention(intensity)
+    const newProgress = calculateFSRSReview(current.progress, rating, retention)
 
     // Fire-and-forget DB update
     upsertSrsRecord(user.id, current.word.id, {
-      repetitions: newProgress.repetitions,
+      ...newProgress,
       incrementWrong: isCorrect ? 0 : 1,
-      mastered: newProgress.repetitions >= 6, // Global master threshold
-      ease: newProgress.ease,
-      interval: newProgress.interval,
-      nextReview: newProgress.nextReview
     }).catch(err => console.error('[useReviewSession] sync error:', err))
 
     // Update session stats

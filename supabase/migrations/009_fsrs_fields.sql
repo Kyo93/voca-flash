@@ -1,6 +1,6 @@
 -- Migration 009: FSRS Fields
 -- Thêm columns cho ts-fsrs@5.3.2
--- Columns mới có DEFAULT = 0 (backward compatible với dữ liệu cũ)
+-- NOTE: fsrs_elapsed_days KHÔNG lưu (deprecated in ts-fsrs v5)
 
 -- 1. Thêm FSRS columns vào user_srs_records
 ALTER TABLE user_srs_records
@@ -8,7 +8,6 @@ ADD COLUMN IF NOT EXISTS fsrs_stability FLOAT DEFAULT 0,
 ADD COLUMN IF NOT EXISTS fsrs_difficulty FLOAT DEFAULT 0,
 ADD COLUMN IF NOT EXISTS fsrs_state INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS fsrs_scheduled_days INTEGER DEFAULT 0,
-ADD COLUMN IF NOT EXISTS fsrs_elapsed_days INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS fsrs_reps INTEGER DEFAULT 0,
 ADD COLUMN IF NOT EXISTS fsrs_lapses INTEGER DEFAULT 0;
 

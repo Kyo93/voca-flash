@@ -156,40 +156,51 @@ function FlashcardBack({ card }: { card: Card }) {
   )
 }
 
-function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3) => void }) {
+function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3 | 4) => void }) {
   return (
-    <div className="w-full max-w-md grid grid-cols-3 gap-4 px-2">
-      {/* Hard Button */}
+    <div className="w-full max-w-md grid grid-cols-4 gap-2 px-1">
+      {/* Again Button */}
       <button
         onClick={() => onRate(1)}
-        className="group flex flex-col items-center gap-2"
+        className="group flex flex-col items-center gap-1.5"
       >
-        <div className="w-full py-4 bg-error-container text-on-error-container font-headline font-bold rounded-lg border border-error/10 group-active:scale-95 transition-all flex items-center justify-center">
-          Khó
+        <div className="w-full py-4 bg-error-container text-on-error-container font-headline font-bold rounded-lg border border-error/10 group-active:scale-95 transition-all flex items-center justify-center text-xs">
+          Quên
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">1 Ngày</span>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Lại</span>
       </button>
 
-      {/* Good/Vừa Button */}
+      {/* Hard Button */}
       <button
         onClick={() => onRate(2)}
-        className="group flex flex-col items-center gap-2"
+        className="group flex flex-col items-center gap-1.5"
       >
-        <div className="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center shadow-lg shadow-primary/20">
-          Vừa
+        <div className="w-full py-4 bg-surface-container-highest text-on-surface-variant font-headline font-bold rounded-lg border border-outline-variant/10 group-active:scale-95 transition-all flex items-center justify-center text-xs">
+          Khó
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">4 Ngày</span>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Trễ</span>
       </button>
 
-      {/* Easy/Dễ Button */}
+      {/* Good Button */}
       <button
         onClick={() => onRate(3)}
-        className="group flex flex-col items-center gap-2"
+        className="group flex flex-col items-center gap-1.5"
       >
-        <div className="w-full py-4 bg-secondary-fixed text-on-secondary-fixed font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center border border-secondary/10">
+        <div className="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center shadow-lg shadow-primary/20 text-xs text-nowrap px-1">
+          Vừa
+        </div>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Chuẩn</span>
+      </button>
+
+      {/* Easy Button */}
+      <button
+        onClick={() => onRate(4)}
+        className="group flex flex-col items-center gap-1.5"
+      >
+        <div className="w-full py-4 bg-secondary-fixed text-on-secondary-fixed font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center border border-secondary/10 text-xs">
           Dễ
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">7 Ngày</span>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Sớm</span>
       </button>
     </div>
   )
@@ -373,7 +384,7 @@ export default function StudyPage() {
                 </button>
               </>
             ) : (
-              <SRSButtons onRate={(rating) => rate((rating as 1 | 2 | 3) as 1 | 2 | 3)} />
+              <SRSButtons onRate={(rating) => rate(rating)} />
             )}
           </div>
         </div>

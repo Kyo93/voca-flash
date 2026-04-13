@@ -12,7 +12,7 @@
 
 import { supabase } from './supabase'
 import type { Topic, Roadmap, Word, SrsRecord, UserProfile, WordChoice, ResumePointer, MasteryWord } from './types'
-import type { Card, CardProgress } from './srs'
+import { CardProgress, resetFSRSCard } from './srs'
 
 export interface InitialAppData {
   profile: UserProfile | null
@@ -215,15 +215,14 @@ export async function fetchSrsStates(userId: string): Promise<Map<string, CardPr
     for (const p of progressList) {
       map.set(p.word_id, {
         cardId: p.word_id,
-        ease: p.ease_factor,
-        interval: p.interval_days,
-        repetitions: p.repetitions,
-        nextReview: p.next_review_at
-          ? new Date(p.next_review_at).getTime()
-          : Date.now(),
-        lastReview: p.last_reviewed
-          ? new Date(p.last_reviewed).getTime()
-          : 0,
+        stability: p.fsrs_stability ?? 0,
+        difficulty: p.fsrs_difficulty ?? 0.5,
+        state: p.fsrs_state ?? 0,
+        reps: p.fsrs_reps ?? 0,
+        lapses: p.fsrs_lapses ?? 0,
+        scheduledDays: p.fsrs_scheduled_days ?? 0,
+        due: p.next_review_at ? new Date(p.next_review_at).getTime() : Date.now(),
+        lastReview: p.last_reviewed ? new Date(p.last_reviewed).getTime() : 0,
       })
     }
 
@@ -241,16 +240,9 @@ export async function fetchSrsStates(userId: string): Promise<Map<string, CardPr
 export async function upsertSrsRecord(
   userId: string,
   cardId: string,
-  update: { 
-    repetitions: number; 
-    incrementWrong: number; 
-    mastered: boolean;
-    ease: number;
-    interval: number;
-    nextReview: number;
-  }
+  update: CardProgress & { incrementWrong?: number }
 ): Promise<void> {
-  // First try to get existing record
+  // Sync legacy lapse count if provided (used by flashcard hook)
   const { data: existing } = await supabase
     .from('user_srs_records')
     .select('lapse_count')
@@ -258,19 +250,35 @@ export async function upsertSrsRecord(
     .eq('word_id', cardId)
     .maybeSingle()
 
-  const newLapse = (existing?.lapse_count ?? 0) + update.incrementWrong
+  const newLapseLegacy = (existing?.lapse_count ?? 0) + (update.incrementWrong ?? 0)
+  const isMasteredStatus = update.stability >= 21 && update.state !== 3 // State.Relearning = 3
+
+  // Defensive check for NaN values (prevents DB errors if FSRS calculation fails)
+  if (isNaN(update.stability) || isNaN(update.difficulty)) {
+    console.warn('[supabase-storage] Skipping upsert due to NaN values in FSRS data', update)
+    return
+  }
 
   const { error } = await supabase
     .from('user_srs_records')
     .upsert({
       user_id: userId,
       word_id: cardId,
-      repetitions: update.repetitions,
-      lapse_count: newLapse,
-      ease_factor: update.ease,
-      interval_days: update.interval,
-      next_review_at: new Date(update.nextReview).toISOString(),
-      mastered: update.mastered,
+      // Legacy fields (synced for admin/analytics)
+      repetitions: update.reps,
+      lapse_count: newLapseLegacy,
+      ease_factor: 3.0 - (update.difficulty * 1.7), // Approx mapping back
+      interval_days: update.scheduledDays,
+      // FSRS fields (Mains)
+      fsrs_stability: update.stability,
+      fsrs_difficulty: update.difficulty,
+      fsrs_state: update.state,
+      fsrs_scheduled_days: update.scheduledDays,
+      fsrs_reps: update.reps,
+      fsrs_lapses: update.lapses,
+      // Shared
+      next_review_at: new Date(update.due).toISOString(),
+      mastered: isMasteredStatus,
       last_reviewed: new Date().toISOString(),
     }, {
       onConflict: 'user_id,word_id',
@@ -278,6 +286,7 @@ export async function upsertSrsRecord(
 
   if (error) {
     console.error('[supabase-storage] upsertSrsRecord error:', error)
+    throw error // Allow caller to handle notification
   }
 }
 
@@ -331,10 +340,13 @@ export async function fetchReviewWords(userId: string): Promise<{ word: Word; pr
       word: w,
       progress: {
         cardId: record.word_id,
-        ease: record.ease_factor,
-        interval: record.interval_days,
-        repetitions: record.repetitions,
-        nextReview: new Date(record.next_review_at!).getTime(),
+        stability: record.fsrs_stability ?? 0,
+        difficulty: record.fsrs_difficulty ?? 0.5,
+        state: record.fsrs_state ?? 0,
+        reps: record.fsrs_reps ?? 0,
+        lapses: record.fsrs_lapses ?? 0,
+        scheduledDays: record.fsrs_scheduled_days ?? 0,
+        due: record.next_review_at ? new Date(record.next_review_at).getTime() : Date.now(),
         lastReview: record.last_reviewed ? new Date(record.last_reviewed).getTime() : 0,
       },
       choices: wordChoices
@@ -774,21 +786,51 @@ export async function fetchUserVocabulary(userId: string): Promise<MasteryWord[]
 }
 
 /**
- * Resets a word's progress when failed during Free Study (Option B).
- * Resets repetitions, interval, and updates next_review_at to tomorrow.
+ * Resets a word's progress when failed during Free Study.
+ * Uses FSRS forget logic to ensure consistency.
  */
 export async function upsertFreeStudyFail(userId: string, wordId: string): Promise<void> {
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  tomorrow.setHours(0, 0, 0, 0)
+  const { data: record } = await supabase
+    .from('user_srs_records')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('word_id', wordId)
+    .single()
 
-  // We only update if the record exists (it should, since it's in the Vault)
+  if (!record) return
+
+  // 1. Map to CardProgress
+  const prog: CardProgress = {
+    cardId: record.word_id,
+    stability: record.fsrs_stability ?? 0,
+    difficulty: record.fsrs_difficulty ?? 0.5,
+    state: record.fsrs_state ?? 0,
+    reps: record.fsrs_reps ?? 0,
+    lapses: record.fsrs_lapses ?? 0,
+    scheduledDays: record.fsrs_scheduled_days ?? 0,
+    due: record.next_review_at ? new Date(record.next_review_at).getTime() : Date.now(),
+    lastReview: record.last_reviewed ? new Date(record.last_reviewed).getTime() : 0,
+  }
+
+  // 2. Forget (FSRS logic)
+  const resetProg = resetFSRSCard(prog)
+
+  // 3. Update DB
   const { error } = await supabase
     .from('user_srs_records')
     .update({
+      // Legacy Reset
       repetitions: 0,
       interval_days: 1,
-      next_review_at: tomorrow.toISOString(),
+      // FSRS Reset
+      fsrs_stability: resetProg.stability,
+      fsrs_difficulty: resetProg.difficulty,
+      fsrs_state: resetProg.state,
+      fsrs_reps: resetProg.reps,
+      fsrs_lapses: resetProg.lapses,
+      fsrs_scheduled_days: resetProg.scheduledDays,
+      // Shared
+      next_review_at: new Date(resetProg.due).toISOString(),
       mastered: false,
       last_reviewed: new Date().toISOString()
     })

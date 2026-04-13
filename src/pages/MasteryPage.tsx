@@ -45,7 +45,7 @@ export default function MasteryPage() {
     const orphaned = words.filter(w => w.is_orphaned).length
     const now = new Date()
     const due = words.filter(w => w.next_review_at && new Date(w.next_review_at) <= now).length
-    const weak = words.filter(w => w.lapse_count > 2).length
+    const weak = words.filter(w => (w.fsrs_lapses ?? w.lapse_count) > 2).length
     const learning = words.filter(w => !w.mastered).length
     const today = getTodayBoundary()
     const newlyLearned = words.filter(w => (new Date(w.first_encountered)) >= today).length
@@ -64,7 +64,7 @@ export default function MasteryPage() {
       
       switch (activeFilter) {
         case 'due': return matchesSearch && isDue
-        case 'weak': return matchesSearch && w.lapse_count > 2
+        case 'weak': return matchesSearch && (w.fsrs_lapses ?? w.lapse_count) > 2
         case 'orphaned': return matchesSearch && w.is_orphaned
         case 'mastered': return matchesSearch && w.mastered
         default: return matchesSearch
@@ -244,9 +244,10 @@ function CardRow({
   const nextReviewDate = word.next_review_at ? new Date(word.next_review_at) : null
   const isDue = nextReviewDate && nextReviewDate <= new Date()
   
-  // Ease factor bar color
-  const strengthColor = word.ease_factor >= 2.5 ? 'bg-green-500' : word.ease_factor >= 2.0 ? 'bg-orange-400' : 'bg-red-500'
-  const strengthPercent = Math.min(100, (word.ease_factor / 3) * 100)
+  // Stability-based strength (Mastery target: 21 days)
+  const stability = Number(word.fsrs_stability ?? 0)
+  const strengthColor = stability >= 21 ? 'bg-green-500' : stability >= 7 ? 'bg-primary' : stability >= 3 ? 'bg-orange-400' : 'bg-red-500'
+  const strengthPercent = Math.min(100, (stability / 21) * 100)
 
   return (
     <>
@@ -287,7 +288,7 @@ function CardRow({
                 style={{ width: `${strengthPercent}%` }}
               />
             </div>
-            <p className="text-[10px] font-black text-stone-400 uppercase">EF: {word.ease_factor.toFixed(2)}</p>
+            <p className="text-[10px] font-black text-stone-400 uppercase">Stability: {stability.toFixed(1)}d</p>
           </div>
         </td>
         <td className="py-4 px-6 text-right">
@@ -341,7 +342,7 @@ function CardRow({
                   </div>
                   <div>
                     <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Tần suất sai</p>
-                    <p className="text-xs font-bold text-red-500">{word.lapse_count} lần</p>
+                    <p className="text-xs font-bold text-red-500">{word.fsrs_lapses ?? word.lapse_count} lần</p>
                   </div>
                 </div>
               </div>

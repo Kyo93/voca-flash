@@ -93,6 +93,14 @@ export interface SrsRecord {
   lapse_count: number
   ease_factor: number
   interval_days: number
+  // FSRS fields
+  fsrs_stability: number
+  fsrs_difficulty: number
+  fsrs_state: number
+  fsrs_scheduled_days: number
+  fsrs_reps: number
+  fsrs_lapses: number
+  // Shared fields
   next_review_at: string | null
   mastered: boolean
   last_reviewed: string | null
@@ -128,6 +136,12 @@ export interface MasteryWord {
   interval_days: number
   repetitions: number
   lapse_count: number
+  // FSRS fields for Mastery Vault
+  fsrs_stability: number
+  fsrs_difficulty: number
+  fsrs_state: number
+  fsrs_scheduled_days: number
+  // Shared
   next_review_at: string | null
   last_reviewed: string | null
   mastered: boolean

@@ -168,9 +168,17 @@ function UserSrsPanel({
                       {p.mastered ? 'Mastered' : 'Learning'}
                     </span>
                   </div>
-                  <div className="flex gap-4 mt-1 text-xs text-stone-400">
-                    <span>🔁 {p.repetitions}</span>
-                    <span>✗ {p.lapse_count}</span>
+                  <div className="grid grid-cols-2 gap-4 mt-1 text-[10px] text-stone-400 font-mono">
+                    <div className="space-y-1">
+                      <p>Stability: {p.fsrs_stability?.toFixed(2) ?? '0.00'}</p>
+                      <p>Difficulty: {p.fsrs_difficulty?.toFixed(2) ?? '0.00'}</p>
+                      <p>State: {p.fsrs_state === 0 ? 'New' : p.fsrs_state === 1 ? 'Learning' : p.fsrs_state === 2 ? 'Review' : 'Relearning'}</p>
+                    </div>
+                    <div className="space-y-1 text-right">
+                      <p>Reps: {p.fsrs_reps ?? 0} (Old: {p.repetitions})</p>
+                      <p>Lapses: {p.fsrs_lapses ?? 0}</p>
+                      <p>Next: {p.next_review_at ? new Date(p.next_review_at).toLocaleDateString() : 'N/A'}</p>
+                    </div>
                   </div>
                 </div>
               ))}

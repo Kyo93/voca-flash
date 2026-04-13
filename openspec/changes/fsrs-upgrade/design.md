@@ -1,179 +1,80 @@
-# Design: Nâng cấp SRS lên FSRS
+# Design: FSRS Hard Migration
 
-> **Cập nhật:** 2026-04-13
-> **Library:** `ts-fsrs@5.3.2` ✅ (đã install)
+> **Mục tiêu:** Chuyển đổi toàn diện sang FSRS, xóa sạch code SM-2 cũ để hệ thống gọn nhẹ và dễ bảo trì.
 
 ---
 
 ## Context & Technical Approach
 
-### Tại sao cần FSRS?
+### Tại sao chọn Hard Migration?
+- **Sạch sẽ (Clean Code):** Không cần duy trì logic dual-mode phức tạp. Cả 2 hooks (`useFlashcard`, `useReviewSession`) sẽ dùng chung 1 logic FSRS duy nhất.
+- **Thống nhất (Consistency):** Tránh việc `mastered` status bị lệch giữa 2 thuật toán.
+- **Dữ liệu nhỏ:** Hiện tại chỉ có 21 records, việc chạy migration SQL hàng loạt (Batch) là phương án an toàn nhất.
 
-- **SM-2 hiện tại:** Interval tăng theo cấp số nhân (`interval * ease`), dễ tạo review backlog
-- **FSRS:** Tối ưu interval dựa trên stability thực tế → giảm 20-30% review count
-- **Target:** 90% retention với minimum review effort
-
-### Architecture
+### Architecture (REFINED)
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
-│   srs.ts    │────▶│  ts-fsrs@5   │────▶│ Supabase (NEW)  │
-│  (SM-2 legacy)     │  Scheduler   │     │ fsrs_* columns  │
-└─────────────┘     └──────────────┘     └─────────────────┘
-        │                    │                    │
-        ▼                    ▼                    ▼
-┌─────────────────────────────────────────────────────────┐
-│                    CardProgress                           │
-│  { SM-2: ease, interval, repetitions }                │
-│  { FSRS: stability, difficulty, fsrsState, reps }      │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────┐     ┌──────────────┐     ┌─────────────────┐
+│   src/lib/srs.ts │────▶│  ts-fsrs@5   │────▶│ Supabase (MỚI)  │
+│  (FSRS ONLY)     │     │  Scheduler   │     │ fsrs_* columns  │
+└──────────────────┘     └──────────────┘     └─────────────────┘
+         │                       │                    │
+         ▼                       ▼                    ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       CardProgress                          │
+│  { stability, difficulty, state, reps, lapses, due, ... }   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Key Decisions
+### Key Decisions (REFINED)
 
 | Decision | Reason |
 |----------|--------|
-| `enable_short_term: false` | Skip learning steps → vocabulary app hoạt động như mong đợi (New → interval 1+ ngày) |
-| Keep SM-2 fields in DB | Backward compatibility, dữ liệu cũ không bị break |
-| Lazy migration | Chuyển SM-2 → FSRS khi user học từ cũ lần đầu |
-| Singleton scheduler | Tránh tạo instance mới mỗi review |
+| **Remove SM-2 Logic** | Loại bỏ hoàn toàn function `calculateNextReview` cũ. |
+| **SQL Batch Migration** | Chuyển đổi 21 records cũ qua SQL UPDATE ngay lập tức. |
+| **State-Aware Mastered** | `mastered = (stability >= 21 AND state != 3)`. |
+| **4-Button Rating** | Cập nhật UI sang Again (1), Hard (2), Good (3), Easy (4). |
+| **Standardized Dates** | Ép kiểu Strict Date Flow (ISO -> Date -> ISO) để tránh lỗi Timezone. |
 
 ---
 
-## ts-fsrs v5.3.2 — API Reference
+## ts-fsrs v5.3.2 Integration
 
-### Card interface
-
+### Core Setup
 ```typescript
-interface Card {
-  due: Date
-  stability: number      // Recall stability (days)
-  difficulty: number     // 0-1 (0=easy, 1=hard)
-  scheduled_days: number
-  reps: number          // ⚠️ KHÔNG phải repetitions!
-  lapses: number
-  state: State          // New=0, Learning=1, Review=2, Relearning=3
-  last_review?: Date
-}
+const scheduler = fsrs({ 
+  enable_short_term: false, // Dùng cho vocabulary app (interval 1+ ngày)
+  request_retention: 0.9    // Mặc định (sẽ map từ profile settings)
+})
 ```
 
-### Rating / State
-
-```typescript
-Rating.Again = 1, Rating.Hard = 2, Rating.Good = 3, Rating.Easy = 4
-State.New = 0, State.Learning = 1, State.Review = 2, State.Relearning = 3
-```
-
-### Core Methods
-
-```typescript
-import { fsrs, createEmptyCard, Rating, State } from 'ts-fsrs'
-
-const scheduler = fsrs({ enable_short_term: false })
-
-// Preview all 4 outcomes
-const preview = scheduler.repeat(card, new Date())
-preview[Rating.Good].card  // Good outcome
-
-// Calculate single outcome
-const { card: newCard } = scheduler.next(card, new Date(), Rating.Good)
-
-// Reset (forget)
-const { card: resetCard } = scheduler.forget(card, new Date())
-```
+### Mapping Rating values
+- ** Rating 1 (Again):** Quên hoàn toàn.
+- ** Rating 2 (Hard):** Nhớ mang máng, mất nhiều công.
+- ** Rating 3 (Good):** Nhớ tốt, phản xạ ổn.
+- ** Rating 4 (Easy):** Nhớ rất rõ, không cần ôn sớm.
 
 ---
 
 ## Proposed Changes
 
-### `supabase/migrations/009_fsrs_fields.sql`
+### 1. Database & RPCs
+- **Migration 011:** Thực hiện batch update và nâng cấp RPCs aggregations.
+- **RPC `get_progress_page_data`:** Cập nhật logic lọc `learned` và `mastered`.
 
-Thêm 6 columns mới vào `user_srs_records`:
+### 2. Multi-Page UI Update
+- **StudyPage:** 4 nút rating với text gợi ý thời gian review.
+- **MasteryPage:** Thanh strength hiển thị theo stability (ví dụ: stability 30 ngày = 100%).
+- **SettingsPage:** Slider hoặc Dropdown chỉnh `request_retention` (ẩn mapping từ `srs_intensity`).
+- **Admin UsersPage:** Hiển thị chi tiết thông số FSRS để dễ debug.
 
-```sql
-fsrs_stability: FLOAT       -- Recall stability
-fsrs_difficulty: FLOAT      -- Intrinsic difficulty
-fsrs_state: INTEGER        -- 0=New, 1=Learning, 2=Review, 3=Relearning
-fsrs_scheduled_days: INTEGER
-fsrs_reps: INTEGER         -- ⚠️ reps, không phải repetitions!
-fsrs_lapses: INTEGER
-```
-
-> ⚠️ `elapsed_days` **không lưu** (deprecated in v5)
-
-### `src/lib/srs.ts`
-
-**Thêm exports:**
-- `createFsrsCard()` — Tạo card mới
-- `calculateFSRSReview()` — Tính review với FSRS
-- `progressToFsrsCard()` — Convert CardProgress → Card
-- `fsrsCardToProgress()` — Convert Card → CardProgress
-- `isFsrsMigrated()` — Kiểm tra đã migrate chưa
-- `isMastered()` — Unified mastered check
-- `getFsrsScheduler()` — Singleton scheduler
-
-**Giữ nguyên:**
-- `calculateNextReview()` — SM-2 legacy
-- `createInitialProgress()` — SM-2 legacy
-- `getDueCards()` — SM-2 legacy
-
-### `src/lib/types.ts`
-
-Thêm FSRS fields vào `SrsRecord` và `MasteryWord`.
-
-### `src/lib/supabase-storage.ts`
-
-- `fetchSrsStates()` — Đọc cả SM-2 + FSRS fields
-- `upsertSrsRecord()` — Ghi cả SM-2 + FSRS fields
-- `fetchReviewWords()` — Order by `next_review_at`
-
-### `src/hooks/useFlashcard.ts`
-
-- Dùng FSRS thay SM-2 khi `isFsrsMigrated()`
-- Unified `isMastered()` thay vì `repetitions >= 5`
-
-### `src/hooks/useReviewSession.ts`
-
-- `selectQuadrant` dùng `stability` thay vì `repetitions`
-- Unified `isMastered()`
-
-### `src/hooks/useFreeStudySession.ts`
-
-- Dùng `resetFsrsCard()` thay vì reset manual
+### 3. Hooks Correction
+- **Wrong Detection:** Thống nhất `isCorrect = (rating !== 1)`.
+- **Free Study:** Dùng `scheduler.forget()` thay vì reset manual fields.
 
 ---
 
 ## Verification
-
-### Automated Tests (✅ Đã tạo)
-
-| File | Tests | Status |
-|------|-------|--------|
-| `tests/srs-sm2.test.ts` | 24 | ✅ |
-| `tests/srs-migration.test.ts` | 20 | ✅ |
-| `tests/srs-fsrs.test.ts` | 25 | ✅ |
-| **Tổng** | **81** | ✅ |
-
-### Manual Verification Checklist
-
-- [ ] DB migration chạy thành công
-- [ ] Cards mới học → `fsrs_state > 0`
-- [ ] Cards đã học → `fsrs_stability > 0`
-- [ ] `isMastered()` trả về đúng
-- [ ] Dữ liệu cũ (SM-2) không bị break
-- [ ] Review session hoạt động đúng
-
-### Database Verification
-
-```sql
--- Check columns exist
-SELECT column_name FROM information_schema.columns
-WHERE table_name = 'user_srs_records'
-AND column_name LIKE 'fsrs_%';
-
--- Check sample data
-SELECT word_id, fsrs_stability, fsrs_difficulty, fsrs_state, fsrs_reps
-FROM user_srs_records
-WHERE user_id = 'your-user-id'
-LIMIT 10;
-```
+- Chạy 81 tests hiện có sau khi đã update imports.
+- Kiểm tra SQL: `SELECT COUNT(*) FROM user_srs_records WHERE fsrs_stability > 0`.
+- Kiểm tra Dashboard: Memory Health phải được tính từ các cột FSRS.

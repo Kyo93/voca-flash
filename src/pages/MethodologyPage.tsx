@@ -84,31 +84,41 @@ const MethodologyPage: React.FC = () => {
         </div>
       </section>
 
-      {/* SM-2 Mechanism */}
+      {/* FSRS Mechanism */}
       <section className="space-y-12">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">{t('methodology.srsTitle')}</h2>
+          <h2 className="text-3xl font-bold mb-4">Thuật toán FSRS</h2>
+          <p className="text-on-surface-variant mb-6">Free Spaced Repetition Scheduler - Thế hệ thuật toán SRS mạnh mẽ nhất hiện nay.</p>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </div>
 
         {/* Core Logic Cards */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           <div className="p-8 rounded-2xl bg-surface-container border border-outline/10 space-y-4">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">analytics</span>
             </div>
-            <h3 className="font-bold text-xl">{t('methodology.easeFactor')}</h3>
-            <p className="text-on-surface-variant leading-relaxed">
-              {t('methodology.easeFactorDesc')}
+            <h3 className="font-bold text-xl">Stability (Độ ổn định)</h3>
+            <p className="text-on-surface-variant leading-relaxed text-sm">
+              Đại diện cho số ngày bạn có khả năng ghi nhớ từ này với tỷ lệ 90%. Độ ổn định càng cao, trí nhớ càng bền vững.
+            </p>
+          </div>
+          <div className="p-8 rounded-2xl bg-surface-container border border-outline/10 space-y-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <span className="material-symbols-outlined">psychology_alt</span>
+            </div>
+            <h3 className="font-bold text-xl">Difficulty (Độ khó)</h3>
+            <p className="text-on-surface-variant leading-relaxed text-sm">
+              Mỗi từ vựng có độ phức tạp riêng. FSRS tự điều chỉnh dựa trên phản hồi của bạn để tìm ra lộ trình học tối ưu.
             </p>
           </div>
           <div className="p-8 rounded-2xl bg-surface-container border border-outline/10 space-y-4">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">reorder</span>
             </div>
-            <h3 className="font-bold text-xl">{t('methodology.intervals')}</h3>
-            <p className="text-on-surface-variant leading-relaxed">
-              {t('methodology.intervalsDesc')}
+            <h3 className="font-bold text-xl">Retrievability (Khả năng gợi nhớ)</h3>
+            <p className="text-on-surface-variant leading-relaxed text-sm">
+              Xác suất bạn có thể nhớ lại thông tin ngay lúc này. Hệ thống sẽ lên lịch ôn tập khi chỉ số này giảm xuống mức mục tiêu.
             </p>
           </div>
         </div>
@@ -121,13 +131,13 @@ const MethodologyPage: React.FC = () => {
           </h3>
           <p className="text-on-surface-variant italic mb-8">{t('methodology.repetitionsDesc')}</p>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl border border-green-500/20 bg-green-500/5 space-y-3">
-              <h4 className="font-bold text-green-600 flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm">sentiment_satisfied</span>
-                {t('methodology.ratingEasy')}
+          <div className="grid md:grid-cols-4 gap-6">
+            <div className="p-6 rounded-xl border border-red-500/20 bg-red-500/5 space-y-3">
+              <h4 className="font-bold text-red-600 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">sentiment_very_dissatisfied</span>
+                {t('methodology.ratingAgain')}
               </h4>
-              <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingEasyDesc')}</p>
+              <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingAgainDesc')}</p>
             </div>
             <div className="p-6 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3">
               <h4 className="font-bold text-amber-600 flex items-center gap-2">
@@ -136,12 +146,19 @@ const MethodologyPage: React.FC = () => {
               </h4>
               <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingHardDesc')}</p>
             </div>
-            <div className="p-6 rounded-xl border border-red-500/20 bg-red-500/5 space-y-3">
-              <h4 className="font-bold text-red-600 flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm">sentiment_very_dissatisfied</span>
-                {t('methodology.ratingAgain')}
+            <div className="p-6 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-3">
+              <h4 className="font-bold text-blue-600 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">sentiment_satisfied</span>
+                {t('methodology.ratingGood')}
               </h4>
-              <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingAgainDesc')}</p>
+              <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingGoodDesc')}</p>
+            </div>
+            <div className="p-6 rounded-xl border border-green-500/20 bg-green-500/5 space-y-3">
+              <h4 className="font-bold text-green-600 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">sentiment_very_satisfied</span>
+                {t('methodology.ratingEasy')}
+              </h4>
+              <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingEasyDesc')}</p>
             </div>
           </div>
         </div>

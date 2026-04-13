@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { Card, CardProgress, calculateNextReview, createInitialProgress, Rating } from '../lib/srs'
+import { Card, CardProgress, calculateFSRSReview, createInitialProgress, isMastered, SrsRating, mapIntensityToRetention } from '../lib/srs'
 import { fetchWords, fetchSrsStates, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -46,7 +46,7 @@ export function useFlashcard() {
         unlearned.push(c)
       } else {
         const prog = progressMap.get(c.id)!
-        if (prog.repetitions >= 5) {
+        if (isMastered(prog)) {
           mastered.push(c)
         } else {
           learning.push(c)
@@ -101,14 +101,16 @@ export function useFlashcard() {
     setState((s) => ({ ...s, isFlipped: !s.isFlipped }))
   }, [])
 
-  const rate = useCallback(async (rating: Rating) => {
+  const rate = useCallback(async (rating: SrsRating) => {
     setState((s) => {
       const card = s.queue[s.currentIndex]
       if (!card) return s
 
       const prevProgress = s.progressMap.get(card.id) || createInitialProgress(card.id)
       const intensity = profile?.srs_intensity ?? 1.0
-      const newProgress = calculateNextReview(prevProgress, rating, intensity)
+      const retention = mapIntensityToRetention(intensity)
+      
+      const newProgress = calculateFSRSReview(prevProgress, rating, retention)
 
       const newMap = new Map(s.progressMap)
       newMap.set(card.id, newProgress)
@@ -118,16 +120,12 @@ export function useFlashcard() {
 
       // Fire-and-forget Supabase sync (non-blocking)
       if (user) {
-        const mastered = newProgress.repetitions >= 5
-        const wrong = rating < 3 ? 1 : 0
+        // In FSRS, only Rating 1 (Again) counts as "wrong"
+        const wrong = rating === 1 ? 1 : 0
 
         upsertSrsRecord(user.id, card.id, {
-          repetitions: newProgress.repetitions,
+          ...newProgress,
           incrementWrong: wrong,
-          mastered,
-          ease: newProgress.ease,
-          interval: newProgress.interval,
-          nextReview: newProgress.nextReview
         }).catch(
           (err) => console.error('[useFlashcard] upsert progress error:', err)
         )

@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
-import { CardProgress, Rating } from '../lib/srs'
+import { CardProgress, SrsRating, isMastered } from '../lib/srs'
 import { upsertFreeStudyFail, fetchUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
@@ -18,16 +18,16 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     mistakes: [] as Word[] 
   })
 
-  // Quadrant selection logic (kept for consistency)
+  // Quadrant selection logic (Stability-based)
   const selectQuadrant = (word: MasteryWord): QuadrantType => {
     const hasExample = !!word.example
-    const reps = word.repetitions
+    const stability = word.fsrs_stability ?? 0
 
-    if (reps < 2) {
+    if (stability < 3) {
       const options: QuadrantType[] = ['construction', 'recognition']
       if (hasExample) options.push('context_gap')
       return options[Math.floor(Math.random() * options.length)]
-    } else if (reps < 4) {
+    } else if (stability < 14) {
       const options: QuadrantType[] = ['construction', 'phonetics']
       if (hasExample) options.push('context_gap')
       return options[Math.floor(Math.random() * options.length)]
@@ -51,19 +51,26 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
         if (deckId === 'all') {
           // Default: Take 20 random words for free study if none selected
           sourceWords = allWords.sort(() => Math.random() - 0.5).slice(0, 20)
+        } else if (deckId === 'mastered') {
+          sourceWords = allWords.filter(w => w.mastered === true)
         } else {
           // Filter by topic if deckId looks like a topic slug
-          sourceWords = allWords.filter(w => w.topics?.slug === deckId)
+          sourceWords = allWords.filter(w => w.topic_name === deckId)
         }
       }
 
       const challenges: ReviewChallenge[] = sourceWords.map(w => {
-        // Create a dummy CardProgress for compatibility
+        // Map MasteryWord to CardProgress
         const progress: CardProgress = {
-          repetitions: w.repetitions,
-          ease: w.ease_factor,
-          interval: w.interval_days,
-          nextReview: w.next_review_at ? new Date(w.next_review_at) : new Date()
+          cardId: w.word_id,
+          stability: w.fsrs_stability ?? 0,
+          difficulty: w.fsrs_difficulty ?? 0.5,
+          state: w.fsrs_state ?? 0,
+          reps: w.fsrs_reps ?? 0,
+          lapses: w.fsrs_lapses ?? 0,
+          scheduledDays: w.fsrs_scheduled_days ?? 0,
+          due: w.next_review_at ? new Date(w.next_review_at).getTime() : Date.now(),
+          lastReview: w.last_reviewed ? new Date(w.last_reviewed).getTime() : 0,
         }
 
         const wordObj: Word = {
@@ -99,15 +106,13 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     }
   }, [user, deckId, wordsOverride])
 
-  const submitAnswer = useCallback(async (isCorrect: boolean) => {
+  const submitAnswer = useCallback(async (isCorrect: boolean, ratingFallback?: SrsRating) => {
     if (currentIndex >= queue.length) return
     if (!user) return
 
     const current = queue[currentIndex]
     
-    // Logic Option B:
-    // Pass -> No action in DB.
-    // Fail -> Reset SM-2 process.
+    // In Free Study, Fail results in an SRS reset (Forget)
     if (!isCorrect) {
       upsertFreeStudyFail(user.id, current.word.id)
         .catch(err => console.error('[useFreeStudySession] fail sync error:', err))
