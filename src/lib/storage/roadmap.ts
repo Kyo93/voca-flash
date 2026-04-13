@@ -9,21 +9,33 @@ export async function fetchInitialAppData(userId: string): Promise<InitialAppDat
     return {
       profile: null,
       stats: { total_words: 0, mastered: 0, learning: 0 },
+      health: {
+        retention_rate: 0.9,
+        avg_stability: 0,
+        new_today: 0,
+        due_today: 0,
+        stability_distribution: { fresh: 0, stable: 0, rooted: 0 },
+        forecast: [0, 0, 0, 0, 0, 0, 0]
+      },
       active_roadmap: null,
       global_review_count: 0
     }
   }
 
   const result = data || {}
+  const health = result.health || {}
+  
   return {
     profile: result.profile || null,
-    health: result.health || { 
-      retention_rate: 1, 
-      avg_stability: 0, 
-      new_today: 0, 
-      due_today: 0, 
-      mastered_today: 0, 
-      stability_distribution: result.health?.stability_distribution || { fresh: 0, stable: 0, rooted: 0 }
+    stats: result.stats || { total_words: 0, mastered: 0, learning: 0 },
+    health: { 
+      retention_rate: health.retention_rate ?? 0.9, 
+      avg_stability: health.avg_stability ?? 0, 
+      new_today: health.new_today ?? 0, 
+      due_today: health.due_today ?? 0, 
+      mastered_today: health.mastered_today ?? 0, 
+      forecast: health.forecast ?? [0, 0, 0, 0, 0, 0, 0],
+      stability_distribution: health.stability_distribution || { fresh: 0, stable: 0, rooted: 0 }
     },
     active_roadmap: result.active_roadmap || null,
     global_review_count: result.global_review_count || 0
@@ -118,7 +130,11 @@ export async function fetchTopicCompletionMap(
 
   const result: Record<string, { total: number; learned: number; percent: number }> = {}
   for (const row of (data || [])) {
-    result[row.topic_id] = { total: row.total_words, learned: row.learned_count, percent: row.percent_complete }
+    result[row.topic_id] = {
+      total: Number(row.total_words),
+      learned: Number(row.learned_count),
+      percent: Number(row.percent_complete)
+    }
   }
   return result
 }

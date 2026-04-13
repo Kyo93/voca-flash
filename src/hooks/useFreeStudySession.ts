@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { CardProgress, SrsRating, isMastered } from '../lib/srs'
 import { upsertFreeStudyFail, fetchUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
@@ -17,6 +17,8 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     points: 0, 
     mistakes: [] as Word[] 
   })
+  const [syncError, setSyncError] = useState<string | null>(null)
+  const isInitializing = useRef(false)
 
   // Quadrant selection logic (Stability-based)
   const selectQuadrant = (word: MasteryWord): QuadrantType => {
@@ -38,8 +40,10 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
   }
 
   const initialize = useCallback(async () => {
-    if (!user) return
+    if (!user || isInitializing.current) return
+    isInitializing.current = true
     setIsLoading(true)
+    setSyncError(null)
     
     try {
       let sourceWords: MasteryWord[] = []
@@ -47,15 +51,15 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
       if (wordsOverride && wordsOverride.length > 0) {
         sourceWords = wordsOverride
       } else {
-        const allWords = await fetchUserVocabulary(user.id)
+        const { data: allWords } = await fetchUserVocabulary(user.id)
         if (deckId === 'all') {
           // Default: Take 20 random words for free study if none selected
-          sourceWords = allWords.sort(() => Math.random() - 0.5).slice(0, 20)
+          sourceWords = (allWords ?? []).sort(() => Math.random() - 0.5).slice(0, 20)
         } else if (deckId === 'mastered') {
-          sourceWords = allWords.filter(w => w.mastered === true)
+          sourceWords = (allWords ?? []).filter(w => w.mastered === true)
         } else {
           // Filter by topic if deckId looks like a topic slug
-          sourceWords = allWords.filter(w => w.topic_name === deckId)
+          sourceWords = (allWords ?? []).filter(w => w.topic_names === deckId)
         }
       }
 
@@ -68,23 +72,25 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
           state: w.fsrs_state ?? 0,
           reps: w.fsrs_reps ?? 0,
           lapses: w.fsrs_lapses ?? 0,
-          scheduledDays: w.fsrs_scheduled_days ?? 0,
+          scheduledDays: 0, // v2 does not return fsrs_scheduled_days
           due: w.next_review_at ? new Date(w.next_review_at).getTime() : Date.now(),
           lastReview: w.last_reviewed ? new Date(w.last_reviewed).getTime() : 0,
         }
 
         const wordObj: Word = {
           id: w.word_id,
+          topic_id: null, // v2 does not return topic_id
           word: w.word,
           definition: w.definition,
           phonetic: w.phonetic,
-          pos: w.pos as any,
+          pos: 'other', // v2 does not return pos
           difficulty: 3,
           image_url: w.image_url,
+          image_position: null, // v2 does not return image_position
           example: w.example,
-          example_vi: w.example_vi,
-          created_at: w.first_encountered,
-          updated_at: w.first_encountered
+          example_vi: null, // v2 does not return example_vi
+          created_at: '',
+          updated_at: ''
         }
 
         return {
@@ -101,8 +107,10 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
       setIsComplete(challenges.length === 0)
     } catch (err) {
       console.error('[useFreeStudySession] initialization failed:', err)
+      setSyncError('Không thể tải bài học tự do.')
     } finally {
       setIsLoading(false)
+      isInitializing.current = false
     }
   }, [user, deckId, wordsOverride])
 
@@ -115,7 +123,10 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     // In Free Study, Fail results in an SRS reset (Forget)
     if (!isCorrect) {
       upsertFreeStudyFail(user.id, current.word.id)
-        .catch(err => console.error('[useFreeStudySession] fail sync error:', err))
+        .catch(err => {
+          console.error('[useFreeStudySession] fail sync error:', err)
+          setSyncError('Lỗi cập nhật tiến độ tự do.')
+        })
     }
 
     // Update session stats
@@ -146,6 +157,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     totalCount: queue.length,
     currentChallenge,
     stats,
+    syncError,
     initialize,
     submitAnswer
   }

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { 
-  fetchProgressPageData,
-  UserStats
+  fetchProgressPageData
 } from '../lib/supabase-storage'
 import { useNavigate, Link } from 'react-router-dom'
 import ActivityHeatmap from '../components/ActivityHeatmap'
@@ -83,7 +82,7 @@ export default function ProgressPage() {
             {[
               { 
                 label: 'Mới/Hạt mầm', 
-                value: initialData?.health.stability_distribution.fresh ?? 0, 
+                value: initialData?.health.stability_distribution?.fresh ?? 0, 
                 desc: 'Độ bền < 5 ngày',
                 color: 'text-emerald-500', 
                 bg: 'bg-emerald-50',
@@ -91,7 +90,7 @@ export default function ProgressPage() {
               },
               { 
                 label: 'Vững chắc', 
-                value: initialData?.health.stability_distribution.stable ?? 0, 
+                value: initialData?.health.stability_distribution?.stable ?? 0, 
                 desc: 'Độ bền 5-30 ngày',
                 color: 'text-blue-500', 
                 bg: 'bg-blue-50',
@@ -99,7 +98,7 @@ export default function ProgressPage() {
               },
               { 
                 label: 'Dài hạn', 
-                value: initialData?.health.stability_distribution.rooted ?? 0, 
+                value: initialData?.health.stability_distribution?.rooted ?? 0, 
                 desc: 'Độ bền > 30 ngày',
                 color: 'text-purple-600', 
                 bg: 'bg-purple-50',
@@ -142,8 +141,8 @@ export default function ProgressPage() {
             </div>
             
             <div className="h-48 flex items-end gap-4 px-2">
-              {(initialData?.health.forecast || [2, 5, 3, 8, 4, 6, 2]).map((count, i) => {
-                const max = Math.max(...(initialData?.health.forecast || [10])) || 1
+              {(initialData?.health.forecast || [0, 0, 0, 0, 0]).slice(0, 7).map((count, i) => {
+                const max = Math.max(...(initialData?.health.forecast || [1])) || 1
                 const height = Math.max(10, (count / max) * 100)
                 const isToday = i === 0
                 return (
@@ -154,9 +153,16 @@ export default function ProgressPage() {
                         {count} từ
                       </div>
                       <div 
-                        className={`w-full rounded-t-2xl transition-all duration-500 cursor-help ${isToday ? 'bg-primary' : 'bg-stone-50 group-hover:bg-primary/20'}`}
-                        style={{ height: `${height}%` }}
-                      />
+                      className={`w-full rounded-t-lg transition-all duration-700 ${
+                        isToday 
+                          ? 'bg-orange-500 shadow-[0_4px_12px_rgba(249,115,22,0.3)]' 
+                          : 'bg-blue-500/10 group-hover:bg-blue-500/20'
+                      }`}
+                      style={{ 
+                        height: `${height}%`,
+                        transitionDelay: `${i * 100}ms`
+                      }}
+                    />
                     </div>
                     <div className="text-center">
                       <p className={`text-[9px] font-black uppercase tracking-tighter ${isToday ? 'text-primary' : 'text-stone-300'}`}>

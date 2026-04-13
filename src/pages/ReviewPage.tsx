@@ -76,6 +76,7 @@ export default function ReviewPage() {
         cancelSpeech()
         navigate('/dashboard')
       }}
+      syncError={session.syncError}
     >
       {session.currentChallenge && (
         <ChallengeManager 

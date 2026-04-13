@@ -37,27 +37,27 @@ export async function fetchUserVocabulary(
   }
 
   const result = data || []
-  const total = result.length > 0 ? parseInt(result[0].total_count) : 0
+  const total = result.length > 0 && result[0].total_count != null
+    ? Number(result[0].total_count)
+    : result.length
 
   const mappedData: MasteryWord[] = result.map((r: any) => ({
     word_id: r.word_id,
     word: r.word,
     definition: r.definition,
     phonetic: r.phonetic,
-    example: r.example,
     image_url: r.image_url,
-    image_position: r.image_position,
+    example: r.example,
     mastered: r.mastered,
     next_review_at: r.next_review_at,
     last_reviewed: r.last_reviewed,
-    fsrs_stability: r.fsrs_stability,
-    fsrs_difficulty: r.fsrs_difficulty,
-    fsrs_state: r.fsrs_state,
-    fsrs_reps: r.fsrs_reps,
-    fsrs_lapses: r.fsrs_lapses,
-    is_orphaned: r.is_orphaned,
-    topic_names: r.topic_names,
-    first_encountered: r.first_encountered
+    fsrs_stability: r.fsrs_stability ?? 0,
+    fsrs_difficulty: r.fsrs_difficulty ?? 0,
+    fsrs_state: r.fsrs_state ?? 0,
+    fsrs_reps: r.fsrs_reps ?? 0,
+    fsrs_lapses: r.fsrs_lapses ?? 0,
+    is_orphaned: r.is_orphaned ?? false,
+    topic_names: r.topic_names ?? null
   }))
 
   return { data: mappedData, total }

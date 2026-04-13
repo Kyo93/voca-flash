@@ -54,6 +54,7 @@ export default function FreeStudyPage() {
         navigate('/dashboard')
       }}
       modeLabel="Học tập tự do"
+      syncError={session.syncError}
     >
       {session.currentChallenge && (
         <ChallengeManager 

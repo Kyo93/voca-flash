@@ -1,5 +1,5 @@
 import { supabase } from '../supabase'
-import type { UserProfile, UserStats } from '../types'
+import type { UserProfile, MasteryStats } from '../types'
 import { fetchInitialAppData } from './roadmap'
 
 export async function updateUserSettings(userId: string, settings: Partial<UserProfile>): Promise<void> {
@@ -14,6 +14,14 @@ export async function updateUserSettings(userId: string, settings: Partial<UserP
   }
 }
 
+/**
+ * recordStreak — Supabase-backed streak for LOGGED-IN users.
+ * Creates profile if missing, then increments streak_days based on
+ * consecutive-day study pattern.
+ *
+ * NOT a duplicate of streak.ts (which handles anonymous/offline
+ * users via localStorage).
+ */
 export async function recordStreak(userId: string): Promise<number> {
   const today = new Date().toISOString().split('T')[0]
 
@@ -81,13 +89,16 @@ export async function recordStreak(userId: string): Promise<number> {
   return newStreak
 }
 
-export async function fetchDashboardStats(userId: string): Promise<UserStats> {
+export async function fetchDashboardStats(userId: string): Promise<MasteryStats> {
   const appData = await fetchInitialAppData(userId)
   
   return {
-    totalWords: appData.stats.total_words,
+    total: appData.stats.total_words,
     mastered: appData.stats.mastered,
     learning: appData.stats.learning,
-    streakDays: appData.profile?.streak_days ?? 0,
+    due: appData.global_review_count,
+    weak: 0, 
+    orphaned: 0,
+    streak_days: appData.profile?.streak_days ?? 0,
   }
 }

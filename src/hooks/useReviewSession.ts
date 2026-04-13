@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { CardProgress, SrsRating, calculateFSRSReview, isMastered, mapIntensityToRetention } from '../lib/srs'
 import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
@@ -26,6 +26,8 @@ export function useReviewSession() {
     points: 0, 
     mistakes: [] as Word[] 
   })
+  const [syncError, setSyncError] = useState<string | null>(null)
+  const isInitializing = useRef(false)
 
   /**
    * Adaptive Quadrant Selection
@@ -56,23 +58,32 @@ export function useReviewSession() {
   }
 
   const initialize = useCallback(async () => {
-    if (!user) return
+    if (!user || isInitializing.current) return
+    isInitializing.current = true
     setIsLoading(true)
+    setSyncError(null)
     
-    const rawCards = await fetchReviewWords(user.id)
-    
-    const challenges: ReviewChallenge[] = rawCards.map(c => ({
-      id: c.word.id,
-      word: c.word,
-      progress: c.progress,
-      choices: c.choices,
-      quadrant: selectQuadrant(c)
-    }))
+    try {
+      const rawCards = await fetchReviewWords(user.id)
+      
+      const challenges: ReviewChallenge[] = rawCards.map(c => ({
+        id: c.word.id,
+        word: c.word,
+        progress: c.progress,
+        choices: c.choices,
+        quadrant: selectQuadrant(c)
+      }))
 
-    // Shuffle the final queue
-    setQueue(challenges.sort(() => Math.random() - 0.5))
-    setIsLoading(false)
-    setIsComplete(challenges.length === 0)
+      // Shuffle the final queue
+      setQueue(challenges.sort(() => Math.random() - 0.5))
+      setIsComplete(challenges.length === 0)
+    } catch (err) {
+      console.error('[useReviewSession] Init failed:', err)
+      setSyncError('Không thể tải dữ liệu ôn tập.')
+    } finally {
+      setIsLoading(false)
+      isInitializing.current = false
+    }
   }, [user])
 
   const submitAnswer = useCallback(async (isCorrect: boolean, ratingFallback?: SrsRating) => {
@@ -91,11 +102,18 @@ export function useReviewSession() {
     const retention = mapIntensityToRetention(intensity)
     const newProgress = calculateFSRSReview(current.progress, rating, retention)
 
-    // Fire-and-forget DB update
+    // Fire-and-forget DB update with latency monitoring
+    const start = performance.now()
     upsertSrsRecord(user.id, current.word.id, {
       ...newProgress,
       incrementWrong: isCorrect ? 0 : 1,
-    }).catch(err => console.error('[useReviewSession] sync error:', err))
+    }).then(() => {
+      const duration = performance.now() - start
+      if (duration > 2000) console.warn(`[useReviewSession] Slow sync: ${duration.toFixed(0)}ms`)
+    }).catch(err => {
+      console.error('[useReviewSession] sync error:', err)
+      setSyncError('Lỗi đồng bộ dữ liệu. Kết quả có thể không được lưu.')
+    })
 
     // Update session stats
     setStats(prev => {
@@ -132,6 +150,7 @@ export function useReviewSession() {
     totalCount: queue.length,
     currentChallenge,
     stats,
+    syncError,
     initialize,
     submitAnswer
   }

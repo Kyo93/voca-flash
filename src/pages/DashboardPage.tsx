@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { fetchDashboardStats, fetchDashboardSummary, fetchUserVocabulary, getTodayBoundary } from '../lib/supabase-storage'
-import type { DashboardSummary } from '../lib/supabase-storage'
+import { fetchDashboardSummary, fetchUserVocabulary, getTodayBoundary } from '../lib/supabase-storage'
+import type { DashboardSummary, MasteryStats } from '../lib/types'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
@@ -17,12 +17,7 @@ const QUOTES = [
   "Học tập là kho báu sẽ đi theo chủ nhân của nó khắp mọi nơi."
 ]
 
-interface DashboardStats {
-  totalWords: number
-  mastered: number
-  learning: number
-  topicCounts: Record<string, number>
-}
+// Replaced local DashboardStats with global MasteryStats
 
 
 
@@ -31,12 +26,6 @@ export default function DashboardPage() {
   const { user, profile, initialData } = useAuth()
 
   const [streak, setStreak] = useState<StreakData>(loadStreak())
-  const [stats, setStats] = useState<DashboardStats>({
-    totalWords: 0,
-    mastered: 0,
-    learning: 0,
-    topicCounts: {},
-  })
   const [dashboardData, setDashboardData] = useState<DashboardSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [showBanner, setShowBanner] = useState(false)
@@ -50,12 +39,6 @@ export default function DashboardPage() {
   // Sync with initialData from Context (Màn hình sẽ hiện số ngay lập tức)
   useEffect(() => {
     if (initialData) {
-      setStats({
-        totalWords: 0, // Legacy - not in health
-        mastered: initialData.health.mastered_today, // repurposed
-        learning: initialData.health.due_today, // repurposed
-        topicCounts: {},
-      })
       setNewTodayTotal(initialData.health.new_today)
       
       // Map initialData to DashboardSummary legacy structure
@@ -273,8 +256,8 @@ export default function DashboardPage() {
                 </div>
                 
                 <div className="flex-1 flex items-end gap-2 px-1">
-                  {(initialData?.health.forecast || [2, 5, 3, 8, 4, 6, 2]).slice(0, 5).map((count, i) => {
-                    const max = Math.max(...(initialData?.health.forecast || [10])) || 1
+                  {(initialData?.health.forecast || [0, 0, 0, 0, 0]).slice(0, 5).map((count, i) => {
+                    const max = Math.max(...(initialData?.health.forecast || [1])) || 1
                     const height = Math.max(15, (count / max) * 100)
                     return (
                       <div key={i} className="flex-1 flex flex-col items-center gap-2">

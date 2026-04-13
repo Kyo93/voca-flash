@@ -123,38 +123,40 @@ export interface AuthSession {
 }
 
 // ── Mastery Vault Types ─────────────────────────────────────
+// NOTE: These fields match get_user_vocabulary_v2 return shape.
+// Fields from old v1 (pos, ease_factor, interval_days, repetitions,
+// lapse_count, first_encountered, example_vi) are intentionally
+// excluded — v2 does not return them.
 export interface MasteryWord {
   word_id: string
   word: string
   definition: string
   phonetic: string | null
-  pos: string | null
   image_url: string | null
   example: string | null
-  example_vi: string | null
-  ease_factor: number
-  interval_days: number
-  repetitions: number
-  lapse_count: number
-  // FSRS fields for Mastery Vault
+  // FSRS fields
   fsrs_stability: number
   fsrs_difficulty: number
   fsrs_state: number
-  fsrs_scheduled_days: number
+  fsrs_reps: number
+  fsrs_lapses: number
   // Shared
   next_review_at: string | null
   last_reviewed: string | null
   mastered: boolean
-  first_encountered: string
-  topic_name?: string | null
-  topic_names?: string | null
   is_orphaned: boolean
+  topic_names: string | null
 }
 
 // ── Data Transfer Objects (DTOs) ──────────────────────────
 
 export interface InitialAppData {
   profile: UserProfile | null
+  stats: {
+    total_words: number
+    mastered: number
+    learning: number
+  }
   health: {
     retention_rate: number
     avg_stability: number
@@ -165,6 +167,7 @@ export interface InitialAppData {
       stable: number
       rooted: number
     }
+    forecast: number[]
   }
   active_roadmap: {
     id: string
@@ -211,13 +214,6 @@ export interface LibraryPageData {
   } | null
 }
 
-export interface UserStats {
-  totalWords: number
-  mastered: number
-  learning: number
-  streakDays: number
-}
-
 export interface DashboardSummary {
   resumeTopic: Topic | null
   fallbackTopics: Topic[]
@@ -231,4 +227,5 @@ export interface MasteryStats {
   weak: number
   orphaned: number
   learning: number
+  streak_days?: number
 }

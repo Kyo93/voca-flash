@@ -1,9 +1,10 @@
 /**
- * streak.ts — Phase 10
+ * streak.ts — Anonymous/Offline streak tracking (localStorage).
  *
- * Streak tracking now supports both:
- * - localStorage fallback (for non-logged-in users)
- * - Supabase user_profiles (for logged-in users)
+ * PURPOSE: Persist streak data for anonymous users via localStorage.
+ * NOT a duplicate of src/lib/storage/auth.ts (Supabase-backed
+ * for logged-in users via recordStreak). Different use cases,
+ * different storage backends.
  */
 
 import { supabase } from './supabase'

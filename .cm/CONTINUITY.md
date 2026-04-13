@@ -3,19 +3,41 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-**Performance & Architecture Refactor (Bridge)** — Transition from client-side data processing to a scalable database-first architecture. Modularize `supabase-storage.ts` and implement pagination/infinite scroll for the Mastery page.
+**RPC Audit ✅ COMPLETE** — 5 orphan RPCs dropped, TypeScript types fixed, local migrations synced.
 
 ## Current Phase
-`planning` — Refactor OpenSpec plan written, awaiting execution.
+`done` — RPC audit executed successfully 2026-04-13.
 
 ## Next Actions
-1. Step 1: Database Foundation — Implement RPCs `get_mastery_stats` and update `get_user_vocabulary` (limit/offset).
-2. Step 2: Storage Restructuring — Branch off and split `supabase-storage.ts` into 4 domain-specific files.
-3. Step 3: UI Optimization — Implement Infinite Scroll and Skeleton UI in `MasteryPage.tsx`.
+1. Smoke test: login → Dashboard → Library → Progress → Review (frontend dev)
+2. Push changes: `git add -A && git commit -m "chore: rpc-audit — drop orphans, fix types, sync migrations"`
 
-- **Plan location:** `openspec/changes/performance-refactor-bridge/`
-- **Modules:** `auth-storage.ts`, `mastery-storage.ts`, `roadmap-storage.ts`, `session-storage.ts`.
-- **Primary Goal:** Eliminate O(N) client-side processing by moving stats to RPC.
+## RPC Audit Results (2026-04-13)
+
+### Dropped (5 orphan RPCs):
+- `get_initial_app_data_v2(uuid)` ✅
+- `get_progress_page_data_v2(uuid)` ✅
+- `get_user_memory_health(uuid)` ✅
+- `get_user_memory_health_v2(uuid)` ✅
+- `get_user_vocabulary(uuid)` ✅
+
+### Fixed TypeScript:
+- `InitialAppData.stats` missing field → added ✅
+- `UserStats` unused import → removed ✅
+- `MasteryStats` return type fixed in `fetchDashboardStats` ✅
+- `Number()` coercion for `bigint` fields ✅
+
+### New Files:
+- `supabase/migrations/_orphan_rpc_backup.sql` (backup)
+- `supabase/migrations/017_sync_cloud_local.sql` (documentation)
+
+### Pre-existing bugs found & fixed:
+- `src/lib/storage/auth.ts`: `fetchDashboardStats` returned wrong shape — now matches `MasteryStats`
+- `src/lib/types.ts`: `InitialAppData` missing `stats` field — now aligned with RPC return shape
+4. Phase 4.1: Check `src/lib/streak.ts` usage → deduplicate
+
+- **Plan location:** `openspec/changes/rpc-audit/`
+- **Total tasks:** 13 (~3.5 hrs)
 
 ## What Was Done (2026-04-13)
 
