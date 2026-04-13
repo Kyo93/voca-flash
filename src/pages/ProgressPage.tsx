@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { 
-  fetchDashboardStats, 
-  fetchDashboardSummary, 
-  fetchRoadmaps, 
-  fetchRoadmapStats,
-  fetchUserVocabulary,
   fetchProgressPageData,
-  getTodayBoundary,
   UserStats
 } from '../lib/supabase-storage'
 import { useNavigate, Link } from 'react-router-dom'

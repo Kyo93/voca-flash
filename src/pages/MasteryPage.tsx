@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchUserVocabulary, getTodayBoundary } from '../lib/supabase-storage'
+import { fetchUserVocabulary, fetchMasteryStats } from '../lib/storage/mastery'
 import { MasteryWord } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -13,74 +13,109 @@ export default function MasteryPage() {
   const { user } = useAuth()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  
+  // Data State
   const [words, setWords] = useState<MasteryWord[]>([])
+  const [stats, setStats] = useState<any>(null)
+  const [totalCount, setTotalCount] = useState(0)
+  
+  // UI State
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [page, setPage] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  
+  // Filter/Search State
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
+  
+  // interaction State
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
+  const PAGE_SIZE = 50
+  const observer = useRef<IntersectionObserver | null>(null)
+
+  // 1. Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
+
+  // 2. Fetch Stats & Reset on filter/search change
+  useEffect(() => {
+    if (!user) return
+    setPage(0)
+    setWords([])
+    setHasMore(true)
+    
+    async function loadStats() {
+      if (!user) return
+      const s = await fetchMasteryStats(user.id)
+      setStats(s)
+    }
+    loadStats()
+  }, [user, debouncedSearch, activeFilter])
+
+  // 3. Fetch Data (Paginated)
+  const loadData = useCallback(async (pageNum: number) => {
+    if (!user) return
+    const isInitial = pageNum === 0
+    
+    if (isInitial) setLoading(true)
+    else setLoadingMore(true)
+
+    try {
+      const { data, total } = await fetchUserVocabulary(user.id, {
+        limit: PAGE_SIZE,
+        offset: pageNum * PAGE_SIZE,
+        search: debouncedSearch,
+        filter: activeFilter
+      })
+
+      setTotalCount(total)
+      setWords(prev => isInitial ? data : [...prev, ...data])
+      setHasMore(data.length === PAGE_SIZE)
+    } catch (err) {
+      console.error('Failed to load mastery data:', err)
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
+  }, [user, debouncedSearch, activeFilter])
 
   useEffect(() => {
-    async function loadData() {
-      if (!user) return
-      setLoading(true)
-      try {
-        const data = await fetchUserVocabulary(user.id)
-        setWords(data)
-      } catch (err) {
-        console.error('Failed to load mastery data:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadData()
-  }, [user])
+    loadData(page)
+  }, [loadData, page])
 
-  // Stats calculation
-  const stats = useMemo(() => {
-    const total = words.length
-    const mastered = words.filter(w => w.mastered).length
-    const orphaned = words.filter(w => w.is_orphaned).length
-    const now = new Date()
-    const due = words.filter(w => w.next_review_at && new Date(w.next_review_at) <= now).length
-    const weak = words.filter(w => (w.fsrs_lapses ?? w.lapse_count) > 2).length
-    const learning = words.filter(w => !w.mastered).length
-    const today = getTodayBoundary()
-    const newlyLearned = words.filter(w => (new Date(w.first_encountered)) >= today).length
+  // 4. Infinite Scroll Observer
+  const lastElementRef = useCallback((node: HTMLTableRowElement | null) => {
+    if (loading || loadingMore) return
+    if (observer.current) observer.current.disconnect()
     
-    return { total, mastered, orphaned, due, weak, learning, newlyLearned }
-  }, [words])
-
-  // Filter & Search logic
-  const filteredWords = useMemo(() => {
-    return words.filter(w => {
-      const matchesSearch = w.word.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           w.definition.toLowerCase().includes(searchQuery.toLowerCase())
-      
-      const now = new Date()
-      const isDue = w.next_review_at && new Date(w.next_review_at) <= now
-      
-      switch (activeFilter) {
-        case 'due': return matchesSearch && isDue
-        case 'weak': return matchesSearch && (w.fsrs_lapses ?? w.lapse_count) > 2
-        case 'orphaned': return matchesSearch && w.is_orphaned
-        case 'mastered': return matchesSearch && w.mastered
-        default: return matchesSearch
+    observer.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prev => prev + 1)
       }
     })
-  }, [words, searchQuery, activeFilter])
+    
+    if (node) observer.current.observe(node)
+  }, [loading, loadingMore, hasMore])
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === filteredWords.length) {
+    if (selectedIds.size === words.length) {
       setSelectedIds(new Set())
     } else {
-      setSelectedIds(new Set(filteredWords.map(w => w.word_id)))
+      setSelectedIds(new Set(words.map(w => w.word_id)))
     }
   }
 
-  const toggleSelect = (id: string) => {
+  const toggleSelect = (id: string, e: React.ChangeEvent<HTMLInputElement> | React.MouseEvent) => {
+    e.stopPropagation()
     const next = new Set(selectedIds)
     if (next.has(id)) next.delete(id)
     else next.add(id)
@@ -92,23 +127,14 @@ export default function MasteryPage() {
     navigate('/free-study', { state: { words: selectedWords } })
   }
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-4">
-        <div className="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-        <p className="text-stone-400 font-bold uppercase tracking-widest text-xs">Đang mở kho lưu trữ...</p>
-      </div>
-    )
-  }
-
   return (
-    <div className="px-10 py-8 max-w-7xl mx-auto w-full">
+    <div className="px-6 md:px-10 py-8 max-w-7xl mx-auto w-full">
       {/* Hero Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="space-y-2">
           <h1 className="text-4xl font-black text-secondary tracking-tight">Kho Từ Vựng</h1>
           <p className="text-stone-500 font-medium max-w-lg">
-            Quản lý toàn bộ {stats.total} từ bạn đã học. Ôn tập tự do bất cứ khi nào bạn muốn.
+            Quản lý {totalCount} từ vựng bạn đã bắt đầu học. Tối ưu hóa lộ trình ghi nhớ của bạn.
           </p>
         </div>
         
@@ -141,9 +167,9 @@ export default function MasteryPage() {
 
       {/* Stats Quick Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
-        {[
+        {stats ? [
           { label: 'Đang học', value: stats.learning, icon: 'school', color: 'text-blue-600', bg: 'bg-blue-50' },
-          { label: 'Mới hôm nay', value: stats.newlyLearned, icon: 'new_releases', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'Tổng số từ', value: stats.total, icon: 'leaderboard', color: 'text-stone-600', bg: 'bg-stone-50' },
           { label: 'Đã thuộc', value: stats.mastered, icon: 'military_tech', color: 'text-orange-500', bg: 'bg-orange-50' },
           { label: 'Đến hạn', value: stats.due, icon: 'history_toggle_off', color: 'text-blue-500', bg: 'bg-blue-50' },
           { label: 'Mồ côi', value: stats.orphaned, icon: 'broken_image', color: 'text-red-500', bg: 'bg-red-50' },
@@ -158,7 +184,11 @@ export default function MasteryPage() {
               <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">{s.label}</p>
             </div>
           </div>
-        ))}
+        )) : (
+          Array(6).fill(0).map((_, i) => (
+            <div key={i} className="h-20 bg-stone-50 animate-pulse rounded-2xl w-full" />
+          ))
+        )}
       </div>
 
       {/* Filter Tabs */}
@@ -187,7 +217,7 @@ export default function MasteryPage() {
                 <th className="py-5 px-6 w-12">
                   <input 
                     type="checkbox" 
-                    checked={selectedIds.size === filteredWords.length && filteredWords.length > 0}
+                    checked={selectedIds.size === words.length && words.length > 0}
                     onChange={toggleSelectAll}
                     className="w-5 h-5 rounded-lg border-stone-300 text-primary focus:ring-primary/20 accent-primary cursor-pointer"
                   />
@@ -199,52 +229,67 @@ export default function MasteryPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-50">
-              {filteredWords.map(w => (
+              {words.map((w, index) => (
                 <CardRow 
                   key={w.word_id} 
+                  ref={index === words.length - 1 ? lastElementRef : null}
                   word={w} 
                   isSelected={selectedIds.has(w.word_id)}
-                  onSelect={() => toggleSelect(w.word_id)}
+                  onSelect={(e) => toggleSelect(w.word_id, e)}
                   isExpanded={expandedId === w.word_id}
                   onToggleExpand={() => setExpandedId(expandedId === w.word_id ? null : w.word_id)}
                   locale={dateLocale}
                 />
               ))}
-              {filteredWords.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="py-20 text-center">
-                    <span className="material-symbols-outlined text-stone-200 text-6xl mb-4">folder_open</span>
-                    <p className="text-stone-400 font-bold">Không tìm thấy từ vựng nào phù hợp.</p>
-                  </td>
-                </tr>
+              
+              {loading && page === 0 && (
+                Array(5).fill(0).map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="py-6 px-6"><div className="w-5 h-5 bg-stone-100 rounded" /></td>
+                    <td className="py-6 px-2">
+                      <div className="h-4 bg-stone-100 rounded w-24 mb-2" />
+                      <div className="h-3 bg-stone-50 rounded w-48" />
+                    </td>
+                    <td className="py-6 px-6"><div className="h-4 bg-stone-100 rounded w-20" /></td>
+                    <td className="py-6 px-6"><div className="h-6 bg-stone-100 rounded w-32" /></td>
+                    <td className="py-6 px-6"><div className="h-8 bg-stone-100 rounded w-16 float-right" /></td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
         </div>
+        
+        {!loading && words.length === 0 && (
+          <div className="py-32 text-center">
+            <span className="material-symbols-outlined text-stone-100 text-8xl mb-6">folder_off</span>
+            <p className="text-stone-400 font-black text-xl">Không tìm thấy từ vựng nào.</p>
+            <p className="text-stone-300 text-sm mt-2">Dữ liệu không tồn tại hoặc filter quá hẹp.</p>
+          </div>
+        )}
+
+        {loadingMore && (
+           <div className="py-10 flex justify-center border-t border-stone-50">
+              <div className="w-6 h-6 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+           </div>
+        )}
       </div>
     </div>
   )
 }
 
-function CardRow({ 
+import React from 'react'
+const CardRow = React.forwardRef<HTMLTableRowElement, any>(({ 
   word, 
   isSelected, 
   onSelect, 
   isExpanded, 
   onToggleExpand,
   locale
-}: { 
-  word: MasteryWord, 
-  isSelected: boolean, 
-  onSelect: () => void,
-  isExpanded: boolean,
-  onToggleExpand: () => void,
-  locale: any
-}) {
+}, ref) => {
   const nextReviewDate = word.next_review_at ? new Date(word.next_review_at) : null
   const isDue = nextReviewDate && nextReviewDate <= new Date()
   
-  // Stability-based strength (Mastery target: 21 days)
   const stability = Number(word.fsrs_stability ?? 0)
   const strengthColor = stability >= 21 ? 'bg-green-500' : stability >= 7 ? 'bg-primary' : stability >= 3 ? 'bg-orange-400' : 'bg-red-500'
   const strengthPercent = Math.min(100, (stability / 21) * 100)
@@ -252,10 +297,11 @@ function CardRow({
   return (
     <>
       <tr 
+        ref={ref}
         className={`group hover:bg-stone-50/50 transition-colors cursor-pointer ${isExpanded ? 'bg-stone-50' : ''}`}
         onClick={onToggleExpand}
       >
-        <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
+        <td className="py-4 px-6">
           <input 
             type="checkbox" 
             checked={isSelected}
@@ -275,9 +321,9 @@ function CardRow({
         </td>
         <td className="py-4 px-6 hidden lg:table-cell">
           {word.is_orphaned ? (
-            <span className="inline-flex px-2 px-1.5 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-md border border-red-100">Mồ côi</span>
+            <span className="inline-flex px-2 py-0.5 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-md border border-red-100">Mồ côi</span>
           ) : (
-            <span className="inline-flex px-2 px-1.5 bg-stone-100 text-stone-500 text-[10px] font-black uppercase tracking-widest rounded-md">{word.topic_name}</span>
+            <span className="inline-flex px-2 py-0.5 bg-stone-100 text-stone-500 text-[10px] font-black uppercase tracking-widest rounded-md">{word.topic_names?.split(',')[0]}</span>
           )}
         </td>
         <td className="py-4 px-6">
@@ -288,7 +334,7 @@ function CardRow({
                 style={{ width: `${strengthPercent}%` }}
               />
             </div>
-            <p className="text-[10px] font-black text-stone-400 uppercase">Stability: {stability.toFixed(1)}d</p>
+            <p className="text-[10px] font-black text-stone-400 uppercase leading-none">Stability: {stability.toFixed(1)}d</p>
           </div>
         </td>
         <td className="py-4 px-6 text-right">
@@ -296,16 +342,15 @@ function CardRow({
             <span className={`text-[13px] font-bold ${isDue ? 'text-primary' : 'text-secondary'}`}>
               {nextReviewDate ? format(nextReviewDate, 'dd/MM/yyyy', { locale }) : '--'}
             </span>
-            <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">
+            <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest leading-none">
               {isDue ? 'Cần ôn ngay' : 'Sắp tới'}
             </span>
           </div>
         </td>
       </tr>
       
-      {/* Expanded Row: Example sentence */}
       {isExpanded && (
-        <tr className="bg-stone-50 border-t border-stone-100">
+        <tr className="bg-stone-50/80 border-t border-stone-100">
           <td />
           <td colSpan={4} className="py-6 px-2 pr-6">
             <div className="flex gap-6 animate-in slide-in-from-top-2 duration-300">
@@ -321,19 +366,10 @@ function CardRow({
                     <p className="text-secondary font-semibold leading-relaxed text-sm">
                       {word.example ? `"${word.example}"` : 'Chưa có ví dụ.'}
                     </p>
-                    {word.example_vi && (
-                      <p className="text-stone-400 font-medium text-xs">
-                        {word.example_vi}
-                      </p>
-                    )}
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-8 pt-4 border-t border-stone-200/50">
-                  <div>
-                    <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Đã gặp lần đầu</p>
-                    <p className="text-xs font-bold text-secondary">{format(new Date(word.first_encountered), 'dd MMMM, yyyy', { locale })}</p>
-                  </div>
                   <div>
                     <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Lần học cuối</p>
                     <p className="text-xs font-bold text-secondary">
@@ -342,7 +378,11 @@ function CardRow({
                   </div>
                   <div>
                     <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Tần suất sai</p>
-                    <p className="text-xs font-bold text-red-500">{word.fsrs_lapses ?? word.lapse_count} lần</p>
+                    <p className="text-xs font-bold text-red-500">{word.fsrs_lapses} lần</p>
+                  </div>
+                   <div>
+                    <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Gán cho</p>
+                    <p className="text-xs font-bold text-secondary truncate max-w-[120px]">{word.topic_names || 'Chưa gán'}</p>
                   </div>
                 </div>
               </div>
@@ -352,4 +392,4 @@ function CardRow({
       )}
     </>
   )
-}
+})

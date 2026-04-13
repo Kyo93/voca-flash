@@ -3,22 +3,19 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-**New User Onboarding Fix** — Fix Progress page crash for newly registered users by auto-creating `user_profiles` and replacing unsafe `.single()` queries with defensive fallbacks.
+**Performance & Architecture Refactor (Bridge)** — Transition from client-side data processing to a scalable database-first architecture. Modularize `supabase-storage.ts` and implement pagination/infinite scroll for the Mastery page.
 
 ## Current Phase
-`planning` — OpenSpec plan written, awaiting execution.
+`planning` — Refactor OpenSpec plan written, awaiting execution.
 
 ## Next Actions
-1. Step 0: Audit all `.single()` calls in `supabase-storage.ts`
-2. Step 1: Fix `AuthContext.tsx` — add `ensureUserProfile()` lazy creation
-3. Step 2: Fix `supabase-storage.ts` — 2 locations (fetchDashboardStats + recordStreak)
-4. Step 3: Fix `ProgressPage.tsx` — `Promise.all` → `Promise.allSettled`
+1. Step 1: Database Foundation — Implement RPCs `get_mastery_stats` and update `get_user_vocabulary` (limit/offset).
+2. Step 2: Storage Restructuring — Branch off and split `supabase-storage.ts` into 4 domain-specific files.
+3. Step 3: UI Optimization — Implement Infinite Scroll and Skeleton UI in `MasteryPage.tsx`.
 
-## Working Context
-- **Root Cause:** New Supabase Auth users have no `user_profiles` record → `.single()` throws 406 Not Acceptable → `Promise.all` rejects → spinner hangs.
-- **3 Files affected:** `AuthContext.tsx`, `supabase-storage.ts`, `ProgressPage.tsx`
-- **Plan location:** `openspec/changes/new-user-onboarding-fix/`
-- **RLS risk:** Must verify INSERT policy on `user_profiles` before step 1.
+- **Plan location:** `openspec/changes/performance-refactor-bridge/`
+- **Modules:** `auth-storage.ts`, `mastery-storage.ts`, `roadmap-storage.ts`, `session-storage.ts`.
+- **Primary Goal:** Eliminate O(N) client-side processing by moving stats to RPC.
 
 ## What Was Done (2026-04-13)
 

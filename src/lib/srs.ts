@@ -1,6 +1,19 @@
 import { fsrs, createEmptyCard, Rating, State, type Card as FSRSCard } from 'ts-fsrs'
 import { Word } from './types'
 
+export interface Card {
+  id: string
+  front: string
+  back: string
+  phonetic?: string
+  example?: string
+  example_vi?: string
+  image_url?: string
+  image_position?: string
+  topic: string
+  createdAt: number
+}
+
 /** 
  * FSRS Card Progress — Unified Interface 
  * This replaces the legacy SM-2 CardProgress.
@@ -154,13 +167,6 @@ export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: nu
  * FSRS Retention 0.70 -> 0.97
  */
 export function mapIntensityToRetention(intensity: number): number {
-  // Default intensity 1.0 -> 0.9 retention
-  // lower intensity = more reviews = higher retention
-  // Higher srs_intensity in this app actually meant MORE frequent reviews in old code?
-  // Old code: interval = interval * intensity. 
-  // If intensity = 0.6, interval gets smaller -> more reviews.
-  // So: low intensity value = high retention request.
-  
   if (intensity <= 0.6) return 0.95
   if (intensity <= 0.8) return 0.93
   if (intensity <= 1.0) return 0.90

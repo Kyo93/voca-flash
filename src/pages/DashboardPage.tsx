@@ -68,8 +68,8 @@ export default function DashboardPage() {
         setStreak({
           currentStreak: initialData.profile.streak_days,
           lastStudyDate: initialData.profile.last_study_date || null,
-          history: []
-        })
+          longestStreak: initialData.profile.streak_days
+        } as any)
       }
       
       // Nếu đã có data cơ bản, cất loader đi cho user sướng
@@ -87,16 +87,17 @@ export default function DashboardPage() {
 
       try {
         // Chỉ fetch những thứ KHÔNG có trong Mega RPC hoặc cần load sâu
-        const [summary, vocabData] = await Promise.all([
+        const [summary, vocabResponse] = await Promise.all([
           fetchDashboardSummary(user.id),
-          fetchUserVocabulary(user.id).catch(() => [])
+          fetchUserVocabulary(user.id).catch(() => ({ data: [], total: 0 }))
         ])
 
         setDashboardData(summary)
 
         // Calculate new words today with 4 AM reset
         const todayBoundary = getTodayBoundary()
-        const newToday = vocabData.filter(w => new Date(w.first_encountered) >= todayBoundary).length
+        const vocabData = vocabResponse.data || []
+        const newToday = vocabData.filter((w: any) => new Date(w.first_encountered) >= todayBoundary).length
         setNewTodayTotal(newToday)
         
         // Banner logic

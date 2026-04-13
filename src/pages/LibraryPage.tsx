@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchLibraryPageData, fetchRoadmaps, fetchRoadmapStats, fetchResumePointers } from '../lib/supabase-storage'
+import { fetchLibraryPageData } from '../lib/supabase-storage'
 import type { Roadmap, ResumePointer } from '../lib/types'
 
 export default function LibraryPage() {
