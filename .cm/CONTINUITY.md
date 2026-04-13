@@ -3,14 +3,27 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-**RPC Audit ✅ COMPLETE** — 5 orphan RPCs dropped, TypeScript types fixed, local migrations synced.
+**Vocab Import Feature** — Xây dựng tính năng import từ vựng trong Admin Panel
+- Specs: `openspec/changes/vocab-import/`
+- Design: `openspec/changes/vocab-import/design.md` ✅
+- Tasks: `openspec/changes/vocab-import/tasks.md` ✅
 
 ## Current Phase
-`done` — RPC audit executed successfully 2026-04-13.
+`planning` — cm-planning hoàn tất. Chuyển sang cm-execution.
 
 ## Next Actions
-1. Smoke test: login → Dashboard → Library → Progress → Review (frontend dev)
-2. Push changes: `git add -A && git commit -m "chore: rpc-audit — drop orphans, fix types, sync migrations"`
+1. **2.1** Tạo Supabase RPC migration (`018_batch_import_rpc.sql`)
+2. **1.1** Cài đặt dependencies (`papaparse`, `xlsx`, `@types/papaparse`)
+3. **3.1** Xây `src/lib/import-parser.ts`
+4. **4.1** Thêm `findDuplicateWords` + `batchInsertWords` vào `admin-queries.ts`
+5. **6.1** Xây `src/components/admin/ImportWordsModal.tsx`
+
+## Vocab Import Spec Summary
+- **3 input formats:** CSV, Excel (.xlsx), Google Sheets URL
+- **12-column CSV:** word, phonetic, pos, difficulty, definition, example, example_vi, image_url, topics, wrong1, wrong2, wrong3
+- **Duplicate handling:** Per-row — Keep Existing | Update | Skip
+- **Transaction:** Batch RPC, chunk 50 rows
+- **Template download:** YES — nút trong modal
 
 ## RPC Audit Results (2026-04-13)
 

@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Word, WordChoice, Topic, Roadmap } from './types'
+import type { Word, WordChoice, Topic, Roadmap, NormalizedWord, BatchInsertResult } from './types'
 
 // ─── Words ──────────────────────────────────────────────────
 export async function getAllWords(topicFilter?: string, search?: string) {
@@ -212,4 +212,170 @@ export async function getRecentWords(limit = 5) {
   }
 
   return { data: words, error: null }
+}
+
+// ─── Batch Import Queries ─────────────────────────────────
+
+/**
+ * Find words that already exist in DB (case-insensitive).
+ * Used for duplicate detection before import.
+ */
+export async function findDuplicateWords(words: string[]): Promise<string[]> {
+  if (words.length === 0) return []
+
+  const { data, error } = await supabase.rpc('find_duplicate_words', {
+    p_words: words.map(w => w.toLowerCase().trim())
+  })
+
+  if (error) {
+    console.error('findDuplicateWords error:', error)
+    return []
+  }
+
+  return (data as string[]) ?? []
+}
+
+/**
+ * Mark rows as duplicates based on findDuplicateWords result.
+ * Mutates the rows array in-place.
+ */
+export function markDuplicates(rows: NormalizedWord[], duplicateWords: Set<string>): void {
+  for (const row of rows) {
+    if (duplicateWords.has(row.word.toLowerCase())) {
+      row.status = 'duplicate'
+      row.duplicateAction = 'keep' // default safe choice
+    }
+  }
+}
+
+/**
+ * Get a map of topic name → topic id.
+ * Used to resolve topic names from import file to DB IDs.
+ */
+export async function getTopicNameMap(): Promise<Map<string, string>> {
+  const { data, error } = await supabase
+    .from('topics')
+    .select('id, name')
+
+  if (error || !data) {
+    console.error('getTopicNameMap error:', error)
+    return new Map()
+  }
+
+  const map = new Map<string, string>()
+  for (const topic of data as { id: string; name: string }[]) {
+    map.set(topic.name.toLowerCase(), topic.id)
+  }
+  return map
+}
+
+/**
+ * Batch insert words via RPC.
+ * Splits into chunks of 50 rows per RPC call.
+ * Returns aggregated results.
+ */
+export async function batchInsertWords(rows: NormalizedWord[]): Promise<BatchInsertResult> {
+  const CHUNK_SIZE = 50
+  let totalInserted = 0
+  const allErrors: { word: string; error: string }[] = []
+
+  // Filter rows: only process 'new' and 'update' duplicates
+  // Skip 'invalid' rows and 'skip' duplicates
+  const toImport = rows.filter(r => {
+    if (r.status === 'invalid') return false
+    if (r.status === 'duplicate' && r.duplicateAction === 'skip') return false
+    return true
+  })
+
+  if (toImport.length === 0) {
+    return { inserted: 0, errors: [] }
+  }
+
+  // Process in chunks
+  for (let i = 0; i < toImport.length; i += CHUNK_SIZE) {
+    const chunk = toImport.slice(i, i + CHUNK_SIZE)
+
+    const payload = chunk.map(row => ({
+      word: row.word,
+      phonetic: row.phonetic ?? null,
+      pos: row.pos ?? 'noun',
+      difficulty: row.difficulty ?? 3,
+      definition: row.definition,
+      example: row.example ?? null,
+      example_vi: row.example_vi ?? null,
+      image_url: row.image_url ?? null,
+      image_position: row.image_position ?? 'center',
+      topic_ids: row.topicIds ?? [],
+      wrong_choices: row.wrongChoices ?? [],
+    }))
+
+    const { data, error } = await supabase.rpc('batch_insert_words', {
+      p_words: payload
+    })
+
+    if (error) {
+      console.error('batch_insert_words RPC error:', error)
+      // On RPC error, add all chunk words as errors
+      for (const row of chunk) {
+        allErrors.push({ word: row.word, error: error.message })
+      }
+      continue
+    }
+
+    const result = data as BatchInsertResult
+    totalInserted += result.inserted ?? 0
+
+    if (result.errors && result.errors.length > 0) {
+      allErrors.push(...result.errors)
+    }
+  }
+
+  return { inserted: totalInserted, errors: allErrors }
+}
+
+/**
+ * Update existing word (used when user selects "Update" for duplicates).
+ */
+export async function updateWordFromImport(
+  wordId: string,
+  normalized: NormalizedWord
+): Promise<{ error: string | null }> {
+  const { error: err } = await supabase
+    .from('words')
+    .update({
+      word: normalized.word,
+      phonetic: normalized.phonetic ?? null,
+      pos: normalized.pos ?? 'noun',
+      difficulty: normalized.difficulty ?? 3,
+      definition: normalized.definition,
+      example: normalized.example ?? null,
+      example_vi: normalized.example_vi ?? null,
+      image_url: normalized.image_url ?? null,
+      image_position: normalized.image_position ?? 'center',
+    })
+    .eq('id', wordId)
+
+  if (err) return { error: err.message }
+
+  // Update topic_words junction
+  await supabase.from('topic_words').delete().eq('word_id', wordId)
+  if (normalized.topicIds.length > 0) {
+    await supabase.from('topic_words').insert(
+      normalized.topicIds.map(tid => ({ topic_id: tid, word_id: wordId }))
+    )
+  }
+
+  // Update word_choices
+  await supabase.from('word_choices').delete().eq('word_id', wordId)
+  if (normalized.wrongChoices.length > 0) {
+    await supabase.from('word_choices').insert(
+      normalized.wrongChoices.map((choice, i) => ({
+        word_id: wordId,
+        choice,
+        sort: i + 1,
+      }))
+    )
+  }
+
+  return { error: null }
 }

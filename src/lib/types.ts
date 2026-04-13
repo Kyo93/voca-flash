@@ -229,3 +229,43 @@ export interface MasteryStats {
   learning: number
   streak_days?: number
 }
+
+// ── Batch Import Types ───────────────────────────────────
+export interface BatchInsertResult {
+  inserted: number
+  errors: { word: string; error: string }[]
+}
+
+export interface NormalizedWord {
+  word: string
+  phonetic: string | null
+  pos: Word['pos']
+  difficulty: number
+  definition: string
+  example: string | null
+  example_vi: string | null
+  image_url: string | null
+  image_position: string
+  topicIds: string[]
+  wrongChoices: string[]
+  status: 'new' | 'duplicate' | 'invalid'
+  duplicateAction?: 'keep' | 'update' | 'skip'
+  validationErrors?: string[]
+  unmatchedTopics?: string[]
+}
+
+export interface RawRow {
+  word?: string
+  phonetic?: string
+  pos?: string
+  difficulty?: string
+  definition?: string
+  example?: string
+  example_vi?: string
+  image_url?: string
+  topics?: string
+  wrong1?: string
+  wrong2?: string
+  wrong3?: string
+  [key: string]: string | undefined
+}
