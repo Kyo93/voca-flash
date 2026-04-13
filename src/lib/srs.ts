@@ -1,5 +1,4 @@
-import { fsrs, createEmptyCard, Rating, State, type Card as FSRSCard } from 'ts-fsrs'
-import { Word } from './types'
+import { fsrs, createEmptyCard, State, type Card as FSRSCard } from 'ts-fsrs'
 
 export interface Card {
   id: string
@@ -68,7 +67,8 @@ export function calculateFSRSReview(
     reps: progress.reps,
     lapses: progress.lapses,
     state: progress.state,
-    last_review: progress.lastReview ? new Date(progress.lastReview) : undefined
+    last_review: progress.lastReview ? new Date(progress.lastReview) : undefined,
+    learning_steps: 0
   }
 
   // 3. Repeat (Calculate all 4 options, then pick the rated one)
@@ -128,7 +128,8 @@ export function resetFSRSCard(progress: CardProgress): CardProgress {
     reps: progress.reps,
     lapses: progress.lapses,
     state: progress.state,
-    last_review: progress.lastReview ? new Date(progress.lastReview) : undefined
+    last_review: progress.lastReview ? new Date(progress.lastReview) : undefined,
+    learning_steps: 0
   }
 
   const { card: reset } = scheduler.forget(currentCard, new Date())

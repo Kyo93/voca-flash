@@ -5,7 +5,7 @@ import { MasteryWord } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
-import { vi, enUS } from 'date-fns/locale'
+import { vi, enUS, type Locale } from 'date-fns/locale'
 
 type FilterType = 'all' | 'due' | 'weak' | 'orphaned' | 'mastered'
 
@@ -236,6 +236,7 @@ export default function MasteryPage() {
                   word={w} 
                   isSelected={selectedIds.has(w.word_id)}
                   onSelect={(e) => toggleSelect(w.word_id, e)}
+
                   isExpanded={expandedId === w.word_id}
                   onToggleExpand={() => setExpandedId(expandedId === w.word_id ? null : w.word_id)}
                   locale={dateLocale}
@@ -279,14 +280,14 @@ export default function MasteryPage() {
 }
 
 import React from 'react'
-const CardRow = React.forwardRef<HTMLTableRowElement, any>(({ 
-  word, 
-  isSelected, 
-  onSelect, 
-  isExpanded, 
-  onToggleExpand,
-  locale
-}, ref) => {
+const CardRow = React.forwardRef<HTMLTableRowElement, {
+  word: MasteryWord
+  isSelected: boolean
+  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+  isExpanded: boolean
+  onToggleExpand: () => void
+  locale: Locale
+}>(({ word, isSelected, onSelect, isExpanded, onToggleExpand, locale }, ref) => {
   const nextReviewDate = word.next_review_at ? new Date(word.next_review_at) : null
   const isDue = nextReviewDate && nextReviewDate <= new Date()
   

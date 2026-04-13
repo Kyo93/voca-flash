@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { fetchDashboardSummary, fetchUserVocabulary, getTodayBoundary } from '../lib/supabase-storage'
-import type { DashboardSummary, MasteryStats } from '../lib/types'
+import { fetchDashboardSummary } from '../lib/supabase-storage'
+import type { DashboardSummary } from '../lib/types'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
+import { loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
 
 const QUOTES = [
@@ -71,9 +71,8 @@ export default function DashboardPage() {
 
       try {
         // Chỉ fetch những thứ KHÔNG có trong Mega RPC hoặc cần load sâu
-        const [summary, vocabResponse] = await Promise.all([
+        const [summary] = await Promise.all([
           fetchDashboardSummary(user.id),
-          fetchUserVocabulary(user.id).catch(() => ({ data: [], total: 0 }))
         ])
 
         setDashboardData(summary)

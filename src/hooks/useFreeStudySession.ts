@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
-import { CardProgress, SrsRating, isMastered } from '../lib/srs'
+import { CardProgress } from '../lib/srs'
 import { upsertFreeStudyFail, fetchUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
@@ -114,7 +114,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     }
   }, [user, deckId, wordsOverride])
 
-  const submitAnswer = useCallback(async (isCorrect: boolean, ratingFallback?: SrsRating) => {
+  const submitAnswer = useCallback(async (isCorrect: boolean) => {
     if (currentIndex >= queue.length) return
     if (!user) return
 

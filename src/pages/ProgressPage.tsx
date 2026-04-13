@@ -15,15 +15,6 @@ interface RoadmapProgress {
   percent: number
 }
 
-interface MemoryHealth {
-  learning: number
-  newToday: number
-  mastered: number
-  masteredToday: number
-  due: number
-  orphaned: number
-  weak: number
-}
 
 export default function ProgressPage() {
   const { user, profile, initialData } = useAuth()
