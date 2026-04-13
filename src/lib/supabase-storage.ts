@@ -615,12 +615,11 @@ export async function fetchRoadmapStats(roadmapId: string, userId?: string) {
 
   if (!userId || total === 0) return { total, mastered: 0 }
 
-  // 3. Count mastered
+  // 3. Count started learning (any SRS record)
   const { data: progress } = await supabase
     .from('user_srs_records')
     .select('id')
     .eq('user_id', userId)
-    .eq('mastered', true)
     .in('word_id', wordIds)
 
   return { total, mastered: progress?.length ?? 0 }
@@ -689,7 +688,6 @@ export async function fetchTopicCompletionMap(
     .from('user_srs_records')
     .select('word_id')
     .eq('user_id', userId)
-    .eq('mastered', true)
     .in('word_id', allWordIds)
 
   const masteredSet = new Set((progressRows ?? []).map(p => p.word_id))
