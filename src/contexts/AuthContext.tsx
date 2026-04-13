@@ -13,6 +13,9 @@ import {
 } from '../lib/auth'
 import type { User, Session } from '@supabase/supabase-js'
 import type { UserProfile } from '../lib/types'
+import { setTtsConfig } from '../lib/tts'
+
+import { fetchInitialAppData, type InitialAppData } from '../lib/supabase-storage'
 
 interface AuthContextValue {
   user: User | null
@@ -20,6 +23,11 @@ interface AuthContextValue {
   profile: UserProfile | null
   loading: boolean
   isAdmin: boolean
+  activeRoadmapSlug: string | null
+  initialData: InitialAppData | null // Chứa stats khởi tạo
+  refreshActiveRoadmap: (targetRoadmapId?: string, forcedUserId?: string) => Promise<void>
+  refreshProfile: () => Promise<void>
+  refreshInitialData: () => Promise<void>
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
@@ -36,12 +44,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [activeRoadmapSlug, setActiveRoadmapSlug] = useState<string | null>(null)
+  const [initialData, setInitialData] = useState<InitialAppData | null>(null)
 
   // Hàm fetch đồng nhất tránh tranh chấp Lock của Supabase
   async function loadUserData(currentSession: Session | null) {
     if (!currentSession?.user) {
       setProfile(null)
       setIsAdmin(false)
+      setActiveRoadmapSlug(null)
+      setInitialData(null)
       return
     }
 
@@ -49,25 +61,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userEmail = currentSession.user.email
 
     try {
-      // 1. Kiểm tra Admin (ưu tiên email bypass để nhanh)
-      if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
-        setIsAdmin(true)
-      } else {
-        // Nếu không thuộc email bypass, mới gọi RPC kiểm tra
-        const { data: isAdminRpc } = await supabase.rpc('is_admin')
-        setIsAdmin(!!isAdminRpc)
+      // MEGA RPC: Lấy toàn bộ dữ liệu chỉ trong 1 request
+      const data = await fetchInitialAppData(userId)
+      setInitialData(data)
+      
+      if (data.profile) {
+        setProfile(data.profile)
       }
 
-      // 2. Lấy profile (chạy ngầm, không block luồng chính)
-      supabase.from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
-        .then(({ data }) => setProfile(data ?? null))
+      setIsAdmin(userEmail ? ADMIN_EMAILS.includes(userEmail) : false)
+      
+      if (data.active_roadmap) {
+        setActiveRoadmapSlug(data.active_roadmap.slug)
+      }
 
     } catch (err) {
       console.error('UserData loading error:', err)
-      // Fallback cho admin email ngay cả khi lỗi network/DB
       if (userEmail && ADMIN_EMAILS.includes(userEmail)) {
         setIsAdmin(true)
       }
@@ -89,7 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(initialSession?.user ?? null)
         
         if (initialSession) {
-          await loadUserData(initialSession)
+          // KHÔNG await loadUserData để tránh treo màn hình "Đang tải"
+          loadUserData(initialSession)
         }
       } catch (err) {
         console.error('Auth initialization failed:', err)
@@ -109,12 +119,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(newSession?.user ?? null)
         
         if (newSession) {
-          await loadUserData(newSession)
+          // Bắt đầu load data ngầm, nhưng cho phép vào App ngay
+          loadUserData(newSession)
+          setLoading(false) 
         } else {
           setProfile(null)
           setIsAdmin(false)
+          setActiveRoadmapSlug(null)
+          setLoading(false)
         }
-        setLoading(false)
       }
     )
 
@@ -123,6 +136,86 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe()
     }
   }, [])
+
+  // Sync TTS config whenever profile changes
+  useEffect(() => {
+    if (profile) {
+      setTtsConfig(
+        profile.tts_voice || null,
+        profile.tts_rate ?? 0.85
+      )
+    }
+  }, [profile])
+
+  // Sync Theme mode whenever profile changes
+  useEffect(() => {
+    if (!profile) return
+
+    const applyTheme = (mode: string) => {
+      const root = window.document.documentElement
+      root.classList.remove('light', 'dark')
+
+      if (mode === 'dark') {
+        root.classList.add('dark')
+      } else if (mode === 'light') {
+        root.classList.add('light')
+      } else {
+        // System preference
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        root.classList.add(systemDark ? 'dark' : 'light')
+      }
+    }
+
+    applyTheme(profile.theme_mode || 'light')
+  }, [profile?.theme_mode])
+
+  async function refreshActiveRoadmap(targetRoadmapId?: string, forcedUserId?: string) {
+    const currentUserId = forcedUserId || user?.id
+    if (!currentUserId) return
+    
+    let roadmapId = targetRoadmapId
+    
+    // 1. Nếu không truyền ID, tìm roadmap học gần nhất từ DB
+    if (!roadmapId) {
+      const { data } = await supabase.from('user_resume_pointers')
+        .select('roadmap_id')
+        .eq('user_id', currentUserId)
+        .order('last_accessed_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      
+      roadmapId = data?.roadmap_id
+    }
+
+    // 2. Lấy slug từ roadmapId (tránh join phức tạp)
+    if (roadmapId) {
+      const { data: roadmap } = await supabase.from('roadmaps')
+        .select('slug')
+        .eq('id', roadmapId)
+        .single()
+      
+      setActiveRoadmapSlug(roadmap?.slug ?? null)
+    } else {
+      setActiveRoadmapSlug(null)
+    }
+  }
+
+  async function refreshProfile() {
+    if (!user) return
+    const { data } = await supabase.from('user_profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+    if (data) setProfile(data)
+  }
+
+  async function refreshInitialData() {
+    if (!user) return
+    const data = await fetchInitialAppData(user.id)
+    setInitialData(data)
+    if (data.profile) setProfile(data.profile)
+    if (data.active_roadmap) setActiveRoadmapSlug(data.active_roadmap.slug)
+  }
 
   async function handleSignIn(email: string, password: string) {
     const { error } = await authSignIn(email, password)
@@ -146,6 +239,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         loading,
         isAdmin,
+        activeRoadmapSlug,
+        initialData,
+        refreshActiveRoadmap,
+        refreshProfile,
+        refreshInitialData,
         signIn: handleSignIn,
         signUp: handleSignUp,
         signOut: handleSignOut,

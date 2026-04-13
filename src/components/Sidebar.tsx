@@ -1,28 +1,35 @@
+import { useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { getStreakDisplay } from '../lib/streak'
 import { useAuth } from '../contexts/AuthContext'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 
-interface NavItem {
-  path: string
-  labelKey: string
-  icon: string
-}
-
-const navItems: NavItem[] = [
-  { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard' },
-  { path: '/library', labelKey: 'nav.library', icon: 'menu_book' },
-  { path: '/progress', labelKey: 'nav.progress', icon: 'bar_chart' },
-  { path: '/settings', labelKey: 'nav.settings', icon: 'settings' },
-]
-
 export default function Sidebar() {
   const { t } = useTranslation()
   const location = useLocation()
   const streak = getStreakDisplay()
-  const { profile, signOut } = useAuth()
+  const { profile, activeRoadmapSlug, signOut } = useAuth()
   const { collapsed, toggleSidebar } = useSidebar()
+  
+  const [avatarError, setAvatarError] = useState(false)
+  
+  useEffect(() => {
+    setAvatarError(false)
+  }, [profile?.avatar_url])
+
+  const navItems = useMemo(() => [
+    { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard' },
+    { 
+      path: activeRoadmapSlug ? `/library/${activeRoadmapSlug}` : '/library', 
+      basePath: '/library',
+      labelKey: 'nav.library', 
+      icon: 'menu_book' 
+    },
+    { path: '/progress', labelKey: 'nav.progress', icon: 'bar_chart' },
+    { path: '/mastery', labelKey: 'nav.mastery', icon: 'inventory_2' },
+    { path: '/settings', labelKey: 'nav.settings', icon: 'settings' },
+  ], [activeRoadmapSlug])
 
   const displayName = profile?.display_name ?? profile?.email?.split('@')[0] ?? 'User'
   const avatarChar = displayName[0].toUpperCase()
@@ -49,7 +56,7 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex flex-col gap-1">
         {navItems.map((item) => {
-          const isActive = location.pathname.startsWith(item.path)
+          const isActive = location.pathname.startsWith((item as any).basePath || item.path)
           return (
             <Link
               key={item.path}
@@ -108,8 +115,17 @@ export default function Sidebar() {
 
         {/* User Profile Card */}
         <div className={`flex items-center gap-3 p-3 bg-white rounded-2xl shadow-sm border border-stone-100 ${collapsed ? 'justify-center' : ''}`}>
-          <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="text-sm font-black text-primary">{avatarChar}</span>
+          <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0 relative group">
+            {profile?.avatar_url && !avatarError ? (
+              <img 
+                src={profile.avatar_url} 
+                alt={displayName} 
+                className="w-full h-full object-cover"
+                onError={() => setAvatarError(true)}
+              />
+            ) : (
+              <span className="text-sm font-black text-primary">{avatarChar}</span>
+            )}
           </div>
           {!collapsed && (
             <>

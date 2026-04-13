@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Word, WordChoice, Topic, Roadmap, UserProfile, UserProgress } from './types'
+import type { Word, WordChoice, Topic, Roadmap } from './types'
 
 // ─── Words ──────────────────────────────────────────────────
 export async function getAllWords(topicFilter?: string, search?: string) {
@@ -9,7 +9,16 @@ export async function getAllWords(topicFilter?: string, search?: string) {
     .order('created_at', { ascending: false })
 
   if (topicFilter) {
-    query = query.eq('topic_id', topicFilter)
+    // Lấy word IDs thuộc topic này qua junction
+    const { data: junctions } = await supabase
+      .from('topic_words').select('word_id').eq('topic_id', topicFilter)
+    const wordIds = (junctions ?? []).map(j => j.word_id)
+    
+    if (wordIds.length === 0) {
+      // Return empty query result pattern if no words found
+      return supabase.from('words').select('*').eq('id', '00000000-0000-0000-0000-000000000000')
+    }
+    query = query.in('id', wordIds)
   }
   if (search) {
     query = query.ilike('word', `%${search}%`)
@@ -18,16 +27,59 @@ export async function getAllWords(topicFilter?: string, search?: string) {
   return query
 }
 
-export async function createWord(word: Omit<Word, 'id' | 'created_at' | 'updated_at'>) {
-  return supabase.from('words').insert(word).select().single()
+export async function createWord(
+  word: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
+  topicIds: string[] = []
+) {
+  // Insert word (vẫn giữ topic_id cũ cho backward compat - lấy topicIds[0] nếu có)
+  const wordPayload = { ...word, topic_id: topicIds[0] ?? null }
+  const res = await supabase.from('words').insert(wordPayload).select().single()
+  
+  if (res.error || !res.data) return res
+
+  // Insert junction rows
+  if (topicIds.length > 0) {
+    await supabase.from('topic_words').insert(
+      topicIds.map(tid => ({ topic_id: tid, word_id: res.data.id }))
+    )
+  }
+
+  return res
 }
 
-export async function updateWord(id: string, word: Partial<Word>) {
-  return supabase.from('words').update(word).eq('id', id).select().single()
+export async function updateWord(
+  id: string, 
+  word: Partial<Word>,
+  topicIds?: string[]
+) {
+  const wordPayload = { ...word }
+  if (topicIds && topicIds.length > 0) {
+    wordPayload.topic_id = topicIds[0]
+  }
+
+  const res = await supabase.from('words').update(wordPayload).eq('id', id).select().single()
+  if (res.error || !res.data) return res
+
+  // Thay thế toàn bộ liên kết trong topic_words nếu topicIds được cung cấp
+  if (topicIds) {
+    await supabase.from('topic_words').delete().eq('word_id', id)
+    if (topicIds.length > 0) {
+      await supabase.from('topic_words').insert(
+        topicIds.map(tid => ({ topic_id: tid, word_id: id }))
+      )
+    }
+  }
+
+  return res
 }
 
 export async function deleteWord(id: string) {
   return supabase.from('words').delete().eq('id', id)
+}
+
+export async function getWordTopicIds(wordId: string): Promise<string[]> {
+  const { data } = await supabase.from('topic_words').select('topic_id').eq('word_id', wordId)
+  return (data ?? []).map(r => r.topic_id)
 }
 
 // ─── Word Choices ────────────────────────────────────────────
@@ -98,9 +150,9 @@ export async function getAllUsers() {
   return supabase.from('user_profiles').select('*').order('created_at', { ascending: false })
 }
 
-export async function getUserProgress(userId: string) {
+export async function getUserSrsRecords(userId: string) {
   return supabase
-    .from('user_progress')
+    .from('user_srs_records')
     .select('*, words(word, definition)')
     .eq('user_id', userId)
     .order('updated_at', { ascending: false })
@@ -112,7 +164,7 @@ export async function getAdminStats() {
     supabase.from('words').select('id', { count: 'exact', head: true }),
     supabase.from('topics').select('id', { count: 'exact', head: true }),
     supabase.from('user_profiles').select('id', { count: 'exact', head: true }),
-    supabase.from('user_progress').select('mastered'),
+    supabase.from('user_srs_records').select('mastered'),
   ])
 
   const mastered = progressRes.data?.filter((p) => p.mastered).length ?? 0
@@ -127,9 +179,37 @@ export async function getAdminStats() {
 }
 
 export async function getRecentWords(limit = 5) {
-  return supabase
+  // Fetch words without topics join first
+  const queryRes = await supabase
     .from('words')
-    .select('*, topics(name)')
+    .select('*')
     .order('created_at', { ascending: false })
     .limit(limit)
+
+  if (queryRes.error || !queryRes.data) return queryRes
+
+  // Enrich with topic names via junction
+  const words = queryRes.data
+  const wordIds = words.map(w => w.id)
+  
+  if (wordIds.length > 0) {
+    const { data: junctions } = await supabase
+      .from('topic_words')
+      .select('word_id, topics(name)')
+      .in('word_id', wordIds)
+
+    const topicNameMap = new Map<string, string>()
+    for (const j of (junctions ?? [])) {
+      topicNameMap.set(j.word_id, (j as any).topics?.name ?? '')
+    }
+
+    // Gắn topics object giả lập để UI không bị break (vì UI kì vọng `topics.name`)
+    for (const w of words) {
+      if (!w.topics) {
+        (w as any).topics = { name: topicNameMap.get(w.id) ?? '' }
+      }
+    }
+  }
+
+  return { data: words, error: null }
 }

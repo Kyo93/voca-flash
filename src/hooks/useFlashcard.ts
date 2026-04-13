@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react'
-import { Card, CardProgress, calculateNextReview, createInitialProgress, getDueCards, Rating } from '../lib/srs'
-import { fetchWords, fetchUserProgress, upsertUserProgress, recordStreak } from '../lib/supabase-storage'
+import { useState, useCallback } from 'react'
+import { Card, CardProgress, calculateFSRSReview, createInitialProgress, isMastered, SrsRating, mapIntensityToRetention } from '../lib/srs'
+import { fetchWords, fetchSrsStates, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 
 interface FlashcardState {
@@ -10,10 +10,12 @@ interface FlashcardState {
   progressMap: Map<string, CardProgress>
   isComplete: boolean
   isLoading: boolean
+  isPrepScreen: boolean
+  prepStats: { unlearned: Card[], learning: Card[], mastered: Card[] } | null
 }
 
-export function useFlashcard(topicFilter?: string) {
-  const { user } = useAuth()
+export function useFlashcard() {
+  const { user, profile, refreshActiveRoadmap } = useAuth()
 
   const [state, setState] = useState<FlashcardState>({
     queue: [],
@@ -22,6 +24,8 @@ export function useFlashcard(topicFilter?: string) {
     progressMap: new Map(),
     isComplete: false,
     isLoading: true,
+    isPrepScreen: true,
+    prepStats: null,
   })
 
   const initialize = useCallback(async (topic?: string) => {
@@ -30,20 +34,66 @@ export function useFlashcard(topicFilter?: string) {
     // Fetch words and progress in parallel
     const [cards, progressMap] = await Promise.all([
       fetchWords(topic),
-      user ? fetchUserProgress(user.id) : Promise.resolve(new Map<string, CardProgress>()),
+      user ? fetchSrsStates(user.id) : Promise.resolve(new Map<string, CardProgress>()),
     ])
 
-    const dueCards = getDueCards(cards, progressMap)
-    const newCards = cards.filter((c) => !progressMap.has(c.id))
-    const combined = [...dueCards, ...newCards].slice(0, 20) // Max 20 per session
+    const unlearned: Card[] = []
+    const learning: Card[] = []
+    const mastered: Card[] = []
+
+    for (const c of cards) {
+      if (!progressMap.has(c.id)) {
+        unlearned.push(c)
+      } else {
+        const prog = progressMap.get(c.id)!
+        if (isMastered(prog)) {
+          mastered.push(c)
+        } else {
+          learning.push(c)
+        }
+      }
+    }
 
     setState({
-      queue: combined,
+      queue: [],
       currentIndex: 0,
       isFlipped: false,
       progressMap,
-      isComplete: combined.length === 0,
+      isComplete: false,
       isLoading: false,
+      isPrepScreen: true,
+      prepStats: { unlearned, learning, mastered },
+    })
+  }, [user])
+
+  const startSession = useCallback(async (roadmapId: string | undefined, topicId: string, includeMastered: boolean) => {
+    setState((s) => {
+      if (!s.prepStats) return s
+      const { unlearned, learning, mastered } = s.prepStats
+      
+      // unlearned + ALL learning is fine, or just due learning. Let's use unlearned + leaning.
+      // Wait, getDueCards only gets DUE cards. Let's combine unlearned and due cards.
+      let combined = [...unlearned, ...learning]
+      if (includeMastered) {
+        combined = [...combined, ...mastered]
+      }
+      
+      const limit = profile?.daily_target ?? 20
+      combined = combined.slice(0, limit)
+
+      if (user && roadmapId) {
+        // Optimistically save resume state
+        saveResumePointer(user.id, roadmapId, topicId).then(() => {
+          refreshActiveRoadmap(roadmapId)
+        }).catch(err => console.error(err))
+      }
+
+      return {
+        ...s,
+        queue: combined,
+        isPrepScreen: false,
+        isComplete: combined.length === 0,
+      }
     })
   }, [user])
 
@@ -51,13 +101,16 @@ export function useFlashcard(topicFilter?: string) {
     setState((s) => ({ ...s, isFlipped: !s.isFlipped }))
   }, [])
 
-  const rate = useCallback(async (rating: Rating) => {
+  const rate = useCallback(async (rating: SrsRating) => {
     setState((s) => {
       const card = s.queue[s.currentIndex]
       if (!card) return s
 
       const prevProgress = s.progressMap.get(card.id) || createInitialProgress(card.id)
-      const newProgress = calculateNextReview(prevProgress, rating)
+      const intensity = profile?.srs_intensity ?? 1.0
+      const retention = mapIntensityToRetention(intensity)
+      
+      const newProgress = calculateFSRSReview(prevProgress, rating, retention)
 
       const newMap = new Map(s.progressMap)
       newMap.set(card.id, newProgress)
@@ -67,11 +120,13 @@ export function useFlashcard(topicFilter?: string) {
 
       // Fire-and-forget Supabase sync (non-blocking)
       if (user) {
-        const mastered = newProgress.repetitions >= 5
-        const correct = rating >= 3 ? 1 : 0
-        const wrong = rating < 3 ? 1 : 0
+        // In FSRS, only Rating 1 (Again) counts as "wrong"
+        const wrong = rating === 1 ? 1 : 0
 
-        upsertUserProgress(user.id, card.id, correct, wrong, mastered).catch(
+        upsertSrsRecord(user.id, card.id, {
+          ...newProgress,
+          incrementWrong: wrong,
+        }).catch(
           (err) => console.error('[useFlashcard] upsert progress error:', err)
         )
         recordStreak(user.id).catch(
@@ -103,6 +158,7 @@ export function useFlashcard(topicFilter?: string) {
     total: state.queue.length,
     remaining: state.queue.length - state.currentIndex,
     initialize,
+    startSession,
     flip,
     rate,
     markLearned,

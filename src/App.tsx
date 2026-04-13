@@ -8,13 +8,19 @@ import StudyPage from './pages/StudyPage'
 import LibraryPage from './pages/LibraryPage'
 import RoadmapTopicsPage from './pages/RoadmapTopicsPage'
 import LoginPage from './pages/LoginPage'
+import SettingsPage from './pages/SettingsPage'
 import AppLayout from './components/AppLayout'
+import ReviewPage from './pages/ReviewPage'
 import AdminLayout from './components/admin/AdminLayout'
 import AdminWordsPage from './pages/admin/WordsPage'
 import AdminTopicsPage from './pages/admin/TopicsPage'
 import AdminRoadmapsPage from './pages/admin/RoadmapsPage'
 import AdminDashboardPage from './pages/admin/DashboardPage'
 import AdminUsersPage from './pages/admin/UsersPage'
+import ProgressPage from './pages/ProgressPage'
+import MethodologyPage from './pages/MethodologyPage'
+import MasteryPage from './pages/MasteryPage'
+import FreeStudyPage from './pages/FreeStudyPage'
 
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -41,15 +47,6 @@ function RequireAdmin({ children }: { children: ReactNode }) {
   return <>{children}</>
 }
 
-// Placeholder admin pages (filled in Phase 4+)
-function AdminComingSoon({ title }: { title: string }) {
-  return (
-    <div className="flex flex-col items-start">
-      <h1 className="text-3xl font-black text-secondary mb-2">{title}</h1>
-      <p className="text-on-surface-variant">Trang đang được phát triển...</p>
-    </div>
-  )
-}
 
 function App() {
   return (
@@ -66,12 +63,16 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/library/:roadmapSlug" element={<RoadmapTopicsPage />} />
-            <Route path="/progress" element={<div className="p-12 text-2xl font-bold">Progress — coming soon</div>} />
-            <Route path="/settings" element={<div className="p-12 text-2xl font-bold">Settings — coming soon</div>} />
+            <Route path="/progress" element={<ProgressPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/methodology" element={<MethodologyPage />} />
+            <Route path="/mastery" element={<MasteryPage />} />
           </Route>
 
           {/* Special immersive routes */}
           <Route path="/study" element={<RequireAuth><StudyPage /></RequireAuth>} />
+          <Route path="/review" element={<RequireAuth><ReviewPage /></RequireAuth>} />
+          <Route path="/free-study" element={<RequireAuth><FreeStudyPage /></RequireAuth>} />
 
           {/* Admin routes */}
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>

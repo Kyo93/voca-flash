@@ -1,83 +1,175 @@
+import { fsrs, createEmptyCard, Rating, State, type Card as FSRSCard } from 'ts-fsrs'
+import { Word } from './types'
+
 export interface Card {
   id: string
-  front: string       // English word
-  back: string        // Vietnamese meaning
-  example?: string    // Example sentence
-  example_vi?: string // Vietnamese translation of the example
-  image_url?: string  // Custom image URL for flashcard
-  image_position?: string // CSS object-position for image cropping
-  topic: string       // Topic category
+  front: string
+  back: string
+  phonetic?: string
+  example?: string
+  example_vi?: string
+  image_url?: string
+  image_position?: string
+  topic: string
   createdAt: number
 }
 
+/** 
+ * FSRS Card Progress — Unified Interface 
+ * This replaces the legacy SM-2 CardProgress.
+ */
 export interface CardProgress {
   cardId: string
-  ease: number        // SM-2 ease factor (default 2.5)
-  interval: number     // Days until next review
-  repetitions: number  // Successful reviews in a row
-  nextReview: number   // Timestamp of next review
-  lastReview: number  // Last review timestamp
+  stability: number      // Recall stability (days)
+  difficulty: number     // Intrinsic difficulty (0-1)
+  state: number          // 0=New, 1=Learning, 2=Review, 3=Relearning
+  reps: number           // Total review count
+  lapses: number         // Times forgotten
+  scheduledDays: number  // Days until next review
+  due: number            // Timestamp of next review (ms)
+  lastReview: number     // Last review timestamp (ms)
 }
 
-export type Rating = 0 | 1 | 2 | 3 | 4 | 5
+/** 
+ * Internal FSRS Scheduler instance (Singleton) 
+ * request_retention default is 0.9 (90% retention)
+ * enable_short_term=false ensures we don't have sub-day intervals
+ */
+const scheduler = fsrs({ 
+  enable_short_term: false,
+  request_retention: 0.9 
+})
 
 /**
- * SM-2 Spaced Repetition Algorithm
- * Quality: 0=Again, 1=Hard(hard), 2=Good, 3=Easy
- * Maps to SM-2 quality scale: 0→1, 1→2, 2→3, 3→5
+ * Maps SM-2 Rating (1-3) or FSRS Rating (1-4)
+ * SM-2 Quality: 0=Again, 1=Hard, 2=Good, 3=Easy
+ * FSRS Rating: 1=Again, 2=Hard, 3=Good, 4=Easy
  */
-export function calculateNextReview(
+export type SrsRating = 1 | 2 | 3 | 4
+
+/**
+ * Calculates the next review date using FSRS algorithm.
+ */
+export function calculateFSRSReview(
   progress: CardProgress,
-  rating: Rating
+  rating: SrsRating,
+  retention: number = 0.9
 ): CardProgress {
-  const q = Math.max(1, Math.min(5, Math.round((rating / 5) * 5)))
-
-  let { ease, interval, repetitions } = progress
-
-  if (q < 3) {
-    // Failed — reset
-    repetitions = 0
-    interval = 1
-  } else {
-    if (repetitions === 0) {
-      interval = 1
-    } else if (repetitions === 1) {
-      interval = 6
-    } else {
-      interval = Math.round(interval * ease)
-    }
-    repetitions += 1
+  // 1. Create/Configure scheduler with user retention preference
+  const s = retention === 0.9 ? scheduler : fsrs({ enable_short_term: false, request_retention: retention })
+  
+  // 2. Map Progress to FSRS Card
+  const currentCard: FSRSCard = {
+    due: new Date(progress.due),
+    stability: progress.stability,
+    difficulty: progress.difficulty,
+    elapsed_days: progress.lastReview ? Math.floor((Date.now() - progress.lastReview) / (24 * 60 * 60 * 1000)) : 0,
+    scheduled_days: progress.scheduledDays,
+    reps: progress.reps,
+    lapses: progress.lapses,
+    state: progress.state,
+    last_review: progress.lastReview ? new Date(progress.lastReview) : undefined
   }
 
-  ease = Math.max(1.3, ease + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)))
+  // 3. Repeat (Calculate all 4 options, then pick the rated one)
+  const results = s.repeat(currentCard, new Date())
+  const selected = results[rating]
+  const newCard = selected.card
 
-  const now = Date.now()
   return {
-    ...progress,
     cardId: progress.cardId,
-    ease,
-    interval,
-    repetitions,
-    nextReview: now + interval * 24 * 60 * 60 * 1000,
-    lastReview: now,
+    stability: newCard.stability,
+    difficulty: newCard.difficulty,
+    state: newCard.state,
+    reps: newCard.reps,
+    lapses: newCard.lapses,
+    scheduledDays: newCard.scheduled_days,
+    due: newCard.due.getTime(),
+    lastReview: Date.now()
   }
 }
 
-export function getDueCards(cards: Card[], progressMap: Map<string, CardProgress>): Card[] {
-  const now = Date.now()
-  return cards.filter(card => {
-    const p = progressMap.get(card.id)
-    return !p || p.nextReview <= now
-  })
+/**
+ * Unified check for "Mastered" status.
+ * FSRS Criteria: Stability is at least 21 days AND not in Relearning state.
+ */
+export function isMastered(progress: CardProgress): boolean {
+  return progress.stability >= 21 && progress.state !== State.Relearning
 }
 
+/**
+ * Creates initial progress for a newly encountered card.
+ */
 export function createInitialProgress(cardId: string): CardProgress {
+  const empty = createEmptyCard()
   return {
     cardId,
-    ease: 2.5,
-    interval: 0,
-    repetitions: 0,
-    nextReview: Date.now(),
-    lastReview: 0,
+    stability: empty.stability,
+    difficulty: empty.difficulty,
+    state: empty.state,
+    reps: empty.reps,
+    lapses: empty.lapses,
+    scheduledDays: empty.scheduled_days,
+    due: empty.due.getTime(),
+    lastReview: 0
   }
+}
+
+/**
+ * Resets a card (used when user fails in Free Study).
+ */
+export function resetFSRSCard(progress: CardProgress): CardProgress {
+  const currentCard: FSRSCard = {
+    due: new Date(progress.due),
+    stability: progress.stability,
+    difficulty: progress.difficulty,
+    elapsed_days: 0,
+    scheduled_days: progress.scheduledDays,
+    reps: progress.reps,
+    lapses: progress.lapses,
+    state: progress.state,
+    last_review: progress.lastReview ? new Date(progress.lastReview) : undefined
+  }
+
+  const { card: reset } = scheduler.forget(currentCard, new Date())
+  
+  return {
+    cardId: progress.cardId,
+    stability: reset.stability,
+    difficulty: reset.difficulty,
+    state: reset.state,
+    reps: reset.reps,
+    lapses: reset.lapses,
+    scheduledDays: reset.scheduled_days,
+    due: reset.due.getTime(),
+    lastReview: Date.now()
+  }
+}
+
+/**
+ * Conversion helper: SM-2 to FSRS (used by migration tests).
+ * Logic matches the SQL migration script.
+ */
+export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: number, lapse_count?: number }): Partial<CardProgress> {
+  return {
+    stability: Math.max(0.1, sm2.interval),
+    difficulty: Math.max(0, Math.min(1, (3.0 - sm2.ease) / 1.7)),
+    state: sm2.repetitions === 0 ? 3 : (sm2.repetitions < 2 ? 1 : 2),
+    reps: sm2.repetitions,
+    lapses: sm2.lapse_count ?? 0,
+    scheduledDays: sm2.interval
+  }
+}
+
+/**
+ * Mapping helper: SM-2 Intensity to FSRS Retention.
+ * SM-2 Intensity 0.6 (High) -> 1.4 (Low)
+ * FSRS Retention 0.70 -> 0.97
+ */
+export function mapIntensityToRetention(intensity: number): number {
+  if (intensity <= 0.6) return 0.95
+  if (intensity <= 0.8) return 0.93
+  if (intensity <= 1.0) return 0.90
+  if (intensity <= 1.2) return 0.85
+  return 0.8 // Relaxed
 }

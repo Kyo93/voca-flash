@@ -28,7 +28,6 @@ export default function AdminRoadmapsPage() {
   const [showModal, setShowModal] = useState(false)
   const [editData, setEditData] = useState<Roadmap | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Roadmap | null>(null)
-  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => { fetch() }, [])
 
@@ -58,9 +57,7 @@ export default function AdminRoadmapsPage() {
 
   async function handleDelete() {
     if (!deleteTarget) return
-    setDeleting(true)
     await removeRoadmap(deleteTarget.id)
-    setDeleting(false)
     setDeleteTarget(null)
   }
 

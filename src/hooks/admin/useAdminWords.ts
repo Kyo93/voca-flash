@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import {
   getAllWords,
   createWord,
@@ -7,8 +7,9 @@ import {
   getWordChoices,
   createWordChoices,
   deleteWordChoices,
+  getWordTopicIds,
 } from '../../lib/admin-queries'
-import type { Word, WordChoice, Topic } from '../../lib/types'
+import type { Word, WordChoice } from '../../lib/types'
 
 export function useAdminWords() {
   const [words, setWords] = useState<Word[]>([])
@@ -30,9 +31,10 @@ export function useAdminWords() {
 
   async function addWord(
     word: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
-    wrongChoices: string[]
+    wrongChoices: string[],
+    topicIds: string[] = []
   ) {
-    const { data, error: err } = await createWord(word)
+    const { data, error: err } = await createWord({ ...word }, topicIds)
     if (err) return { error: err.message }
 
     if (wrongChoices.length > 0) {
@@ -52,9 +54,10 @@ export function useAdminWords() {
   async function editWord(
     id: string,
     word: Partial<Word>,
-    wrongChoices?: string[]
+    wrongChoices?: string[],
+    topicIds?: string[]
   ) {
-    const { error: err } = await updateWord(id, word)
+    const { error: err } = await updateWord(id, word, topicIds)
     if (err) return { error: err.message }
 
     if (wrongChoices !== undefined) {
@@ -87,5 +90,9 @@ export function useAdminWords() {
     return (data as WordChoice[]) ?? []
   }
 
-  return { words, loading, error, fetch, addWord, editWord, removeWord, loadChoices }
+  async function loadTopicIds(wordId: string): Promise<string[]> {
+    return await getWordTopicIds(wordId)
+  }
+
+  return { words, loading, error, fetch, addWord, editWord, removeWord, loadChoices, loadTopicIds }
 }

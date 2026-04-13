@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getAllUsers, getUserProgress } from '../../lib/admin-queries'
-import type { UserProfile, UserProgress } from '../../lib/types'
+import { getAllUsers, getUserSrsRecords } from '../../lib/admin-queries'
+import type { UserProfile, SrsRecord } from '../../lib/types'
 
 function UserRow({
   user,
@@ -72,17 +72,17 @@ function UserRow({
   )
 }
 
-function UserProgressPanel({
+function UserSrsPanel({
   user,
   progress,
   onClose,
 }: {
   user: UserProfile
-  progress: UserProgress[]
+  progress: SrsRecord[]
   onClose: () => void
 }) {
   const mastered = progress.filter((p) => p.mastered).length
-  const learning = progress.filter((p) => !p.mastered && (p.correct_count > 0 || p.wrong_count > 0)).length
+  const learning = progress.filter((p) => !p.mastered && (p.repetitions > 0 || p.lapse_count > 0)).length
   const total = progress.length
 
   return (
@@ -168,9 +168,17 @@ function UserProgressPanel({
                       {p.mastered ? 'Mastered' : 'Learning'}
                     </span>
                   </div>
-                  <div className="flex gap-4 mt-1 text-xs text-stone-400">
-                    <span>✓ {p.correct_count}</span>
-                    <span>✗ {p.wrong_count}</span>
+                  <div className="grid grid-cols-2 gap-4 mt-1 text-[10px] text-stone-400 font-mono">
+                    <div className="space-y-1">
+                      <p>Stability: {p.fsrs_stability?.toFixed(2) ?? '0.00'}</p>
+                      <p>Difficulty: {p.fsrs_difficulty?.toFixed(2) ?? '0.00'}</p>
+                      <p>State: {p.fsrs_state === 0 ? 'New' : p.fsrs_state === 1 ? 'Learning' : p.fsrs_state === 2 ? 'Review' : 'Relearning'}</p>
+                    </div>
+                    <div className="space-y-1 text-right">
+                      <p>Reps: {p.fsrs_reps ?? 0} (Old: {p.repetitions})</p>
+                      <p>Lapses: {p.fsrs_lapses ?? 0}</p>
+                      <p>Next: {p.next_review_at ? new Date(p.next_review_at).toLocaleDateString() : 'N/A'}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -187,7 +195,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null)
-  const [userProgress, setUserProgress] = useState<UserProgress[]>([])
+  const [srsRecords, setSrsRecords] = useState<SrsRecord[]>([])
 
   useEffect(() => {
     getAllUsers()
@@ -200,8 +208,8 @@ export default function AdminUsersPage() {
 
   async function handleSelectUser(user: UserProfile) {
     setSelectedUser(user)
-    const { data } = await getUserProgress(user.id)
-    setUserProgress((data as UserProgress[]) ?? [])
+    const { data } = await getUserSrsRecords(user.id)
+    setSrsRecords((data as SrsRecord[]) ?? [])
   }
 
   return (
@@ -266,9 +274,9 @@ export default function AdminUsersPage() {
       </div>
 
       {selectedUser && (
-        <UserProgressPanel
+        <UserSrsPanel
           user={selectedUser}
-          progress={userProgress}
+          progress={srsRecords}
           onClose={() => setSelectedUser(null)}
         />
       )}

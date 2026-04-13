@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const { signIn, signUp, loading } = useAuth()
+  const { signIn, signUp } = useAuth()
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -29,7 +29,12 @@ export default function LoginPage() {
         setSuccess('Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.')
         setSubmitting(false)
       } else {
-        navigate('/dashboard')
+        // Chờ 500ms để AuthContext kịp cập nhật session/user ngầm 
+        // trước khi thực hiện chuyển trang, tránh race condition.
+        setTimeout(() => {
+          navigate('/dashboard')
+          setSubmitting(false)
+        }, 500)
       }
     }
   }

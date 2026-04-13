@@ -23,11 +23,10 @@ export default function AppLayout() {
     if (location.pathname.startsWith('/progress')) return t('nav.progress')
     if (location.pathname.startsWith('/settings')) return t('nav.settings')
     if (location.pathname.startsWith('/admin')) return 'Quản trị'
+    if (location.pathname.startsWith('/mastery')) return t('nav.mastery')
     return 'VocabMaster'
   }
 
-  // Dashboard usually has the right sidebar
-  const hasRightSidebar = location.pathname === '/dashboard'
 
   return (
     <div 

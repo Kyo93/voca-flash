@@ -1,9 +1,13 @@
-/**
- * Text-to-Speech using Web Speech API
- * Supports standard and slow playback
- */
 
-let currentUtterance: SpeechSynthesisUtterance | null = null
+let ttsConfig = {
+  voiceURI: null as string | null,
+  rate: 0.85
+}
+
+export function setTtsConfig(voiceURI: string | null, rate: number) {
+  ttsConfig.voiceURI = voiceURI
+  ttsConfig.rate = rate
+}
 
 export function speak(text: string, slow = false): void {
   if (!window.speechSynthesis) {
@@ -16,21 +20,33 @@ export function speak(text: string, slow = false): void {
 
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'en-US'
-  utterance.rate = slow ? 0.6 : 0.85
+  
+  // Defensive check for rate
+  const rawRate = slow ? (ttsConfig.rate * 0.7) : ttsConfig.rate
+  utterance.rate = isNaN(rawRate) || rawRate <= 0 ? 0.85 : rawRate
+  
   utterance.pitch = 1
   utterance.volume = 1
 
-  // Try to find an English voice
   const voices = window.speechSynthesis.getVoices()
-  const englishVoice = voices.find(
-    (v) => v.lang.startsWith('en') && !v.name.includes('Google')
-  ) || voices.find((v) => v.lang.startsWith('en'))
-
-  if (englishVoice) {
-    utterance.voice = englishVoice
+  
+  let selectedVoice = null
+  
+  if (ttsConfig.voiceURI) {
+    selectedVoice = voices.find(v => v.voiceURI === ttsConfig.voiceURI)
+  }
+  
+  if (!selectedVoice) {
+    // Try to find an English voice
+    selectedVoice = voices.find(
+      (v) => v.lang.startsWith('en') && !v.name.includes('Google')
+    ) || voices.find((v) => v.lang.startsWith('en'))
   }
 
-  currentUtterance = utterance
+  if (selectedVoice) {
+    utterance.voice = selectedVoice
+  }
+
   window.speechSynthesis.speak(utterance)
 }
 
@@ -38,8 +54,10 @@ export function stop(): void {
   if (window.speechSynthesis) {
     window.speechSynthesis.cancel()
   }
-  currentUtterance = null
 }
+
+export const cancelSpeech = stop
+export const speakWord = (text: string, _rate?: number) => speak(text, false)
 
 export function isSpeaking(): boolean {
   return window.speechSynthesis?.speaking ?? false

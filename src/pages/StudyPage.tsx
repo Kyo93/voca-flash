@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
+import { useAuth } from '../contexts/AuthContext'
 import Sidebar from '../components/Sidebar'
+import StudyPrepScreen from '../components/StudyPrepScreen'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 import type { Card } from '../lib/srs'
 
@@ -132,7 +133,7 @@ function FlashcardBack({ card }: { card: Card }) {
                     "{card.example}"
                   </p>
                   {card.example_vi && (
-                    <p className="text-on-surface-variant font-body text-xs leading-relaxed border-t border-outline-variant/10 pt-2 opacity-70">
+                    <p className="text-on-surface-variant font-body text-xs leading-relaxed border-t border-outline-variant/10 pt-2 oceanic-pulse oceanic-glow opacity-70">
                       "{card.example_vi}"
                     </p>
                   )}
@@ -155,49 +156,62 @@ function FlashcardBack({ card }: { card: Card }) {
   )
 }
 
-function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3) => void }) {
-  const { t } = useTranslation()
-
+function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3 | 4) => void }) {
   return (
-    <div className="w-full max-w-md grid grid-cols-3 gap-4 px-2">
-      {/* Hard Button */}
+    <div className="w-full max-w-md grid grid-cols-4 gap-2 px-1">
+      {/* Again Button */}
       <button
         onClick={() => onRate(1)}
-        className="group flex flex-col items-center gap-2"
+        className="group flex flex-col items-center gap-1.5"
       >
-        <div className="w-full py-4 bg-error-container text-on-error-container font-headline font-bold rounded-lg border border-error/10 group-active:scale-95 transition-all flex items-center justify-center">
-          Khó
+        <div className="w-full py-4 bg-error-container text-on-error-container font-headline font-bold rounded-lg border border-error/10 group-active:scale-95 transition-all flex items-center justify-center text-xs">
+          Quên
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">1 Ngày</span>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Lại</span>
       </button>
 
-      {/* Good/Vừa Button */}
+      {/* Hard Button */}
       <button
         onClick={() => onRate(2)}
-        className="group flex flex-col items-center gap-2"
+        className="group flex flex-col items-center gap-1.5"
       >
-        <div className="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center shadow-lg shadow-primary/20">
-          Vừa
+        <div className="w-full py-4 bg-surface-container-highest text-on-surface-variant font-headline font-bold rounded-lg border border-outline-variant/10 group-active:scale-95 transition-all flex items-center justify-center text-xs">
+          Khó
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">4 Ngày</span>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Trễ</span>
       </button>
 
-      {/* Easy/Dễ Button */}
+      {/* Good Button */}
       <button
         onClick={() => onRate(3)}
-        className="group flex flex-col items-center gap-2"
+        className="group flex flex-col items-center gap-1.5"
       >
-        <div className="w-full py-4 bg-secondary-fixed text-on-secondary-fixed font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center border border-secondary/10">
+        <div className="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center shadow-lg shadow-primary/20 text-xs text-nowrap px-1">
+          Vừa
+        </div>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Chuẩn</span>
+      </button>
+
+      {/* Easy Button */}
+      <button
+        onClick={() => onRate(4)}
+        className="group flex flex-col items-center gap-1.5"
+      >
+        <div className="w-full py-4 bg-secondary-fixed text-on-secondary-fixed font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center border border-secondary/10 text-xs">
           Dễ
         </div>
-        <span className="text-outline text-[10px] font-bold uppercase tracking-tighter">7 Ngày</span>
+        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Sớm</span>
       </button>
     </div>
   )
 }
 
 function StudyComplete({ total }: { total: number }) {
-  const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
+  
+  // Preserve current topic/roadmap context
+  const currentQuery = searchParams.toString()
+  const studyLink = currentQuery ? `/study?${currentQuery}` : '/study'
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
@@ -211,7 +225,7 @@ function StudyComplete({ total }: { total: number }) {
         <a href="/dashboard" className="px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
           Về Dashboard
         </a>
-        <a href="/study" className="px-8 py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
+        <a href={studyLink} className="px-8 py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all">
           Học thêm
         </a>
       </div>
@@ -220,9 +234,11 @@ function StudyComplete({ total }: { total: number }) {
 }
 
 export default function StudyPage() {
-  const { t } = useTranslation()
+  const { profile } = useAuth()
   const [searchParams] = useSearchParams()
   const topic = searchParams.get('topic') || undefined
+  const topicId = searchParams.get('topicId') || undefined
+  const roadmapId = searchParams.get('roadmapId') || undefined
 
   const {
     currentCard,
@@ -231,7 +247,10 @@ export default function StudyPage() {
     isFlipped,
     isComplete,
     isLoading,
+    isPrepScreen,
+    prepStats,
     initialize,
+    startSession,
     flip,
     rate,
   } = useFlashcard()
@@ -244,13 +263,19 @@ export default function StudyPage() {
   // Tự động phát âm khi thẻ xuất hiện hoặc khi lật thẻ
   useEffect(() => {
     if (currentCard && !isLoading && !isComplete) {
-      // Phát âm từ vựng tiếng Anh (mặt trước)
-      speak(currentCard.front);
+      if (profile?.auto_play_audio !== false) {
+        speak(currentCard.front);
+      }
     }
-  }, [currentCard?.id, isFlipped, isLoading, isComplete]);
+  }, [currentCard?.id, isFlipped, isLoading, isComplete, profile?.auto_play_audio]);
+
   const { collapsed, rightCollapsed } = useSidebar()
   const sidebarW = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
   const rightbarW = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
+
+  const onStartCallback = useCallback((includeMastered: boolean) => {
+    startSession(roadmapId, topicId || '', includeMastered)
+  }, [startSession, roadmapId, topicId])
 
   if (isLoading) {
     return (
@@ -258,6 +283,22 @@ export default function StudyPage() {
         <Sidebar />
         <main className="flex-1 flex items-center justify-center transition-all duration-300" style={{ marginLeft: sidebarW }}>
           <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
+        </main>
+      </div>
+    )
+  }
+
+  if (isPrepScreen) {
+    return (
+      <div className="flex min-h-screen bg-surface">
+        <Sidebar />
+        <main className="flex-1 flex transition-all duration-300" style={{ marginLeft: sidebarW, marginRight: rightbarW }}>
+          <StudyPrepScreen 
+            stats={prepStats}
+            loading={isLoading}
+            onStart={onStartCallback}
+            onBack={() => window.history.back()}
+          />
         </main>
       </div>
     )
@@ -343,7 +384,7 @@ export default function StudyPage() {
                 </button>
               </>
             ) : (
-              <SRSButtons onRate={(rating) => rate((rating as 1 | 2 | 3) as 1 | 2 | 3)} />
+              <SRSButtons onRate={(rating) => rate(rating)} />
             )}
           </div>
         </div>
