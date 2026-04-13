@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchRoadmaps, fetchRoadmapStats, fetchResumePointers } from '../lib/supabase-storage'
+import { fetchLibraryPageData, fetchRoadmaps, fetchRoadmapStats, fetchResumePointers } from '../lib/supabase-storage'
 import type { Roadmap, ResumePointer } from '../lib/types'
 
 export default function LibraryPage() {
@@ -16,22 +16,41 @@ export default function LibraryPage() {
     async function loadRoadmaps() {
       setLoading(true)
       try {
-        const data = await fetchRoadmaps()
-        setRoadmaps(data)
+        const data = await fetchLibraryPageData(user?.id)
         
-        // Fetch stats for each roadmap
-        const stats: Record<string, { total: number, mastered: number }> = {}
-        await Promise.all(data.map(async (r) => {
-          const s = await fetchRoadmapStats(r.id, user?.id)
-          stats[r.id] = s
+        // 1. Set roadmaps
+        const rms: Roadmap[] = data.map(d => ({
+          id: d.id,
+          name: d.name,
+          slug: d.slug,
+          description: d.description,
+          image_url: d.image_url,
+          is_active: true,
+          created_at: '', // Not needed for UI comparison usually
+          updated_at: ''
         }))
-        setRoadmapStats(stats)
+        setRoadmaps(rms)
 
-        // Fetch learning states
-        if (user?.id) {
-          const states = await fetchResumePointers(user.id)
-          setLearningStates(states)
-        }
+        // 2. Set stats
+        const stats: Record<string, { total: number, mastered: number }> = {}
+        const states = new Map<string, ResumePointer>()
+
+        data.forEach(d => {
+          stats[d.id] = { total: d.total_words, mastered: d.mastered_count }
+          if (d.resume_state) {
+            states.set(d.id, {
+              id: '', // Not used in Library UI
+              user_id: user?.id || '',
+              roadmap_id: d.id,
+              last_topic_id: d.resume_state.last_topic_id,
+              last_accessed_at: d.resume_state.last_accessed_at
+            })
+          }
+        })
+
+        setRoadmapStats(stats)
+        setLearningStates(states)
+
       } catch (err) {
         console.error('Error fetching roadmaps:', err)
       } finally {

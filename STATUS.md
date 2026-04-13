@@ -80,6 +80,25 @@
 | 4.11 | Review Arena (Active Recall) | ✅ |
 | 4.12 | Deploy Cloudflare Pages | ⬜ |
 
+### Phase 5: FSRS Upgrade
+> 📋 **Nâng cấp SM-2 → FSRS** — Review + Tests hoàn thành
+
+| Task | Trạng thái |
+|------|-------------|
+| Review kế hoạch vs thực tế code | ✅ Done |
+| Tạo tests SM-2 (24 tests) | ✅ Done |
+| Tạo tests Migration SM-2 → FSRS (20 tests) | ✅ Done |
+| Tạo tests FSRS Algorithm (30 tests) | ✅ Done |
+| Cập nhật kế hoạch (8 phases, 7 issues fixed) | ✅ Done |
+| DB Migration Script | ⬜ |
+| Install ts-fsrs | ⬜ |
+| Update Types + SRS Algorithm | ⬜ |
+| Update Storage Layer | ⬜ |
+| Update Hooks (useFlashcard, useReviewSession) | ⬜ |
+| Fix Inconsistencies (mastered threshold) | ⬜ |
+| Integration Tests | ⬜ |
+| Manual Verification | ⬜ |
+
 ---
 
 ## 📊 TIẾN ĐỘ TỔNG
@@ -99,7 +118,19 @@ Phase 4.7 ✅✅✅✅✅✅  Users View
 Phase 4.8 ✅✅✅✅✅✅  Admin Dashboard Stats
 Phase 4.9 ✅✅✅✅✅✅  Migration: localStorage → Supabase
 Phase 4.10 ✅✅✅✅✅  Student → Supabase Sync
-Phase 4.11 ⬜⬜⬜⬜⬜  Deploy Cloudflare Pages
+Phase 4.11 ✅✅✅✅✅✅  Review Arena (Active Recall)
+Phase 4.12 ⬜⬜⬜⬜⬜  Deploy Cloudflare Pages
+
+Phase 5 🔄🔄🔄🔄⬜⬜  FSRS Upgrade (SM-2 → FSRS)
+  5.1 ✅✅✅✅✅✅  Review + Plan (7 issues found)
+  5.2 ✅✅✅✅✅✅  Tests SM-2 (24 tests)
+  5.3 ✅✅✅✅✅✅  Tests Migration (20 tests)
+  5.4 ✅✅✅✅✅✅  Tests FSRS Algorithm (30 tests)
+  5.5 ⬜⬜⬜⬜⬜⬜  DB Migration + ts-fsrs install
+  5.6 ⬜⬜⬜⬜⬜⬜  Update Types + SRS Algorithm
+  5.7 ⬜⬜⬜⬜⬜⬜  Update Storage Layer
+  5.8 ⬜⬜⬜⬜⬜⬜  Update Hooks
+  5.9 ⬜⬜⬜⬜⬜⬜  Integration Tests + Verify
 ```
 
 ---
@@ -143,5 +174,5 @@ voca-flash/
 
 ---
 
-_Cập nhật lần cuối: 2026-04-12_
+_Cập nhật lần cuối: 2026-04-13_
 

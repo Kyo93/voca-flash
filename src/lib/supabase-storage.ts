@@ -14,6 +14,115 @@ import { supabase } from './supabase'
 import type { Topic, Roadmap, Word, SrsRecord, UserProfile, WordChoice, ResumePointer, MasteryWord } from './types'
 import type { Card, CardProgress } from './srs'
 
+export interface InitialAppData {
+  profile: UserProfile | null
+  stats: {
+    total_words: number
+    mastered: number
+    learning: number
+  }
+  active_roadmap: {
+    id: string
+    slug: string
+  } | null
+  global_review_count: number
+}
+
+export async function fetchInitialAppData(userId: string): Promise<InitialAppData> {
+  const { data, error } = await supabase.rpc('get_initial_app_data', { p_user_id: userId })
+  
+  if (error) {
+    console.error('[Storage] Error fetching initial app data:', error)
+    // Fallback to empty data structure
+    return {
+      profile: null,
+      stats: { total_words: 0, mastered: 0, learning: 0 },
+      active_roadmap: null,
+      global_review_count: 0
+    }
+  }
+
+  // Ensure stats fields are present even if RPC returns null
+  const result = data || {}
+  return {
+    profile: result.profile || null,
+    stats: result.stats || { total_words: 0, mastered: 0, learning: 0 },
+    active_roadmap: result.active_roadmap || null,
+    global_review_count: result.global_review_count || 0
+  } as InitialAppData
+}
+
+export interface ProgressPageData {
+  memory_health: {
+    learning: number
+    new_today: number
+    mastered: number
+    mastered_today: number
+    due: number
+    orphaned: number
+    weak: number
+  }
+  roadmap_progress: {
+    id: string
+    name: string
+    slug: string
+    total: number
+    mastered: number
+    percent: number
+  }[]
+  overall_stats: {
+    streak_days: number
+    total_mastered: number
+  }
+}
+
+export async function fetchProgressPageData(userId: string): Promise<ProgressPageData> {
+  const { data, error } = await supabase.rpc('get_progress_page_data', { p_user_id: userId })
+  
+  if (error) {
+    console.error('[Storage] Error fetching progress page data:', error)
+    // Return empty state instead of throwing to prevent component crash
+    return {
+      memory_health: { learning: 0, new_today: 0, mastered: 0, mastered_today: 0, due: 0, orphaned: 0, weak: 0 },
+      roadmap_progress: [],
+      overall_stats: { streak_days: 0, total_mastered: 0 }
+    }
+  }
+
+  return (data || {
+    memory_health: { learning: 0, new_today: 0, mastered: 0, mastered_today: 0, due: 0, orphaned: 0, weak: 0 },
+    roadmap_progress: [],
+    overall_stats: { streak_days: 0, total_mastered: 0 }
+  }) as ProgressPageData
+}
+
+export interface LibraryPageData {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  image_url: string | null
+  total_words: number
+  mastered_count: number
+  resume_state: {
+    last_topic_id: string
+    last_accessed_at: string
+  } | null
+}
+
+export async function fetchLibraryPageData(userId: string | undefined): Promise<LibraryPageData[]> {
+  const { data, error } = await supabase.rpc('get_library_page_data', { 
+    p_user_id: userId || '00000000-0000-0000-0000-000000000000' // Fallback cho guest
+  })
+  
+  if (error) {
+    console.error('[Storage] Error fetching library page data:', error)
+    throw error
+  }
+
+  return (data || []) as LibraryPageData[]
+}
+
 // ── Mapping: Word (Supabase) → Card (student app) ────────────
 
 function mapWordToCard(word: Word, topicSlug?: string): Card {
@@ -315,30 +424,22 @@ export async function fetchDashboardSummary(userId: string): Promise<DashboardSu
   }
 }
 
+export interface UserStats {
+  totalWords: number
+  mastered: number
+  learning: number
+  streakDays: number
+}
+
 export async function fetchDashboardStats(userId: string): Promise<UserStats> {
-  const [progressRes, profileRes] = await Promise.all([
-    supabase
-      .from('user_srs_records')
-      .select('mastered, repetitions, lapse_count')
-      .eq('user_id', userId),
-    supabase
-      .from('user_profiles')
-      .select('streak_days')
-      .eq('id', userId)
-      .single(),
-  ])
-
-  const progress = (progressRes.data ?? []) as SrsRecord[]
-  const mastered = progress.filter((p) => p.mastered).length
-  const learning = progress.filter(
-    (p) => !p.mastered && (p.repetitions > 0 || p.lapse_count > 0)
-  ).length
-
+  // Use the shared initial data RPC to get consistent stats across dashboard
+  const appData = await fetchInitialAppData(userId)
+  
   return {
-    totalWords: progress.length,
-    mastered,
-    learning,
-    streakDays: (profileRes.data?.streak_days ?? 0) as number,
+    totalWords: appData.stats.total_words,
+    mastered: appData.stats.mastered,
+    learning: appData.stats.learning,
+    streakDays: appData.profile?.streak_days ?? 0,
   }
 }
 
@@ -351,16 +452,34 @@ export async function fetchDashboardStats(userId: string): Promise<UserStats> {
 export async function recordStreak(userId: string): Promise<number> {
   const today = new Date().toISOString().split('T')[0]
 
-  // Get current profile
+  // Get current profile — use .maybeSingle() to avoid crash on new users
   const { data: profile, error: fetchError } = await supabase
     .from('user_profiles')
     .select('streak_days, last_study_date')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
 
-  if (fetchError || !profile) {
+  if (fetchError) {
     console.error('[supabase-storage] recordStreak fetch error:', fetchError)
     return 0
+  }
+
+  // New user with no profile — create one with streak = 1
+  if (!profile) {
+    const { error: insertError } = await supabase
+      .from('user_profiles')
+      .insert({
+        id: userId,
+        streak_days: 1,
+        last_study_date: today,
+        daily_target: 20,
+        theme_mode: 'light',
+      })
+    if (insertError) {
+      console.error('[supabase-storage] recordStreak create profile failed:', insertError)
+      return 0
+    }
+    return 1
   }
 
   const lastDate = profile.last_study_date as string | null

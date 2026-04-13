@@ -3,14 +3,41 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-**Progress Dashboard Layered Analytics** — Integrate detailed SRS memory health metrics into the Progress Page using Tactile Scholar Glassmorphism design.
+**New User Onboarding Fix** — Fix Progress page crash for newly registered users by auto-creating `user_profiles` and replacing unsafe `.single()` queries with defensive fallbacks.
 
 ## Current Phase
-`execution` — Hoàn tất việc chèn 6 chỉ số chuyên sâu vào trang Tiến độ (`/progress`).
+`planning` — OpenSpec plan written, awaiting execution.
 
 ## Next Actions
-1. Review lại UI trên trình duyệt.
-2. Setup Git push cho tính năng mới.
+1. Step 0: Audit all `.single()` calls in `supabase-storage.ts`
+2. Step 1: Fix `AuthContext.tsx` — add `ensureUserProfile()` lazy creation
+3. Step 2: Fix `supabase-storage.ts` — 2 locations (fetchDashboardStats + recordStreak)
+4. Step 3: Fix `ProgressPage.tsx` — `Promise.all` → `Promise.allSettled`
+
+## Working Context
+- **Root Cause:** New Supabase Auth users have no `user_profiles` record → `.single()` throws 406 Not Acceptable → `Promise.all` rejects → spinner hangs.
+- **3 Files affected:** `AuthContext.tsx`, `supabase-storage.ts`, `ProgressPage.tsx`
+- **Plan location:** `openspec/changes/new-user-onboarding-fix/`
+- **RLS risk:** Must verify INSERT policy on `user_profiles` before step 1.
+
+## What Was Done (2026-04-13)
+
+### 🔍 Root Cause Analysis (cm-debugging output)
+- **Issue:** New user → Progress page spinner hangs indefinitely
+- **Root 1:** `user_profiles` record missing (Supabase Auth creates auth user, no profile upsert)
+- **Root 2:** `fetchDashboardStats()` uses `.single()` → throws 406 for null profile
+- **Root 3:** `Promise.all` in `ProgressPage.tsx` rejects entirely when one query throws
+- **Root 4:** `recordStreak()` also uses `.single()` — fails silently on first study session
+- **Race condition:** AuthContext fires profile fetch non-blocking (`then()`) → ProgressPage may read before profile exists
+
+### 📋 OpenSpec Plan Written
+- `openspec/changes/new-user-onboarding-fix/design.md` ✅
+- `openspec/changes/new-user-onboarding-fix/tasks.md` ✅
+  - Step 0: Audit all `.single()` calls
+  - Step 1: `ensureUserProfile()` in AuthContext
+  - Step 2: Defensive queries in supabase-storage (2 locations)
+  - Step 3: `Promise.allSettled` in ProgressPage
+  - Step 4: Manual verification tests
 
 ## Working Context
 - **Zen Arena 2.0:** Đã hoàn tất (Motion + Rewards). Các thử thách hiện có độ "flow" và phần tổng kết đã tích hợp cơ chế xây dựng thói quen.

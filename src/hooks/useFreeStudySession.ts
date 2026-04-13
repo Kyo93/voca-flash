@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { CardProgress, Rating } from '../lib/srs'
-import { upsertFreeStudyFail } from '../lib/supabase-storage'
+import { upsertFreeStudyFail, fetchUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
 import { QuadrantType, ReviewChallenge } from './useReviewSession'

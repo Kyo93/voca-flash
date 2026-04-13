@@ -28,7 +28,7 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const { t } = useTranslation()
-  const { user, profile } = useAuth()
+  const { user, profile, initialData } = useAuth()
 
   const [streak, setStreak] = useState<StreakData>(loadStreak())
   const [stats, setStats] = useState<DashboardStats>({
@@ -47,45 +47,69 @@ export default function DashboardPage() {
     setCurrentQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)])
   }, [])
 
+  // Sync with initialData from Context (Màn hình sẽ hiện số ngay lập tức)
+  useEffect(() => {
+    if (initialData) {
+      setStats({
+        totalWords: initialData.stats.total_words,
+        mastered: initialData.stats.mastered,
+        learning: initialData.stats.learning,
+        topicCounts: {},
+      })
+      
+      // Map initialData to DashboardSummary legacy structure
+      setDashboardData(prev => ({
+        resumeTopic: prev?.resumeTopic || null,
+        fallbackTopics: prev?.fallbackTopics || [],
+        globalReviewCount: initialData.global_review_count
+      }))
+      
+      if (initialData.profile) {
+        setStreak({
+          currentStreak: initialData.profile.streak_days,
+          lastStudyDate: initialData.profile.last_study_date || null,
+          history: []
+        })
+      }
+      
+      // Nếu đã có data cơ bản, cất loader đi cho user sướng
+      setLoading(false)
+    }
+  }, [initialData])
+
   useEffect(() => {
     async function load() {
       if (!user) {
-        // Not logged in — use localStorage fallback
         setStreak(loadStreak())
         setLoading(false)
         return
       }
 
-      // Logged in — fetch from Supabase
-      const [streakData, userStats, summary, vocabData] = await Promise.all([
-        fetchStreakFromSupabase(user.id),
-        fetchDashboardStats(user.id),
-        fetchDashboardSummary(user.id),
-        fetchUserVocabulary(user.id).catch(() => [])
-      ])
+      try {
+        // Chỉ fetch những thứ KHÔNG có trong Mega RPC hoặc cần load sâu
+        const [summary, vocabData] = await Promise.all([
+          fetchDashboardSummary(user.id),
+          fetchUserVocabulary(user.id).catch(() => [])
+        ])
 
-      setStreak(streakData)
-      setStats({
-        totalWords: userStats.totalWords,
-        mastered: userStats.mastered,
-        learning: userStats.learning,
-        topicCounts: {}, // No longer used for cards
-      })
-      setDashboardData(summary)
+        setDashboardData(summary)
 
-      // Calculate new words today with 4 AM reset
-      const todayBoundary = getTodayBoundary()
-      const newToday = vocabData.filter(w => new Date(w.first_encountered) >= todayBoundary).length
-      setNewTodayTotal(newToday)
-      
-      // Banner logic: check if last_study_date is NOT today
-      const today = new Date().toISOString().split('T')[0]
-      const dismissed = sessionStorage.getItem('welcome_banner_dismissed') === 'true'
-      if (profile?.last_study_date !== today && !dismissed) {
-        setShowBanner(true)
+        // Calculate new words today with 4 AM reset
+        const todayBoundary = getTodayBoundary()
+        const newToday = vocabData.filter(w => new Date(w.first_encountered) >= todayBoundary).length
+        setNewTodayTotal(newToday)
+        
+        // Banner logic
+        const today = new Date().toISOString().split('T')[0]
+        const dismissed = sessionStorage.getItem('welcome_banner_dismissed') === 'true'
+        if (profile?.last_study_date !== today && !dismissed) {
+          setShowBanner(true)
+        }
+      } catch (err) {
+        console.error('Dashboard deep load error:', err)
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     }
 
     load()

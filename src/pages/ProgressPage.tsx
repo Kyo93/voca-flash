@@ -6,6 +6,7 @@ import {
   fetchRoadmaps, 
   fetchRoadmapStats,
   fetchUserVocabulary,
+  fetchProgressPageData,
   getTodayBoundary,
   UserStats
 } from '../lib/supabase-storage'
@@ -44,54 +45,34 @@ export default function ProgressPage() {
     async function loadData() {
       if (!user) return
       try {
-        const [userStats, summary, allRoadmaps, vocabData] = await Promise.all([
-          fetchDashboardStats(user.id),
-          fetchDashboardSummary(user.id),
-          fetchRoadmaps(),
-          fetchUserVocabulary(user.id).catch(() => []) // Fallback to empty array on error
-        ])
+        const data = await fetchProgressPageData(user.id)
 
-        setStats(userStats)
-        setReviewCount(summary.globalReviewCount)
-
-        // Calculate Memory Health
-        if (vocabData.length > 0) {
-          const now = new Date()
-          const today = getTodayBoundary()
-          
-          setMemoryHealth({
-            learning: vocabData.filter(w => !w.mastered).length,
-            newToday: vocabData.filter(w => new Date(w.first_encountered) >= today).length,
-            mastered: vocabData.filter(w => w.mastered).length,
-            masteredToday: vocabData.filter(w => w.mastered && w.last_reviewed && new Date(w.last_reviewed) >= today).length,
-            due: vocabData.filter(w => w.next_review_at && new Date(w.next_review_at) <= now).length,
-            orphaned: vocabData.filter(w => w.is_orphaned).length,
-            weak: vocabData.filter(w => w.lapse_count > 2).length,
-          })
-        } else {
-          setMemoryHealth({ learning: 0, newToday: 0, mastered: 0, masteredToday: 0, due: 0, orphaned: 0, weak: 0 })
-        }
-
-        // Parallel fetch for each roadmap's stats
-        const progressList = await Promise.all(
-          allRoadmaps.map(async (rm) => {
-            const roadmapStats = await fetchRoadmapStats(rm.id, user.id)
-            return {
-              id: rm.id,
-              name: rm.name, // Corrected from rm.title
-              slug: rm.slug,
-              total: roadmapStats.total,
-              mastered: roadmapStats.mastered,
-              percent: roadmapStats.total > 0 
-                ? Math.round((roadmapStats.mastered / roadmapStats.total) * 100) 
-                : 0
-            }
-          })
-        )
-        setRoadmapProgress(progressList)
+        setStats({
+          totalWords: data.memory_health.learning + data.memory_health.mastered,
+          mastered: data.memory_health.mastered,
+          learning: data.memory_health.learning,
+          streakDays: data.overall_stats.streak_days,
+          topicCounts: {}
+        })
+        
+        setReviewCount(data.memory_health.due)
+        setMemoryHealth({
+          learning: data.memory_health.learning,
+          newToday: data.memory_health.new_today,
+          mastered: data.memory_health.mastered,
+          masteredToday: data.memory_health.mastered_today,
+          due: data.memory_health.due,
+          orphaned: data.memory_health.orphaned,
+          weak: data.memory_health.weak
+        })
+        
+        setRoadmapProgress(data.roadmap_progress)
       } catch (err) {
         console.error('Failed to load progress data:', err)
-        setMemoryHealth({ learning: 0, newToday: 0, mastered: 0, due: 0, orphaned: 0, weak: 0 })
+        setStats(null)
+        setReviewCount(0)
+        setRoadmapProgress([])
+        setMemoryHealth({ learning: 0, newToday: 0, mastered: 0, masteredToday: 0, due: 0, orphaned: 0, weak: 0 })
       } finally {
         setLoading(false)
       }
