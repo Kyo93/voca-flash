@@ -4,6 +4,8 @@ import {
   createWord,
   updateWord,
   deleteWord,
+  deleteWords,
+  bulkAddWordsToTopic,
   getWordChoices,
   createWordChoices,
   deleteWordChoices,
@@ -85,6 +87,19 @@ export function useAdminWords() {
     return { error: null }
   }
 
+  async function bulkDelete(ids: string[]) {
+    const { error: err } = await deleteWords(ids)
+    if (err) return { error: err.message }
+    setWords((prev) => prev.filter((w) => !ids.includes(w.id)))
+    return { error: null }
+  }
+
+  async function bulkAssignTopic(ids: string[], topicId: string) {
+    const { error: err } = await bulkAddWordsToTopic(ids, topicId)
+    if (err) return { error: err.message }
+    return { error: null }
+  }
+
   async function loadChoices(wordId: string): Promise<WordChoice[]> {
     const { data } = await getWordChoices(wordId)
     return (data as WordChoice[]) ?? []
@@ -94,5 +109,5 @@ export function useAdminWords() {
     return await getWordTopicIds(wordId)
   }
 
-  return { words, loading, error, fetch, addWord, editWord, removeWord, loadChoices, loadTopicIds }
+  return { words, loading, error, fetch, addWord, editWord, removeWord, bulkDelete, bulkAssignTopic, loadChoices, loadTopicIds }
 }

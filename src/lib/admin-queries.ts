@@ -106,6 +106,29 @@ export async function deleteWord(id: string) {
   return supabase.from('words').delete().eq('id', id)
 }
 
+export async function deleteWords(ids: string[]) {
+  if (ids.length === 0) return { error: null }
+  await supabase.from('word_choices').delete().in('word_id', ids)
+  await supabase.from('topic_words').delete().in('word_id', ids)
+  return supabase.from('words').delete().in('id', ids)
+}
+
+// Additive — thêm words vào topic mà KHÔNG xóa links hiện có
+export async function bulkAddWordsToTopic(wordIds: string[], topicId: string) {
+  if (wordIds.length === 0) return { error: null }
+  const { data: existing } = await supabase
+    .from('topic_words')
+    .select('word_id')
+    .eq('topic_id', topicId)
+    .in('word_id', wordIds)
+  const existingIds = new Set((existing ?? []).map(r => r.word_id))
+  const newLinks = wordIds
+    .filter(id => !existingIds.has(id))
+    .map(wordId => ({ topic_id: topicId, word_id: wordId }))
+  if (newLinks.length === 0) return { error: null }
+  return supabase.from('topic_words').insert(newLinks)
+}
+
 export async function getWordTopicIds(wordId: string): Promise<string[]> {
   const { data } = await supabase.from('topic_words').select('topic_id').eq('word_id', wordId)
   return (data ?? []).map(r => r.topic_id)

@@ -73,17 +73,6 @@ function SortableItem({
         )}
       </div>
 
-      {/* Roadmap badge */}
-      <div className="shrink-0">
-        {topic.roadmap_id ? (
-          <span className="text-xs bg-orange-50 text-orange-600 px-2.5 py-1 rounded-lg font-bold">
-            {roadmapNameMap.get(topic.roadmap_id) ?? '—'}
-          </span>
-        ) : (
-          <span className="text-xs text-stone-300">—</span>
-        )}
-      </div>
-
       {/* Actions */}
       <div className="flex items-center gap-1 shrink-0">
         <button

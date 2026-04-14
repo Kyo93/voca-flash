@@ -27,7 +27,7 @@ function DifficultyDots({ value }: { value: number }) {
 const PAGE_SIZE = 20
 
 export default function AdminWordsPage() {
-  const { words, loading, error, fetch, addWord, editWord, removeWord, loadChoices, loadTopicIds } = useAdminWords()
+  const { words, loading, error, fetch, addWord, editWord, removeWord, bulkDelete, bulkAssignTopic, loadChoices, loadTopicIds } = useAdminWords()
   const { selectedRoadmap } = useRoadmapContext()
   const [topics, setTopics] = useState<Topic[]>([])
   const [roadmapNameMap, setRoadmapNameMap] = useState<Map<string, string>>(new Map())
@@ -46,6 +46,13 @@ export default function AdminWordsPage() {
   const [editWordWrongChoices, setEditWordWrongChoices] = useState<string[]>([])
   const [deleteTarget, setDeleteTarget] = useState<Word | null>(null)
   const [searchDebounce, setSearchDebounce] = useState('')
+
+  // Bulk selection
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [assignTopicId, setAssignTopicId] = useState('')
+  const [bulkLoading, setBulkLoading] = useState(false)
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false)
 
   // Debounce search
   useEffect(() => {
@@ -66,6 +73,7 @@ export default function AdminWordsPage() {
   useEffect(() => {
     fetch(topicFilter || undefined, searchDebounce || undefined)
     setPage(1)
+    setSelectedIds(new Set())
   }, [topicFilter, searchDebounce])
 
   // Sorted words
@@ -77,6 +85,63 @@ export default function AdminWordsPage() {
 
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
   const paginated = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
+  // Selection helpers
+  const allPageIds = paginated.map(w => w.id)
+  const allSelected = allPageIds.length > 0 && allPageIds.every(id => selectedIds.has(id))
+  const someSelected = allPageIds.some(id => selectedIds.has(id))
+
+  function toggleAll() {
+    if (allSelected) {
+      setSelectedIds(prev => {
+        const next = new Set(prev)
+        allPageIds.forEach(id => next.delete(id))
+        return next
+      })
+    } else {
+      setSelectedIds(prev => new Set([...prev, ...allPageIds]))
+    }
+  }
+
+  function toggleOne(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  // Bulk actions
+  async function handleBulkDelete() {
+    if (selectedIds.size === 0) return
+    setBulkLoading(true)
+    const ids = [...selectedIds]
+    const { error: err } = await bulkDelete(ids)
+    setBulkLoading(false)
+    if (err) {
+      console.error(err)
+      return
+    }
+    setSelectedIds(new Set())
+    setBulkDeleteConfirm(false)
+    await fetch()
+  }
+
+  async function handleBulkAssign() {
+    if (!assignTopicId || selectedIds.size === 0) return
+    setBulkLoading(true)
+    const ids = [...selectedIds]
+    const { error: err } = await bulkAssignTopic(ids, assignTopicId)
+    setBulkLoading(false)
+    if (err) {
+      console.error(err)
+      return
+    }
+    setSelectedIds(new Set())
+    setShowAssignModal(false)
+    setAssignTopicId('')
+  }
 
   async function handleSave(
     wordData: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
@@ -165,6 +230,37 @@ export default function AdminWordsPage() {
         </select>
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedIds.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 px-5 py-3 bg-orange-50 border-2 border-orange-200 rounded-xl animate-in slide-in-from-top-2">
+          <span className="text-sm font-black text-primary">
+            {selectedIds.size} từ đã chọn
+          </span>
+          <div className="flex-1 h-px bg-orange-200" />
+          <button
+            onClick={() => { setAssignTopicId(''); setShowAssignModal(true) }}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white border border-stone-200 text-sm font-bold text-secondary hover:bg-orange-100 hover:border-orange-300 transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-base">playlist_add</span>
+            Gán chủ đề
+          </button>
+          <button
+            onClick={() => setBulkDeleteConfirm(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white border border-red-200 text-sm font-bold text-red-500 hover:bg-red-50 transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-base">delete</span>
+            Xóa ({selectedIds.size})
+          </button>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="material-symbols-outlined text-stone-400 hover:text-stone-600 cursor-pointer transition-colors"
+            title="Bỏ chọn"
+          >
+            close
+          </button>
+        </div>
+      )}
+
       {/* Error */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600">
@@ -178,6 +274,16 @@ export default function AdminWordsPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-stone-100 bg-stone-50">
+                <th className="px-3 py-3 w-10">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={el => { if (el) el.indeterminate = !allSelected && someSelected }}
+                    onChange={toggleAll}
+                    className="w-4 h-4 rounded accent-primary cursor-pointer"
+                    title="Chọn tất cả trên trang"
+                  />
+                </th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Từ</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Chủ đề</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Loại</th>
@@ -189,7 +295,7 @@ export default function AdminWordsPage() {
             <tbody>
               {loading && words.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-stone-400">
+                  <td colSpan={7} className="px-4 py-12 text-center text-stone-400">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl animate-spin">progress_activity</span>
                       <p>Đang tải...</p>
@@ -198,7 +304,7 @@ export default function AdminWordsPage() {
                 </tr>
               ) : paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-stone-400">
+                  <td colSpan={7} className="px-4 py-12 text-center text-stone-400">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl">search_off</span>
                       <p>Không tìm thấy từ vựng nào</p>
@@ -206,7 +312,15 @@ export default function AdminWordsPage() {
                   </td>
                 </tr>
               ) : paginated.map((w) => (
-                <tr key={w.id} className="border-b border-stone-50 last:border-0 hover:bg-orange-50/30 transition-colors">
+                <tr key={w.id} className={`border-b border-stone-50 last:border-0 transition-colors ${selectedIds.has(w.id) ? 'bg-orange-50/50' : 'hover:bg-orange-50/30'}`}>
+                  <td className="px-3 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(w.id)}
+                      onChange={() => toggleOne(w.id)}
+                      className="w-4 h-4 rounded accent-primary cursor-pointer"
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <div>
                       <p className="font-black text-secondary">{w.word}</p>
@@ -223,7 +337,6 @@ export default function AdminWordsPage() {
                           {w.topics.name}
                         </span>
                         {(() => {
-                          // Find topic in local list to get roadmap_id
                           const topicMeta = topics.find(t => t.id === (w.topics as any).id)
                           const roadmapName = topicMeta?.roadmap_id ? roadmapNameMap.get(topicMeta.roadmap_id) : null
                           return roadmapName ? (
@@ -254,7 +367,6 @@ export default function AdminWordsPage() {
                             loadChoices(w.id),
                             loadTopicIds(w.id)
                           ])
-                          // pass current wrong choices to edit
                           setEditWordData(w)
                           setEditWordTopicIds(tIds)
                           setEditWordWrongChoices(choices.map(c => c.choice))
@@ -326,6 +438,66 @@ export default function AdminWordsPage() {
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
       />
+
+      <ConfirmDialog
+        open={bulkDeleteConfirm}
+        title={`Xóa ${selectedIds.size} từ?`}
+        message={`Bạn có chắc muốn xóa ${selectedIds.size} từ đã chọn? Hành động này không thể hoàn tác.`}
+        confirmLabel={`Xóa ${selectedIds.size} từ`}
+        danger
+        loading={bulkLoading}
+        onConfirm={handleBulkDelete}
+        onCancel={() => setBulkDeleteConfirm(false)}
+      />
+
+      {/* Assign Topic Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={(e) => { if (e.target === e.currentTarget) setShowAssignModal(false) }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-5 border-b border-stone-100">
+              <h2 className="text-lg font-black text-secondary">Gán chủ đề</h2>
+              <p className="text-sm text-stone-500 mt-1">cho {selectedIds.size} từ đã chọn</p>
+            </div>
+            <div className="px-6 py-5">
+              <label className="block text-xs font-black text-stone-500 uppercase tracking-wider mb-2">
+                Chủ đề
+              </label>
+              <select
+                value={assignTopicId}
+                onChange={(e) => setAssignTopicId(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 bg-white text-secondary font-medium outline-none focus:border-primary transition-all cursor-pointer"
+              >
+                <option value="">— Chọn chủ đề —</option>
+                {topics
+                  .filter(t => !selectedRoadmap || t.roadmap_id === selectedRoadmap.id)
+                  .map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+              </select>
+            </div>
+            <div className="px-6 py-4 bg-stone-50 flex justify-end gap-3">
+              <button
+                onClick={() => setShowAssignModal(false)}
+                className="px-5 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-500 hover:bg-stone-100 transition-all cursor-pointer"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleBulkAssign}
+                disabled={!assignTopicId || bulkLoading}
+                className="flex items-center gap-2 px-5 py-2.5 primary-gradient text-white text-sm font-bold rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                {bulkLoading ? (
+                  <span className="material-symbols-outlined text-base animate-spin">progress_activity</span>
+                ) : (
+                  <span className="material-symbols-outlined text-base">check</span>
+                )}
+                Gán chủ đề
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ImportWordsModal
         open={showImportModal}
