@@ -145,7 +145,7 @@ function FlashcardBack({ card }: { card: Card }) {
 
         {/* Card Footer / Metadata */}
         <div className="mt-auto pt-6 border-t border-outline-variant/15 flex justify-between items-center text-outline text-[10px] font-bold uppercase tracking-widest">
-          <span>Topic: {card.topic}</span>
+          <span className="text-stone-300 italic">Không có chủ đề</span>
           <span className="flex items-center gap-1">
             <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
             SRS READY

@@ -235,6 +235,7 @@ function TopicPanel({
   onDeleteTopic,
   onImportToTopic,
   onViewWords,
+  onReorderTopics,
   activeTopicId,
 }: {
   topics: Topic[]
@@ -246,9 +247,51 @@ function TopicPanel({
   onDeleteTopic: (t: Topic) => void
   onImportToTopic: (topicId: string) => void
   onViewWords: (topicId: string | null) => void
+  onReorderTopics: (topics: Topic[]) => void
   activeTopicId: string | null
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [dragOverId, setDragOverId] = useState<string | null>(null)
+
+  function handleDragStart(e: React.DragEvent, topicId: string) {
+    setDraggingId(topicId)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  function handleDragOver(e: React.DragEvent, topicId: string) {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    if (topicId !== draggingId) {
+      setDragOverId(topicId)
+    }
+  }
+
+  function handleDrop(e: React.DragEvent, targetId: string) {
+    e.preventDefault()
+    if (!draggingId || draggingId === targetId) {
+      setDraggingId(null)
+      setDragOverId(null)
+      return
+    }
+    // Reorder: move dragging item to target position
+    const oldIndex = topics.findIndex(t => t.id === draggingId)
+    const newIndex = topics.findIndex(t => t.id === targetId)
+    if (oldIndex === -1 || newIndex === -1) return
+
+    const reordered = [...topics]
+    const [moved] = reordered.splice(oldIndex, 1)
+    reordered.splice(newIndex, 0, moved)
+    onReorderTopics(reordered)
+
+    setDraggingId(null)
+    setDragOverId(null)
+  }
+
+  function handleDragEnd() {
+    setDraggingId(null)
+    setDragOverId(null)
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -301,7 +344,21 @@ function TopicPanel({
             const isActive = activeTopicId === topic.id
 
             return (
-              <div key={topic.id} className="rounded-xl border border-stone-200 bg-white overflow-hidden">
+              <div
+                key={topic.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, topic.id)}
+                onDragOver={(e) => handleDragOver(e, topic.id)}
+                onDrop={(e) => handleDrop(e, topic.id)}
+                onDragEnd={handleDragEnd}
+                className={`rounded-xl border overflow-hidden bg-white transition-all ${
+                  draggingId === topic.id
+                    ? 'opacity-40 border-dashed border-stone-300'
+                    : dragOverId === topic.id
+                    ? 'border-primary shadow-md'
+                    : 'border-stone-200'
+                }`}
+              >
                 <button
                   onClick={() => {
                     setExpandedId(isExpanded ? null : topic.id)
@@ -311,6 +368,7 @@ function TopicPanel({
                     isActive ? 'bg-orange-50' : 'hover:bg-stone-50'
                   }`}
                 >
+                  <span className="material-symbols-outlined text-stone-300 text-base cursor-grab shrink-0">drag_indicator</span>
                   <span
                     className="w-3 h-3 rounded-full shrink-0"
                     style={{ backgroundColor: topic.color ?? '#F97316' }}
@@ -328,45 +386,51 @@ function TopicPanel({
                   </span>
                 </button>
 
-                {/* Expanded: mini word list */}
+                {/* Expanded: mini word list — 3-column grid */}
                 {isExpanded && (
                   <div className="border-t border-stone-100 px-3 py-2 bg-stone-50">
                     {wordsByTopic.get(topic.id)?.length === 0 ? (
                       <p className="text-xs text-stone-400 italic py-1">Chưa có từ nào</p>
                     ) : (
-                      <div className="space-y-1">
-                        {wordsByTopic.get(topic.id)?.slice(0, 10).map(w => (
-                          <div key={w.id} className="flex items-center gap-2 py-1">
-                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: topic.color ?? '#F97316' }} />
-                            <span className="text-xs font-medium text-secondary truncate">{w.word}</span>
-                          </div>
-                        ))}
-                        {(wordsByTopic.get(topic.id)?.length ?? 0) > 10 && (
-                          <p className="text-xs text-stone-400 italic pt-1">
-                            +{(wordsByTopic.get(topic.id)?.length ?? 0) - 10} từ khác
+                      <>
+                        <div className="grid grid-cols-3 gap-x-4 gap-y-1">
+                          {wordsByTopic.get(topic.id)?.slice(0, 12).map(w => (
+                            <div key={w.id} className="flex items-center gap-1.5 py-0.5">
+                              <span className="w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: topic.color ?? '#F97316' }} />
+                              <span className="text-xs font-medium text-secondary truncate">{w.word}</span>
+                            </div>
+                          ))}
+                        </div>
+                        {(wordsByTopic.get(topic.id)?.length ?? 0) > 12 && (
+                          <p className="text-[10px] text-stone-400 italic pt-1">
+                            +{(wordsByTopic.get(topic.id)?.length ?? 0) - 12} từ khác
                           </p>
                         )}
-                      </div>
+                      </>
                     )}
 
-                    {/* Actions */}
-                    <div className="flex gap-2 mt-2 pt-2 border-t border-stone-200">
-                      <button
-                        onClick={() => onEditTopic(topic)}
-                        className="text-xs text-stone-500 hover:text-primary font-medium"
-                      >
-                        Sửa
-                      </button>
+                    {/* Actions — improved layout */}
+                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-stone-200">
                       <button
                         onClick={() => onImportToTopic(topic.id)}
-                        className="text-xs text-stone-500 hover:text-primary font-medium"
+                        className="flex items-center gap-1 text-xs text-stone-500 hover:text-primary font-medium px-2 py-1 rounded-lg hover:bg-orange-50 transition-all"
                       >
+                        <span className="material-symbols-outlined text-xs">upload</span>
                         Nhập thêm
                       </button>
                       <button
-                        onClick={() => onDeleteTopic(topic)}
-                        className="text-xs text-red-400 hover:text-red-600 font-medium ml-auto"
+                        onClick={() => onEditTopic(topic)}
+                        className="flex items-center gap-1 text-xs text-stone-500 hover:text-primary font-medium px-2 py-1 rounded-lg hover:bg-orange-50 transition-all"
                       >
+                        <span className="material-symbols-outlined text-xs">edit</span>
+                        Sửa
+                      </button>
+                      <div className="flex-1" />
+                      <button
+                        onClick={() => onDeleteTopic(topic)}
+                        className="flex items-center gap-1 text-xs text-red-400 hover:text-red-600 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition-all"
+                      >
+                        <span className="material-symbols-outlined text-xs">delete</span>
                         Xóa
                       </button>
                     </div>
@@ -532,7 +596,12 @@ export default function RoadmapSetupPage() {
     await loadData()
   }
 
-  // Save topic (create/edit)
+  // Reorder topics
+  async function handleReorderTopics(reordered: Topic[]) {
+    setTopics(reordered)
+    const updates = reordered.map((t, i) => ({ id: t.id, sort_order: i }))
+    await import('../../lib/admin-queries').then(m => m.reorderTopics(updates))
+  }
   async function handleSaveTopic(data: {
     name: string; slug: string; description: string | null
     image_url: string | null; icon: string; color: string; roadmap_id: string | null
@@ -591,6 +660,7 @@ export default function RoadmapSetupPage() {
             onDeleteTopic={(t) => setDeleteTopicTarget(t)}
             onImportToTopic={() => setShowImportModal(true)}
             onViewWords={(id) => setActiveTopicId(id)}
+            onReorderTopics={handleReorderTopics}
             activeTopicId={activeTopicId}
           />
         </div>

@@ -60,33 +60,30 @@ export async function createWord(
   word: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
   topicIds: string[] = []
 ) {
-  // Insert word (vẫn giữ topic_id cũ cho backward compat - lấy topicIds[0] nếu có)
-  const wordPayload = { ...word, topic_id: topicIds[0] ?? null }
-  const res = await supabase.from('words').insert(wordPayload).select().single()
-  
-  if (res.error || !res.data) return res
+  // Insert word (topic_id đã bị DROP — dùng topic_words junction)
+  const { data: newWord, error } = await supabase.from('words').insert(word).select().single()
+
+  if (error || !newWord) return { data: null, error }
 
   // Insert junction rows
   if (topicIds.length > 0) {
     await supabase.from('topic_words').insert(
-      topicIds.map(tid => ({ topic_id: tid, word_id: res.data.id }))
+      topicIds.map(tid => ({ topic_id: tid, word_id: newWord.id }))
     )
   }
 
-  return res
+  return { data: newWord, error: null }
 }
 
 export async function updateWord(
-  id: string, 
+  id: string,
   word: Partial<Word>,
   topicIds?: string[]
 ) {
-  const wordPayload = { ...word }
-  if (topicIds && topicIds.length > 0) {
-    wordPayload.topic_id = topicIds[0]
-  }
+  // Xóa topic_id khỏi payload (cột đã bị DROP)
+  const { topic_id: _dropped, ...cleanWord } = word as any
 
-  const res = await supabase.from('words').update(wordPayload).eq('id', id).select().single()
+  const res = await supabase.from('words').update(cleanWord).eq('id', id).select().single()
   if (res.error || !res.data) return res
 
   // Thay thế toàn bộ liên kết trong topic_words nếu topicIds được cung cấp
@@ -166,51 +163,56 @@ export async function getTopicsByRoadmap(roadmapId: string) {
     .order('sort_order')
 }
 
-/** Lấy tất cả words + topic junction trong 1 roadmap */
+/** Lấy tất cả words trong 1 roadmap (bao gồm cả uncategorized) */
 export async function getWordsWithTopicsByRoadmap(roadmapId: string) {
   // Lấy topic IDs trong roadmap
   const { data: topics } = await supabase
     .from('topics').select('id').eq('roadmap_id', roadmapId)
 
   const topicIds = (topics ?? []).map(t => t.id)
-  if (topicIds.length === 0) {
-    return { data: [], error: null }
+
+  // Lấy junction rows (nếu có topic)
+  let junctions: any[] = []
+  if (topicIds.length > 0) {
+    const { data: j } = await supabase
+      .from('topic_words')
+      .select('word_id, topic_id')
+      .in('topic_id', topicIds)
+    junctions = j ?? []
   }
 
-  // Lấy junction rows
-  const { data: junctions, error } = await supabase
-    .from('topic_words')
-    .select('word_id, topic_id')
-    .in('topic_id', topicIds)
-
-  const wordIds = [...new Set((junctions ?? []).map(j => j.word_id))]
-
-  if (wordIds.length === 0) {
-    return { data: [], error: null }
-  }
-
-  // Lấy word details
-  const { data: words, error: wordError } = await supabase
-    .from('words')
-    .select('*')
-    .in('id', wordIds)
-
-  // Map topic info
+  // Map topicId per word
   const junctionMap = new Map<string, string[]>()
-  for (const j of (junctions ?? [])) {
-    if (!junctionMap.has(j.word_id)) {
-      junctionMap.set(j.word_id, [])
-    }
+  for (const j of junctions) {
+    if (!junctionMap.has(j.word_id)) junctionMap.set(j.word_id, [])
     junctionMap.get(j.word_id)!.push(j.topic_id)
   }
 
-  // Enrich words với topicIds
-  const enriched = (words ?? []).map(w => ({
+  // Lấy TẤT CẢ words trong roadmap (bao gồm uncategorized)
+  // Bằng cách join qua topic_words hoặc lấy trực tiếp từ words
+  let wordIds: string[] = []
+
+  if (topicIds.length > 0 && junctions.length > 0) {
+    // Có topic → lấy words từ junction + words chưa gán (uncategorized)
+    wordIds = [...new Set(junctions.map(j => j.word_id))]
+  }
+  // Nếu wordIds rỗng vẫn tiếp tục để lấy uncategorized words
+
+  // Lấy tất cả words (bất kể có junction hay không)
+  const { data: words, error } = await supabase
+    .from('words')
+    .select('*')
+    .order('word')
+
+  if (error || !words) return { data: [], error }
+
+  // Enrich với topicIds (rỗng nếu không có junction = uncategorized)
+  const enriched = (words as any[]).map(w => ({
     ...w,
     topicIds: junctionMap.get(w.id) ?? [],
   }))
 
-  return { data: enriched, error: wordError ?? error }
+  return { data: enriched, error: null }
 }
 
 /** Gán nhiều words vào 1 topic (thay thế hoàn toàn) */

@@ -425,6 +425,7 @@ export default function AdminWordsPage() {
         initialTopicIds={editWordTopicIds}
         initialWrongChoices={editWordWrongChoices}
         topics={topics}
+        showTopics={topics.filter(t => !selectedRoadmap || t.roadmap_id === selectedRoadmap.id).length > 0}
         onSave={handleSave}
         onClose={() => { setShowModal(false); setEditWordData(null); setEditWordTopicIds([]); setEditWordWrongChoices([]) }}
       />

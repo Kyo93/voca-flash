@@ -18,11 +18,13 @@ interface Props {
   initialTopicIds?: string[]
   initialWrongChoices?: string[]
   topics: Topic[]
+  /** Khi false, ẩn hoàn toàn phần "Chủ đề" trong modal (dùng khi roadmap không còn topics) */
+  showTopics?: boolean
   onSave: (word: Omit<Word, 'id' | 'created_at' | 'updated_at'>, wrongChoices: string[], topicIds: string[]) => Promise<void>
   onClose: () => void
 }
 
-export default function WordFormModal({ open, word, topics, initialTopicIds, initialWrongChoices, onSave, onClose }: Props) {
+export default function WordFormModal({ open, word, topics, initialTopicIds, initialWrongChoices, showTopics = true, onSave, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,14 +53,8 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
       setExample(word.example ?? '')
       setExampleVi(word.example_vi ?? '')
       
-      // Khôi phục topicIds từ DB, nếu rỗng thì fallback về topic_id cũ nếu có
-      if (initialTopicIds && initialTopicIds.length > 0) {
-        setTopicIds(initialTopicIds)
-      } else if (word.topic_id) {
-        setTopicIds([word.topic_id])
-      } else {
-        setTopicIds([])
-      }
+      // Khôi phục topicIds từ DB (từ junction table topic_words)
+      setTopicIds(initialTopicIds && initialTopicIds.length > 0 ? initialTopicIds : [])
 
       setImageUrl(word.image_url ?? '')
       setImagePosition(word.image_position ?? 'center')
@@ -112,7 +108,7 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
         definition: definition.trim(),
         example: example.trim() || null,
         example_vi: exampleVi.trim() || null,
-        topic_id: topicIds.length > 0 ? topicIds[0] : null, // backward compat
+        topic_id: undefined, // topic_id đã bị DROP — chỉ dùng topicWords junction
         image_url: imageUrl.trim() || null,
         image_position: imagePosition || 'center',
       },
@@ -208,32 +204,34 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
             </div>
           </div>
 
-          {/* Topics (Multiple Checkboxes) */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Chủ đề (có thể chọn nhiều)</label>
-            <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl border-2 border-orange-100 bg-orange-50/30">
-              {topics.map((t) => (
-                <label key={t.id} className="flex items-center gap-3 cursor-pointer p-1">
-                  <input
-                    type="checkbox"
-                    checked={topicIds.includes(t.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setTopicIds(prev => [...prev, t.id])
-                      } else {
-                        setTopicIds(prev => prev.filter(id => id !== t.id))
-                      }
-                    }}
-                    className="w-5 h-5 accent-primary rounded cursor-pointer"
-                  />
-                  <span className="text-secondary font-medium text-sm">{t.name}</span>
-                </label>
-              ))}
-              {topics.length === 0 && (
-                <div className="col-span-2 text-sm text-stone-500 italic">Chưa có chủ đề nào.</div>
-              )}
+          {/* Topics (Multiple Checkboxes) — chỉ hiển thị khi roadmap còn có topics */}
+          {showTopics && (
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Chủ đề (có thể chọn nhiều)</label>
+              <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl border-2 border-orange-100 bg-orange-50/30">
+                {topics.map((t) => (
+                  <label key={t.id} className="flex items-center gap-3 cursor-pointer p-1">
+                    <input
+                      type="checkbox"
+                      checked={topicIds.includes(t.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setTopicIds(prev => [...prev, t.id])
+                        } else {
+                          setTopicIds(prev => prev.filter(id => id !== t.id))
+                        }
+                      }}
+                      className="w-5 h-5 accent-primary rounded cursor-pointer"
+                    />
+                    <span className="text-secondary font-medium text-sm">{t.name}</span>
+                  </label>
+                ))}
+                {topics.length === 0 && (
+                  <div className="col-span-2 text-sm text-stone-500 italic">Chưa có chủ đề nào.</div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Definition */}
           <div>

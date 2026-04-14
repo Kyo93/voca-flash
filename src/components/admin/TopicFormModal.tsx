@@ -44,6 +44,17 @@ const ICON_MAP: [string[], string][] = [
   [['tài chính', 'finance'], 'account_balance'],
 ]
 
+// ─── Icon Picker Grid ────────────────────────────────────────────
+const ICON_OPTIONS = [
+  'chat', 'school', 'fitness_center', 'restaurant', 'waving_hand',
+  'nature', 'home', 'work', 'mood', 'psychology',
+  'travel', 'music_note', 'palette', 'science', 'gavel',
+  'policy', 'payments', 'groups', 'child_care', 'auto_stories',
+  'computer', 'engineering', 'translate', 'favorite', 'sports',
+  'account_balance', 'storefront', 'pets', 'lightbulb', 'brush',
+  'celebration', 'eco', 'medical_services', '做饭', 'book',
+]
+
 function suggestIcon(name: string): string {
   const lower = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   for (const [keywords, icon] of ICON_MAP) {
@@ -144,6 +155,24 @@ export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initi
       setRoadmapSlug('')
     }
   }, [roadmapId, topic, roadmaps])
+
+  // Auto-sync icon + color + image when name changes (create mode only)
+  useEffect(() => {
+    if (!name.trim() || !!topic) return
+    // Auto-suggest icon from keyword
+    const suggested = suggestIcon(name)
+    if (icon === 'label' || !icon) {
+      setIcon(suggested)
+    }
+    // Auto-suggest color from name hash
+    if (color === '#F97316') {
+      setColor(suggestColor(name))
+    }
+    // Auto-suggest image from name
+    if (!imageUrl) {
+      setImageUrl(suggestImageUrl(name))
+    }
+  }, [name, topic])
 
   // Auto-fill all suggestions in one shot
   function handleAutoGenerate() {
@@ -300,27 +329,24 @@ export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initi
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">Icon</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={icon}
-                  onChange={(e) => setIcon(e.target.value)}
-                  maxLength={20}
-                  placeholder="icon name"
-                  className="w-16 px-3 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-center text-2xl outline-none focus:border-primary focus:bg-white transition-all"
-                />
-                <span className="text-3xl">{icon || '📚'}</span>
+              {/* Icon grid picker */}
+              <div className="grid grid-cols-6 gap-1 max-h-32 overflow-y-auto p-2 rounded-xl border-2 border-orange-100 bg-orange-50/30">
+                {ICON_OPTIONS.map((iconName) => (
+                  <button
+                    key={iconName}
+                    type="button"
+                    onClick={() => setIcon(iconName)}
+                    title={iconName}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                      icon === iconName
+                        ? 'bg-primary text-white shadow-md scale-110'
+                        : 'bg-white text-stone-500 hover:bg-orange-100 hover:text-primary border border-stone-100'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-base">{iconName}</span>
+                  </button>
+                ))}
               </div>
-              <p className="text-xs text-stone-400 mt-1">
-                <a
-                  href="https://fonts.google.com/icons"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-primary"
-                >
-                  Tra icon Material
-                </a>
-              </p>
             </div>
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">Màu sắc</label>

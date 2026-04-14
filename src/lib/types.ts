@@ -30,7 +30,6 @@ export interface Topic {
 // ── Word ───────────────────────────────────────────────────
 export interface Word {
   id: string
-  topic_id: string | null
   word: string
   phonetic: string | null
   pos: 'noun' | 'verb' | 'adj' | 'adv' | 'phrase' | 'other' | null
