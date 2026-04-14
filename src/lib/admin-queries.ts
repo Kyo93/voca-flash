@@ -3,28 +3,57 @@ import type { Word, WordChoice, Topic, Roadmap, NormalizedWord, BatchInsertResul
 
 // ─── Words ──────────────────────────────────────────────────
 export async function getAllWords(topicFilter?: string, search?: string) {
-  let query = supabase
+  // Build base query — do NOT use `*, topics(...)` join here because
+  // `words.topic_id` is often NULL (topics live in junction table).
+  let baseQuery = supabase
     .from('words')
-    .select('*, topics(id, name, slug, color)')
+    .select('*')
     .order('created_at', { ascending: false })
 
   if (topicFilter) {
-    // Lấy word IDs thuộc topic này qua junction
     const { data: junctions } = await supabase
       .from('topic_words').select('word_id').eq('topic_id', topicFilter)
     const wordIds = (junctions ?? []).map(j => j.word_id)
-    
     if (wordIds.length === 0) {
-      // Return empty query result pattern if no words found
-      return supabase.from('words').select('*').eq('id', '00000000-0000-0000-0000-000000000000')
+      return { data: [], error: null }
     }
-    query = query.in('id', wordIds)
+    baseQuery = baseQuery.in('id', wordIds)
   }
   if (search) {
-    query = query.ilike('word', `%${search}%`)
+    baseQuery = baseQuery.ilike('word', `%${search}%`)
   }
 
-  return query
+  const { data: words, error } = await baseQuery
+
+  if (error || !words || words.length === 0) {
+    return { data: words ?? [], error }
+  }
+
+  // Enrich with topic names via junction table
+  const wordIds = (words as Word[]).map(w => w.id)
+  const { data: junctions } = await supabase
+    .from('topic_words')
+    .select('word_id, topics(name, color)')
+    .in('word_id', wordIds)
+
+  const topicNameMap = new Map<string, { name: string; color: string }>()
+  for (const j of (junctions ?? [])) {
+    const t = (j as any).topics
+    if (t) {
+      topicNameMap.set(j.word_id, { name: t.name, color: t.color ?? '#f97316' })
+    }
+  }
+
+  for (const w of words as Word[]) {
+    const t = topicNameMap.get(w.id)
+    if (t) {
+      (w as any).topics = { name: t.name, color: t.color, slug: '', id: '' }
+    } else {
+      (w as any).topics = null
+    }
+  }
+
+  return { data: words, error: null }
 }
 
 export async function createWord(
@@ -97,6 +126,111 @@ export async function createWordChoices(choices: Omit<WordChoice, 'id'>[]) {
 
 export async function deleteWordChoices(wordId: string) {
   return supabase.from('word_choices').delete().eq('word_id', wordId)
+}
+
+// ─── Roadmap Setup ─────────────────────────────────────────────
+/** Lấy roadmap theo ID */
+export async function getRoadmapById(id: string) {
+  return supabase.from('roadmaps').select('*').eq('id', id).single()
+}
+
+/** Lấy tất cả topics trong 1 roadmap */
+export async function getTopicsByRoadmap(roadmapId: string) {
+  return supabase
+    .from('topics')
+    .select('*')
+    .eq('roadmap_id', roadmapId)
+    .order('sort_order')
+}
+
+/** Lấy tất cả words + topic junction trong 1 roadmap */
+export async function getWordsWithTopicsByRoadmap(roadmapId: string) {
+  // Lấy topic IDs trong roadmap
+  const { data: topics } = await supabase
+    .from('topics').select('id').eq('roadmap_id', roadmapId)
+
+  const topicIds = (topics ?? []).map(t => t.id)
+  if (topicIds.length === 0) {
+    return { data: [], error: null }
+  }
+
+  // Lấy junction rows
+  const { data: junctions, error } = await supabase
+    .from('topic_words')
+    .select('word_id, topic_id')
+    .in('topic_id', topicIds)
+
+  const wordIds = [...new Set((junctions ?? []).map(j => j.word_id))]
+
+  if (wordIds.length === 0) {
+    return { data: [], error: null }
+  }
+
+  // Lấy word details
+  const { data: words, error: wordError } = await supabase
+    .from('words')
+    .select('*')
+    .in('id', wordIds)
+
+  // Map topic info
+  const junctionMap = new Map<string, string[]>()
+  for (const j of (junctions ?? [])) {
+    if (!junctionMap.has(j.word_id)) {
+      junctionMap.set(j.word_id, [])
+    }
+    junctionMap.get(j.word_id)!.push(j.topic_id)
+  }
+
+  // Enrich words với topicIds
+  const enriched = (words ?? []).map(w => ({
+    ...w,
+    topicIds: junctionMap.get(w.id) ?? [],
+  }))
+
+  return { data: enriched, error: wordError ?? error }
+}
+
+/** Gán nhiều words vào 1 topic (thay thế hoàn toàn) */
+export async function assignWordsToTopic(wordIds: string[], topicId: string) {
+  if (wordIds.length === 0) return { error: null }
+  // Xóa junction cũ của topic này
+  await supabase.from('topic_words').delete().eq('topic_id', topicId)
+  // Tạo junction mới
+  const { error } = await supabase.from('topic_words').insert(
+    wordIds.map(wordId => ({ topic_id: topicId, word_id: wordId }))
+  )
+  return { error }
+}
+
+/** Xóa nhiều words khỏi 1 topic */
+export async function unassignWordsFromTopic(wordIds: string[], topicId: string) {
+  if (wordIds.length === 0) return { error: null }
+  const { error } = await supabase
+    .from('topic_words')
+    .delete()
+    .eq('topic_id', topicId)
+    .in('word_id', wordIds)
+  return { error }
+}
+
+/** Lấy word count theo topicId trong 1 roadmap */
+export async function getTopicWordCounts(roadmapId: string) {
+  const { data: topics } = await supabase
+    .from('topics').select('id').eq('roadmap_id', roadmapId)
+
+  const topicIds = (topics ?? []).map(t => t.id)
+  if (topicIds.length === 0) return { data: [], error: null }
+
+  const { data } = await supabase
+    .from('topic_words')
+    .select('topic_id')
+    .in('topic_id', topicIds)
+
+  const counts: Record<string, number> = {}
+  for (const row of (data ?? [])) {
+    counts[row.topic_id] = (counts[row.topic_id] ?? 0) + 1
+  }
+  return { data: counts, error: null }
 }
 
 // ─── Topics ──────────────────────────────────────────────────

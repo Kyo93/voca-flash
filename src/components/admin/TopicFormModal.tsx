@@ -12,10 +12,72 @@ function slugify(name: string): string {
     .trim()
 }
 
+// Keyword → Material Symbol icon name
+const ICON_MAP: [string[], string][] = [
+  [['giao tiếp', 'communication', 'chat', 'nói'], 'chat'],
+  [['giáo dục', 'học', 'học tập', 'school', 'study', 'edu', 'learning'], 'school'],
+  [['sức khỏe', 'y tế', 'bệnh', 'thể thao', 'health', 'medical', 'fitness', 'sport'], 'fitness_center'],
+  [['đồ ăn', 'ẩm thực', 'nấu ăn', 'food', 'eat', 'dining', 'restaurant', 'cooking'], 'restaurant'],
+  [['đời thường', 'cuộc sống', 'daily', 'life', 'living', 'lifestyle'], 'waving_hand'],
+  [['thiên nhiên', 'môi trường', 'cây', 'nature', 'outdoor', 'plant', 'animal', 'pets'], 'nature'],
+  [['nhà cửa', 'nhà', 'home', 'house', 'housing'], 'home'],
+  [['công việc', 'job', 'work', 'career', 'business', 'office'], 'work'],
+  [['cảm xúc', 'tâm lý', 'emotion', 'feeling', 'mind', 'mental'], 'mood'],
+  [['kỹ năng', 'skill', 'ability', 'soft skill'], 'psychology'],
+  [['du lịch', 'travel', 'trip', 'journey', 'vacation'], 'travel'],
+  [['âm nhạc', 'music', 'nhạc'], 'music_note'],
+  [['nghệ thuật', 'art', 'design', 'creative'], 'palette'],
+  [['khoa học', 'science', 'tech', 'technology'], 'science'],
+  [['pháp luật', 'law', 'legal', 'justice'], 'gavel'],
+  [['chính trị', 'politics', 'policy', 'political'], 'policy'],
+  [['kinh tế', 'economy', 'economic', 'finance', 'money'], 'payments'],
+  [['xã hội', 'social', 'society', 'community'], 'groups'],
+  [['trẻ em', 'trẻ', 'kid', 'child', 'children'], 'child_care'],
+  [['phổ thông', 'general', 'common', 'standard'], 'auto_stories'],
+  [['công nghệ', 'tech', 'computer', 'it', 'software'], 'computer'],
+  [['kỹ thuật', 'engineering', 'technical'], 'engineering'],
+  [['luật', 'legal'], 'gavel'],
+  [['toeic', 'ielts', 'ngoại ngữ', 'language'], 'translate'],
+  [['yêu', 'tình yêu', 'love', 'romance'], 'favorite'],
+  [['thể thao', 'sport', 'game', 'competition'], 'sports'],
+  [['tiền', 'tài chính', 'money', 'financial'], 'payments'],
+  [['tài chính', 'finance'], 'account_balance'],
+]
+
+function suggestIcon(name: string): string {
+  const lower = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  for (const [keywords, icon] of ICON_MAP) {
+    if (keywords.some(k => lower.includes(k.toLowerCase()))) return icon
+  }
+  return 'label'
+}
+
+function suggestImageUrl(name: string): string {
+  // Use picsum for a random beautiful placeholder image
+  const seed = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-').toLowerCase()
+  return `https://picsum.photos/seed/${seed}/800/450`
+}
+
+// Color palette for auto-assignment
+const COLOR_PALETTE = [
+  '#F97316', '#3B82F6', '#10B981', '#8B5CF6',
+  '#EF4444', '#EAB308', '#06B6D4', '#EC4899',
+]
+
+function suggestColor(name: string): string {
+  const idx = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % COLOR_PALETTE.length
+  return COLOR_PALETTE[idx]
+}
+
 interface Props {
   open: boolean
   topic?: Topic | null
   roadmaps: Roadmap[]
+  /** Pre-fill roadmap_id khi tạo mới (từ RoadmapContext sidebar) */
+  roadmapId?: string
+  /** Roadmap slug dùng làm prefix cho topic slug */
+  roadmapSlug?: string
   onSave: (data: {
     name: string
     slug: string
@@ -28,7 +90,7 @@ interface Props {
   onClose: () => void
 }
 
-export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose }: Props) {
+export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initialRoadmapId, roadmapSlug: initialRoadmapSlug, onSave, onClose }: Props) {
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
@@ -36,8 +98,10 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
   const [icon, setIcon] = useState('📚')
   const [color, setColor] = useState('#F97316')
   const [roadmapId, setRoadmapId] = useState('')
+  const [roadmapSlug, setRoadmapSlug] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
 
   useEffect(() => {
     if (topic) {
@@ -45,27 +109,49 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
       setSlug(topic.slug)
       setDescription(topic.description ?? '')
       setImageUrl(topic.image_url ?? '')
-      setIcon(topic.icon ?? '📚')
+      setIcon(topic.icon ?? 'label')
       setColor(topic.color ?? '#F97316')
       setRoadmapId(topic.roadmap_id ?? '')
+      setRoadmapSlug('')
+      setSlugManuallyEdited(true) // Khi edit, giữ nguyên slug không đổi
     } else {
       setName('')
       setSlug('')
       setDescription('')
       setImageUrl('')
-      setIcon('📚')
+      setIcon('label')
       setColor('#F97316')
-      setRoadmapId('')
+      setRoadmapId(initialRoadmapId ?? '')
+      setRoadmapSlug(initialRoadmapSlug ?? '')
+      setSlugManuallyEdited(false) // Khi tạo mới, auto-generate slug
     }
     setError(null)
-  }, [topic, open])
+  }, [topic, open, roadmapId])
 
-  // Auto-generate slug from name
   useEffect(() => {
-    if (!topic) {
-      setSlug(slugify(name))
+    if (!topic && !slugManuallyEdited) {
+      const baseSlug = slugify(name)
+      setSlug(roadmapSlug ? `${roadmapSlug}-${baseSlug}` : baseSlug)
     }
-  }, [name, topic])
+  }, [name, topic, roadmapSlug, slugManuallyEdited])
+
+  // Update roadmapSlug when roadmapId changes (for creating only)
+  useEffect(() => {
+    if (!topic && roadmapId) {
+      const found = roadmaps.find(r => r.id === roadmapId)
+      setRoadmapSlug(found?.slug ?? '')
+    } else if (!topic && !roadmapId) {
+      setRoadmapSlug('')
+    }
+  }, [roadmapId, topic, roadmaps])
+
+  // Auto-fill all suggestions in one shot
+  function handleAutoGenerate() {
+    if (!name.trim()) return
+    setIcon(suggestIcon(name))
+    setImageUrl(suggestImageUrl(name))
+    setColor(suggestColor(name))
+  }
 
   if (!open) return null
 
@@ -121,14 +207,25 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
             <label className="block text-sm font-bold text-secondary mb-2">
               Tên chủ đề *
             </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Giao tiếp hàng ngày"
-              required
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Giao tiếp hàng ngày"
+                required
+                className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+              />
+              <button
+                type="button"
+                onClick={handleAutoGenerate}
+                disabled={!name.trim()}
+                title="Tự động gợi ý icon, ảnh, màu"
+                className="px-4 py-3 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-600 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                ✨ Tự động
+              </button>
+            </div>
           </div>
 
           {/* Slug */}
@@ -138,13 +235,23 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
               <input
                 type="text"
                 value={slug}
-                onChange={(e) => setSlug(e.target.value)}
+                onChange={(e) => { setSlug(e.target.value); setSlugManuallyEdited(true) }}
                 placeholder="giao-tiep-hang-ngay"
                 className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-sm outline-none focus:border-primary focus:bg-white transition-all"
               />
               <button
                 type="button"
-                onClick={() => setSlug(slugify(name))}
+                onClick={() => {
+                  if (topic) {
+                    // Edit mode: reset về slug gốc từ DB
+                    setSlug(topic.slug)
+                  } else {
+                    // Create mode: regenerate với prefix
+                    const baseSlug = slugify(name)
+                    setSlug(roadmapSlug ? `${roadmapSlug}-${baseSlug}` : baseSlug)
+                    setSlugManuallyEdited(false)
+                  }
+                }}
                 className="px-3 py-2 rounded-xl bg-stone-100 text-stone-500 text-sm font-bold hover:bg-stone-200 transition-all cursor-pointer"
                 title="Tạo lại slug"
               >
@@ -165,6 +272,7 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
             />
           </div>
 
+          {/* Image URL */}
           <div>
             <label className="block text-sm font-bold text-secondary mb-2">Ảnh đại diện (URL)</label>
             <input
@@ -176,7 +284,14 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
             />
             {imageUrl && (
               <div className="mt-3 aspect-video w-full max-w-[200px] overflow-hidden rounded-xl border border-stone-200">
-                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+URL'; }} />
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    ;(e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+URL'
+                  }}
+                />
               </div>
             )}
           </div>
@@ -190,11 +305,22 @@ export default function TopicFormModal({ open, topic, roadmaps, onSave, onClose 
                   type="text"
                   value={icon}
                   onChange={(e) => setIcon(e.target.value)}
-                  maxLength={2}
+                  maxLength={20}
+                  placeholder="icon name"
                   className="w-16 px-3 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-center text-2xl outline-none focus:border-primary focus:bg-white transition-all"
                 />
                 <span className="text-3xl">{icon || '📚'}</span>
               </div>
+              <p className="text-xs text-stone-400 mt-1">
+                <a
+                  href="https://fonts.google.com/icons"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-primary"
+                >
+                  Tra icon Material
+                </a>
+              </p>
             </div>
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">Màu sắc</label>

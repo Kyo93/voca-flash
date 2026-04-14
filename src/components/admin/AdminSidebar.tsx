@@ -1,6 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../contexts/SidebarContext'
+import { useRoadmapContext } from '../../contexts/RoadmapContext'
+import { useState, useRef, useEffect } from 'react'
 
 const navItems = [
   { path: '/admin', label: 'Dashboard', icon: 'dashboard', exact: true },
@@ -14,7 +16,20 @@ export default function AdminSidebar() {
   const location = useLocation()
   const { profile, signOut } = useAuth()
   const { collapsed, toggleSidebar } = useSidebar()
+  const { selectedRoadmap, setSelectedRoadmap, roadmaps } = useRoadmapContext()
   const w = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
+  const [open, setOpen] = useState(false)
+  const selectorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (selectorRef.current && !selectorRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   function isActive(item: typeof navItems[0]) {
     if (item.exact) return location.pathname === item.path
@@ -27,7 +42,7 @@ export default function AdminSidebar() {
       style={{ width: w }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-8 px-2">
+      <div className="flex items-center gap-3 mb-2 px-2">
         <div className="w-10 h-10 bg-gradient-to-br from-orange-600 to-orange-800 rounded-lg flex items-center justify-center text-white shadow-lg shrink-0">
           <span className="material-symbols-outlined-filled text-xl">admin_panel_settings</span>
         </div>
@@ -38,6 +53,60 @@ export default function AdminSidebar() {
           </div>
         )}
       </div>
+
+      {/* Roadmap Context Selector */}
+      {!collapsed && (
+        <div className="px-3 mb-4 relative" ref={selectorRef}>
+          <p className="text-[10px] font-black text-stone-400 tracking-widest uppercase mb-1 px-1">Lộ trình hiện tại</p>
+
+          {/* Current selection chip */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 border-orange-100 bg-orange-50 text-secondary text-sm font-bold outline-none focus:border-primary cursor-pointer hover:bg-orange-100 transition-all"
+          >
+            <span className="material-symbols-outlined text-orange-400 text-lg shrink-0">route</span>
+            <span className="flex-1 text-left truncate">
+              {selectedRoadmap?.name ?? '— Chọn lộ trình —'}
+            </span>
+            <span className={`material-symbols-outlined text-stone-400 text-lg transition-transform duration-200 shrink-0 ${open ? 'rotate-180' : ''}`}>
+              expand_more
+            </span>
+          </button>
+
+          {/* Dropdown panel */}
+          {open && (
+            <div className="absolute z-50 mt-2 w-[calc(100%-24px)] bg-white rounded-xl border-2 border-orange-100 shadow-xl overflow-hidden">
+              {roadmaps.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => {
+                    setSelectedRoadmap(r)
+                    setOpen(false)
+                  }}
+                  className={`w-full flex items-start gap-2 px-3 py-2.5 text-left transition-colors cursor-pointer ${
+                    selectedRoadmap?.id === r.id
+                      ? 'bg-orange-50 border-l-4 border-primary'
+                      : 'hover:bg-orange-50 border-l-4 border-transparent'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-orange-300 text-lg mt-0.5 shrink-0">route</span>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-bold leading-tight ${selectedRoadmap?.id === r.id ? 'text-primary' : 'text-secondary'}`}>
+                      {r.name}
+                    </p>
+                    {r.description && (
+                      <p className="text-[10px] text-stone-400 leading-tight mt-0.5 line-clamp-2">{r.description}</p>
+                    )}
+                  </div>
+                  {selectedRoadmap?.id === r.id && (
+                    <span className="material-symbols-outlined text-primary text-lg shrink-0">check</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Admin Navigation */}
       <nav className="flex flex-col gap-1">

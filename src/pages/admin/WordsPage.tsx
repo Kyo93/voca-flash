@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAdminWords } from '../../hooks/admin/useAdminWords'
-import { getAllTopics } from '../../lib/admin-queries'
+import { getAllTopics, getAllRoadmaps } from '../../lib/admin-queries'
+import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import WordFormModal from '../../components/admin/WordFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import ImportWordsModal from '../../components/admin/ImportWordsModal'
@@ -27,7 +28,9 @@ const PAGE_SIZE = 20
 
 export default function AdminWordsPage() {
   const { words, loading, error, fetch, addWord, editWord, removeWord, loadChoices, loadTopicIds } = useAdminWords()
+  const { selectedRoadmap } = useRoadmapContext()
   const [topics, setTopics] = useState<Topic[]>([])
+  const [roadmapNameMap, setRoadmapNameMap] = useState<Map<string, string>>(new Map())
 
   // Filters
   const [search, setSearch] = useState('')
@@ -50,9 +53,13 @@ export default function AdminWordsPage() {
     return () => clearTimeout(t)
   }, [search])
 
-  // Load topics once
+  // Load topics + roadmap name map once
   useEffect(() => {
     getAllTopics().then(({ data }) => setTopics((data as Topic[]) ?? []))
+    getAllRoadmaps().then(({ data }) => {
+      const rMap = new Map((data as any[] ?? []).map((r: any) => [r.id, r.name]))
+      setRoadmapNameMap(rMap)
+    })
   }, [])
 
   // Fetch words when filters change
@@ -140,9 +147,11 @@ export default function AdminWordsPage() {
           className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-white text-secondary font-medium outline-none focus:border-primary transition-all cursor-pointer"
         >
           <option value="">Tất cả chủ đề</option>
-          {topics.map((t) => (
-            <option key={t.id} value={t.id}>{t.name}</option>
-          ))}
+          {topics
+            .filter(t => !selectedRoadmap || t.roadmap_id === selectedRoadmap.id)
+            .map((t) => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
         </select>
 
         <select
@@ -206,12 +215,22 @@ export default function AdminWordsPage() {
                   </td>
                   <td className="px-4 py-3">
                     {w.topics ? (
-                      <span
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
-                        style={{ backgroundColor: (w.topics.color ?? '#f97316') + '20', color: w.topics.color ?? '#f97316' }}
-                      >
-                        {w.topics.name}
-                      </span>
+                      <div className="flex flex-col gap-0.5">
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                          style={{ backgroundColor: (w.topics.color ?? '#f97316') + '20', color: w.topics.color ?? '#f97316' }}
+                        >
+                          {w.topics.name}
+                        </span>
+                        {(() => {
+                          // Find topic in local list to get roadmap_id
+                          const topicMeta = topics.find(t => t.id === (w.topics as any).id)
+                          const roadmapName = topicMeta?.roadmap_id ? roadmapNameMap.get(topicMeta.roadmap_id) : null
+                          return roadmapName ? (
+                            <span className="inline-block text-[10px] text-orange-400 font-bold">{roadmapName}</span>
+                          ) : null
+                        })()}
+                      </div>
                     ) : (
                       <span className="text-xs text-stone-400">—</span>
                     )}
@@ -313,6 +332,7 @@ export default function AdminWordsPage() {
         onClose={() => setShowImportModal(false)}
         onImportComplete={() => fetch()}
         topics={topics}
+        roadmapId={selectedRoadmap?.id ?? undefined}
       />
     </div>
   )

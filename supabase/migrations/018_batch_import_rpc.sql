@@ -47,6 +47,7 @@ BEGIN
   LOOP
     BEGIN
       -- ── words ─────────────────────────────────────────────
+      -- Upsert: insert new word, or update if same word (case-insensitive) already exists
       INSERT INTO words (
         word, phonetic, pos, difficulty, definition,
         example, example_vi, image_url, image_position
@@ -65,7 +66,19 @@ BEGIN
         w->>'example_vi',
         w->>'image_url',
         COALESCE(w->>'image_position', 'center')
-      ) RETURNING id INTO new_id;
+      )
+      ON CONFLICT (lower(word)) DO UPDATE
+      SET
+        phonetic     = EXCLUDED.phonetic,
+        pos          = EXCLUDED.pos,
+        difficulty   = EXCLUDED.difficulty,
+        definition   = EXCLUDED.definition,
+        example      = EXCLUDED.example,
+        example_vi   = EXCLUDED.example_vi,
+        image_url    = EXCLUDED.image_url,
+        image_position = EXCLUDED.image_position,
+        updated_at   = now()
+      RETURNING id INTO new_id;
 
       -- ── topic_words junctions ─────────────────────────────
       IF jsonb_typeof(w->'topic_ids') = 'array' THEN

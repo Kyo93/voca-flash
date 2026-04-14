@@ -1,5 +1,4 @@
 import Papa from 'papaparse'
-import * as XLSX from 'xlsx'
 import type { RawRow, NormalizedWord } from './types'
 import type { Topic } from './types'
 
@@ -11,56 +10,45 @@ const VALID_POS = ['noun', 'verb', 'adj', 'adv', 'phrase', 'other'] as const
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 // ── Column name normalization map ─────────────────────────
-// Handles: "Word", "word", "words", "Word ", " WORD " etc.
+// Column aliases: CSV header → DB field
+// Header đặt đúng tên như bảng bên dưới → import tự động khớp
 const COLUMN_ALIASES: Record<string, string> = {
-  // Word / từ
-  word: 'word', words: 'word', từ: 'word', từ_vựng: 'word',
-  // Phonetic
-  phonetic: 'phonetic', phonetic_symbol: 'phonetic', pronunciation: 'phonetic',
-  phiên_âm: 'phonetic',
-  // POS
-  pos: 'pos', part_of_speech: 'pos', loại_từ: 'pos', từ_loại: 'pos', type: 'pos', part: 'pos',
-  // Difficulty
-  difficulty: 'difficulty', level: 'difficulty', độ_khó: 'difficulty', do_kho: 'difficulty',
-  // Definition
-  definition: 'definition', meaning: 'definition', nghĩa: 'definition',
-  dịch: 'definition', translate: 'definition',
-  // Example EN
-  example: 'example', ví_dụ: 'example', ví_dụ__en: 'example',
-  ví_dụ_en: 'example', sentence: 'example', use: 'example',
-  ví_dụ__en: 'example',
-  // Example VI
-  example_vi: 'example_vi', ví_dụ_vi: 'example_vi',
-  ví_dụ__vi: 'example_vi', ví_dụ_vietnamese: 'example_vi',
-  ví_dụ_vn: 'example_vi',
-  // Image URL
-  image_url: 'image_url', image: 'image_url', imageurl: 'image_url',
-  img: 'image_url', ảnh: 'image_url', ảnh_minh_hoạ: 'image_url',
-  ảnh_minh_hoa: 'image_url', image_minh_hoa: 'image_url',
-  // Topics
-  topics: 'topics', topic: 'topics', chủ_đề: 'topics',
-  chude: 'topics', chủ_đề: 'topics', category: 'topics', tags: 'topics',
-  chủ_đề: 'topics',
-  // Wrong choices
-  wrong1: 'wrong1', sai_1: 'wrong1',
-  wrong2: 'wrong2', sai_2: 'wrong2',
-  wrong3: 'wrong3', sai_3: 'wrong3',
-  // Misc
-  image_position: 'image_position', focal_point: 'image_position', position: 'image_position',
+  // word
+  word: 'word', words: 'word',
+  // phonetic
+  phonetic: 'phonetic',
+  // pos
+  pos: 'pos', type: 'pos',
+  // difficulty
+  difficulty: 'difficulty', level: 'difficulty',
+  // definition
+  definition: 'definition', meaning: 'definition',
+  // example EN
+  example: 'example',
+  // example VI
+  example_vi: 'example_vi',
+  // image_url
+  image_url: 'image_url', image: 'image_url',
+  // topics
+  topics: 'topics', topic: 'topics',
+  // wrong choices
+  wrong1: 'wrong1',
+  wrong2: 'wrong2',
+  wrong3: 'wrong3',
+  // misc
+  image_position: 'image_position',
 }
 
 function normalizeKey(key: string): string {
-  const k = key.toLowerCase().trim().replace(/\s+/g, '_').replace(/_+$/, '')
-  return COLUMN_ALIASES[k] ?? k
+  return COLUMN_ALIASES[key.toLowerCase().trim()] ?? key.toLowerCase().trim()
 }
 
+// ── Parse CSV ─────────────────────────────────────────────
 function parseRawValue(val: unknown): string {
   if (val === null || val === undefined) return ''
   if (typeof val === 'number') return String(val)
   return String(val).trim()
 }
-
-// ── Parse CSV ─────────────────────────────────────────────
 export function parseCSV(file: File): Promise<RawRow[]> {
   return new Promise((resolve, reject) => {
     if (file.size > MAX_FILE_SIZE) {
@@ -97,53 +85,6 @@ export function parseCSV(file: File): Promise<RawRow[]> {
       },
       error: (err) => reject(new Error(`PARSE_ERROR: ${err.message}`)),
     })
-  })
-}
-
-// ── Parse Excel (.xlsx, .xls) ──────────────────────────────
-export function parseExcel(file: File): Promise<RawRow[]> {
-  return new Promise((resolve, reject) => {
-    if (file.size > MAX_FILE_SIZE) {
-      reject(new Error('FILE_TOO_LARGE'))
-      return
-    }
-
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      try {
-        const data = e.target?.result
-        if (!data) { reject(new Error('EMPTY_FILE')); return }
-
-        const workbook = XLSX.read(data, { type: 'array', cellDates: true })
-
-        // Use first sheet or pick a sheet with data
-        const sheetName = workbook.SheetNames[0]
-        if (!sheetName) { reject(new Error('NO_SHEETS')); return }
-
-        const sheet = workbook.Sheets[sheetName]
-        const json: Record<string, unknown>[] = XLSX.utils.sheet_to_json(sheet, { defval: '' })
-
-        if (json.length === 0) { reject(new Error('EMPTY_FILE')); return }
-
-        // Normalize headers
-        const headers = Object.keys(json[0])
-        const normalizedHeaders = headers.map(h => normalizeKey(h))
-
-        const rows: RawRow[] = json.map((row, _i) => {
-          const normalized: Record<string, string> = {}
-          headers.forEach((h, idx) => {
-            normalized[normalizedHeaders[idx]] = parseRawValue(row[h])
-          })
-          return normalized as unknown as RawRow
-        })
-
-        resolve(rows)
-      } catch (err: unknown) {
-        reject(new Error(`PARSE_ERROR: ${err instanceof Error ? err.message : 'Unknown error'}`))
-      }
-    }
-    reader.onerror = () => reject(new Error('READ_ERROR'))
-    reader.readAsArrayBuffer(file)
   })
 }
 
@@ -210,25 +151,20 @@ export function parseGoogleSheetsUrl(url: string): Promise<RawRow[]> {
 
 // ── Value mapping ──────────────────────────────────────────
 const POS_LABEL_MAP: Record<string, NormalizedWord['pos']> = {
-  danh_từ: 'noun', danh_tu: 'noun',
-  động_từ: 'verb', dong_tu: 'verb', động_từ: 'verb',
-  tính_từ: 'adj', tinh_tu: 'adj',
-  trạng_từ: 'adv', trang_tu: 'adv',
-  cụm_từ: 'phrase', cum_tu: 'phrase',
+  danh_từ: 'noun', danh_tu: 'noun', noun: 'noun',
+  động_từ: 'verb', dong_tu: 'verb', verb: 'verb',
+  tính_từ: 'adj', tinh_tu: 'adj', adj: 'adj',
+  trạng_từ: 'adv', trang_tu: 'adv', adv: 'adv',
+  cụm_từ: 'phrase', cum_tu: 'phrase', phrase: 'phrase',
   khác: 'other',
-  noun: 'noun', danh: 'noun',
-  verb: 'verb', động: 'verb', dong: 'verb',
-  adj: 'adj', tính: 'adj', tinh: 'adj',
-  adv: 'adv', trạng: 'adv', trang: 'adv',
-  phrase: 'phrase', cụm: 'phrase',
 }
 
 const DIFFICULTY_LABEL_MAP: Record<string, number> = {
   rất_dễ: 1, rat_de: 1, very_easy: 1,
-  dễ: 2, de: 2, easy: 2, dễ: 2,
+  dễ: 2, de: 2, easy: 2,
   trung_bình: 3, trung_binh: 3, medium: 3, trungbình: 3, trungbinh: 3,
-  khó: 4, kho: 4, hard: 4, khó: 4,
-  rất_khó: 5, rat_kho: 5, very_hard: 5, rấtkhó: 5,
+  khó: 4, kho: 4, hard: 4,
+  rất_khó: 5, rat_kho: 5, very_hard: 5,
 }
 
 // ── Normalize Row ──────────────────────────────────────────
@@ -327,16 +263,13 @@ export function resolveTopics(
 export async function parseFile(
   file: File,
   topicMap: Map<string, Topic>
-): Promise<NormalizedWord[]> {
+): Promise<{ rows: NormalizedWord[]; unmatchedTopics: string[] }> {
   let rawRows: RawRow[]
 
-  if (file.name.endsWith('.csv')) {
-    rawRows = await parseCSV(file)
-  } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
-    rawRows = await parseExcel(file)
-  } else {
+  if (!file.name.endsWith('.csv')) {
     throw new Error('UNSUPPORTED_FORMAT')
   }
+  rawRows = await parseCSV(file)
 
   return processRows(rawRows, topicMap)
 }
@@ -344,29 +277,60 @@ export async function parseFile(
 export async function parseSheetsUrl(
   url: string,
   topicMap: Map<string, Topic>
-): Promise<NormalizedWord[]> {
+): Promise<{ rows: NormalizedWord[]; unmatchedTopics: string[] }> {
   const rawRows = await parseGoogleSheetsUrl(url)
   return processRows(rawRows, topicMap)
 }
 
-function processRows(rawRows: RawRow[], topicMap: Map<string, Topic>): NormalizedWord[] {
-  return rawRows.map((raw, _idx) => {
+// Alias for backward compat
+export { parseSheetsUrl as parseSheetsUrlIntoRows }
+
+// ── Process rows ───────────────────────────────────────────
+// Returns rows + list of unique topic names for auto-creation.
+// NOTE: Does NOT resolve topic IDs here — caller must create topics
+// first, then call resolveUnmatchedTopics to populate topicIds.
+export function processRows(
+  rawRows: RawRow[],
+  _topicMap: Map<string, Topic>
+): { rows: NormalizedWord[]; unmatchedTopics: string[] } {
+  const unmatchedSet = new Set<string>()
+
+  const rows = rawRows.map((raw) => {
     const partial = normalizeRow(raw)
     const { valid, errors } = validateRow(partial)
 
+    // Collect ALL topic names as unmatched — resolve happens after topics are created
     const topicNames = (raw.topics ?? '')
       .split(/[;,]/)
       .map(t => t.trim())
       .filter(t => t.length > 0)
-    const { topicIds, unmatched } = resolveTopics(topicNames, topicMap)
+
+    for (const name of topicNames) unmatchedSet.add(name)
 
     return {
       ...partial,
-      topicIds,
-      unmatchedTopics: unmatched,
+      topicIds: [],           // will be resolved by resolveUnmatchedTopics after topics created
+      unmatchedTopics: topicNames,
       status: valid ? 'new' : 'invalid',
       validationErrors: errors,
     } as NormalizedWord
+  })
+
+  return { rows, unmatchedTopics: [...unmatchedSet] }
+}
+
+// ── Re-resolve topic IDs after topics are created ─────────
+// Call this after createMissingTopics to patch row.topicIds with new IDs.
+export function resolveUnmatchedTopics(
+  rows: NormalizedWord[],
+  topicMap: Map<string, Topic>
+): NormalizedWord[] {
+  return rows.map(row => {
+    if (row.unmatchedTopics && row.unmatchedTopics.length > 0) {
+      const { topicIds } = resolveTopics(row.unmatchedTopics, topicMap)
+      return { ...row, topicIds, unmatchedTopics: [] }
+    }
+    return row
   })
 }
 

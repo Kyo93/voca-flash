@@ -3,20 +3,33 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-**Vocab Import Feature** — Xây dựng tính năng import từ vựng trong Admin Panel
-- Specs: `openspec/changes/vocab-import/`
-- Design: `openspec/changes/vocab-import/design.md` ✅
-- Tasks: `openspec/changes/vocab-import/tasks.md` ✅
+**Roadmap Setup Page** — 1 trang tập trung quản lý topics + words trong 1 roadmap. Word-first hybrid approach.
+- Design: `openspec/changes/roadmap-setup-page/design.md` ✅
+- Tasks: `openspec/changes/roadmap-setup-page/tasks.md` ✅
+- Previous done: Topic slug prefix migration ✅
 
 ## Current Phase
-`planning` — cm-planning hoàn tất. Chuyển sang cm-execution.
+`planning` — plan hoàn tất, chờ execute.
 
 ## Next Actions
-1. **2.1** Tạo Supabase RPC migration (`018_batch_import_rpc.sql`)
-2. **1.1** Cài đặt dependencies (`papaparse`, `xlsx`, `@types/papaparse`)
-3. **3.1** Xây `src/lib/import-parser.ts`
-4. **4.1** Thêm `findDuplicateWords` + `batchInsertWords` vào `admin-queries.ts`
-5. **6.1** Xây `src/components/admin/ImportWordsModal.tsx`
+1. **1.1** Tạo `RoadmapSetupPage.tsx` — layout 2 cột
+2. **1.2** Thêm route `/admin/roadmaps/:id/setup`
+3. **3.1** Xây WordPool với multi-select + bulk gán topic
+
+## Working Context
+- **Layout:** 2 cột — TopicPanel (trái) + WordPool (phải)
+- **Word-first:** Import words → gán vào topics
+- **user_srs_records:** gắn word_id (không phụ thuộc topic) → KHÔNG ảnh hưởng user learning
+- **topic_words junction:** admin quản lý qua bulk assign
+- **FK cascade:** `topics.roadmap_id ON DELETE SET NULL` → xóa topic không ảnh hưởng `user_srs_records`
+- **Block roadmap delete:** Query topics count trước khi xóa → warning nếu còn topics
+
+## Next Actions
+1. **1.1** Tạo `src/contexts/RoadmapContext.tsx`
+2. **1.2** Gắn `<RoadmapProvider>` vào `AdminLayout.tsx`
+3. **2.1** Thêm roadmap selector dropdown vào `AdminSidebar.tsx`
+4. **3.1** TopicsPage lọc theo `selectedRoadmap.id`
+5. **4.1** WordsPage cột Chủ đề hiển thị topic + roadmap
 
 ## Vocab Import Spec Summary
 - **3 input formats:** CSV, Excel (.xlsx), Google Sheets URL

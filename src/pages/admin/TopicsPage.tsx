@@ -11,20 +11,22 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useAdminTopics } from '../../hooks/admin/useAdminTopics'
-import { getAllRoadmaps } from '../../lib/admin-queries'
+import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import TopicFormModal from '../../components/admin/TopicFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import type { Topic, Roadmap } from '../../lib/types'
+import type { Topic } from '../../lib/types'
 
 // ── Sortable item ─────────────────────────────────────────────
 function SortableItem({
   topic,
   onEdit,
   onDelete,
+  roadmapNameMap,
 }: {
   topic: Topic
   onEdit: () => void
   onDelete: () => void
+  roadmapNameMap: Map<string, string>
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: topic.id })
@@ -74,8 +76,8 @@ function SortableItem({
       {/* Roadmap badge */}
       <div className="shrink-0">
         {topic.roadmap_id ? (
-          <span className="text-xs bg-stone-100 text-stone-500 px-2.5 py-1 rounded-lg font-medium">
-            Lộ trình
+          <span className="text-xs bg-orange-50 text-orange-600 px-2.5 py-1 rounded-lg font-bold">
+            {roadmapNameMap.get(topic.roadmap_id) ?? '—'}
           </span>
         ) : (
           <span className="text-xs text-stone-300">—</span>
@@ -107,7 +109,7 @@ function SortableItem({
 export default function AdminTopicsPage() {
   const { topics, loading, error, fetch, addTopic, editTopic, removeTopic, reorder } =
     useAdminTopics()
-  const [roadmaps, setRoadmaps] = useState<Roadmap[]>([])
+  const { selectedRoadmap, roadmaps } = useRoadmapContext()
 
   const [showModal, setShowModal] = useState(false)
   const [editTopicData, setEditTopicData] = useState<Topic | null>(null)
@@ -115,8 +117,13 @@ export default function AdminTopicsPage() {
 
   useEffect(() => {
     fetch()
-    getAllRoadmaps().then(({ data }) => setRoadmaps((data as Roadmap[]) ?? []))
   }, [])
+
+  // Filter topics by selected roadmap
+  const roadmapTopics = topics.filter(t => t.roadmap_id === selectedRoadmap?.id)
+
+  // Roadmap name lookup for badge
+  const roadmapNameMap = new Map(roadmaps.map(r => [r.id, r.name]))
 
   async function handleSave(data: {
     name: string
@@ -146,8 +153,8 @@ export default function AdminTopicsPage() {
         image_url: data.image_url,
         icon: data.icon,
         color: data.color,
-        roadmap_id: data.roadmap_id,
-        sort_order: topics.length,
+        roadmap_id: selectedRoadmap?.id ?? null,
+        sort_order: roadmapTopics.length,
       })
       if (err) { console.error(err); return }
     }
@@ -182,7 +189,12 @@ export default function AdminTopicsPage() {
         <div>
           <h1 className="text-3xl font-black text-secondary">Chủ đề</h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            {loading ? '...' : `${topics.length} chủ đề — kéo thả để sắp xếp`}
+            {loading ? '...' : `${roadmapTopics.length} chủ đề — kéo thả để sắp xếp`}
+            {selectedRoadmap && (
+              <span className="ml-2 text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-bold">
+                {selectedRoadmap.name}
+              </span>
+            )}
           </p>
         </div>
         <button
@@ -200,15 +212,17 @@ export default function AdminTopicsPage() {
         </div>
       )}
 
-      {loading && topics.length === 0 ? (
+      {loading && roadmapTopics.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20">
           <span className="material-symbols-outlined text-5xl text-stone-300 animate-spin">progress_activity</span>
           <p className="text-stone-400">Đang tải...</p>
         </div>
-      ) : topics.length === 0 ? (
+      ) : roadmapTopics.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20">
           <span className="material-symbols-outlined text-5xl text-stone-300">folder_open</span>
-          <p className="text-stone-400">Chưa có chủ đề nào. Tạo chủ đề đầu tiên!</p>
+          <p className="text-stone-400">
+            {selectedRoadmap ? `Chưa có chủ đề nào trong "${selectedRoadmap.name}".` : 'Chưa có chủ đề nào.'}
+          </p>
           <button
             onClick={() => { setEditTopicData(null); setShowModal(true) }}
             className="mt-2 px-5 py-2 primary-gradient text-white font-bold rounded-xl"
@@ -218,12 +232,13 @@ export default function AdminTopicsPage() {
         </div>
       ) : (
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={topics.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={roadmapTopics.map((t) => t.id)} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
-              {topics.map((topic) => (
+              {roadmapTopics.map((topic) => (
                 <SortableItem
                   key={topic.id}
                   topic={topic}
+                  roadmapNameMap={roadmapNameMap}
                   onEdit={() => { setEditTopicData(topic); setShowModal(true) }}
                   onDelete={() => setDeleteTarget(topic)}
                 />
@@ -237,6 +252,8 @@ export default function AdminTopicsPage() {
         open={showModal}
         topic={editTopicData}
         roadmaps={roadmaps}
+        roadmapId={selectedRoadmap?.id ?? undefined}
+        roadmapSlug={selectedRoadmap?.slug ?? undefined}
         onSave={handleSave}
         onClose={() => { setShowModal(false); setEditTopicData(null) }}
       />

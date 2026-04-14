@@ -17,6 +17,7 @@ import AdminTopicsPage from './pages/admin/TopicsPage'
 import AdminRoadmapsPage from './pages/admin/RoadmapsPage'
 import AdminDashboardPage from './pages/admin/DashboardPage'
 import AdminUsersPage from './pages/admin/UsersPage'
+import RoadmapSetupPage from './pages/admin/RoadmapSetupPage'
 import ProgressPage from './pages/ProgressPage'
 import MethodologyPage from './pages/MethodologyPage'
 import MasteryPage from './pages/MasteryPage'
@@ -80,6 +81,7 @@ function App() {
             <Route path="words" element={<AdminWordsPage />} />
             <Route path="topics" element={<AdminTopicsPage />} />
             <Route path="roadmaps" element={<AdminRoadmapsPage />} />
+            <Route path="roadmaps/:roadmapId/setup" element={<RoadmapSetupPage />} />
             <Route path="users" element={<AdminUsersPage />} />
           </Route>
 

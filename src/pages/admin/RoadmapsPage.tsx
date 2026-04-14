@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAdminRoadmaps } from '../../hooks/admin/useAdminRoadmaps'
+import { supabase } from '../../lib/supabase'
 import RoadmapFormModal from '../../components/admin/RoadmapFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import type { Roadmap } from '../../lib/types'
@@ -28,6 +30,7 @@ export default function AdminRoadmapsPage() {
   const [showModal, setShowModal] = useState(false)
   const [editData, setEditData] = useState<Roadmap | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Roadmap | null>(null)
+  const [deleteTopicCount, setDeleteTopicCount] = useState(0)
 
   useEffect(() => { fetch() }, [])
 
@@ -59,6 +62,17 @@ export default function AdminRoadmapsPage() {
     if (!deleteTarget) return
     await removeRoadmap(deleteTarget.id)
     setDeleteTarget(null)
+  }
+
+  async function checkAndDelete(roadmap: Roadmap) {
+    // Kiểm tra có topics trong roadmap không
+    const { count } = await supabase
+      .from('topics')
+      .select('*', { count: 'exact', head: true })
+      .eq('roadmap_id', roadmap.id)
+
+    setDeleteTopicCount(count ?? 0)
+    setDeleteTarget(roadmap)
   }
 
   return (
@@ -132,6 +146,14 @@ export default function AdminRoadmapsPage() {
                   </td>
                   <td className="px-4 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">
+                      <Link
+                        to={`/admin/roadmaps/${r.id}/setup`}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-500 text-xs font-bold hover:bg-orange-100 transition-colors"
+                        title="Quản lý topics & từ vựng"
+                      >
+                        <span className="material-symbols-outlined text-sm">settings</span>
+                        Setup
+                      </Link>
                       <button
                         onClick={() => { setEditData(r); setShowModal(true) }}
                         className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-orange-100 transition-colors cursor-pointer"
@@ -140,7 +162,7 @@ export default function AdminRoadmapsPage() {
                         <span className="material-symbols-outlined text-stone-400 text-lg">edit</span>
                       </button>
                       <button
-                        onClick={() => setDeleteTarget(r)}
+                        onClick={() => checkAndDelete(r)}
                         className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
                         title="Xóa"
                       >
@@ -164,11 +186,15 @@ export default function AdminRoadmapsPage() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Xóa lộ trình?"
-        message={`Xóa "${deleteTarget?.name}"? Hành động này không thể hoàn tác.`}
-        confirmLabel="Xóa"
-        danger
-        onConfirm={handleDelete}
+        title={deleteTopicCount > 0 ? 'Không thể xóa lộ trình' : 'Xóa lộ trình?'}
+        message={
+          deleteTopicCount > 0
+            ? `Lộ trình "${deleteTarget?.name}" còn ${deleteTopicCount} chủ đề. Xóa tất cả chủ đề trước khi xóa lộ trình.`
+            : `Xóa lộ trình "${deleteTarget?.name}"? Hành động này không thể hoàn tác.`
+        }
+        confirmLabel={deleteTopicCount > 0 ? 'Đã hiểu' : 'Xóa'}
+        danger={deleteTopicCount === 0}
+        onConfirm={deleteTopicCount === 0 ? handleDelete : () => setDeleteTarget(null)}
         onCancel={() => setDeleteTarget(null)}
       />
     </div>
