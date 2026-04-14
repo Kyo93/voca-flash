@@ -1,42 +1,80 @@
 import { describe, it, expect } from 'vitest'
-import { calculateNextReview, createInitialProgress, getDueCards, type Card } from '../../src/lib/srs'
+import { 
+  calculateFSRSReview, 
+  createInitialProgress, 
+  isMastered, 
+  resetFSRSCard, 
+  sm2ToFsrs,
+  type CardProgress 
+} from '../../src/lib/srs'
 
-describe('SRS Algorithm', () => {
-  it('createInitialProgress returns default values', () => {
+describe('SRS Algorithm (FSRS 5.3)', () => {
+  it('createInitialProgress returns default FSRS values', () => {
     const progress = createInitialProgress('card-1')
     expect(progress.cardId).toBe('card-1')
-    expect(progress.ease).toBe(2.5)
-    expect(progress.interval).toBe(0)
-    expect(progress.repetitions).toBe(0)
-    expect(progress.nextReview).toBeLessThanOrEqual(Date.now())
+    expect(progress.stability).toBeGreaterThan(0)
+    expect(progress.difficulty).toBeGreaterThan(0)
+    expect(progress.state).toBe(0) // State.New
+    expect(progress.reps).toBe(0)
+    expect(typeof progress.due).toBe('number')
   })
 
-  it('calculateNextReview: Again (rating 0) resets repetitions', () => {
+  it('calculateFSRSReview: Again (rating 1) sets state to Learning/Relearning', () => {
     const progress = createInitialProgress('card-1')
-    const next = calculateNextReview(progress, 0)
-    expect(next.repetitions).toBe(0)
-    expect(next.interval).toBe(1)
+    const next = calculateFSRSReview(progress, 1)
+    expect(next.state).toBe(1) // Learning
+    expect(next.reps).toBe(1)
   })
 
-  it('calculateNextReview: Good (rating 3) increments interval', () => {
-    const progress = { ...createInitialProgress('card-1'), repetitions: 1, interval: 6 }
-    const next = calculateNextReview(progress, 3)
-    expect(next.repetitions).toBe(2)
-    expect(next.interval).toBeGreaterThanOrEqual(6)
+  it('calculateFSRSReview: Good (rating 3) increases stability', () => {
+    const progress = createInitialProgress('card-1')
+    const next = calculateFSRSReview(progress, 3)
+    // Stability should increase after a 'Good' rating
+    expect(next.stability).toBeGreaterThan(progress.stability)
   })
 
-  it('getDueCards returns cards with past due date', () => {
-    const cards: Card[] = [
-      { id: '1', front: 'hello', back: 'xin chao', topic: 'daily', createdAt: Date.now() },
-      { id: '2', front: 'world', back: 'the gioi', topic: 'daily', createdAt: Date.now() },
-    ]
-    const dueCards = getDueCards(cards, new Map())
-    expect(dueCards.length).toBe(2)
+  it('isMastered: returns true when stability >= 21', () => {
+    const progress: CardProgress = {
+      cardId: '1',
+      stability: 25,
+      difficulty: 0.5,
+      state: 2, // Review
+      reps: 10,
+      lapses: 0,
+      scheduledDays: 25,
+      due: Date.now(),
+      lastReview: Date.now()
+    }
+    expect(isMastered(progress)).toBe(true)
   })
 
-  it('ease never goes below 1.3', () => {
-    const progress = { ...createInitialProgress('card-1'), ease: 1.4 }
-    const next = calculateNextReview(progress, 0)
-    expect(next.ease).toBeGreaterThanOrEqual(1.3)
+  it('isMastered: returns false when stability < 21', () => {
+    const progress: CardProgress = {
+      cardId: '1',
+      stability: 10,
+      difficulty: 0.5,
+      state: 2,
+      reps: 5,
+      lapses: 0,
+      scheduledDays: 10,
+      due: Date.now(),
+      lastReview: Date.now()
+    }
+    expect(isMastered(progress)).toBe(false)
+  })
+
+  it('resetFSRSCard: should reset stability and difficulty', () => {
+    const progress = { ...createInitialProgress('1'), reps: 10, stability: 50 }
+    const reset = resetFSRSCard(progress)
+    expect(reset.stability).toBeLessThan(50)
+  })
+
+  it('sm2ToFsrs: maps legacy SM-2 data to FSRS correctly', () => {
+    const legacy = { ease: 2.5, interval: 10, repetitions: 5 }
+    const mapped = sm2ToFsrs(legacy)
+    expect(mapped.stability).toBe(10)
+    expect(mapped.scheduledDays).toBe(10)
+    expect(mapped.difficulty).toBeDefined()
+    expect(mapped.reps).toBe(5)
   })
 })

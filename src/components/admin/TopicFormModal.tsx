@@ -46,13 +46,45 @@ const ICON_MAP: [string[], string][] = [
 
 // ─── Icon Picker Grid ────────────────────────────────────────────
 const ICON_OPTIONS = [
-  'chat', 'school', 'fitness_center', 'restaurant', 'waving_hand',
-  'nature', 'home', 'work', 'mood', 'psychology',
-  'travel', 'music_note', 'palette', 'science', 'gavel',
-  'policy', 'payments', 'groups', 'child_care', 'auto_stories',
-  'computer', 'engineering', 'translate', 'favorite', 'sports',
-  'account_balance', 'storefront', 'pets', 'lightbulb', 'brush',
-  'celebration', 'eco', 'medical_services', '做饭', 'book',
+  // Giao tiếp & ngôn ngữ
+  'chat', 'forum', 'comment', 'translate', 'language', 'text_fields',
+  // Học tập & giáo dục
+  'school', 'auto_stories', 'menu_book', 'library_books', 'science',
+  'calculate', 'biotech', 'history_edu', 'psychology', 'tips_and_updates',
+  // Công nghệ & kỹ thuật
+  'computer', 'code', 'terminal', 'developer_mode', 'api',
+  'cloud', 'storage', 'dns', 'memory', 'smartphone', 'laptop_mac',
+  // Công việc & kinh doanh
+  'work', 'business_center', 'handshake', 'analytics', 'trending_up',
+  'campaign', 'storefront', 'point_of_sale', 'payments', 'receipt_long',
+  'account_balance', 'savings', 'workspace_premium', 'workspace', 'support_agent',
+  // Sức khỏe & thể thao
+  'fitness_center', 'sports', 'sports_esports', 'pool', 'self_improvement',
+  'medical_services', 'vaccines', 'monitor_heart', 'spa', 'favorite_border',
+  // Đời sống & xã hội
+  'home', 'groups', 'family_restroom', 'diversity_3', 'volunteer_activism',
+  'emoji_people', 'accessibility_new', 'cruelty_free', 'pets', 'child_care',
+  // Du lịch & khám phá
+  'travel_explore', 'flight', 'hotel', 'beach_access', 'terrain',
+  'map', 'explore', 'directions_car', 'two_wheeler', 'sailing',
+  // Ẩm thực
+  'restaurant', 'local_cafe', 'bakery_dining', 'dinner_dining', 'lunch_dining',
+  'breakfast_dining', 'kitchen', 'local_bar', 'icecream', 'cake',
+  // Thiên nhiên
+  'nature', 'eco', 'forest', 'water_drop', 'waves', 'whatshot',
+  'sunny', 'cloud', 'partly_cloudy_day', 'grass', 'potted_plant',
+  // Sáng tạo & nghệ thuật
+  'palette', 'brush', 'draw', 'photo_camera', 'movie', 'music_note',
+  'headphones', 'videocam', 'mic', 'album', 'audiotrack',
+  // Luật & chính trị
+  'gavel', 'balance', 'policy', 'real_estate_agent', 'account_box',
+  // Cảm xúc & tâm lý
+  'mood', 'sentiment_satisfied', 'sentiment_very_satisfied', 'mood_bad', 'psychology_alt',
+  // Tiện ích & vật phẩm
+  'lightbulb', 'bulb', 'extension', 'build', 'build_circle', 'settings',
+  'bookmark', 'label', 'local_offer', 'discount', 'attach_money', 'paid',
+  'push_pin', 'flag', 'stars', 'emoji_events', 'celebration',
+  'cake', 'waving_hand', 'sign_language',
 ]
 
 function suggestIcon(name: string): string {
@@ -204,16 +236,28 @@ export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initi
     setLoading(false)
   }
 
+  // ─── Section label with icon ──────────────────────────────────
+  function SectionLabel({ icon, label }: { icon: string; label: string }) {
+    return (
+      <div className="flex items-center gap-2 mb-3">
+        <span className="material-symbols-outlined text-base text-orange-400">{icon}</span>
+        <span className="text-xs font-black text-stone-400 uppercase tracking-wider">{label}</span>
+        <div className="flex-1 h-px bg-stone-100" />
+      </div>
+    )
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl border border-orange-50 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-2xl shadow-2xl border border-orange-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl z-10">
           <div>
             <h2 className="text-xl font-black text-secondary">
               {topic ? 'Sửa chủ đề' : 'Thêm chủ đề mới'}
@@ -230,107 +274,114 @@ export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initi
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">
-              Tên chủ đề *
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Giao tiếp hàng ngày"
-                required
-                className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-              />
-              <button
-                type="button"
-                onClick={handleAutoGenerate}
-                disabled={!name.trim()}
-                title="Tự động gợi ý icon, ảnh, màu"
-                className="px-4 py-3 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-600 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              >
-                ✨ Tự động
-              </button>
-            </div>
-          </div>
+        <form onSubmit={handleSubmit} className="p-6">
 
-          {/* Slug */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Slug</label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={slug}
-                onChange={(e) => { setSlug(e.target.value); setSlugManuallyEdited(true) }}
-                placeholder="giao-tiep-hang-ngay"
-                className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-sm outline-none focus:border-primary focus:bg-white transition-all"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  if (topic) {
-                    // Edit mode: reset về slug gốc từ DB
-                    setSlug(topic.slug)
-                  } else {
-                    // Create mode: regenerate với prefix
-                    const baseSlug = slugify(name)
-                    setSlug(roadmapSlug ? `${roadmapSlug}-${baseSlug}` : baseSlug)
-                    setSlugManuallyEdited(false)
-                  }
-                }}
-                className="px-3 py-2 rounded-xl bg-stone-100 text-stone-500 text-sm font-bold hover:bg-stone-200 transition-all cursor-pointer"
-                title="Tạo lại slug"
-              >
-                <span className="material-symbols-outlined text-lg">refresh</span>
-              </button>
-            </div>
-          </div>
+          {/* ── Section 1: Nội dung ─────────────────────────── */}
+          <SectionLabel icon="label" label="Nội dung" />
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Mô tả</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Nhập mô tả ngắn về chủ đề này..."
-              rows={3}
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
-            />
-          </div>
-
-          {/* Image URL */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Ảnh đại diện (URL)</label>
-            <input
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
-            />
-            {imageUrl && (
-              <div className="mt-3 aspect-video w-full max-w-[200px] overflow-hidden rounded-xl border border-stone-200">
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+URL'
-                  }}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Icon + Color row */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Name + Roadmap in a 2-col row */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Icon</label>
-              {/* Icon grid picker */}
-              <div className="grid grid-cols-6 gap-1 max-h-32 overflow-y-auto p-2 rounded-xl border-2 border-orange-100 bg-orange-50/30">
+              <label className="block text-sm font-bold text-secondary mb-2">
+                Tên chủ đề *
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Giao tiếp hàng ngày"
+                  required
+                  className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all min-w-0"
+                />
+                <button
+                  type="button"
+                  onClick={handleAutoGenerate}
+                  disabled={!name.trim()}
+                  title="Tự động gợi ý icon, ảnh, màu"
+                  className="shrink-0 w-11 h-11 rounded-xl bg-orange-500 text-white hover:bg-orange-600 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined text-lg">auto_awesome</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Lộ trình</label>
+              <select
+                value={roadmapId}
+                onChange={(e) => setRoadmapId(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+              >
+                <option value="">— Không gán —</option>
+                {roadmaps.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Slug + Description in a 2-col row */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Slug</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => { setSlug(e.target.value); setSlugManuallyEdited(true) }}
+                  placeholder="giao-tiep-hang-ngay"
+                  className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-xs outline-none focus:border-primary focus:bg-white transition-all min-w-0"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (topic) {
+                      setSlug(topic.slug)
+                    } else {
+                      const baseSlug = slugify(name)
+                      setSlug(roadmapSlug ? `${roadmapSlug}-${baseSlug}` : baseSlug)
+                      setSlugManuallyEdited(false)
+                    }
+                  }}
+                  className="shrink-0 px-3 py-2 rounded-xl bg-stone-100 text-stone-500 hover:bg-stone-200 transition-all cursor-pointer"
+                  title="Tạo lại slug"
+                >
+                  <span className="material-symbols-outlined text-base">refresh</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Mô tả</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Mô tả ngắn về chủ đề..."
+                rows={2}
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
+              />
+            </div>
+          </div>
+
+          {/* ── Section 2: Thiết kế ────────────────────────── */}
+          <SectionLabel icon="palette" label="Thiết kế" />
+
+          {/* Icon grid — full width */}
+          <div className="mb-4">
+            <label className="block text-sm font-bold text-secondary mb-2">Icon</label>
+            <div className="flex items-center gap-3">
+              {/* Current icon preview */}
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border-2 border-orange-200"
+                style={{ backgroundColor: color + '20' }}
+              >
+                <span className="material-symbols-outlined text-2xl" style={{ color }}>{icon}</span>
+              </div>
+              {/* Grid picker */}
+              <div className="flex-1 grid grid-cols-10 gap-1 max-h-24 overflow-y-auto p-2 rounded-xl border-2 border-orange-100 bg-orange-50/30">
                 {ICON_OPTIONS.map((iconName) => (
                   <button
                     key={iconName}
@@ -348,47 +399,79 @@ export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initi
                 ))}
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Màu sắc</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-12 h-12 rounded-xl border-2 border-stone-200 cursor-pointer p-1 bg-transparent"
-                />
-                <span
-                  className="w-12 h-12 rounded-xl border-2 border-stone-200 shrink-0"
-                  style={{ backgroundColor: color }}
-                />
+          </div>
+
+          {/* Color picker — full width below */}
+          <div className="mb-4">
+            <label className="block text-sm font-bold text-secondary mb-2">Màu chủ đề</label>
+            <div className="flex items-center gap-3">
+              {/* Active color preview swatch */}
+              <div
+                className="w-12 h-12 rounded-xl border-2 border-stone-200 shrink-0"
+                style={{ backgroundColor: color }}
+              />
+              {/* Preset swatches */}
+              <div className="flex flex-wrap gap-2">
+                {COLOR_PALETTE.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColor(c)}
+                    title={c}
+                    className={`w-8 h-8 rounded-xl border-2 transition-all cursor-pointer ${
+                      color === c ? 'border-secondary scale-110 shadow-md' : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
               </div>
+              {/* Custom color picker */}
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="w-10 h-10 rounded-xl border-2 border-stone-200 cursor-pointer bg-transparent shrink-0"
+              />
+              <span className="text-xs font-mono text-stone-400 shrink-0">{color}</span>
             </div>
           </div>
 
-          {/* Roadmap assignment */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Lộ trình</label>
-            <select
-              value={roadmapId}
-              onChange={(e) => setRoadmapId(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-            >
-              <option value="">— Không gán —</option>
-              {roadmaps.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
+          {/* ── Section 3: Hình ảnh ────────────────────────── */}
+          <SectionLabel icon="image" label="Hình ảnh" />
+
+          <div className="mb-4">
+            <label className="block text-sm font-bold text-secondary mb-2">Ảnh đại diện</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://picsum.photos/seed/your-topic/800/450"
+                className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all min-w-0"
+              />
+              {imageUrl && (
+                <div className="w-36 h-20 shrink-0 overflow-hidden rounded-xl border-2 border-stone-200 bg-stone-50">
+                  <img
+                    src={imageUrl}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      ;(e.target as HTMLImageElement).src = 'https://placehold.co/300x120/e5e7eb/9ca3af?text=Invalid'
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium">
+            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium mb-4">
               {error}
             </div>
           )}
 
-          <div className="flex gap-3 pt-2">
+          {/* Footer actions */}
+          <div className="flex gap-3 pt-2 border-t border-stone-100 mt-2">
             <button
               type="button"
               onClick={onClose}

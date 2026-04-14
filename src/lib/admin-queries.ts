@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import type { Word, WordChoice, Topic, Roadmap, NormalizedWord, BatchInsertResult } from './types'
+import { autoTag } from './tag-engine'
 
 // ─── Words ──────────────────────────────────────────────────
 export async function getAllWords(topicFilter?: string, search?: string) {
@@ -60,12 +61,20 @@ export async function createWord(
   word: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
   topicIds: string[] = []
 ) {
-  // Insert word (topic_id đã bị DROP — dùng topic_words junction)
-  const { data: newWord, error } = await supabase.from('words').insert(word).select().single()
+  // Auto-generate tags from word + definition
+  const wordWithTags = {
+    ...word,
+    tags: autoTag(word.word, word.definition),
+  }
+
+  const { data: newWord, error } = await supabase
+    .from('words')
+    .insert(wordWithTags)
+    .select()
+    .single()
 
   if (error || !newWord) return { data: null, error }
 
-  // Insert junction rows
   if (topicIds.length > 0) {
     await supabase.from('topic_words').insert(
       topicIds.map(tid => ({ topic_id: tid, word_id: newWord.id }))

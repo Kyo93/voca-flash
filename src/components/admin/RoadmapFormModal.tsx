@@ -81,10 +81,11 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl border border-orange-50 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-2xl shadow-2xl border border-orange-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl z-10">
           <div>
             <h2 className="text-xl font-black text-secondary">
               {roadmap ? 'Sửa lộ trình' : 'Thêm lộ trình mới'}
@@ -101,78 +102,107 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Tên lộ trình *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="English Mastery"
-              required
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-            />
+        <form onSubmit={handleSubmit} className="p-6">
+
+          {/* ── Section 1: Thông tin ─────────────────────── */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-base text-orange-400">label</span>
+            <span className="text-xs font-black text-stone-400 uppercase tracking-wider">Thông tin</span>
+            <div className="flex-1 h-px bg-stone-100" />
           </div>
 
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Slug</label>
-            <div className="flex gap-2">
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Tên lộ trình *</label>
               <input
                 type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                placeholder="english-mastery"
-                className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-sm outline-none focus:border-primary focus:bg-white transition-all"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="English Mastery"
+                required
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
-              <button
-                type="button"
-                onClick={() => setSlug(slugify(name))}
-                className="px-3 py-2 rounded-xl bg-stone-100 text-stone-500 text-sm font-bold hover:bg-stone-200 transition-all cursor-pointer"
-                title="Tạo lại slug"
-              >
-                <span className="material-symbols-outlined text-lg">refresh</span>
-              </button>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Slug</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  placeholder="english-mastery"
+                  className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-xs outline-none focus:border-primary focus:bg-white transition-all min-w-0"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSlug(slugify(name))}
+                  className="shrink-0 px-3 py-2 rounded-xl bg-stone-100 text-stone-500 hover:bg-stone-200 transition-all cursor-pointer"
+                  title="Tạo lại slug"
+                >
+                  <span className="material-symbols-outlined text-base">refresh</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div>
+          <div className="mb-4">
             <label className="block text-sm font-bold text-secondary mb-2">Mô tả</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Mô tả ngắn về lộ trình này..."
-              rows={3}
+              rows={2}
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Ảnh đại diện (URL)</label>
+          {/* ── Section 2: Hình ảnh ─────────────────────── */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-base text-orange-400">image</span>
+            <span className="text-xs font-black text-stone-400 uppercase tracking-wider">Hình ảnh</span>
+            <div className="flex-1 h-px bg-stone-100" />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-bold text-secondary mb-2">Ảnh đại diện</label>
             <input
               type="text"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://example.com/image.jpg"
+              placeholder="https://picsum.photos/seed/roadmap-name/800/450"
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
             />
             {imageUrl && (
-              <div className="mt-3 aspect-video w-full max-w-[200px] overflow-hidden rounded-xl border border-stone-200">
-                <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Invalid+URL'; }} />
+              <div className="mt-3 aspect-video w-full overflow-hidden rounded-xl border-2 border-stone-200 bg-stone-50">
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    ;(e.target as HTMLImageElement).src = 'https://placehold.co/800x450/e5e7eb/9ca3af?text=Invalid+URL'
+                  }}
+                />
               </div>
             )}
           </div>
 
-          {/* Active toggle */}
+          {/* ── Section 3: Trạng thái ────────────────────── */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-base text-orange-400">toggle_on</span>
+            <span className="text-xs font-black text-stone-400 uppercase tracking-wider">Trạng thái</span>
+            <div className="flex-1 h-px bg-stone-100" />
+          </div>
+
           <div
             onClick={() => setIsActive(!isActive)}
-            className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+            className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all mb-4 ${
               isActive
                 ? 'border-green-200 bg-green-50'
                 : 'border-stone-200 bg-stone-50'
             }`}
           >
             <div
-              className={`w-12 h-7 rounded-full relative transition-colors ${
+              className={`w-12 h-7 rounded-full relative transition-colors shrink-0 ${
                 isActive ? 'bg-green-500' : 'bg-stone-300'
               }`}
             >
@@ -193,12 +223,13 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium">
+            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium mb-4">
               {error}
             </div>
           )}
 
-          <div className="flex gap-3 pt-2">
+          {/* Footer actions */}
+          <div className="flex gap-3 pt-2 border-t border-stone-100 mt-2">
             <button
               type="button"
               onClick={onClose}

@@ -39,6 +39,7 @@ export interface Word {
   example_vi: string | null
   image_url: string | null
   image_position: string | null // CSS object-position: 'center' | 'top' | 'bottom'
+  tags: string[]           // ← semantic tags auto-assigned by rule engine
   created_at: string
   updated_at: string
   // Joined

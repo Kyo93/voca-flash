@@ -7,9 +7,12 @@ import {
   getWordsWithTopicsByRoadmap,
   getTopicWordCounts,
   assignWordsToTopic,
+  unassignWordsFromTopic,
   deleteTopic,
+  deleteWord,
   createTopic,
 } from '../../lib/admin-queries'
+import { TAG_META, suggestTopicFromTags } from '../../lib/tag-engine'
 import TopicFormModal from '../../components/admin/TopicFormModal'
 import ImportWordsModal from '../../components/admin/ImportWordsModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -25,6 +28,7 @@ interface EnrichedWord {
   example?: string
   example_vi?: string
   difficulty?: number
+  tags: string[]  // ← semantic tags
   topicIds: string[]
 }
 
@@ -55,11 +59,16 @@ function WordPool({
   onToggle,
   onToggleAll,
   onBulkAssign,
+  onBulkUnassign,
   onDelete,
+  onUnassignWord,
   onImport,
   loading,
   search,
   onSearch,
+  activeTopicId,
+  activeTagFilter,
+  onActiveTagFilterChange,
 }: {
   words: EnrichedWord[]
   topics: Topic[]
@@ -67,22 +76,40 @@ function WordPool({
   onToggle: (id: string) => void
   onToggleAll: () => void
   onBulkAssign: (topicId: string) => void
+  onBulkUnassign: () => void
   onDelete: (wordId: string) => void
+  onUnassignWord: (wordId: string) => void
   onImport: () => void
   loading: boolean
   search: string
   onSearch: (s: string) => void
+  activeTopicId: string | null
+  activeTagFilter: string | null
+  onActiveTagFilterChange: (tag: string | null) => void
 }) {
   const [expandedWordId, setExpandedWordId] = useState<string | null>(null)
   const [bulkTopicId, setBulkTopicId] = useState('')
 
-  const allSelected = words.length > 0 && words.every(w => selectedWordIds.has(w.id))
+  // All unique tags across current words
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>()
+    words.forEach(w => w.tags.forEach(t => tagSet.add(t)))
+    return [...tagSet].sort()
+  }, [words])
+
+  // Filter by active tag
+  const visibleWords = useMemo(() => {
+    if (!activeTagFilter) return words
+    return words.filter(w => w.tags.includes(activeTagFilter))
+  }, [words, activeTagFilter])
+
+  const allSelected = visibleWords.length > 0 && visibleWords.every(w => selectedWordIds.has(w.id))
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-black text-secondary">Từ vựng ({words.length})</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-black text-secondary">Từ vựng ({visibleWords.length})</h2>
         <button
           onClick={onImport}
           className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-orange-200 text-orange-500 text-sm font-bold hover:bg-orange-50 transition-all"
@@ -104,30 +131,80 @@ function WordPool({
         />
       </div>
 
+      {/* Tag Filter Bar */}
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          <button
+            onClick={() => onActiveTagFilterChange(null)}
+            className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
+              activeTagFilter === null
+                ? 'bg-primary text-white shadow-sm'
+                : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+            }`}
+          >
+            Tất cả
+          </button>
+          {allTags.map(tag => {
+            const meta = TAG_META[tag]
+            return (
+              <button
+                key={tag}
+                onClick={() => onActiveTagFilterChange(activeTagFilter === tag ? null : tag)}
+                className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
+                  activeTagFilter === tag ? 'shadow-sm' : 'opacity-60 hover:opacity-100'
+                }`}
+                style={{
+                  backgroundColor: (meta?.color ?? '#9CA3AF') + '20',
+                  color: meta?.color ?? '#9CA3AF',
+                  ...(activeTagFilter === tag ? {
+                    outline: `2px solid ${meta?.color ?? '#9CA3AF'}`,
+                    outlineOffset: '1px',
+                  } : {}),
+                }}
+              >
+                {meta?.label ?? tag}
+              </button>
+            )
+          })}
+        </div>
+      )}
+
       {/* Bulk Actions */}
       {selectedWordIds.size > 0 && (
-        <div className="flex items-center gap-2 mb-3 p-3 bg-orange-50 rounded-xl border border-orange-100">
-          <span className="text-sm font-bold text-primary">
-            {selectedWordIds.size} từ được chọn
-          </span>
-          <select
-            value={bulkTopicId}
-            onChange={(e) => setBulkTopicId(e.target.value)}
-            className="flex-1 px-3 py-1.5 rounded-lg border border-stone-200 bg-white text-sm outline-none cursor-pointer"
-          >
-            <option value="">— Gán vào topic —</option>
-            {topics.map(t => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-          </select>
-          {bulkTopicId && (
-            <button
-              onClick={() => { onBulkAssign(bulkTopicId); setBulkTopicId('') }}
-              className="px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-orange-600 transition-all"
+        <div className="flex flex-col gap-2 mb-3 p-3 bg-orange-50 rounded-xl border border-orange-100">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold text-primary">
+              {selectedWordIds.size} từ được chọn
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={bulkTopicId}
+              onChange={(e) => setBulkTopicId(e.target.value)}
+              className="flex-1 px-3 py-1.5 rounded-lg border border-stone-200 bg-white text-sm outline-none cursor-pointer"
             >
-              Gán
-            </button>
-          )}
+              <option value="">— Gán vào topic —</option>
+              {topics.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+            {bulkTopicId && (
+              <button
+                onClick={() => { onBulkAssign(bulkTopicId); setBulkTopicId('') }}
+                className="px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-orange-600 transition-all"
+              >
+                Gán
+              </button>
+            )}
+            {activeTopicId && (
+              <button
+                onClick={onBulkUnassign}
+                className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-all shrink-0"
+              >
+                Bỏ khỏi topic
+              </button>
+            )}
+          </div>
         </div>
       )}
 
@@ -151,15 +228,15 @@ function WordPool({
             <span className="material-symbols-outlined text-4xl text-stone-300 animate-spin">progress_activity</span>
             <p className="text-stone-400 text-sm">Đang tải...</p>
           </div>
-        ) : words.length === 0 ? (
+        ) : visibleWords.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-12">
             <span className="material-symbols-outlined text-4xl text-stone-300">spellcheck</span>
             <p className="text-stone-400 text-sm">
-              {search ? 'Không tìm thấy từ nào' : 'Chưa có từ vựng nào. Nhập từ để bắt đầu.'}
+              {search || activeTagFilter ? 'Không tìm thấy từ nào' : 'Chưa có từ vựng nào. Nhập từ để bắt đầu.'}
             </p>
           </div>
         ) : (
-          words.map((word) => {
+          visibleWords.map((word) => {
             const isExpanded = expandedWordId === word.id
             return (
               <div
@@ -181,7 +258,7 @@ function WordPool({
 
                   {/* Word Info */}
                   <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setExpandedWordId(isExpanded ? null : word.id)}>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <p className="font-bold text-secondary text-sm">{word.word}</p>
                       {word.phonetic && (
                         <span className="text-xs text-stone-400">{word.phonetic}</span>
@@ -194,6 +271,27 @@ function WordPool({
                       <DifficultyDots value={word.difficulty ?? 3} />
                     </div>
 
+                    {/* Tags — shown collapsed */}
+                    {word.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {word.tags.slice(0, 4).map(tag => {
+                          const meta = TAG_META[tag]
+                          return (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold"
+                              style={{ backgroundColor: (meta?.color ?? '#9CA3AF') + '20', color: meta?.color ?? '#9CA3AF' }}
+                            >
+                              {meta?.label ?? tag}
+                            </span>
+                          )
+                        })}
+                        {word.tags.length > 4 && (
+                          <span className="text-[10px] text-stone-400 font-medium">+{word.tags.length - 4}</span>
+                        )}
+                      </div>
+                    )}
+
                     {/* Expanded Details */}
                     {isExpanded && (
                       <div className="mt-2 pt-2 border-t border-stone-100 space-y-1.5" onClick={(e) => e.stopPropagation()}>
@@ -204,13 +302,59 @@ function WordPool({
                         {word.example_vi && (
                           <p className="text-xs text-stone-400">"{word.example_vi}"</p>
                         )}
-                        {/* Quick delete */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onDelete(word.id) }}
-                          className="text-xs text-red-400 hover:text-red-600 font-medium mt-1"
-                        >
-                          Xóa từ này
-                        </button>
+
+                        {/* All Tags + Suggest Topic */}
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {word.tags.map(tag => {
+                            const meta = TAG_META[tag]
+                            return (
+                              <span
+                                key={tag}
+                                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold"
+                                style={{ backgroundColor: (meta?.color ?? '#9CA3AF') + '20', color: meta?.color ?? '#9CA3AF' }}
+                              >
+                                {meta?.label ?? tag}
+                              </span>
+                            )
+                          })}
+                          {/* Suggest topic button */}
+                          {!activeTopicId && word.tags.length > 0 && (() => {
+                            const suggestion = suggestTopicFromTags(word.tags, topics)
+                            return suggestion ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  onBulkAssign(suggestion.id)
+                                  setBulkTopicId('')
+                                }}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700 hover:bg-green-200 transition-all"
+                              >
+                                <span className="material-symbols-outlined text-xs">lightbulb</span>
+                                → {suggestion.name}
+                              </button>
+                            ) : null
+                          })()}
+                        </div>
+
+                        {/* Quick actions */}
+                        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-stone-100">
+                          {activeTopicId && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); onUnassignWord(word.id) }}
+                              className="text-xs text-red-400 hover:text-red-600 font-medium flex items-center gap-1"
+                            >
+                              <span className="material-symbols-outlined text-xs">remove_circle_outline</span>
+                              Bỏ khỏi topic
+                            </button>
+                          )}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onDelete(word.id) }}
+                            className="text-xs text-red-400 hover:text-red-600 font-medium flex items-center gap-1"
+                          >
+                            <span className="material-symbols-outlined text-xs">delete</span>
+                            Xóa từ này
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -461,6 +605,7 @@ export default function RoadmapSetupPage() {
   const [selectedWordIds, setSelectedWordIds] = useState<Set<string>>(new Set())
   const [search, setSearch] = useState('')
   const [activeTopicId, setActiveTopicId] = useState<string | null>(null) // null = Uncategorized
+  const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null)
 
   // Modals
   const [showTopicModal, setShowTopicModal] = useState(false)
@@ -562,13 +707,33 @@ export default function RoadmapSetupPage() {
   async function handleBulkAssign(targetTopicId: string) {
     if (!roadmapId) return
     const ids = [...selectedWordIds]
-
-    // Nếu gán vào 1 topic cụ thể
     if (targetTopicId) {
       await assignWordsToTopic(ids, targetTopicId)
     }
-
     setSelectedWordIds(new Set())
+    await loadData()
+    await fetchTopics()
+  }
+
+  // Bulk unassign from active topic
+  async function handleBulkUnassign() {
+    if (!activeTopicId) return
+    const ids = [...selectedWordIds]
+    await unassignWordsFromTopic(ids, activeTopicId)
+    setSelectedWordIds(new Set())
+    await loadData()
+    await fetchTopics()
+  }
+
+  // Unassign single word from active topic
+  async function handleUnassignWord(wordId: string) {
+    if (!activeTopicId) return
+    await unassignWordsFromTopic([wordId], activeTopicId)
+    setSelectedWordIds(prev => {
+      const next = new Set(prev)
+      next.delete(wordId)
+      return next
+    })
     await loadData()
     await fetchTopics()
   }
@@ -585,7 +750,6 @@ export default function RoadmapSetupPage() {
   // Delete word
   async function handleDeleteWord() {
     if (!deleteWordTarget) return
-    const { deleteWord } = await import('../../lib/admin-queries')
     await deleteWord(deleteWordTarget)
     setDeleteWordTarget(null)
     setSelectedWordIds(prev => {
@@ -674,11 +838,16 @@ export default function RoadmapSetupPage() {
             onToggle={toggleWord}
             onToggleAll={toggleAll}
             onBulkAssign={handleBulkAssign}
+            onBulkUnassign={handleBulkUnassign}
             onDelete={(id) => setDeleteWordTarget(id)}
+            onUnassignWord={handleUnassignWord}
             onImport={() => setShowImportModal(true)}
             loading={loading}
             search={search}
             onSearch={setSearch}
+            activeTopicId={activeTopicId}
+            activeTagFilter={activeTagFilter}
+            onActiveTagFilterChange={setActiveTagFilter}
           />
         </div>
       </div>
