@@ -3,18 +3,14 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-**Roadmap Setup Page** — 1 trang tập trung quản lý topics + words trong 1 roadmap. Word-first hybrid approach.
-- Design: `openspec/changes/roadmap-setup-page/design.md` ✅
-- Tasks: `openspec/changes/roadmap-setup-page/tasks.md` ✅
-- Previous done: Topic slug prefix migration ✅
+(Đang xem xét tiếp theo)
 
-## Current Phase
-`planning` — plan hoàn tất, chờ execute.
-
-## Next Actions
-1. **1.1** Tạo `RoadmapSetupPage.tsx` — layout 2 cột
-2. **1.2** Thêm route `/admin/roadmaps/:id/setup`
-3. **3.1** Xây WordPool với multi-select + bulk gán topic
+## Working Context
+- **Color Tokens:** Dùng bảng token từ `design.md` — KHÔNG dùng generic `text-secondary`, `bg-orange-*`
+- **Progress bar:** LUÔN màu `bg-secondary` (#546435/xanh lá) — KHÔNG dùng `topic.color`
+- **Add Word button:** `bg-secondary text-on-secondary` (xanh lá) — KHÔNG phải cam
+- **No-Line Rule:** KHÔNG dùng border 1px solid — dùng background shifts
+- **Design reference:** `C:\Users\Ocean\Downloads\stitch_vocabmaster\code.html` (source of truth)
 
 ## Working Context
 - **Layout:** 2 cột — TopicPanel (trái) + WordPool (phải)

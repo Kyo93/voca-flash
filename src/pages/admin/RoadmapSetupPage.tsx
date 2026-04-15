@@ -32,12 +32,7 @@ interface EnrichedWord {
   topicIds: string[]
 }
 
-// DifficultyDots is defined at the bottom of this file (after WordPool)
-
-// ─── POS Labels ──────────────────────────────────────────────
-const POS_LABELS: Record<string, string> = {
-  noun: 'DT', verb: 'ĐT', adj: 'TT', adv: 'TrT', phrase: 'CT', other: '—',
-}
+// DifficultyPill is defined at the bottom of this file (after WordPool)
 
 // ─── WordPool (Right Column) ─────────────────────────────────
 // Matches Stitch design reference exactly:
@@ -110,9 +105,10 @@ function WordPool({
   }, [words, search, activeTagFilter])
 
   const allSelected = visibleWords.length > 0 && visibleWords.every(w => selectedWordIds.has(w.id))
+  const someSelected = visibleWords.some(w => selectedWordIds.has(w.id))
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full p-4">
 
       {/* ── Breadcrumb (uppercase, bold, tracking-widest) ── */}
       <div className="flex items-center gap-2 text-[10px] text-stone-500 mb-2 font-bold uppercase tracking-widest">
@@ -227,7 +223,7 @@ function WordPool({
       )}
 
       {/* ── Word List Table (7 columns — matches design reference) ── */}
-      <div className="flex-1 overflow-hidden rounded-2xl border border-stone-100 shadow-sm bg-white">
+      <div className="flex-1 overflow-hidden rounded-xl bg-white">
         <div className="overflow-y-auto h-full custom-scrollbar">
           <table className="w-full text-left">
             <thead className="bg-surface-container-low border-b border-stone-200/50 sticky top-0 z-10">
@@ -467,9 +463,9 @@ function TopicPanel({
       {/* Uncategorized bucket */}
       <button
         onClick={() => onViewWords(null)}
-        className={`flex items-center gap-3 px-3 py-3 rounded-xl border transition-all mb-2 ${
+        className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all mb-2 ${
           activeTopicId === null
-            ? 'border border-stone-200 border-l-4 border-l-primary bg-surface-container-lowest'
+            ? 'bg-surface-container-lowest shadow-[inset_4px_0_0_#944a00]'
             : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
         }`}
       >
@@ -512,13 +508,13 @@ function TopicPanel({
                 onDrop={(e) => handleDrop(e, topic.id)}
                 onDragEnd={handleDragEnd}
                 onClick={() => onViewWords(topic.id)}
-                className={`relative rounded-xl border bg-white transition-all cursor-pointer select-none ${
+                className={`relative rounded-lg transition-all cursor-pointer select-none ${
                   isDraggingThis
-                    ? 'opacity-40 border-dashed border-stone-300'
+                    ? 'opacity-40'
                     : isDragOverThis
-                    ? 'border-primary shadow-md'
+                    ? 'border border-primary shadow-md'
                     : isActive
-                    ? 'border border-stone-200 border-l-4 border-l-primary bg-surface-container-lowest shadow-sm'
+                    ? 'border border-stone-200 bg-surface-container-lowest shadow-[inset_4px_0_0_#944a00]'
                     : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
                 }`}
               >
@@ -560,17 +556,8 @@ function TopicPanel({
                     </p>
                   )}
 
-                  {/* Bottom row: progress bar + word count */}
-                  <div className="flex items-center gap-2 pl-[calc(0.625rem+0.625rem)]">
-                    <div className="flex-1 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-                      <div
-                        className="bg-secondary h-full rounded-full transition-all"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-bold text-stone-500 shrink-0">{progress > 0 ? `${progress}%` : '0%'}</span>
-                    <span className="text-[10px] font-bold text-stone-500 shrink-0">{count} từ</span>
-                  </div>
+                  {/* Word count badge */}
+                  <span className="text-[10px] font-bold text-stone-500 shrink-0">{count} từ</span>
 
                   {/* Inline action buttons — always visible, matches design reference */}
                   <div className="flex items-center gap-1 mt-2 pl-[calc(0.625rem+0.625rem)]"
@@ -597,16 +584,6 @@ function TopicPanel({
         )}
       </div>
 
-      {/* Bottom "Add New Topic" CTA — design reference */}
-      <div className="mt-auto p-6 border-t border-stone-200/50 bg-surface-dim/30">
-        <button
-          onClick={onAddTopic}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed border-outline-variant text-on-surface-variant hover:bg-white transition-all font-semibold"
-        >
-          <span className="material-symbols-outlined text-base">library_add</span>
-          Thêm chủ đề mới
-        </button>
-      </div>
     </div>
   )
 }
@@ -616,7 +593,6 @@ export default function RoadmapSetupPage() {
   const { roadmapId } = useParams<{ roadmapId: string }>()
   const { fetch: fetchTopics } = useAdminTopics()
 
-  // Data
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
   const [topics, setTopics] = useState<Topic[]>([])
   const [words, setWords] = useState<EnrichedWord[]>([])
@@ -671,18 +647,6 @@ export default function RoadmapSetupPage() {
     return words.filter(w => w.topicIds.length === 0).length
   }, [words])
 
-  // Computed: words by topic (reserved for future expand feature)
-  const _wordsByTopic = useMemo(() => {
-    const map = new Map<string, EnrichedWord[]>()
-    for (const w of words) {
-      for (const tid of w.topicIds) {
-        if (!map.has(tid)) map.set(tid, [])
-        map.get(tid)!.push(w)
-      }
-    }
-    return map
-  }, [words])
-
   // Toggle word selection
   function toggleWord(id: string) {
     setSelectedWordIds(prev => {
@@ -728,19 +692,6 @@ export default function RoadmapSetupPage() {
     const ids = [...selectedWordIds]
     await unassignWordsFromTopic(ids, activeTopicId)
     setSelectedWordIds(new Set())
-    await loadData()
-    await fetchTopics()
-  }
-
-  // Unassign single word from active topic
-  async function handleUnassignWord(wordId: string) {
-    if (!activeTopicId) return
-    await unassignWordsFromTopic([wordId], activeTopicId)
-    setSelectedWordIds(prev => {
-      const next = new Set(prev)
-      next.delete(wordId)
-      return next
-    })
     await loadData()
     await fetchTopics()
   }
@@ -798,7 +749,7 @@ export default function RoadmapSetupPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 4.5rem)' }}>
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Link
@@ -817,10 +768,10 @@ export default function RoadmapSetupPage() {
         </div>
       </div>
 
-      {/* 2-column layout */}
-      <div className="flex-1 grid grid-cols-12 gap-6 min-h-0">
-        {/* Left: Topic Panel */}
-        <div className="col-span-4 bg-white rounded-2xl border border-stone-100 p-4 min-h-0 overflow-hidden flex flex-col">
+      {/* 2-column layout — full height, each column scrolls independently */}
+      <div className="flex gap-6 min-h-0" style={{ height: 'calc(100vh - 10rem)' }}>
+        {/* Left: Topic Panel (scrollable internally) */}
+        <div className="w-96 shrink-0 bg-white rounded-xl border border-stone-100 flex flex-col overflow-hidden">
           <TopicPanel
             topics={topics}
             wordCounts={wordCounts}
@@ -834,8 +785,8 @@ export default function RoadmapSetupPage() {
           />
         </div>
 
-        {/* Right: Word Pool */}
-        <div className="col-span-8 bg-white rounded-2xl border border-stone-100 p-4 min-h-0 overflow-hidden flex flex-col">
+        {/* Right: Word Pool (scrollable internally) */}
+        <div className="flex-1 bg-white rounded-xl border border-stone-100 flex flex-col overflow-hidden">
           <WordPool
             words={filteredWords}
             topics={topics}
@@ -854,38 +805,11 @@ export default function RoadmapSetupPage() {
             roadmapName={roadmap?.name}
           />
 
-          {/* Bottom 3 cards — design reference */}
-          <div className="mt-8 grid grid-cols-3 gap-6">
-            {/* Card 1: Auto-Gen Meanings */}
-            <div className="col-span-1 p-6 rounded-2xl bg-surface-container flex flex-col items-center justify-center text-center">
-              <span className="material-symbols-outlined text-4xl text-primary mb-3">auto_awesome</span>
-              <h4 className="font-bold text-on-surface">Auto-Gen Meanings</h4>
-              <p className="text-xs text-stone-500 mt-2">Use AI to generate phonetic transcriptions and Vietnamese definitions.</p>
-              <button className="mt-4 text-xs font-bold text-primary uppercase tracking-widest hover:underline cursor-pointer">
-                Launch Tool
-              </button>
-            </div>
+          {/*
+            Bottom 3 cards removed (2026-04-15)
+            Auto-Gen Meanings | Retention Insight | Drag & Drop Assets
+          */}
 
-            {/* Card 2: Retention Insight */}
-            <div className="col-span-1 p-6 rounded-2xl bg-secondary-container/30 border border-secondary-container/50 flex flex-col items-center justify-center text-center">
-              <span className="material-symbols-outlined text-4xl text-secondary mb-3">analytics</span>
-              <h4 className="font-bold text-on-surface">Retention Insight</h4>
-              <p className="text-xs text-stone-500 mt-2">
-                Students struggle with 'Apprenticeship' most in this topic.
-              </p>
-              <button className="mt-4 text-xs font-bold text-secondary uppercase tracking-widest hover:underline cursor-pointer">
-                View Report
-              </button>
-            </div>
-
-            {/* Card 3: Drag & Drop Assets */}
-            <div className="col-span-1 p-6 rounded-2xl flex items-center justify-center border-2 border-dashed border-stone-200">
-              <div className="text-center">
-                <span className="material-symbols-outlined text-4xl text-stone-300 mb-2">post_add</span>
-                <p className="text-xs font-bold text-stone-400">Drag &amp; Drop Assets</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
