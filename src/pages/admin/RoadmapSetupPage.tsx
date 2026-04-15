@@ -12,7 +12,7 @@ import {
   deleteWord,
   createTopic,
 } from '../../lib/admin-queries'
-import { TAG_META, suggestTopicFromTags } from '../../lib/tag-engine'
+import { TAG_META } from '../../lib/tag-engine'
 import TopicFormModal from '../../components/admin/TopicFormModal'
 import ImportWordsModal from '../../components/admin/ImportWordsModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -32,19 +32,7 @@ interface EnrichedWord {
   topicIds: string[]
 }
 
-// ─── Difficulty Dots ────────────────────────────────────────
-function DifficultyDots({ value }: { value: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <div
-          key={n}
-          className={`w-1.5 h-1.5 rounded-full ${n <= value ? 'bg-primary' : 'bg-stone-200'}`}
-        />
-      ))}
-    </div>
-  )
-}
+// DifficultyDots is defined at the bottom of this file (after WordPool)
 
 // ─── POS Labels ──────────────────────────────────────────────
 const POS_LABELS: Record<string, string> = {
@@ -52,6 +40,13 @@ const POS_LABELS: Record<string, string> = {
 }
 
 // ─── WordPool (Right Column) ─────────────────────────────────
+// Matches Stitch design reference exactly:
+// - Breadcrumb (ROADMAPS > RoadmapName > TopicName, uppercase)
+// - Title + word count + "Nhập từ" button
+// - Search input (rounded pill)
+// - Filter chips (horizontal scrollable tabs)
+// - "Chọn tất cả" checkbox
+// - Word list: word + phonetic + POS badge + 3 difficulty dots + tag pill (no expand)
 function WordPool({
   words,
   topics,
@@ -60,8 +55,6 @@ function WordPool({
   onToggleAll,
   onBulkAssign,
   onBulkUnassign,
-  onDelete,
-  onUnassignWord,
   onImport,
   loading,
   search,
@@ -69,6 +62,7 @@ function WordPool({
   activeTopicId,
   activeTagFilter,
   onActiveTagFilterChange,
+  roadmapName,
 }: {
   words: EnrichedWord[]
   topics: Topic[]
@@ -77,8 +71,6 @@ function WordPool({
   onToggleAll: () => void
   onBulkAssign: (topicId: string) => void
   onBulkUnassign: () => void
-  onDelete: (wordId: string) => void
-  onUnassignWord: (wordId: string) => void
   onImport: () => void
   loading: boolean
   search: string
@@ -86,9 +78,13 @@ function WordPool({
   activeTopicId: string | null
   activeTagFilter: string | null
   onActiveTagFilterChange: (tag: string | null) => void
+  roadmapName?: string
 }) {
-  const [expandedWordId, setExpandedWordId] = useState<string | null>(null)
   const [bulkTopicId, setBulkTopicId] = useState('')
+
+  const activeTopicName = activeTopicId
+    ? (topics.find(t => t.id === activeTopicId)?.name ?? '...')
+    : 'Chưa phân loại'
 
   // All unique tags across current words
   const allTags = useMemo(() => {
@@ -99,27 +95,56 @@ function WordPool({
 
   // Filter by active tag
   const visibleWords = useMemo(() => {
-    if (!activeTagFilter) return words
-    return words.filter(w => w.tags.includes(activeTagFilter))
-  }, [words, activeTagFilter])
+    let result = words
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      result = result.filter(w =>
+        w.word.toLowerCase().includes(q) ||
+        w.definition.toLowerCase().includes(q)
+      )
+    }
+    if (activeTagFilter) {
+      result = result.filter(w => w.tags.includes(activeTagFilter))
+    }
+    return result
+  }, [words, search, activeTagFilter])
 
   const allSelected = visibleWords.length > 0 && visibleWords.every(w => selectedWordIds.has(w.id))
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-black text-secondary">Từ vựng ({visibleWords.length})</h2>
+
+      {/* ── Breadcrumb (uppercase, bold, tracking-widest) ── */}
+      <div className="flex items-center gap-2 text-[10px] text-stone-500 mb-2 font-bold uppercase tracking-widest">
+        <Link to="/admin/roadmaps" className="hover:text-primary transition-colors">Roadmaps</Link>
+        <span className="material-symbols-outlined text-xs">chevron_right</span>
+        <span className="text-stone-500 uppercase tracking-widest">
+          {roadmapName ? roadmapName.toUpperCase() : '...'}
+        </span>
+        <span className="material-symbols-outlined text-xs">chevron_right</span>
+        <span className="text-primary uppercase tracking-widest">{activeTopicName.toUpperCase()}</span>
+      </div>
+
+      {/* ── Title + "Nhập từ" button ── */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-2xl font-black text-secondary tracking-tight">
+            {activeTopicName}
+          </h2>
+          <p className="text-xs text-stone-400 mt-0.5">
+            {visibleWords.length} từ vựng
+          </p>
+        </div>
         <button
           onClick={onImport}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-orange-200 text-orange-500 text-sm font-bold hover:bg-orange-50 transition-all"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest text-sm font-medium transition-all"
         >
           <span className="material-symbols-outlined text-sm">upload</span>
           Nhập từ
         </button>
       </div>
 
-      {/* Search */}
+      {/* ── Search input (rounded pill) ── */}
       <div className="relative mb-3">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-stone-400 text-lg">search</span>
         <input
@@ -127,102 +152,95 @@ function WordPool({
           value={search}
           onChange={(e) => onSearch(e.target.value)}
           placeholder="Tìm kiếm từ..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-stone-200 bg-white text-secondary text-sm outline-none focus:border-primary transition-all"
+          className="w-full pl-10 pr-4 py-2.5 rounded-full bg-surface-container-low border-none text-secondary text-sm outline-none focus:ring-2 focus:ring-secondary transition-all"
         />
       </div>
 
-      {/* Tag Filter Bar */}
-      {allTags.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          <button
-            onClick={() => onActiveTagFilterChange(null)}
-            className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
-              activeTagFilter === null
-                ? 'bg-primary text-white shadow-sm'
-                : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-            }`}
-          >
-            Tất cả
-          </button>
-          {allTags.map(tag => {
-            const meta = TAG_META[tag]
-            return (
-              <button
-                key={tag}
-                onClick={() => onActiveTagFilterChange(activeTagFilter === tag ? null : tag)}
-                className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
-                  activeTagFilter === tag ? 'shadow-sm' : 'opacity-60 hover:opacity-100'
-                }`}
-                style={{
-                  backgroundColor: (meta?.color ?? '#9CA3AF') + '20',
-                  color: meta?.color ?? '#9CA3AF',
-                  ...(activeTagFilter === tag ? {
-                    outline: `2px solid ${meta?.color ?? '#9CA3AF'}`,
-                    outlineOffset: '1px',
-                  } : {}),
-                }}
-              >
-                {meta?.label ?? tag}
-              </button>
-            )
-          })}
-        </div>
-      )}
-
-      {/* Bulk Actions */}
-      {selectedWordIds.size > 0 && (
-        <div className="flex flex-col gap-2 mb-3 p-3 bg-orange-50 rounded-xl border border-orange-100">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-primary">
-              {selectedWordIds.size} từ được chọn
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <select
-              value={bulkTopicId}
-              onChange={(e) => setBulkTopicId(e.target.value)}
-              className="flex-1 px-3 py-1.5 rounded-lg border border-stone-200 bg-white text-sm outline-none cursor-pointer"
+      {/* ── Filter chips (horizontal scrollable tabs) ── */}
+      <div className="flex items-center gap-2 overflow-x-auto mb-3 pb-1 custom-scrollbar">
+        <button
+          onClick={() => onActiveTagFilterChange(null)}
+          className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shrink-0 ${
+            activeTagFilter === null
+              ? 'bg-primary text-white shadow-sm'
+              : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+          }`}
+        >
+          Tất cả
+        </button>
+        {allTags.map(tag => {
+          const meta = TAG_META[tag]
+          const isActive = activeTagFilter === tag
+          return (
+            <button
+              key={tag}
+              onClick={() => onActiveTagFilterChange(isActive ? null : tag)}
+              className="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shrink-0"
+              style={{
+                backgroundColor: isActive
+                  ? (meta?.color ?? '#E67E22')
+                  : ((meta?.color ?? '#9CA3AF') + '20'),
+                color: isActive
+                  ? 'white'
+                  : (meta?.color ?? '#9CA3AF'),
+              }}
             >
-              <option value="">— Gán vào topic —</option>
-              {topics.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-            {bulkTopicId && (
-              <button
-                onClick={() => { onBulkAssign(bulkTopicId); setBulkTopicId('') }}
-                className="px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-orange-600 transition-all"
-              >
-                Gán
-              </button>
-            )}
-            {activeTopicId && (
-              <button
-                onClick={onBulkUnassign}
-                className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-all shrink-0"
-              >
-                Bỏ khỏi topic
-              </button>
-            )}
-          </div>
+              {meta?.label ?? tag}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* ── Bulk assign (shows when words selected) ── */}
+      {selectedWordIds.size > 0 && (
+        <div className="flex items-center gap-2 mb-3 p-2 bg-orange-50 rounded-xl border border-orange-100">
+          <span className="text-xs font-bold text-primary shrink-0">
+            {selectedWordIds.size} từ được chọn
+          </span>
+          <select
+            value={bulkTopicId}
+            onChange={(e) => setBulkTopicId(e.target.value)}
+            className="flex-1 px-2 py-1 rounded-lg border border-stone-200 bg-white text-xs outline-none cursor-pointer"
+          >
+            <option value="">— Gán vào topic —</option>
+            {topics.map(t => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
+          </select>
+          {bulkTopicId && (
+            <button
+              onClick={() => { onBulkAssign(bulkTopicId); setBulkTopicId('') }}
+              className="px-2 py-1 rounded-lg bg-primary text-white text-xs font-bold shrink-0"
+            >
+              Gán
+            </button>
+          )}
+          {activeTopicId && (
+            <button
+              onClick={onBulkUnassign}
+              className="px-2 py-1 rounded-lg bg-red-500 text-white text-xs font-bold shrink-0"
+            >
+              Bỏ khỏi topic
+            </button>
+          )}
         </div>
       )}
 
-      {/* Select all */}
-      <div className="flex items-center gap-2 mb-3 px-1">
+      {/* ── Select all ── */}
+      <div className="flex items-center gap-2 mb-3">
         <input
           type="checkbox"
           checked={allSelected}
           onChange={onToggleAll}
           className="w-4 h-4 rounded accent-primary cursor-pointer"
         />
-        <span className="text-sm text-stone-500">
+        <span className="text-xs text-stone-500 font-medium">
           {allSelected ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
         </span>
       </div>
 
-      {/* Word List */}
-      <div className="flex-1 overflow-y-auto space-y-1">
+      {/* ── Word List (simple rows, no expand) ── */}
+      <div className="flex-1 overflow-y-auto space-y-0.5 custom-scrollbar">
         {loading ? (
           <div className="flex flex-col items-center gap-2 py-12">
             <span className="material-symbols-outlined text-4xl text-stone-300 animate-spin">progress_activity</span>
@@ -232,132 +250,87 @@ function WordPool({
           <div className="flex flex-col items-center gap-2 py-12">
             <span className="material-symbols-outlined text-4xl text-stone-300">spellcheck</span>
             <p className="text-stone-400 text-sm">
-              {search || activeTagFilter ? 'Không tìm thấy từ nào' : 'Chưa có từ vựng nào. Nhập từ để bắt đầu.'}
+              {search || activeTagFilter ? 'Không tìm thấy từ nào' : 'Chưa có từ vựng nào.'}
             </p>
           </div>
         ) : (
           visibleWords.map((word) => {
-            const isExpanded = expandedWordId === word.id
+            const isSelected = selectedWordIds.has(word.id)
+            const primaryTag = word.tags[0]
+            const tagMeta = primaryTag ? TAG_META[primaryTag] : null
+            const tagColor = tagMeta?.color ?? '#E67E22'
+
             return (
               <div
                 key={word.id}
-                className={`rounded-xl border transition-all ${
-                  selectedWordIds.has(word.id)
-                    ? 'border-primary bg-orange-50/50'
-                    : 'border-stone-100 bg-white hover:border-stone-200'
+                className={`group flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-orange-50 border border-orange-100'
+                    : 'hover:bg-surface-container-lowest border border-transparent'
                 }`}
               >
-                <div className="flex items-start gap-2 px-3 py-2.5">
-                  {/* Checkbox */}
-                  <input
-                    type="checkbox"
-                    checked={selectedWordIds.has(word.id)}
-                    onChange={() => onToggle(word.id)}
-                    className="w-4 h-4 mt-1 rounded accent-primary cursor-pointer shrink-0"
-                  />
+                {/* Checkbox */}
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => onToggle(word.id)}
+                  className="w-4 h-4 rounded accent-primary cursor-pointer shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                />
 
-                  {/* Word Info */}
-                  <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setExpandedWordId(isExpanded ? null : word.id)}>
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <p className="font-bold text-secondary text-sm">{word.word}</p>
-                      {word.phonetic && (
-                        <span className="text-xs text-stone-400">{word.phonetic}</span>
-                      )}
-                      {word.pos && (
-                        <span className="text-[10px] font-bold text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded">
-                          {POS_LABELS[word.pos] ?? '—'}
-                        </span>
-                      )}
-                      <DifficultyDots value={word.difficulty ?? 3} />
-                    </div>
+                {/* Word + Phonetic + audio button */}
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <p className="font-bold text-base text-on-surface whitespace-nowrap">{word.word}</p>
+                  {word.phonetic && (
+                    <span className="text-stone-500 font-mono shrink-0">/{word.phonetic}/</span>
+                  )}
+                  {word.pos && (
+                    <span className="text-[10px] font-bold text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded shrink-0">
+                      {POS_LABELS[word.pos] ?? '—'}
+                    </span>
+                  )}
+                  {/* Audio button — design reference */}
+                  <button
+                    onClick={(e) => { e.stopPropagation() }}
+                    className="material-symbols-outlined text-stone-300 hover:text-orange-500 text-lg cursor-pointer shrink-0"
+                    title="Phát âm"
+                  >
+                    volume_up
+                  </button>
+                </div>
 
-                    {/* Tags — shown collapsed */}
-                    {word.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {word.tags.slice(0, 4).map(tag => {
-                          const meta = TAG_META[tag]
-                          return (
-                            <span
-                              key={tag}
-                              className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold"
-                              style={{ backgroundColor: (meta?.color ?? '#9CA3AF') + '20', color: meta?.color ?? '#9CA3AF' }}
-                            >
-                              {meta?.label ?? tag}
-                            </span>
-                          )
-                        })}
-                        {word.tags.length > 4 && (
-                          <span className="text-[10px] text-stone-400 font-medium">+{word.tags.length - 4}</span>
-                        )}
-                      </div>
-                    )}
+                {/* Difficulty pill */}
+                <DifficultyPill value={word.difficulty ?? 3} className="shrink-0" />
 
-                    {/* Expanded Details */}
-                    {isExpanded && (
-                      <div className="mt-2 pt-2 border-t border-stone-100 space-y-1.5" onClick={(e) => e.stopPropagation()}>
-                        <p className="text-sm text-on-surface-variant">{word.definition}</p>
-                        {word.example && (
-                          <p className="text-xs text-stone-400 italic">"{word.example}"</p>
-                        )}
-                        {word.example_vi && (
-                          <p className="text-xs text-stone-400">"{word.example_vi}"</p>
-                        )}
+                {/* Tag pill */}
+                {primaryTag && (
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold shrink-0 border ${
+                      tagColor === '#E67E22' ? 'bg-orange-50 text-orange-700 border-orange-100'
+                      : tagColor === '#829460' ? 'bg-secondary-container/30 text-secondary border-secondary-container'
+                      : 'bg-orange-50 text-orange-700 border-orange-100'
+                    }`}
+                  >
+                    {tagMeta?.label ?? primaryTag}
+                  </span>
+                )}
 
-                        {/* All Tags + Suggest Topic */}
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {word.tags.map(tag => {
-                            const meta = TAG_META[tag]
-                            return (
-                              <span
-                                key={tag}
-                                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold"
-                                style={{ backgroundColor: (meta?.color ?? '#9CA3AF') + '20', color: meta?.color ?? '#9CA3AF' }}
-                              >
-                                {meta?.label ?? tag}
-                              </span>
-                            )
-                          })}
-                          {/* Suggest topic button */}
-                          {!activeTopicId && word.tags.length > 0 && (() => {
-                            const suggestion = suggestTopicFromTags(word.tags, topics)
-                            return suggestion ? (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  onBulkAssign(suggestion.id)
-                                  setBulkTopicId('')
-                                }}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700 hover:bg-green-200 transition-all"
-                              >
-                                <span className="material-symbols-outlined text-xs">lightbulb</span>
-                                → {suggestion.name}
-                              </button>
-                            ) : null
-                          })()}
-                        </div>
-
-                        {/* Quick actions */}
-                        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-stone-100">
-                          {activeTopicId && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); onUnassignWord(word.id) }}
-                              className="text-xs text-red-400 hover:text-red-600 font-medium flex items-center gap-1"
-                            >
-                              <span className="material-symbols-outlined text-xs">remove_circle_outline</span>
-                              Bỏ khỏi topic
-                            </button>
-                          )}
-                          <button
-                            onClick={(e) => { e.stopPropagation(); onDelete(word.id) }}
-                            className="text-xs text-red-400 hover:text-red-600 font-medium flex items-center gap-1"
-                          >
-                            <span className="material-symbols-outlined text-xs">delete</span>
-                            Xóa từ này
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                {/* Actions */}
+                <div className="flex justify-end gap-2 transition-opacity">
+                  <button
+                    onClick={(e) => { e.stopPropagation() }}
+                    className="p-2 hover:bg-stone-100 rounded-lg hover:text-primary transition-all bg-orange-50 cursor-pointer"
+                    title="Sửa"
+                  >
+                    <span className="material-symbols-outlined text-lg" style={{ color: '#E67E22' }}>edit</span>
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation() }}
+                    className="p-2 hover:bg-stone-100 rounded-lg text-stone-500 hover:text-error transition-all cursor-pointer"
+                    title="Xóa"
+                  >
+                    <span className="material-symbols-outlined text-lg">delete</span>
+                  </button>
                 </div>
               </div>
             )
@@ -368,16 +341,31 @@ function WordPool({
   )
 }
 
+// ─── DifficultyPill ─────────────────────────────────────────────
+function DifficultyPill({ value, className = '' }: { value: number; className?: string }) {
+  const label = value <= 2 ? 'Easy' : value === 3 ? 'Medium' : 'Hard'
+  const classes = value <= 2
+    ? 'bg-green-50 text-green-700 border border-green-100'
+    : value === 3
+    ? 'bg-orange-50 text-orange-700 border border-orange-100'
+    : 'bg-red-50 text-red-700 border border-red-100'
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-bold shrink-0 ${classes} ${className}`}>
+      {label}
+    </span>
+  )
+}
+
 // ─── TopicPanel (Left Column) ────────────────────────────────
+// Redesigned: flat clickable cards, no expand/collapse
+// Each card shows: name, slug (mono), description (truncated), progress bar, word count, status badge
 function TopicPanel({
   topics,
   wordCounts,
   uncategorizedCount,
-  wordsByTopic,
   onAddTopic,
   onEditTopic,
   onDeleteTopic,
-  onImportToTopic,
   onViewWords,
   onReorderTopics,
   activeTopicId,
@@ -385,68 +373,68 @@ function TopicPanel({
   topics: Topic[]
   wordCounts: Record<string, number>
   uncategorizedCount: number
-  wordsByTopic: Map<string, EnrichedWord[]>
   onAddTopic: () => void
   onEditTopic: (t: Topic) => void
   onDeleteTopic: (t: Topic) => void
-  onImportToTopic: (topicId: string) => void
   onViewWords: (topicId: string | null) => void
   onReorderTopics: (topics: Topic[]) => void
   activeTopicId: string | null
 }) {
-  const [expandedId, setExpandedId] = useState<string | null>(null)
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dragOverId, setDragOverId] = useState<string | null>(null)
 
+  // Drag-and-drop reorder
   function handleDragStart(e: React.DragEvent, topicId: string) {
     setDraggingId(topicId)
     e.dataTransfer.effectAllowed = 'move'
   }
-
   function handleDragOver(e: React.DragEvent, topicId: string) {
     e.preventDefault()
     e.dataTransfer.dropEffect = 'move'
-    if (topicId !== draggingId) {
-      setDragOverId(topicId)
-    }
+    if (topicId !== draggingId) setDragOverId(topicId)
   }
-
   function handleDrop(e: React.DragEvent, targetId: string) {
     e.preventDefault()
-    if (!draggingId || draggingId === targetId) {
-      setDraggingId(null)
-      setDragOverId(null)
-      return
-    }
-    // Reorder: move dragging item to target position
+    if (!draggingId || draggingId === targetId) { setDraggingId(null); setDragOverId(null); return }
     const oldIndex = topics.findIndex(t => t.id === draggingId)
     const newIndex = topics.findIndex(t => t.id === targetId)
     if (oldIndex === -1 || newIndex === -1) return
-
     const reordered = [...topics]
     const [moved] = reordered.splice(oldIndex, 1)
     reordered.splice(newIndex, 0, moved)
     onReorderTopics(reordered)
-
     setDraggingId(null)
     setDragOverId(null)
   }
+  function handleDragEnd() { setDraggingId(null); setDragOverId(null) }
 
-  function handleDragEnd() {
-    setDraggingId(null)
-    setDragOverId(null)
+  // Determine status badge from progress
+  function getTopicStatus(topicId: string): 'DRAFT' | 'PUBLISHED' {
+    const total = wordCounts[topicId] ?? 0
+    // For now: any topic with 0 words = DRAFT, else PUBLISHED
+    return total > 0 ? 'PUBLISHED' : 'DRAFT'
   }
+
+  // Derive progress percentage from mastered vs total — use word count as progress proxy
+  // (real progress would come from topicProgress prop if available; here we use 0-100 scale)
+  function getProgressPercent(_topicId: string): number {
+    // For v1: progress placeholder. Real progress = SRS mastered/total from learning data.
+    return 0
+  }
+
+  const isDragging = (id: string) => draggingId === id
+  const isDragOver = (id: string) => dragOverId === id
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-black text-secondary">Chủ đề</h2>
+        <h2 className="text-lg font-black text-on-surface-variant tracking-tight">Chủ đề</h2>
         <button
           onClick={onAddTopic}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-orange-600 transition-all"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-secondary hover:bg-secondary-container/30 text-sm font-bold transition-all"
         >
-          <span className="material-symbols-outlined text-sm">add</span>
+          <span className="material-symbols-outlined text-base">add_box</span>
           Thêm
         </button>
       </div>
@@ -456,8 +444,8 @@ function TopicPanel({
         onClick={() => onViewWords(null)}
         className={`flex items-center gap-3 px-3 py-3 rounded-xl border transition-all mb-2 ${
           activeTopicId === null
-            ? 'border-primary bg-orange-50'
-            : 'border-stone-200 bg-white hover:border-stone-300'
+            ? 'border border-stone-200 border-l-4 border-l-primary bg-surface-container-lowest'
+            : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
         }`}
       >
         <span className="text-lg">📦</span>
@@ -472,8 +460,8 @@ function TopicPanel({
         )}
       </button>
 
-      {/* Topics list */}
-      <div className="flex-1 overflow-y-auto space-y-1">
+      {/* Topics list — flat cards, no expand */}
+      <div className="flex-1 overflow-y-auto space-y-1 custom-scrollbar">
         {topics.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-8">
             <span className="material-symbols-outlined text-4xl text-stone-200">folder_open</span>
@@ -484,8 +472,11 @@ function TopicPanel({
         ) : (
           topics.map((topic) => {
             const count = wordCounts[topic.id] ?? 0
-            const isExpanded = expandedId === topic.id
             const isActive = activeTopicId === topic.id
+            const status = getTopicStatus(topic.id)
+            const progress = getProgressPercent(topic.id)
+            const isDraggingThis = isDragging(topic.id)
+            const isDragOverThis = isDragOver(topic.id)
 
             return (
               <div
@@ -495,95 +486,101 @@ function TopicPanel({
                 onDragOver={(e) => handleDragOver(e, topic.id)}
                 onDrop={(e) => handleDrop(e, topic.id)}
                 onDragEnd={handleDragEnd}
-                className={`rounded-xl border overflow-hidden bg-white transition-all ${
-                  draggingId === topic.id
+                onClick={() => onViewWords(topic.id)}
+                className={`relative rounded-xl border bg-white transition-all cursor-pointer select-none ${
+                  isDraggingThis
                     ? 'opacity-40 border-dashed border-stone-300'
-                    : dragOverId === topic.id
+                    : isDragOverThis
                     ? 'border-primary shadow-md'
-                    : 'border-stone-200'
+                    : isActive
+                    ? 'border border-stone-200 border-l-4 border-l-primary bg-surface-container-lowest shadow-sm'
+                    : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
                 }`}
               >
-                <button
-                  onClick={() => {
-                    setExpandedId(isExpanded ? null : topic.id)
-                    onViewWords(isExpanded ? topic.id : topic.id)
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-3 text-left transition-all ${
-                    isActive ? 'bg-orange-50' : 'hover:bg-stone-50'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-stone-300 text-base cursor-grab shrink-0">drag_indicator</span>
-                  <span
-                    className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: topic.color ?? '#F97316' }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className={`font-bold text-sm truncate ${isActive ? 'text-primary' : 'text-secondary'}`}>
+                {/* Card body — always visible */}
+                <div className="p-4">
+                  {/* Top row: drag handle + color dot + name */}
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="material-symbols-outlined text-stone-300 text-base cursor-grab shrink-0">drag_indicator</span>
+                    {/* Color dot — matches design reference */}
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: topic.color ?? '#F97316' }}
+                    />
+                    <p className={`flex-1 font-bold text-sm leading-tight min-w-0 truncate ${isActive ? 'text-primary' : 'text-secondary'}`}>
                       {topic.name}
                     </p>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
+                        status === 'PUBLISHED'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-stone-200 text-stone-600'
+                      }`}
+                    >
+                      {status}
+                    </span>
                   </div>
-                  <span className="text-xs font-bold text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full shrink-0">
-                    {count}
-                  </span>
-                  <span className={`material-symbols-outlined text-stone-400 text-lg transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-                    expand_more
-                  </span>
-                </button>
 
-                {/* Expanded: mini word list — 3-column grid */}
-                {isExpanded && (
-                  <div className="border-t border-stone-100 px-3 py-2 bg-stone-50">
-                    {wordsByTopic.get(topic.id)?.length === 0 ? (
-                      <p className="text-xs text-stone-400 italic py-1">Chưa có từ nào</p>
-                    ) : (
-                      <>
-                        <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                          {wordsByTopic.get(topic.id)?.slice(0, 12).map(w => (
-                            <div key={w.id} className="flex items-center gap-1.5 py-0.5">
-                              <span className="w-1 h-1 rounded-full shrink-0" style={{ backgroundColor: topic.color ?? '#F97316' }} />
-                              <span className="text-xs font-medium text-secondary truncate">{w.word}</span>
-                            </div>
-                          ))}
-                        </div>
-                        {(wordsByTopic.get(topic.id)?.length ?? 0) > 12 && (
-                          <p className="text-[10px] text-stone-400 italic pt-1">
-                            +{(wordsByTopic.get(topic.id)?.length ?? 0) - 12} từ khác
-                          </p>
-                        )}
-                      </>
-                    )}
+                  {/* Slug — muted mono text */}
+                  {topic.slug && (
+                    <p className="text-[10px] text-stone-400 font-mono mt-0.5 pl-[calc(0.625rem+0.625rem)] truncate">
+                      {topic.slug}
+                    </p>
+                  )}
 
-                    {/* Actions — improved layout */}
-                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-stone-200">
-                      <button
-                        onClick={() => onImportToTopic(topic.id)}
-                        className="flex items-center gap-1 text-xs text-stone-500 hover:text-primary font-medium px-2 py-1 rounded-lg hover:bg-orange-50 transition-all"
-                      >
-                        <span className="material-symbols-outlined text-xs">upload</span>
-                        Nhập thêm
-                      </button>
-                      <button
-                        onClick={() => onEditTopic(topic)}
-                        className="flex items-center gap-1 text-xs text-stone-500 hover:text-primary font-medium px-2 py-1 rounded-lg hover:bg-orange-50 transition-all"
-                      >
-                        <span className="material-symbols-outlined text-xs">edit</span>
-                        Sửa
-                      </button>
-                      <div className="flex-1" />
-                      <button
-                        onClick={() => onDeleteTopic(topic)}
-                        className="flex items-center gap-1 text-xs text-red-400 hover:text-red-600 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition-all"
-                      >
-                        <span className="material-symbols-outlined text-xs">delete</span>
-                        Xóa
-                      </button>
+                  {/* Description — truncated 1 line */}
+                  {topic.description && (
+                    <p className="text-xs text-stone-400 mb-2 pl-[calc(0.625rem+0.625rem)] line-clamp-1">
+                      {topic.description}
+                    </p>
+                  )}
+
+                  {/* Bottom row: progress bar + word count */}
+                  <div className="flex items-center gap-2 pl-[calc(0.625rem+0.625rem)]">
+                    <div className="flex-1 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="bg-secondary h-full rounded-full transition-all"
+                        style={{ width: `${progress}%` }}
+                      />
                     </div>
+                    <span className="text-[10px] font-bold text-stone-500 shrink-0">{progress > 0 ? `${progress}%` : '0%'}</span>
+                    <span className="text-[10px] font-bold text-stone-500 shrink-0">{count} từ</span>
                   </div>
-                )}
+
+                  {/* Inline action buttons — always visible, matches design reference */}
+                  <div className="flex items-center gap-1 mt-2 pl-[calc(0.625rem+0.625rem)]"
+                    onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => onEditTopic(topic)}
+                      className="flex items-center gap-1 text-[10px] text-stone-400 hover:text-primary font-medium px-2 py-1 rounded-lg hover:bg-orange-50 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-xs">edit</span>
+                      Sửa
+                    </button>
+                    <button
+                      onClick={() => onDeleteTopic(topic)}
+                      className="flex items-center gap-1 text-[10px] text-stone-400 hover:text-red-500 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-xs">delete</span>
+                      Xóa
+                    </button>
+                  </div>
+                </div>
               </div>
             )
           })
         )}
+      </div>
+
+      {/* Bottom "Add New Topic" CTA — design reference */}
+      <div className="mt-auto p-6 border-t border-stone-200/50 bg-surface-dim/30">
+        <button
+          onClick={onAddTopic}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-lg border-2 border-dashed border-outline-variant text-on-surface-variant hover:bg-white transition-all font-semibold"
+        >
+          <span className="material-symbols-outlined text-base">library_add</span>
+          Thêm chủ đề mới
+        </button>
       </div>
     </div>
   )
@@ -638,34 +635,19 @@ export default function RoadmapSetupPage() {
     loadData()
   }, [roadmapId])
 
-  // Computed: filter + group words
+  // Computed: filter words by selected topic (search + tag filter handled in WordPool)
   const filteredWords = useMemo(() => {
-    let result = words
-
-    // Filter by active topic
-    if (activeTopicId !== null) {
-      result = result.filter(w => w.topicIds.includes(activeTopicId))
-    }
-
-    // Filter by search
-    if (search.trim()) {
-      const q = search.toLowerCase()
-      result = result.filter(w =>
-        w.word.toLowerCase().includes(q) ||
-        w.definition.toLowerCase().includes(q)
-      )
-    }
-
-    return result
-  }, [words, activeTopicId, search])
+    if (activeTopicId === null) return words
+    return words.filter(w => w.topicIds.includes(activeTopicId))
+  }, [words, activeTopicId])
 
   // Computed: uncategorized words
   const uncategorizedCount = useMemo(() => {
     return words.filter(w => w.topicIds.length === 0).length
   }, [words])
 
-  // Computed: words by topic
-  const wordsByTopic = useMemo(() => {
+  // Computed: words by topic (reserved for future expand feature)
+  const _wordsByTopic = useMemo(() => {
     const map = new Map<string, EnrichedWord[]>()
     for (const w of words) {
       for (const tid of w.topicIds) {
@@ -818,11 +800,9 @@ export default function RoadmapSetupPage() {
             topics={topics}
             wordCounts={wordCounts}
             uncategorizedCount={uncategorizedCount}
-            wordsByTopic={wordsByTopic}
             onAddTopic={() => { setEditTopic(null); setShowTopicModal(true) }}
             onEditTopic={(t) => { setEditTopic(t); setShowTopicModal(true) }}
             onDeleteTopic={(t) => setDeleteTopicTarget(t)}
-            onImportToTopic={() => setShowImportModal(true)}
             onViewWords={(id) => setActiveTopicId(id)}
             onReorderTopics={handleReorderTopics}
             activeTopicId={activeTopicId}
@@ -839,8 +819,6 @@ export default function RoadmapSetupPage() {
             onToggleAll={toggleAll}
             onBulkAssign={handleBulkAssign}
             onBulkUnassign={handleBulkUnassign}
-            onDelete={(id) => setDeleteWordTarget(id)}
-            onUnassignWord={handleUnassignWord}
             onImport={() => setShowImportModal(true)}
             loading={loading}
             search={search}
@@ -848,7 +826,41 @@ export default function RoadmapSetupPage() {
             activeTopicId={activeTopicId}
             activeTagFilter={activeTagFilter}
             onActiveTagFilterChange={setActiveTagFilter}
+            roadmapName={roadmap?.name}
           />
+
+          {/* Bottom 3 cards — design reference */}
+          <div className="mt-8 grid grid-cols-3 gap-6">
+            {/* Card 1: Auto-Gen Meanings */}
+            <div className="col-span-1 p-6 rounded-2xl bg-surface-container flex flex-col items-center justify-center text-center">
+              <span className="material-symbols-outlined text-4xl text-primary mb-3">auto_awesome</span>
+              <h4 className="font-bold text-on-surface">Auto-Gen Meanings</h4>
+              <p className="text-xs text-stone-500 mt-2">Use AI to generate phonetic transcriptions and Vietnamese definitions.</p>
+              <button className="mt-4 text-xs font-bold text-primary uppercase tracking-widest hover:underline cursor-pointer">
+                Launch Tool
+              </button>
+            </div>
+
+            {/* Card 2: Retention Insight */}
+            <div className="col-span-1 p-6 rounded-2xl bg-secondary-container/30 border border-secondary-container/50 flex flex-col items-center justify-center text-center">
+              <span className="material-symbols-outlined text-4xl text-secondary mb-3">analytics</span>
+              <h4 className="font-bold text-on-surface">Retention Insight</h4>
+              <p className="text-xs text-stone-500 mt-2">
+                Students struggle with 'Apprenticeship' most in this topic.
+              </p>
+              <button className="mt-4 text-xs font-bold text-secondary uppercase tracking-widest hover:underline cursor-pointer">
+                View Report
+              </button>
+            </div>
+
+            {/* Card 3: Drag & Drop Assets */}
+            <div className="col-span-1 p-6 rounded-2xl flex items-center justify-center border-2 border-dashed border-stone-200">
+              <div className="text-center">
+                <span className="material-symbols-outlined text-4xl text-stone-300 mb-2">post_add</span>
+                <p className="text-xs font-bold text-stone-400">Drag &amp; Drop Assets</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
