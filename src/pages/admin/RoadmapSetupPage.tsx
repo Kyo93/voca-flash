@@ -226,116 +226,141 @@ function WordPool({
         </div>
       )}
 
-      {/* ── Select all ── */}
-      <div className="flex items-center gap-2 mb-3">
-        <input
-          type="checkbox"
-          checked={allSelected}
-          onChange={onToggleAll}
-          className="w-4 h-4 rounded accent-primary cursor-pointer"
-        />
-        <span className="text-xs text-stone-500 font-medium">
-          {allSelected ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
-        </span>
-      </div>
+      {/* ── Word List Table (7 columns — matches design reference) ── */}
+      <div className="flex-1 overflow-hidden rounded-2xl border border-stone-100 shadow-sm bg-white">
+        <div className="overflow-y-auto h-full custom-scrollbar">
+          <table className="w-full text-left">
+            <thead className="bg-surface-container-low border-b border-stone-200/50 sticky top-0 z-10">
+              <tr className="text-stone-500 font-bold text-xs uppercase tracking-widest">
+                <th className="p-4 w-12 text-center">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={el => { if (el) el.indeterminate = !allSelected && someSelected }}
+                    onChange={onToggleAll}
+                    className="w-4 h-4 rounded accent-primary cursor-pointer"
+                    title="Chọn tất cả"
+                  />
+                </th>
+                <th className="p-4">Word</th>
+                <th className="p-4">Phonetic</th>
+                <th className="p-4">Meaning (VN)</th>
+                <th className="p-4">Difficulty</th>
+                <th className="p-4">Tags</th>
+                <th className="p-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-100 text-sm">
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="p-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="material-symbols-outlined text-4xl text-stone-300 animate-spin">progress_activity</span>
+                      <p className="text-stone-400">Đang tải...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : visibleWords.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-12 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <span className="material-symbols-outlined text-4xl text-stone-300">spellcheck</span>
+                      <p className="text-stone-400">
+                        {search || activeTagFilter ? 'Không tìm thấy từ nào' : 'Chưa có từ vựng nào.'}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : visibleWords.map((word) => {
+                const isSelected = selectedWordIds.has(word.id)
+                const primaryTag = word.tags[0]
+                const tagMeta = primaryTag ? TAG_META[primaryTag] : null
+                const tagColor = tagMeta?.color ?? '#E67E22'
 
-      {/* ── Word List (simple rows, no expand) ── */}
-      <div className="flex-1 overflow-y-auto space-y-0.5 custom-scrollbar">
-        {loading ? (
-          <div className="flex flex-col items-center gap-2 py-12">
-            <span className="material-symbols-outlined text-4xl text-stone-300 animate-spin">progress_activity</span>
-            <p className="text-stone-400 text-sm">Đang tải...</p>
-          </div>
-        ) : visibleWords.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-12">
-            <span className="material-symbols-outlined text-4xl text-stone-300">spellcheck</span>
-            <p className="text-stone-400 text-sm">
-              {search || activeTagFilter ? 'Không tìm thấy từ nào' : 'Chưa có từ vựng nào.'}
-            </p>
-          </div>
-        ) : (
-          visibleWords.map((word) => {
-            const isSelected = selectedWordIds.has(word.id)
-            const primaryTag = word.tags[0]
-            const tagMeta = primaryTag ? TAG_META[primaryTag] : null
-            const tagColor = tagMeta?.color ?? '#E67E22'
-
-            return (
-              <div
-                key={word.id}
-                className={`group flex items-center gap-3 px-3 py-2 rounded-xl transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-orange-50 border border-orange-100'
-                    : 'hover:bg-surface-container-lowest border border-transparent'
-                }`}
-              >
-                {/* Checkbox */}
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => onToggle(word.id)}
-                  className="w-4 h-4 rounded accent-primary cursor-pointer shrink-0"
-                  onClick={(e) => e.stopPropagation()}
-                />
-
-                {/* Word + Phonetic + audio button */}
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <p className="font-bold text-base text-on-surface whitespace-nowrap">{word.word}</p>
-                  {word.phonetic && (
-                    <span className="text-stone-500 font-mono shrink-0">/{word.phonetic}/</span>
-                  )}
-                  {word.pos && (
-                    <span className="text-[10px] font-bold text-stone-400 bg-stone-100 px-1.5 py-0.5 rounded shrink-0">
-                      {POS_LABELS[word.pos] ?? '—'}
-                    </span>
-                  )}
-                  {/* Audio button — design reference */}
-                  <button
-                    onClick={(e) => { e.stopPropagation() }}
-                    className="material-symbols-outlined text-stone-300 hover:text-orange-500 text-lg cursor-pointer shrink-0"
-                    title="Phát âm"
+                return (
+                  <tr
+                    key={word.id}
+                    className={`hover:bg-surface-container-lowest transition-colors group ${isSelected ? 'bg-orange-50/50' : ''}`}
                   >
-                    volume_up
-                  </button>
-                </div>
+                    {/* Checkbox */}
+                    <td className="p-4 text-center">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggle(word.id)}
+                        className="w-4 h-4 rounded accent-primary cursor-pointer"
+                      />
+                    </td>
 
-                {/* Difficulty pill */}
-                <DifficultyPill value={word.difficulty ?? 3} className="shrink-0" />
+                    {/* Word + audio */}
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-base text-on-surface">{word.word}</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation() }}
+                          className="material-symbols-outlined text-stone-300 hover:text-orange-500 text-lg cursor-pointer"
+                          title="Phát âm"
+                        >
+                          volume_up
+                        </button>
+                      </div>
+                    </td>
 
-                {/* Tag pill */}
-                {primaryTag && (
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold shrink-0 border ${
-                      tagColor === '#E67E22' ? 'bg-orange-50 text-orange-700 border-orange-100'
-                      : tagColor === '#829460' ? 'bg-secondary-container/30 text-secondary border-secondary-container'
-                      : 'bg-orange-50 text-orange-700 border-orange-100'
-                    }`}
-                  >
-                    {tagMeta?.label ?? primaryTag}
-                  </span>
-                )}
+                    {/* Phonetic */}
+                    <td className="p-4 text-stone-500 font-mono">
+                      {word.phonetic ? `/${word.phonetic}/` : '—'}
+                    </td>
 
-                {/* Actions */}
-                <div className="flex justify-end gap-2 transition-opacity">
-                  <button
-                    onClick={(e) => { e.stopPropagation() }}
-                    className="p-2 hover:bg-stone-100 rounded-lg hover:text-primary transition-all bg-orange-50 cursor-pointer"
-                    title="Sửa"
-                  >
-                    <span className="material-symbols-outlined text-lg" style={{ color: '#E67E22' }}>edit</span>
-                  </button>
-                  <button
-                    onClick={(e) => { e.stopPropagation() }}
-                    className="p-2 hover:bg-stone-100 rounded-lg text-stone-500 hover:text-error transition-all cursor-pointer"
-                    title="Xóa"
-                  >
-                    <span className="material-symbols-outlined text-lg">delete</span>
-                  </button>
-                </div>
-              </div>
-            )
-          })
-        )}
+                    {/* Meaning (VN) */}
+                    <td className="p-4 text-on-surface text-sm">
+                      {word.definition || word.example_vi || '—'}
+                    </td>
+
+                    {/* Difficulty */}
+                    <td className="p-4">
+                      <DifficultyPill value={word.difficulty ?? 3} />
+                    </td>
+
+                    {/* Tags */}
+                    <td className="p-4">
+                      {primaryTag && (
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${
+                            tagColor === '#E67E22' ? 'bg-orange-50 text-orange-700 border-orange-100'
+                            : tagColor === '#829460' ? 'bg-secondary-container/30 text-secondary border-secondary-container'
+                            : 'bg-orange-50 text-orange-700 border-orange-100'
+                          }`}
+                        >
+                          {tagMeta?.label ?? primaryTag}
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="p-4 text-right">
+                      <div className="flex justify-end gap-2 transition-opacity">
+                        <button
+                          onClick={(e) => { e.stopPropagation() }}
+                          className="p-2 hover:bg-stone-100 rounded-lg hover:text-primary transition-all bg-orange-50 cursor-pointer"
+                          title="Sửa"
+                        >
+                          <span className="material-symbols-outlined text-lg" style={{ color: '#E67E22' }}>edit</span>
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation() }}
+                          className="p-2 hover:bg-stone-100 rounded-lg text-stone-500 hover:text-error transition-all cursor-pointer"
+                          title="Xóa"
+                        >
+                          <span className="material-symbols-outlined text-lg">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
