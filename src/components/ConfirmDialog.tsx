@@ -8,6 +8,7 @@ interface Props {
   onConfirm: () => void
   onCancel: () => void
   danger?: boolean
+  loading?: boolean
 }
 
 export default function ConfirmDialog({
@@ -18,6 +19,7 @@ export default function ConfirmDialog({
   onConfirm,
   onCancel,
   danger = false,
+  loading = false,
 }: Props) {
   if (!open) return null
 
@@ -52,13 +54,18 @@ export default function ConfirmDialog({
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 py-2.5 rounded-xl font-bold text-white transition-all ${
+            disabled={loading}
+            className={`flex-1 py-2.5 rounded-xl font-bold text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
               danger
                 ? 'bg-red-500 hover:bg-red-600'
                 : 'primary-gradient hover:shadow-lg'
             }`}
           >
-            {confirmLabel}
+            {loading ? (
+              <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
+            ) : (
+              confirmLabel
+            )}
           </button>
         </div>
       </div>

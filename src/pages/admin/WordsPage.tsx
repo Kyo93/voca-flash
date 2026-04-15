@@ -4,7 +4,6 @@ import { getAllTopics, getAllRoadmaps } from '../../lib/admin-queries'
 import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import WordFormModal from '../../components/admin/WordFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import ImportWordsModal from '../../components/admin/ImportWordsModal'
 import type { Word, Topic } from '../../lib/types'
 
 const POS_LABELS: Record<string, string> = {
@@ -40,7 +39,6 @@ export default function AdminWordsPage() {
 
   // Modal state
   const [showModal, setShowModal] = useState(false)
-  const [showImportModal, setShowImportModal] = useState(false)
   const [editWordData, setEditWordData] = useState<Word | null>(null)
   const [editWordTopicIds, setEditWordTopicIds] = useState<string[]>([])
   const [editWordWrongChoices, setEditWordWrongChoices] = useState<string[]>([])
@@ -176,13 +174,6 @@ export default function AdminWordsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowImportModal(true)}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-orange-50 transition-all"
-          >
-            <span className="material-symbols-outlined text-sm">upload</span>
-            Nhập từ vựng
-          </button>
           <button
             onClick={() => { setEditWordData(null); setEditWordTopicIds([]); setEditWordWrongChoices([]); setShowModal(true) }}
             className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
@@ -500,13 +491,6 @@ export default function AdminWordsPage() {
         </div>
       )}
 
-      <ImportWordsModal
-        open={showImportModal}
-        onClose={() => setShowImportModal(false)}
-        onImportComplete={() => fetch()}
-        topics={topics}
-        roadmapId={selectedRoadmap?.id ?? undefined}
-      />
-    </div>
+      </div>
   )
 }

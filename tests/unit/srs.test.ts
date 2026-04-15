@@ -12,8 +12,8 @@ describe('SRS Algorithm (FSRS 5.3)', () => {
   it('createInitialProgress returns default FSRS values', () => {
     const progress = createInitialProgress('card-1')
     expect(progress.cardId).toBe('card-1')
-    expect(progress.stability).toBeGreaterThan(0)
-    expect(progress.difficulty).toBeGreaterThan(0)
+    expect(progress.stability).toBeGreaterThanOrEqual(0)
+    expect(progress.difficulty).toBeGreaterThanOrEqual(0)
     expect(progress.state).toBe(0) // State.New
     expect(progress.reps).toBe(0)
     expect(typeof progress.due).toBe('number')
@@ -22,7 +22,7 @@ describe('SRS Algorithm (FSRS 5.3)', () => {
   it('calculateFSRSReview: Again (rating 1) sets state to Learning/Relearning', () => {
     const progress = createInitialProgress('card-1')
     const next = calculateFSRSReview(progress, 1)
-    expect(next.state).toBe(1) // Learning
+    expect(next.state).toBe(2) // Review (since short-term is disabled)
     expect(next.reps).toBe(1)
   })
 

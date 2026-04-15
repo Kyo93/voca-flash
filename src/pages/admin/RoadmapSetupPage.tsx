@@ -828,6 +828,7 @@ export default function RoadmapSetupPage() {
         open={showImportModal}
         topics={topics}
         roadmapId={roadmapId}
+        roadmapName={roadmap?.name ?? ''}
         onClose={() => setShowImportModal(false)}
         onImportComplete={() => { setShowImportModal(false); loadData() }}
       />

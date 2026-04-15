@@ -6,6 +6,8 @@ import {
   parseSheetsUrlIntoRows,
   parseErrorToMessage,
   resolveUnmatchedTopics,
+  generateUniqueSlug,
+  slugify,
 } from '../../lib/import-parser'
 import { batchInsertWords, createTopic, findDuplicateWords } from '../../lib/admin-queries'
 
@@ -15,8 +17,10 @@ interface Props {
   onClose: () => void
   onImportComplete: () => void
   topics: Topic[]
-  /** Limit topic choices to this roadmap (from RoadmapContext sidebar) */
-  roadmapId?: string
+  /** Roadmap ID — required. Import must happen in context of a specific roadmap. */
+  roadmapId: string
+  /** Display name of the roadmap for context label */
+  roadmapName: string
 }
 
 // ── State machine ─────────────────────────────────────────
@@ -52,10 +56,10 @@ function DifficultyDots({ value }: { value: number }) {
 }
 
 // ── Main Component ───────────────────────────────────────
-export default function ImportWordsModal({ open, onClose, onImportComplete, topics, roadmapId }: Props) {
+export default function ImportWordsModal({ open, onClose, onImportComplete, topics, roadmapId, roadmapName }: Props) {
   const { t } = useTranslation()
-  // Filter topics by roadmap when provided
-  const filteredTopics = roadmapId ? topics.filter(t => t.roadmap_id === roadmapId) : topics
+  // Filter topics by roadmap (always filtered — roadmapId is required)
+  const filteredTopics = topics.filter(t => t.roadmap_id === roadmapId)
   const topicMap = getTopicNameMap(filteredTopics)
 
   const [state, setState] = useState<ImportState>('idle')
@@ -82,17 +86,26 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
 
   // ── Unified parse handler ──────────────────────────────
   const handleParse = useCallback(async (parsed: { rows: NormalizedWord[]; unmatchedTopics: string[] }) => {
-    // Auto-create missing topics
+    // Guard: roadmapId is required — this should never be reached without one
+    if (!roadmapId) {
+      throw new Error('NO_ROADMAP_GUARD_FAILED')
+    }
+
+    // Auto-create missing topics with unique slugs
     let currentTopicMap = topicMap
     if (parsed.unmatchedTopics.length > 0) {
       const newTopicMap = new Map(currentTopicMap)
+      // Build existing slugs set for uniqueness check
+      const existingSlugs = new Set([...topicMap.values()].map(t => t.slug))
       for (const name of parsed.unmatchedTopics) {
+        const uniqueSlug = generateUniqueSlug(slugify(name), existingSlugs)
+        existingSlugs.add(uniqueSlug) // reserve this slug
         const { data, error } = await createTopic({
           name,
-          slug: name.toLowerCase().replace(/\s+/g, '-'),
+          slug: uniqueSlug,
           color: '#f97316',
           sort_order: 999,
-          roadmap_id: roadmapId ?? null,
+          roadmap_id: roadmapId, // always set — never null
           description: null,
           image_url: null,
           icon: 'label',
@@ -230,6 +243,9 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
           <div>
             <h2 className="text-xl font-black text-secondary">{t('admin.import.title')}</h2>
             <p className="text-sm text-on-surface-variant mt-1">{stepLabel}</p>
+            {roadmapId && (
+              <p className="text-xs font-bold text-primary mt-1">📍 Đang nhập vào: {roadmapName}</p>
+            )}
           </div>
           <button
             onClick={handleClose}
@@ -242,8 +258,27 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-6">
 
+          {/* Guard: no roadmap context */}
+          {!roadmapId && (
+            <div className="flex flex-col items-center gap-4 py-16 text-center">
+              <span className="material-symbols-outlined text-6xl text-stone-300">folder_off</span>
+              <div>
+                <p className="text-lg font-black text-secondary">Cần chọn Roadmap trước</p>
+                <p className="text-sm text-on-surface-variant mt-1">
+                  Để nhập từ vựng, bạn cần mở từ một Roadmap cụ thể.
+                </p>
+              </div>
+              <a
+                href="/admin/roadmaps"
+                className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
+              >
+                Đi tới Roadmaps
+              </a>
+            </div>
+          )}
+
           {/* STEP 1: Upload or Paste URL */}
-          {state === 'idle' && (
+          {state === 'idle' && roadmapId && (
             <div className="space-y-6">
               {/* Drop zone */}
               <div

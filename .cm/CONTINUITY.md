@@ -3,7 +3,7 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-(Đang xem xét tiếp theo)
+Import Refactor — Context-Aware Vocabulary Import (cm-brainstorm-idea completed 2026-04-15)
 
 ## Working Context
 - **Color Tokens:** Dùng bảng token từ `design.md` — KHÔNG dùng generic `text-secondary`, `bg-orange-*`
@@ -21,7 +21,19 @@
 - **Block roadmap delete:** Query topics count trước khi xóa → warning nếu còn topics
 
 ## Next Actions
-1. **1.1** Tạo `src/contexts/RoadmapContext.tsx`
+### Import Refactor (ACTIVE — 2026-04-15)
+- [ ] 1.1 Remove import button from `WordsPage.tsx`
+- [ ] 2.1 Add `slugify` + `generateUniqueSlug` in `import-parser.ts`
+- [ ] 3.1 Add guard + roadmap label + fix auto-create in `ImportWordsModal.tsx`
+- [ ] 4.1 Pass `roadmapName` from `RoadmapSetupPage` to `ImportWordsModal`
+- [ ] 5.1 Full integration verification
+- **Plan:** `.planning/import-refactor-2026/`
+
+## Working Context
+- **Import guard:** ImportWordsModal requires `roadmapId` (mandatory). No `roadmapId` → shows warning UI, no upload.
+- **Auto-create topics:** Always set `roadmap_id = roadmapId`. No `null` fallback.
+- **Slug uniqueness:** `generateUniqueSlug(name, existingSlugs)` → append `-1`, `-2` on collision.
+- **Import now lives ONLY in RoadmapSetupPage** — removed from WordsPage.
 2. **1.2** Gắn `<RoadmapProvider>` vào `AdminLayout.tsx`
 3. **2.1** Thêm roadmap selector dropdown vào `AdminSidebar.tsx`
 4. **3.1** TopicsPage lọc theo `selectedRoadmap.id`

@@ -167,6 +167,24 @@ const DIFFICULTY_LABEL_MAP: Record<string, number> = {
   rất_khó: 5, rat_kho: 5, very_hard: 5,
 }
 
+// ── Slug Utilities ────────────────────────────────────────────
+/** Convert a topic name to a URL-safe slug. */
+export function slugify(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+}
+
+/**
+ * Generate a slug that is unique within existingSlugs.
+ * If base slug is not taken → return it.
+ * Otherwise append -1, -2, ... until unique.
+ */
+export function generateUniqueSlug(base: string, existingSlugs: Set<string>): string {
+  if (!existingSlugs.has(base)) return base
+  let i = 1
+  while (existingSlugs.has(`${base}-${i}`)) i++
+  return `${base}-${i}`
+}
+
 // ── Normalize Row ──────────────────────────────────────────
 export function normalizeRow(raw: RawRow): Partial<NormalizedWord> {
   const word = raw.word?.trim() ?? ''
@@ -241,12 +259,22 @@ export function resolveTopics(
 
   for (const name of topicNames) {
     const lower = name.toLowerCase()
-    // Try exact match first, then scan
+    // Try exact name match first
     let found: Topic | undefined
     for (const [, topic] of topicMap) {
       if (topic.name.toLowerCase() === lower) {
         found = topic
         break
+      }
+    }
+    // Fallback: try slug match
+    if (!found) {
+      const slugAttempt = slugify(name)
+      for (const [, topic] of topicMap) {
+        if (topic.slug === slugAttempt) {
+          found = topic
+          break
+        }
       }
     }
     if (found) {
