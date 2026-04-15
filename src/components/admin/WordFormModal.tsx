@@ -1,5 +1,6 @@
-import { useState, useEffect, type FormEvent } from 'react'
-import type { Word, Topic } from '../../lib/types'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
+import type { Word } from '../../lib/types'
+import { getAllTags } from '../../lib/admin-queries'
 
 const POS_OPTIONS = [
   { value: 'noun', label: 'Danh từ' },
@@ -15,16 +16,12 @@ const DIFFICULTY_LABELS = ['Rất dễ', 'Dễ', 'Trung bình', 'Khó', 'Rất k
 interface Props {
   open: boolean
   word?: Word | null
-  initialTopicIds?: string[]
   initialWrongChoices?: string[]
-  topics: Topic[]
-  /** Khi false, ẩn hoàn toàn phần "Chủ đề" trong modal (dùng khi roadmap không còn topics) */
-  showTopics?: boolean
-  onSave: (word: Omit<Word, 'id' | 'created_at' | 'updated_at'>, wrongChoices: string[], topicIds: string[]) => Promise<void>
+  onSave: (word: Omit<Word, 'id' | 'created_at' | 'updated_at'>, wrongChoices: string[]) => Promise<void>
   onClose: () => void
 }
 
-export default function WordFormModal({ open, word, topics, initialTopicIds, initialWrongChoices, showTopics = true, onSave, onClose }: Props) {
+export default function WordFormModal({ open, word, initialWrongChoices, onSave, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -36,12 +33,29 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
   const [definition, setDefinition] = useState('')
   const [example, setExample] = useState('')
   const [exampleVi, setExampleVi] = useState('')
-  const [topicIds, setTopicIds] = useState<string[]>([])
   const [imageUrl, setImageUrl] = useState('')
   const [imagePosition, setImagePosition] = useState('center')
   const [wrong1, setWrong1] = useState('')
   const [wrong2, setWrong2] = useState('')
   const [wrong3, setWrong3] = useState('')
+  const [synonyms, setSynonyms] = useState('')
+  const [antonyms, setAntonyms] = useState('')
+  const [wordFamily, setWordFamily] = useState('')
+
+  // Tags state
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [allTags, setAllTags] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
+  const [tagDropdownOpen, setTagDropdownOpen] = useState(false)
+  const tagInputRef = useRef<HTMLInputElement>(null)
+  const tagDropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Fetch all existing tags once when modal opens
+    if (open) {
+      getAllTags().then(tags => setAllTags(tags))
+    }
+  }, [open])
 
   useEffect(() => {
     if (word) {
@@ -52,9 +66,9 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
       setDefinition(word.definition ?? '')
       setExample(word.example ?? '')
       setExampleVi(word.example_vi ?? '')
-      
-      // Khôi phục topicIds từ DB (từ junction table topic_words)
-      setTopicIds(initialTopicIds && initialTopicIds.length > 0 ? initialTopicIds : [])
+      setSynonyms((word as any).synonyms?.join(', ') ?? '')
+      setAntonyms((word as any).antonyms?.join(', ') ?? '')
+      setWordFamily((word as any).word_family?.join(', ') ?? '')
 
       setImageUrl(word.image_url ?? '')
       setImagePosition(word.image_position ?? 'center')
@@ -67,6 +81,8 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
         setWrong2('')
         setWrong3('')
       }
+      // Load existing tags for edit
+      setSelectedTags(word.tags ?? [])
     } else {
       setWordText('')
       setPhonetic('')
@@ -75,15 +91,62 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
       setDefinition('')
       setExample('')
       setExampleVi('')
-      setTopicIds([])
       setImageUrl('')
       setImagePosition('center')
       setWrong1('')
       setWrong2('')
       setWrong3('')
+      setSynonyms('')
+      setAntonyms('')
+      setWordFamily('')
+      setSelectedTags([])
     }
+    setTagInput('')
     setError(null)
-  }, [word, open, topics, initialTopicIds, initialWrongChoices])
+  }, [word, open, initialWrongChoices])
+
+  // Close tag dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        tagDropdownRef.current && !tagDropdownRef.current.contains(e.target as Node) &&
+        tagInputRef.current && !tagInputRef.current.contains(e.target as Node)
+      ) {
+        setTagDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const filteredSuggestions = tagInput.trim()
+    ? allTags.filter(t =>
+        t.toLowerCase().includes(tagInput.toLowerCase()) &&
+        !selectedTags.includes(t)
+      )
+    : allTags.filter(t => !selectedTags.includes(t)).slice(0, 20)
+
+  function addTag(tag: string) {
+    const trimmed = tag.trim()
+    if (!trimmed || selectedTags.includes(trimmed)) return
+    setSelectedTags(prev => [...prev, trimmed])
+    setTagInput('')
+    setTagDropdownOpen(false)
+  }
+
+  function removeTag(tag: string) {
+    setSelectedTags(prev => prev.filter(t => t !== tag))
+  }
+
+  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      const val = tagInput.trim().replace(/,/g, '')
+      if (val) addTag(val)
+    } else if (e.key === 'Backspace' && !tagInput && selectedTags.length > 0) {
+      removeTag(selectedTags[selectedTags.length - 1])
+    }
+  }
 
   if (!open) return null
 
@@ -108,12 +171,15 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
         definition: definition.trim(),
         example: example.trim() || null,
         example_vi: exampleVi.trim() || null,
-        topic_id: undefined, // topic_id đã bị DROP — chỉ dùng topicWords junction
+        topic_id: undefined,
         image_url: imageUrl.trim() || null,
         image_position: imagePosition || 'center',
+        tags: selectedTags.length > 0 ? selectedTags : undefined,
+        synonyms: synonyms.trim() ? synonyms.split(',').map(s => s.trim()).filter(Boolean) : undefined,
+        antonyms: antonyms.trim() ? antonyms.split(',').map(s => s.trim()).filter(Boolean) : undefined,
+        word_family: wordFamily.trim() ? wordFamily.split(',').map(s => s.trim()).filter(Boolean) : undefined,
       },
-      wrongChoices,
-      topicIds
+      wrongChoices
     )
 
     setLoading(false)
@@ -204,35 +270,6 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
             </div>
           </div>
 
-          {/* Topics (Multiple Checkboxes) — chỉ hiển thị khi roadmap còn có topics */}
-          {showTopics && (
-            <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Chủ đề (có thể chọn nhiều)</label>
-              <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-3 rounded-xl border-2 border-orange-100 bg-orange-50/30">
-                {topics.map((t) => (
-                  <label key={t.id} className="flex items-center gap-3 cursor-pointer p-1">
-                    <input
-                      type="checkbox"
-                      checked={topicIds.includes(t.id)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setTopicIds(prev => [...prev, t.id])
-                        } else {
-                          setTopicIds(prev => prev.filter(id => id !== t.id))
-                        }
-                      }}
-                      className="w-5 h-5 accent-primary rounded cursor-pointer"
-                    />
-                    <span className="text-secondary font-medium text-sm">{t.name}</span>
-                  </label>
-                ))}
-                {topics.length === 0 && (
-                  <div className="col-span-2 text-sm text-stone-500 italic">Chưa có chủ đề nào.</div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Definition */}
           <div>
             <label className="block text-sm font-bold text-secondary mb-2">Definition *</label>
@@ -268,6 +305,115 @@ export default function WordFormModal({ open, word, topics, initialTopicIds, ini
               placeholder="Xin chào, bạn khỏe không?"
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
             />
+          </div>
+
+          {/* Synonyms / Antonyms / Word Family */}
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">
+                Đồng nghĩa <span className="font-normal text-stone-400">(cách nhau bởi dấu phẩy)</span>
+              </label>
+              <input
+                type="text"
+                value={synonyms}
+                onChange={(e) => setSynonyms(e.target.value)}
+                placeholder="greet, salute, hello"
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">
+                Trái nghĩa <span className="font-normal text-stone-400">(cách nhau bởi dấu phẩy)</span>
+              </label>
+              <input
+                type="text"
+                value={antonyms}
+                onChange={(e) => setAntonyms(e.target.value)}
+                placeholder="goodbye, farewell"
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">
+                Word Family <span className="font-normal text-stone-400">(các biến thể, cách nhau bởi dấu phẩy)</span>
+              </label>
+              <input
+                type="text"
+                value={wordFamily}
+                onChange={(e) => setWordFamily(e.target.value)}
+                placeholder="run, runs, running, ran, runner"
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-bold text-secondary mb-2">
+              Tags <span className="font-normal text-stone-400">(chọn trong danh sách hoặc gõ enter để tạo mới)</span>
+            </label>
+            {/* Selected tag chips */}
+            {selectedTags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
+                {selectedTags.map(tag => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-xs leading-none">close</span>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            {/* Tag input with dropdown */}
+            <div className="relative" ref={tagDropdownRef}>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 relative">
+                  <input
+                    ref={tagInputRef}
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => {
+                      setTagInput(e.target.value)
+                      setTagDropdownOpen(true)
+                    }}
+                    onFocus={() => setTagDropdownOpen(true)}
+                    onKeyDown={handleTagKeyDown}
+                    placeholder="gõ để tìm hoặc tạo tag..."
+                    className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                  />
+                  {/* Dropdown */}
+                  {tagDropdownOpen && filteredSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-orange-100 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto">
+                      {filteredSuggestions.map(tag => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onMouseDown={(e) => { e.preventDefault(); addTag(tag) }}
+                          className="w-full text-left px-4 py-2.5 text-sm text-secondary hover:bg-orange-50 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { if (tagInput.trim()) addTag(tagInput.trim()) }}
+                  className="px-4 py-3 rounded-xl bg-stone-100 text-stone-500 font-bold hover:bg-stone-200 transition-all shrink-0"
+                >
+                  + Thêm
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Image URL + Focal Point + Preview */}
