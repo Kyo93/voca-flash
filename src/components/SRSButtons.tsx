@@ -16,11 +16,6 @@ export default function SRSButtons({
 }: SRSButtonsProps) {
   return (
     <div className="w-full flex flex-col gap-3">
-      {suggestedRating !== null && (
-        <p className="text-center text-primary text-[10px] font-bold tracking-widest uppercase">
-          Hệ thống gợi ý
-        </p>
-      )}
       <div className="grid grid-cols-4 gap-2">
         {([1, 2, 3, 4] as SrsRating[]).map(rating => {
           const preview = intervalPreviews?.find(p => p.rating === rating)
