@@ -439,13 +439,16 @@ export async function batchInsertWords(rows: NormalizedWord[]): Promise<BatchIns
     return true
   })
 
-  if (toImport.length === 0) {
-    return { inserted: 0, errors: [] }
+  const submitted = toImport.length
+  if (submitted === 0) {
+    return { inserted: 0, errors: [], submitted: 0 }
   }
 
   // Process in chunks
   for (let i = 0; i < toImport.length; i += CHUNK_SIZE) {
     const chunk = toImport.slice(i, i + CHUNK_SIZE)
+    const chunkNum = Math.floor(i / CHUNK_SIZE) + 1
+    const totalChunks = Math.ceil(submitted / CHUNK_SIZE)
 
     const payload = chunk.map(row => ({
       word: row.word,
@@ -466,23 +469,36 @@ export async function batchInsertWords(rows: NormalizedWord[]): Promise<BatchIns
     })
 
     if (error) {
-      console.error('batch_insert_words RPC error:', error)
-      // On RPC error, add all chunk words as errors
+      // CRITICAL: RPC failed — this silently skips entire chunk in the old code.
+      // Log with chunk context so we can debug missing words.
+      console.error(
+        `[batchInsertWords] Chunk ${chunkNum}/${totalChunks} FAILED — RPC error:`,
+        error.code, error.message
+      )
       for (const row of chunk) {
-        allErrors.push({ word: row.word, error: error.message })
+        allErrors.push({ word: row.word, error: `RPC_ERROR: ${error.message}` })
       }
       continue
     }
 
-    const result = data as BatchInsertResult
-    totalInserted += result.inserted ?? 0
+    const result = data as { inserted?: number; errors?: { word: string; error: string }[] }
+    const chunkInserted = result?.inserted ?? 0
+    totalInserted += chunkInserted
 
-    if (result.errors && result.errors.length > 0) {
+    if (chunkInserted !== chunk.length) {
+      // Detect if some rows silently failed within this chunk
+      const missing = chunk.length - chunkInserted
+      console.warn(
+        `[batchInsertWords] Chunk ${chunkNum}/${totalChunks}: submitted=${chunk.length} inserted=${chunkInserted} missing=${missing}`
+      )
+    }
+
+    if (result?.errors && result.errors.length > 0) {
       allErrors.push(...result.errors)
     }
   }
 
-  return { inserted: totalInserted, errors: allErrors }
+  return { inserted: totalInserted, errors: allErrors, submitted }
 }
 
 /**

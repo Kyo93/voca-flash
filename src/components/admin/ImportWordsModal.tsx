@@ -598,6 +598,14 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
                     : t('admin.import.importFailed')
                   }
                 </p>
+                {result.submitted > 0 && result.inserted !== result.submitted && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
+                    <span className="material-symbols-outlined text-red-500 text-lg">warning</span>
+                    <p className="text-sm font-bold text-red-600">
+                      ⚠️ Import lỗi nghiêm trọng: đã gửi {result.submitted} từ nhưng chỉ insert thành công {result.inserted} từ. Có thể có lỗi RPC trên server. Hãy kiểm tra Console (F12) để biết chi tiết.
+                    </p>
+                  </div>
+                )}
                 {result.errors.length > 0 && (
                   <div className="w-full">
                     <button

@@ -238,6 +238,8 @@ export interface MasteryStats {
 export interface BatchInsertResult {
   inserted: number
   errors: { word: string; error: string }[]
+  /** Total rows submitted across all chunks. Detects silent RPC failures. */
+  submitted: number
 }
 
 export interface NormalizedWord {
