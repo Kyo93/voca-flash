@@ -2,6 +2,7 @@ import { useEffect, useCallback, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
+import { generateChoices } from '../lib/utils'
 import { useAuth } from '../contexts/AuthContext'
 import StudyPrepScreen from '../components/StudyPrepScreen'
 import type { Card } from '../lib/srs'
@@ -231,6 +232,7 @@ export default function StudyPage() {
   const [intervalPreviews, setIntervalPreviews] = useState<IntervalPreview[]>([])
   const [timerSeconds, setTimerSeconds] = useState(30)
   const [currentChallengeType, setCurrentChallengeType] = useState<StudyChallengeType>('recognition')
+  const [precomputedChoices, setPrecomputedChoices] = useState<string[]>([])
   const challengeStartTimeRef = useRef<number>(0)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const timerTickRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -261,6 +263,7 @@ export default function StudyPage() {
     setIntervalPreviews([])
     setTimerSeconds(30)
     setCurrentChallengeType('recognition')
+    setPrecomputedChoices([])
   }, [currentCard?.id])
 
   // READY_FOR_QUIZ → auto-start challenge + timer countdown
@@ -271,6 +274,8 @@ export default function StudyPage() {
     const types: StudyChallengeType[] = ['cloze', 'listen', 'recognition']
     const picked = types[Math.floor(Math.random() * types.length)]
     setCurrentChallengeType(picked)
+    // Precompute choices so they don't re-shuffle on re-renders
+    setPrecomputedChoices(generateChoices(cardToWord(currentCard)))
     challengeStartTimeRef.current = Date.now()
     setTimerSeconds(30)
     setPhase('CHALLENGING')
@@ -469,6 +474,7 @@ export default function StudyPage() {
               <StudyChallengeShell
                 type={currentChallengeType}
                 word={cardToWord(currentCard)}
+                choices={precomputedChoices}
                 onSubmit={handleChallengeSubmit}
               />
               <button

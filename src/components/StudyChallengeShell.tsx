@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import ContextGapChallenge from './review/ContextGapChallenge'
 import GhostRecallChallenge from './review/GhostRecallChallenge'
 import RecognitionChallenge from './review/RecognitionChallenge'
@@ -12,7 +13,7 @@ interface StudyChallengeShellProps {
   onSubmit: (isCorrect: boolean) => void
 }
 
-export default function StudyChallengeShell({
+function StudyChallengeShellInner({
   type,
   word,
   choices,
@@ -44,3 +45,5 @@ export default function StudyChallengeShell({
       )
   }
 }
+
+export default memo(StudyChallengeShellInner)
