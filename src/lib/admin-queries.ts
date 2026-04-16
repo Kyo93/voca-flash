@@ -59,27 +59,19 @@ export async function getAllWords(topicFilter?: string, search?: string) {
 
 export async function createWord(
   word: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
-  topicIds: string[] = []
 ) {
-  // Auto-generate tags from word + definition
-  const wordWithTags = {
-    ...word,
-    tags: autoTag(word.word, word.definition),
-  }
+  // Only auto-generate tags if none are provided manually
+  const tags = word.tags && word.tags.length > 0
+    ? word.tags
+    : autoTag(word.word, word.definition)
 
   const { data: newWord, error } = await supabase
     .from('words')
-    .insert(wordWithTags)
+    .insert({ ...word, tags })
     .select()
     .single()
 
   if (error || !newWord) return { data: null, error }
-
-  if (topicIds.length > 0) {
-    await supabase.from('topic_words').insert(
-      topicIds.map(tid => ({ topic_id: tid, word_id: newWord.id }))
-    )
-  }
 
   return { data: newWord, error: null }
 }
@@ -87,25 +79,16 @@ export async function createWord(
 export async function updateWord(
   id: string,
   word: Partial<Word>,
-  topicIds?: string[]
 ) {
   // Xóa topic_id khỏi payload (cột đã bị DROP)
   const { topic_id: _dropped, ...cleanWord } = word as any
 
-  const res = await supabase.from('words').update(cleanWord).eq('id', id).select().single()
-  if (res.error || !res.data) return res
+  return await supabase.from('words').update(cleanWord).eq('id', id).select().single()
+}
 
-  // Thay thế toàn bộ liên kết trong topic_words nếu topicIds được cung cấp
-  if (topicIds) {
-    await supabase.from('topic_words').delete().eq('word_id', id)
-    if (topicIds.length > 0) {
-      await supabase.from('topic_words').insert(
-        topicIds.map(tid => ({ topic_id: tid, word_id: id }))
-      )
-    }
-  }
-
-  return res
+/** Update tags only (partial update) */
+export async function updateWordTags(id: string, tags: string[]) {
+  return supabase.from('words').update({ tags }).eq('id', id).select().single()
 }
 
 export async function deleteWord(id: string) {
@@ -199,13 +182,14 @@ export async function getWordsWithTopicsByRoadmap(roadmapId: string) {
 
   // Lấy TẤT CẢ words trong roadmap (bao gồm uncategorized)
   // Bằng cách join qua topic_words hoặc lấy trực tiếp từ words
-  let wordIds: string[] = []
+  let wordIds: string[] = [] // TODO: used for uncategorized word filtering — wire up in future
 
   if (topicIds.length > 0 && junctions.length > 0) {
     // Có topic → lấy words từ junction + words chưa gán (uncategorized)
     wordIds = [...new Set(junctions.map(j => j.word_id))]
   }
   // Nếu wordIds rỗng vẫn tiếp tục để lấy uncategorized words
+  void (wordIds) // TODO(M2): wire up uncategorized word filtering
 
   // Lấy tất cả words (bất kể có junction hay không)
   const { data: words, error } = await supabase
@@ -546,4 +530,27 @@ export async function updateWordFromImport(
   }
 
   return { error: null }
+}
+
+// ─── Tags ───────────────────────────────────────────────────
+/**
+ * Collect all unique tag values from the words table.
+ * Returns sorted array of tag strings.
+ */
+export async function getAllTags(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('words')
+    .select('tags')
+    .not('tags', 'is', null)
+    .or('tags.ne.{}')
+
+  if (error || !data) return []
+
+  const set = new Set<string>()
+  for (const row of data as { tags: string[] }[]) {
+    for (const tag of row.tags) {
+      set.add(tag)
+    }
+  }
+  return [...set].sort()
 }

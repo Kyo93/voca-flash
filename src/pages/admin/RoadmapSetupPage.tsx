@@ -482,7 +482,7 @@ function TopicPanel({
       </button>
 
       {/* Topics list — flat cards, no expand */}
-      <div className="flex-1 overflow-y-auto space-y-1 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar">
         {topics.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-8">
             <span className="material-symbols-outlined text-4xl text-stone-200">folder_open</span>
@@ -495,7 +495,7 @@ function TopicPanel({
             const count = wordCounts[topic.id] ?? 0
             const isActive = activeTopicId === topic.id
             const status = getTopicStatus(topic.id)
-            const progress = getProgressPercent(topic.id)
+            void getProgressPercent(topic.id)
             const isDraggingThis = isDragging(topic.id)
             const isDragOverThis = isDragOver(topic.id)
 
@@ -508,15 +508,19 @@ function TopicPanel({
                 onDrop={(e) => handleDrop(e, topic.id)}
                 onDragEnd={handleDragEnd}
                 onClick={() => onViewWords(topic.id)}
-                className={`relative rounded-lg transition-all cursor-pointer select-none ${
+                className={`relative group rounded-lg transition-all cursor-pointer select-none ${
                   isDraggingThis
                     ? 'opacity-40'
                     : isDragOverThis
                     ? 'border border-primary shadow-md'
                     : isActive
-                    ? 'border border-stone-200 bg-surface-container-lowest shadow-[inset_4px_0_0_#944a00]'
-                    : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
+                    ? 'border border-stone-200 shadow-[inset_4px_0_0_#944a00]'
+                    : 'border border-stone-200 hover:bg-surface-container transition-colors'
                 }`}
+                style={{
+                  // Full-card background tint in topic color — muted (~8%) so it doesn't overpower text
+                  backgroundColor: `${topic.color ?? '#F97316'}1A`,
+                }}
               >
                 {/* Card body — always visible */}
                 <div className="p-4">
@@ -559,22 +563,22 @@ function TopicPanel({
                   {/* Word count badge */}
                   <span className="text-[10px] font-bold text-stone-500 shrink-0">{count} từ</span>
 
-                  {/* Inline action buttons — always visible, matches design reference */}
-                  <div className="flex items-center gap-1 mt-2 pl-[calc(0.625rem+0.625rem)]"
+                  {/* Inline action buttons — icon-only, shown on hover */}
+                  <div className="flex items-center gap-1 mt-2 pl-[calc(0.625rem+0.625rem)] opacity-0 group-hover:opacity-100 transition-opacity duration-150"
                     onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => onEditTopic(topic)}
-                      className="flex items-center gap-1 text-[10px] text-stone-400 hover:text-primary font-medium px-2 py-1 rounded-lg hover:bg-orange-50 transition-all"
+                      className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-primary hover:bg-orange-50 transition-all"
+                      title="Sửa"
                     >
-                      <span className="material-symbols-outlined text-xs">edit</span>
-                      Sửa
+                      <span className="material-symbols-outlined text-sm">edit</span>
                     </button>
                     <button
                       onClick={() => onDeleteTopic(topic)}
-                      className="flex items-center gap-1 text-[10px] text-stone-400 hover:text-red-500 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition-all"
+                      className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                      title="Xóa"
                     >
-                      <span className="material-symbols-outlined text-xs">delete</span>
-                      Xóa
+                      <span className="material-symbols-outlined text-sm">delete</span>
                     </button>
                   </div>
                 </div>
@@ -829,6 +833,7 @@ export default function RoadmapSetupPage() {
         topics={topics}
         roadmapId={roadmapId}
         roadmapName={roadmap?.name ?? ''}
+        roadmapSlug={roadmap?.slug}
         onClose={() => setShowImportModal(false)}
         onImportComplete={() => { setShowImportModal(false); loadData() }}
       />

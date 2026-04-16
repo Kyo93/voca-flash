@@ -1,11 +1,9 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
 import { useAuth } from '../contexts/AuthContext'
-import Sidebar from '../components/Sidebar'
 import StudyPrepScreen from '../components/StudyPrepScreen'
-import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 import type { Card } from '../lib/srs'
 
 interface AudioButtonProps {
@@ -253,6 +251,7 @@ export default function StudyPage() {
     startSession,
     flip,
     rate,
+    markLearned,
   } = useFlashcard()
 
   useEffect(() => {
@@ -269,129 +268,107 @@ export default function StudyPage() {
     }
   }, [currentCard?.id, isFlipped, isLoading, isComplete, profile?.auto_play_audio]);
 
-  const { collapsed, rightCollapsed } = useSidebar()
-  const sidebarW = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
-  const rightbarW = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
-
   const onStartCallback = useCallback((includeMastered: boolean) => {
     startSession(roadmapId, topicId || '', includeMastered)
   }, [startSession, roadmapId, topicId])
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-surface">
-        <Sidebar />
-        <main className="flex-1 flex items-center justify-center transition-all duration-300" style={{ marginLeft: sidebarW }}>
-          <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
-        </main>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
       </div>
     )
   }
 
   if (isPrepScreen) {
     return (
-      <div className="flex min-h-screen bg-surface">
-        <Sidebar />
-        <main className="flex-1 flex transition-all duration-300" style={{ marginLeft: sidebarW, marginRight: rightbarW }}>
-          <StudyPrepScreen 
-            stats={prepStats}
-            loading={isLoading}
-            onStart={onStartCallback}
-            onBack={() => window.history.back()}
-          />
-        </main>
+      <div className="flex flex-col flex-1">
+        <StudyPrepScreen
+          stats={prepStats}
+          loading={isLoading}
+          onStart={onStartCallback}
+          onBack={() => window.history.back()}
+        />
       </div>
     )
   }
 
   if (isComplete || !currentCard) {
     return (
-      <div className="flex min-h-screen bg-surface">
-        <Sidebar />
-        <main className="flex-1 transition-all duration-300" style={{ marginLeft: sidebarW }}>
-          <StudyComplete total={total} />
-        </main>
+      <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh]">
+        <StudyComplete total={total} />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-surface transition-all duration-300" style={{ display: 'grid', gridTemplateColumns: `${sidebarW}px 1fr ${rightbarW}px`, gridTemplateAreas: '"sidebar main rightbar"' }}>
-      <div style={{ gridArea: 'sidebar', position: 'sticky', top: 0, height: '100vh', zIndex: 50, width: sidebarW }} className="transition-all duration-300">
-        <Sidebar />
-      </div>
-
-      <main style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', width: '100%', paddingBottom: '6rem' }}>
-        <div className="max-w-md w-full space-y-8">
-          {/* Session Progress */}
-          <div className="flex flex-col gap-2 mb-8">
-            <div className="flex justify-between items-end">
-              <span className="font-label text-xs uppercase tracking-widest text-secondary font-bold">Daily Mastery</span>
-              <span className="font-label text-xs text-outline">{remaining} / {total} Words</span>
-            </div>
-            <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-              <div
-                className="h-full bg-secondary-fixed-dim kinetic-pulse transition-all duration-500"
-                style={{ width: `${((total - remaining) / total) * 100}%` }}
-              />
-            </div>
+    <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12">
+      <div className="max-w-md w-full space-y-8">
+        {/* Session Progress */}
+        <div className="flex flex-col gap-2 mb-8">
+          <div className="flex justify-between items-end">
+            <span className="font-label text-xs uppercase tracking-widest text-secondary font-bold">Daily Mastery</span>
+            <span className="font-label text-xs text-outline">{remaining} / {total} Words</span>
           </div>
-
-          {/* Flashcard — flips between front and back */}
-          <div className="group relative mb-4">
+          <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
             <div
-              onClick={flip}
-              className="perspective-1000 cursor-pointer w-full aspect-[3/4]"
-            >
-              <div
-                className={`preserve-3d transition-all duration-700 w-full h-full relative ${
-                  isFlipped ? 'rotate-y-180' : ''
-                }`}
-              >
-                {/* Front */}
-                <div className="backface-hidden w-full h-full absolute inset-0">
-                  <FlashcardFront card={currentCard} />
-                </div>
-
-                {/* Back */}
-                <div className="backface-hidden w-full h-full absolute inset-0 rotate-y-180">
-                  <FlashcardBack card={currentCard} />
-                </div>
-              </div>
-            </div>
-
-            {/* Aesthetic accent shadow */}
-            <div className="absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 rounded-xl border border-primary/10 pointer-events-none" />
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col gap-4 mt-8">
-            {!isFlipped ? (
-              <>
-                <button
-                  onClick={flip}
-                  className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
-                >
-                  <span className="tracking-wide">Show Answer</span>
-                  <span className="material-symbols-outlined">visibility</span>
-                </button>
-                <button
-                  onClick={() => rate(3)}
-                  className="w-full bg-secondary text-on-secondary font-headline font-bold py-4 rounded-lg shadow-md hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
-                >
-                  <span className="tracking-wide">Mark as Learned</span>
-                  <span className="material-symbols-outlined">check_circle</span>
-                </button>
-              </>
-            ) : (
-              <SRSButtons onRate={(rating) => rate(rating)} />
-            )}
+              className="h-full bg-secondary-fixed-dim kinetic-pulse transition-all duration-500"
+              style={{ width: `${((total - remaining) / total) * 100}%` }}
+            />
           </div>
         </div>
-      </main>
 
-      {/* Right gutter for balance */}
-      <div style={{ gridArea: 'rightbar', width: rightbarW }} className="transition-all duration-300" />
+        {/* Flashcard — flips between front and back */}
+        <div className="group relative mb-4">
+          <div
+            onClick={flip}
+            className="perspective-1000 cursor-pointer w-full aspect-[3/4]"
+          >
+            <div
+              className={`preserve-3d transition-all duration-700 w-full h-full relative ${
+                isFlipped ? 'rotate-y-180' : ''
+              }`}
+            >
+              {/* Front */}
+              <div className="backface-hidden w-full h-full absolute inset-0">
+                <FlashcardFront card={currentCard} />
+              </div>
+
+              {/* Back */}
+              <div className="backface-hidden w-full h-full absolute inset-0 rotate-y-180">
+                <FlashcardBack card={currentCard} />
+              </div>
+            </div>
+          </div>
+
+          {/* Aesthetic accent shadow */}
+          <div className="absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 rounded-xl border border-primary/10 pointer-events-none" />
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-col gap-4 mt-8">
+          {!isFlipped ? (
+            <>
+              <button
+                onClick={flip}
+                className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+              >
+                <span className="tracking-wide">Show Answer</span>
+                <span className="material-symbols-outlined">visibility</span>
+              </button>
+              <button
+                onClick={markLearned}
+                className="w-full bg-secondary text-on-secondary font-headline font-bold py-4 rounded-lg shadow-md hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+              >
+                <span className="tracking-wide">Mark as Learned</span>
+                <span className="material-symbols-outlined">check_circle</span>
+              </button>
+            </>
+          ) : (
+            <SRSButtons onRate={(rating) => rate(rating)} />
+          )}
+        </div>
+      </div>
     </div>
   )
 }

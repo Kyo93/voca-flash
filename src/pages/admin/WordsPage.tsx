@@ -26,7 +26,7 @@ function DifficultyDots({ value }: { value: number }) {
 const PAGE_SIZE = 20
 
 export default function AdminWordsPage() {
-  const { words, loading, error, fetch, addWord, editWord, removeWord, bulkDelete, bulkAssignTopic, loadChoices, loadTopicIds } = useAdminWords()
+  const { words, loading, error, fetch, addWord, editWord, removeWord, bulkDelete, bulkAssignTopic, loadChoices } = useAdminWords()
   const { selectedRoadmap } = useRoadmapContext()
   const [topics, setTopics] = useState<Topic[]>([])
   const [roadmapNameMap, setRoadmapNameMap] = useState<Map<string, string>>(new Map())
@@ -40,7 +40,6 @@ export default function AdminWordsPage() {
   // Modal state
   const [showModal, setShowModal] = useState(false)
   const [editWordData, setEditWordData] = useState<Word | null>(null)
-  const [editWordTopicIds, setEditWordTopicIds] = useState<string[]>([])
   const [editWordWrongChoices, setEditWordWrongChoices] = useState<string[]>([])
   const [deleteTarget, setDeleteTarget] = useState<Word | null>(null)
   const [searchDebounce, setSearchDebounce] = useState('')
@@ -143,14 +142,13 @@ export default function AdminWordsPage() {
 
   async function handleSave(
     wordData: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
-    wrongChoices: string[],
-    topicIds: string[]
+    wrongChoices: string[]
   ) {
     if (editWordData) {
-      const { error } = await editWord(editWordData.id, wordData, wrongChoices, topicIds)
+      const { error } = await editWord(editWordData.id, wordData, wrongChoices)
       if (error) { console.error(error); return }
     } else {
-      const { error } = await addWord(wordData, wrongChoices, topicIds)
+      const { error } = await addWord(wordData, wrongChoices)
       if (error) { console.error(error); return }
     }
     setShowModal(false)
@@ -175,7 +173,7 @@ export default function AdminWordsPage() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => { setEditWordData(null); setEditWordTopicIds([]); setEditWordWrongChoices([]); setShowModal(true) }}
+            onClick={() => { setEditWordData(null); setEditWordWrongChoices([]); setShowModal(true) }}
             className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined text-sm">add</span>
@@ -276,17 +274,19 @@ export default function AdminWordsPage() {
                   />
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Từ</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Chủ đề</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Loại</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Độ khó</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Nghĩa</th>
+                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ví dụ</th>
+                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Dịch</th>
+                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Tags</th>
                 <th className="px-4 py-3 text-right text-xs font-black text-stone-500 uppercase tracking-wider">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {loading && words.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-stone-400">
+                  <td colSpan={9} className="px-4 py-12 text-center text-stone-400">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl animate-spin">progress_activity</span>
                       <p>Đang tải...</p>
@@ -319,27 +319,6 @@ export default function AdminWordsPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    {w.topics ? (
-                      <div className="flex flex-col gap-0.5">
-                        <span
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
-                          style={{ backgroundColor: (w.topics.color ?? '#f97316') + '20', color: w.topics.color ?? '#f97316' }}
-                        >
-                          {w.topics.name}
-                        </span>
-                        {(() => {
-                          const topicMeta = topics.find(t => t.id === (w.topics as any).id)
-                          const roadmapName = topicMeta?.roadmap_id ? roadmapNameMap.get(topicMeta.roadmap_id) : null
-                          return roadmapName ? (
-                            <span className="inline-block text-[10px] text-orange-400 font-bold">{roadmapName}</span>
-                          ) : null
-                        })()}
-                      </div>
-                    ) : (
-                      <span className="text-xs text-stone-400">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
                     <span className="text-xs font-bold text-stone-500 bg-stone-100 px-2 py-1 rounded-lg">
                       {POS_LABELS[w.pos ?? 'other'] ?? '—'}
                     </span>
@@ -350,16 +329,32 @@ export default function AdminWordsPage() {
                   <td className="px-4 py-3 max-w-xs">
                     <p className="text-sm text-on-surface-variant truncate">{w.definition}</p>
                   </td>
+                  <td className="px-4 py-3 max-w-xs">
+                    <p className="text-sm text-on-surface-variant italic truncate">{w.example ?? '—'}</p>
+                  </td>
+                  <td className="px-4 py-3 max-w-xs">
+                    <p className="text-sm text-on-surface-variant truncate">{w.example_vi ?? '—'}</p>
+                  </td>
+                  <td className="px-4 py-3">
+                    {w.tags && w.tags.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {w.tags.slice(0, 3).map(tag => (
+                          <span key={tag} className="text-[10px] bg-stone-100 text-stone-500 px-1.5 py-0.5 rounded-full font-medium">{tag}</span>
+                        ))}
+                        {w.tags.length > 3 && (
+                          <span className="text-[10px] text-stone-400">+{w.tags.length - 3}</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-stone-300">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={async () => {
-                          const [choices, tIds] = await Promise.all([
-                            loadChoices(w.id),
-                            loadTopicIds(w.id)
-                          ])
+                          const choices = await loadChoices(w.id)
                           setEditWordData(w)
-                          setEditWordTopicIds(tIds)
                           setEditWordWrongChoices(choices.map(c => c.choice))
                           setShowModal(true)
                         }}
@@ -413,12 +408,9 @@ export default function AdminWordsPage() {
       <WordFormModal
         open={showModal}
         word={editWordData}
-        initialTopicIds={editWordTopicIds}
         initialWrongChoices={editWordWrongChoices}
-        topics={topics}
-        showTopics={topics.filter(t => !selectedRoadmap || t.roadmap_id === selectedRoadmap.id).length > 0}
         onSave={handleSave}
-        onClose={() => { setShowModal(false); setEditWordData(null); setEditWordTopicIds([]); setEditWordWrongChoices([]) }}
+        onClose={() => { setShowModal(false); setEditWordData(null); setEditWordWrongChoices([]) }}
       />
 
       <ConfirmDialog

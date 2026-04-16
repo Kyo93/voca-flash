@@ -68,12 +68,11 @@ function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/methodology" element={<MethodologyPage />} />
             <Route path="/mastery" element={<MasteryPage />} />
+            {/* C1: StudyPage moved inside AppLayout — reuse Sidebar + RightSidebar */}
+            <Route path="/study" element={<StudyPage />} />
+            <Route path="/review" element={<ReviewPage />} />
+            <Route path="/free-study" element={<FreeStudyPage />} />
           </Route>
-
-          {/* Special immersive routes */}
-          <Route path="/study" element={<RequireAuth><StudyPage /></RequireAuth>} />
-          <Route path="/review" element={<RequireAuth><ReviewPage /></RequireAuth>} />
-          <Route path="/free-study" element={<RequireAuth><FreeStudyPage /></RequireAuth>} />
 
           {/* Admin routes */}
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>

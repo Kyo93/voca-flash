@@ -21,6 +21,8 @@ interface Props {
   roadmapId: string
   /** Display name of the roadmap for context label */
   roadmapName: string
+  /** Roadmap slug — used to prefix topic slugs to avoid cross-roadmap conflicts */
+  roadmapSlug?: string
 }
 
 // ── State machine ─────────────────────────────────────────
@@ -30,7 +32,7 @@ interface ImportRow extends NormalizedWord {
   rowIndex: number
 }
 
-type DuplicateAction = 'keep' | 'update' | 'skip'
+type DuplicateAction = 'update' | 'skip'
 
 // ── Helpers ──────────────────────────────────────────────
 function getTopicNameMap(topics: Topic[]): Map<string, Topic> {
@@ -56,7 +58,7 @@ function DifficultyDots({ value }: { value: number }) {
 }
 
 // ── Main Component ───────────────────────────────────────
-export default function ImportWordsModal({ open, onClose, onImportComplete, topics, roadmapId, roadmapName }: Props) {
+export default function ImportWordsModal({ open, onClose, onImportComplete, topics, roadmapId, roadmapName, roadmapSlug }: Props) {
   const { t } = useTranslation()
   // Filter topics by roadmap (always filtered — roadmapId is required)
   const filteredTopics = topics.filter(t => t.roadmap_id === roadmapId)
@@ -92,13 +94,17 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
     }
 
     // Auto-create missing topics with unique slugs
+    // Only create a topic if it truly doesn't exist (check currentTopicMap)
     let currentTopicMap = topicMap
     if (parsed.unmatchedTopics.length > 0) {
       const newTopicMap = new Map(currentTopicMap)
       // Build existing slugs set for uniqueness check
       const existingSlugs = new Set([...topicMap.values()].map(t => t.slug))
       for (const name of parsed.unmatchedTopics) {
-        const uniqueSlug = generateUniqueSlug(slugify(name), existingSlugs)
+        const lowerName = name.toLowerCase()
+        // Skip if this topic already exists in the current roadmap
+        if (currentTopicMap.has(lowerName)) continue
+        const uniqueSlug = generateUniqueSlug(slugify(name), existingSlugs, roadmapSlug)
         existingSlugs.add(uniqueSlug) // reserve this slug
         const { data, error } = await createTopic({
           name,
@@ -111,7 +117,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
           icon: 'label',
         })
         if (!error && data) {
-          newTopicMap.set(name.toLowerCase(), data as Topic)
+          newTopicMap.set(lowerName, data as Topic)
         }
       }
       currentTopicMap = newTopicMap
@@ -119,6 +125,12 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
 
     // Re-resolve topic IDs with new topics
     const resolvedRows = resolveUnmatchedTopics(parsed.rows, currentTopicMap)
+
+    // Clear unmatchedTopics from rows — topics were just created/verified above,
+    // so no row should show ⚠️ "unmatched" badge for a topic that actually exists
+    for (const row of resolvedRows) {
+      row.unmatchedTopics = []
+    }
 
     // Check for duplicates in DB
     const wordTexts = resolvedRows
@@ -131,7 +143,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
       ...r,
       rowIndex: idx + 1,
       status: dupeSet.has(r.word.toLowerCase()) ? 'duplicate' : r.status,
-      duplicateAction: dupeSet.has(r.word.toLowerCase()) ? 'keep' : undefined,
+      duplicateAction: dupeSet.has(r.word.toLowerCase()) ? 'skip' : undefined,
     }))
     setRows(importRows)
     setState('preview')
@@ -541,7 +553,6 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
                                 className="text-xs px-1.5 py-1 rounded-lg border border-yellow-300 bg-white font-medium outline-none cursor-pointer"
                               >
                                 <option value="skip">Bỏ qua</option>
-                                <option value="keep">Giữ đúng</option>
                                 <option value="update">Cập nhật</option>
                               </select>
                             </div>

@@ -39,7 +39,11 @@ export interface Word {
   example_vi: string | null
   image_url: string | null
   image_position: string | null // CSS object-position: 'center' | 'top' | 'bottom'
-  tags: string[]           // ← semantic tags auto-assigned by rule engine
+  topic_id?: string | null // legacy — set via junction table topic_words, not direct column
+  tags?: string[]           // ← semantic tags auto-assigned by rule engine
+  synonyms?: string[]      // ← đồng nghĩa
+  antonyms?: string[]       // ← trái nghĩa
+  word_family?: string[]    // ← các biến thể: run / ran / running
   created_at: string
   updated_at: string
   // Joined

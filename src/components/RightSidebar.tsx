@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import type { StreakData } from '../lib/streak'
@@ -10,18 +10,30 @@ export default function RightSidebar() {
   const { user } = useAuth()
   const { rightCollapsed, toggleRightSidebar } = useSidebar()
   const [streak, setStreak] = useState<StreakData>(loadStreak())
+  // C4: Cache streak to prevent re-fetch on unrelated re-renders
+  const streakCache = useRef<{ userId: string | undefined; data: StreakData } | null>(null)
 
   useEffect(() => {
+    const userId = user?.id
+    // C4: Return cached data if same user — no re-fetch needed
+    const cached = streakCache.current
+    if (cached && cached.userId === userId) {
+      setStreak(cached.data)
+      return
+    }
     async function load() {
-      if (user) {
-        const data = await fetchStreakFromSupabase(user.id)
+      if (userId) {
+        const data = await fetchStreakFromSupabase(userId)
+        streakCache.current = { userId, data }
         setStreak(data)
       } else {
-        setStreak(loadStreak())
+        const localData = loadStreak()
+        streakCache.current = { userId: undefined, data: localData }
+        setStreak(localData)
       }
     }
     load()
-  }, [user])
+  }, [user?.id])
 
   const w = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
 

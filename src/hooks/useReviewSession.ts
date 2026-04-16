@@ -3,7 +3,9 @@ import { CardProgress, SrsRating, calculateFSRSReview, mapIntensityToRetention }
 import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word } from '../lib/types'
+import { selectQuadrant as sharedSelectQuadrant } from '../lib/challenge-logic'
 
+// Re-export types for backward compatibility
 export type QuadrantType = 'recognition' | 'phonetics' | 'context_gap' | 'construction' | 'usage_master' | 'ghost_recall'
 
 export interface ReviewChallenge {
@@ -20,42 +22,17 @@ export function useReviewSession() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isComplete, setIsComplete] = useState(false)
-  const [stats, setStats] = useState({ 
-    correct: 0, 
-    wrong: 0, 
-    points: 0, 
-    mistakes: [] as Word[] 
+  const [stats, setStats] = useState({
+    correct: 0,
+    wrong: 0,
+    points: 0,
+    mistakes: [] as Word[]
   })
   const [syncError, setSyncError] = useState<string | null>(null)
   const isInitializing = useRef(false)
 
-  /**
-   * Adaptive Quadrant Selection
-   * Chooses the hardest appropriate challenge for the word's current mastery level.
-   */
-  const selectQuadrant = (card: { word: Word; progress: CardProgress; choices: string[] }): QuadrantType => {
-    const { progress, word, choices } = card
-    const hasExample = !!word.example
-    const hasChoices = choices.length >= 3
-
-    // Logic based on FSRS stability (days)
-    if (progress.stability < 3) {
-      // Beginner: Recognition or Construction
-      const options: QuadrantType[] = ['construction']
-      if (hasChoices) options.push('recognition')
-      if (hasExample) options.push('context_gap')
-      return options[Math.floor(Math.random() * options.length)]
-    } else if (progress.stability < 14) {
-      // Intermediate: Phonetics, Construction or Context Gap
-      const options: QuadrantType[] = ['construction', 'phonetics']
-      if (hasExample) options.push('context_gap')
-      return options[Math.floor(Math.random() * options.length)]
-    } else {
-      // Advanced: Ghost Recall or Usage Master
-      if (hasExample && Math.random() > 0.5) return 'usage_master'
-      return 'ghost_recall'
-    }
-  }
+  // C3: Delegated to shared challenge-logic.ts
+  const selectQuadrant = sharedSelectQuadrant
 
   const initialize = useCallback(async () => {
     if (!user || isInitializing.current) return

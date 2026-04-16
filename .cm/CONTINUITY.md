@@ -3,7 +3,74 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-Import Refactor — Context-Aware Vocabulary Import (cm-brainstorm-idea completed 2026-04-15)
+Milestone Reward Character Collection — PLANNING DONE ✅ (2026-04-16)
+→ Next: cm-execution to implement
+
+## Next Actions
+### Milestone Character Collection (READY — 2026-04-16)
+- [x] cm-brainstorm-idea → proposal.md ✅
+- [x] cm-planning → specs/design.md + specs/tasks.md ✅
+- [ ] cm-execution Phase 0: Create migration `026_character_collection.sql`
+- [ ] cm-execution Phase 1: Types + character-types.ts + xp-engine.ts
+- [ ] cm-execution Phase 2: supabase-storage.ts XP functions
+- [ ] cm-execution Phase 3: milestone-engine.ts + tests
+- [ ] cm-execution Phase 4: useCharacterCollection hook
+- [ ] cm-execution Phase 5: CharacterSprite SVG + CSS animations
+- [ ] cm-execution Phase 6: CharacterShelf in RightSidebar
+- [ ] cm-execution Phase 7: CharacterDetail panel
+- [ ] cm-execution Phase 8: XP investment flow
+- [ ] cm-execution Phase 9: UnlockPopup modal
+- [ ] cm-execution Phase 10: StudyPage cameo + ribbon
+- [ ] cm-execution Phase 11: Dashboard integration
+- [ ] cm-execution Phase 12: Milestone trigger in useFlashcard
+- [ ] cm-execution Phase 13: Polish + edge cases
+
+## Character Collection Working Context
+- **XP per rating:** Again=5, Hard=10, Good=15, Easy=20, Mastery bonus=+50
+- **Wallet:** `user_profiles.total_earned_xp` (total) minus sum(`user_characters.invested_xp`)
+- **Level thresholds (invested XP):** 0→Lv1, 200→Lv2, 500→Lv3, 1000→Lv4, 2000→Lv5
+- **Slot limit:** 5 max, unlock 1/month (based on account age)
+- **8 characters:** seedling, spider, butterfly, tree_boy, mini_dragon, farmer, bonsai, golden_dragon
+- **Milestone conditions:** streak_7, words_10/30/50/100/500_mastered, roadmap_complete_1, streak_30
+- **Plan location:** `openspec/changes/pet-garden-exp-system/specs/`
+- **UI preview:** `openspec/changes/pet-garden-exp-system/ui-preview.md`
+
+---
+
+## Previous Active Goals (archive — kept for context)
+**Topic Slug Fix — COMPLETED ✅**
+**Topic Slug Uniqueness Per-Roadmap — COMPLETED 2026-04-15 ✅**
+**Option B Comprehensive Cleanup — COMPLETED 2026-04-15 ✅**
+
+## Next Actions
+### Topic Slug Fix ✅ (DONE 2026-04-15)
+- [x] Migration 024 applied to Supabase (`topics_roadmap_slug_unique UNIQUE (roadmap_id, slug)`)
+- [x] `generateUniqueSlug()` in `import-parser.ts` — `roadmapSlug` prefix added
+- [x] `ImportWordsModal.tsx` — `roadmapSlug` prop propagated to slug generation
+
+### Quick Fix: Mark as Learned Button ✅ (2026-04-15)
+- Bug: "Mark as Learned" called rate(3) directly without flipping card first
+- Fix: markLearned now calls flip() then rate(3) in useFlashcard.ts
+- Fix: StudyPage button now calls markLearned (from useFlashcard) instead of rate(3) direct
+- Tests: 2 added (tests/unit/mark-as-learned.test.ts)
+
+### Option B Changes (2026-04-15) ✅
+- C1: StudyPage inside AppLayout — no own grid/Sidebar
+- C2: Sidebar fetches Supabase streak (logged-in), localStorage (anonymous)
+- C3: `selectQuadrant` extracted → `src/lib/challenge-logic.ts`
+- C4: RightSidebar streak cached with useRef (no redundant fetches)
+- M1: `fetchMasteryStats` → `getMasteryStats`, `fetchUserVocabulary` → `getUserVocabulary`
+- M2: `wordIds` unused in admin-queries.ts — TODO(M2) documented
+- M4: `slugify` moved from useAdminTopics.ts → src/lib/utils.ts
+- L1: RoadmapContext NOT dead — used by AdminLayout/WordsPage/TopicsPage
+- L2: useFreeStudySession imports ReviewChallenge from challenge-logic
+- Type fixes: Word.topic_id optional, Word.tags optional, StudyPage useState import, FreeStudySession full Word shape
+
+## Recent Fixes
+- Option B TDD refactor (23 tests added, 73 total) ✅
+- Pre-existing TS bug: StudyPage missing useState import ✅
+- Pre-existing TS bug: useFreeStudySession topic_id → now in types.ts ✅
+- Pre-existing TS bug: ChallengeCard shape mismatch with useReviewSession ✅
 
 ## Working Context
 - **Color Tokens:** Dùng bảng token từ `design.md` — KHÔNG dùng generic `text-secondary`, `bg-orange-*`
@@ -21,13 +88,11 @@ Import Refactor — Context-Aware Vocabulary Import (cm-brainstorm-idea complete
 - **Block roadmap delete:** Query topics count trước khi xóa → warning nếu còn topics
 
 ## Next Actions
-### Import Refactor (ACTIVE — 2026-04-15)
-- [ ] 1.1 Remove import button from `WordsPage.tsx`
-- [ ] 2.1 Add `slugify` + `generateUniqueSlug` in `import-parser.ts`
-- [ ] 3.1 Add guard + roadmap label + fix auto-create in `ImportWordsModal.tsx`
-- [ ] 4.1 Pass `roadmapName` from `RoadmapSetupPage` to `ImportWordsModal`
-- [ ] 5.1 Full integration verification
-- **Plan:** `.planning/import-refactor-2026/`
+### Topic Slug Fix (ACTIVE — 2026-04-15)
+- [ ] 1.1 Create migration `024_topic_slug_unique_per_roadmap.sql`
+- [ ] 2.1 Update `generateUniqueSlug()` in `import-parser.ts` — add `roadmapSlug` param + prefix
+- [ ] 3.1 Update `handleParse` in `ImportWordsModal.tsx` — pass `roadmapSlug` to `generateUniqueSlug()`
+- [ ] 4.1 Run migration + verify
 
 ## Working Context
 - **Import guard:** ImportWordsModal requires `roadmapId` (mandatory). No `roadmapId` → shows warning UI, no upload.

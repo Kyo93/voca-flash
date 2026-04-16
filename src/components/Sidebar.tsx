@@ -1,18 +1,31 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
-import { getStreakDisplay } from '../lib/streak'
+import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import { useAuth } from '../contexts/AuthContext'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
+import type { StreakData } from '../lib/streak'
 
 export default function Sidebar() {
   const { t } = useTranslation()
   const location = useLocation()
-  const streak = getStreakDisplay()
-  const { profile, activeRoadmapSlug, signOut } = useAuth()
+  const { profile, activeRoadmapSlug, signOut, user } = useAuth()
   const { collapsed, toggleSidebar } = useSidebar()
-  
+
   const [avatarError, setAvatarError] = useState(false)
+  const [streakData, setStreakData] = useState<StreakData>(loadStreak())
+
+  useEffect(() => {
+    async function loadStreakData() {
+      if (user) {
+        const data = await fetchStreakFromSupabase(user.id)
+        setStreakData(data)
+      } else {
+        setStreakData(loadStreak())
+      }
+    }
+    loadStreakData()
+  }, [user])
   
   useEffect(() => {
     setAvatarError(false)
@@ -132,7 +145,7 @@ export default function Sidebar() {
               <div className="overflow-hidden flex-1">
                 <p className="text-[13px] font-black truncate">{displayName}</p>
                 <p className="text-[10px] text-stone-400 font-bold uppercase truncate">
-                  {profile?.streak_days ? `${streak.currentStreak} 🔥 ngày` : 'Học viên'}
+                  {profile?.streak_days ? `${streakData.currentStreak} 🔥 ngày` : 'Học viên'}
                 </p>
               </div>
               <button
