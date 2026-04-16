@@ -406,14 +406,44 @@ export default function StudyPage() {
         {phase === 'CHALLENGING' ? (
           // ── CHALLENGING: quiz with timer countdown + shrinking border ──
           <div
-            className="w-full relative rounded-2xl overflow-hidden"
-            style={{
-              border: `3px solid ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
-              // Border shrinks from full-width → 0 as timer counts down
-              borderWidth: `${Math.max(0, 3 * (timerSeconds / 30))}px`,
-              transition: 'border-color 0.5s ease, border-width 1s linear',
-            }}
+            className="w-full relative rounded-2xl overflow-hidden bg-surface-container-lowest"
+            style={{ padding: '0' }}
           >
+            {/* Snake border: 4 edges shrink clockwise from corner A */}
+            {/* Edge color: primary → error as time runs low */}
+            <div
+              className="absolute top-0 left-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
+              style={{
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                width: `${(timerSeconds / 30) * 100}%`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+              }}
+            />
+            <div
+              className="absolute top-0 right-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
+              style={{
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                height: `${(timerSeconds / 30) * 100}%`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+              }}
+            />
+            <div
+              className="absolute bottom-0 right-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
+              style={{
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                width: `${(timerSeconds / 30) * 100}%`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+              }}
+            />
+            <div
+              className="absolute bottom-0 left-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
+              style={{
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                height: `${(timerSeconds / 30) * 100}%`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+              }}
+            />
+
             {/* Timer bar */}
             <div className="flex items-center justify-between px-5 py-3 bg-surface-container-low">
               <div className="flex items-center gap-2">
