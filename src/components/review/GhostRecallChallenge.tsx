@@ -18,7 +18,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
     inputRef.current?.focus()
     speak(word.word)
     return () => stop()
-  }, [word])
+  }, [word.word])
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
