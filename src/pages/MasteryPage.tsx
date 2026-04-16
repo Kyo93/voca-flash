@@ -52,7 +52,7 @@ export default function MasteryPage() {
     setPage(0)
     setWords([])
     setHasMore(true)
-    
+
     async function loadStats() {
       if (!user) return
       const s = await getMasteryStats(user.id)
@@ -61,7 +61,26 @@ export default function MasteryPage() {
     loadStats()
   }, [user, debouncedSearch, activeFilter])
 
-  // 3. Fetch Data (Paginated)
+  // 3. Re-fetch stats when page becomes visible (e.g. user returns from study)
+  //    This fixes stale data: MasteryPage loaded 12 words, user studies 2 new
+  //    words → back to MasteryPage → visibilitychange fires → re-fetch → shows 14
+  useEffect(() => {
+    if (!user) return
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        setPage(0)
+        setWords([])
+        setHasMore(true)
+        getMasteryStats(user.id).then(s => setStats(s))
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
+  }, [user])
+
+  // 5. Fetch Data (Paginated)
   const loadData = useCallback(async (pageNum: number) => {
     if (!user) return
     const isInitial = pageNum === 0
@@ -92,7 +111,7 @@ export default function MasteryPage() {
     loadData(page)
   }, [loadData, page])
 
-  // 4. Infinite Scroll Observer
+  // 6. Infinite Scroll Observer
   const lastElementRef = useCallback((node: HTMLTableRowElement | null) => {
     if (loading || loadingMore) return
     if (observer.current) observer.current.disconnect()
