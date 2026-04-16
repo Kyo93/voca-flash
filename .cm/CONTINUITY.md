@@ -38,6 +38,12 @@ Milestone Reward Character Collection — PLANNING DONE ✅ (2026-04-16)
 ---
 
 ## Previous Active Goals (archive — kept for context)
+**Settings Profile Load Bug — COMPLETED 2026-04-16 ✅**
+**Root cause:** RPC `get_initial_app_data_v2` không tồn tại (chỉ trong `_orphan_rpc_backup.sql`)
+**Fix 1:** Migration 028 tạo RPC mới với đầy đủ profile fields
+**Fix 2:** `fetchInitialAppData` thêm fallback direct SELECT nếu RPC fail
+**Fix 3:** Test `fetch-profile-settings-load.test.ts` guard regression
+**Note:** `avatar_url` DB = empty string → cần user save lại từ Settings page
 **Topic Slug Fix — COMPLETED ✅**
 **Topic Slug Uniqueness Per-Roadmap — COMPLETED 2026-04-15 ✅**
 **Option B Comprehensive Cleanup — COMPLETED 2026-04-15 ✅**
@@ -113,8 +119,7 @@ Milestone Reward Character Collection — PLANNING DONE ✅ (2026-04-16)
 
 ## RPC Audit Results (2026-04-13)
 
-### Dropped (5 orphan RPCs):
-- `get_initial_app_data_v2(uuid)` ✅
+### Dropped (4 orphan RPCs — CORRECTED 2026-04-16):
 - `get_progress_page_data_v2(uuid)` ✅
 - `get_user_memory_health(uuid)` ✅
 - `get_user_memory_health_v2(uuid)` ✅
@@ -337,6 +342,16 @@ src/
 - Chốt: Option A — KHÔNG tách
 
 ## Mistakes & Learnings
+
+- What Failed: Settings page `display_name` và `avatar_url` không load dù user đã lưu trước đó.
+- Why It Failed: `fetchInitialAppData()` gọi RPC `get_initial_app_data_v2` — nhưng RPC này chỉ tồn tại trong file `_orphan_rpc_backup.sql` (underscore prefix = không bao giờ được apply bởi Supabase CLI). RPC không tồn tại trên Supabase → fail silent → `profile: null`.
+- How to Prevent:
+  1. KHÔNG BAO GIỜ giữ RPC đang dùng trong file backup (underscore prefix không nên dùng cho code đang active).
+  2. Backup file nên đặt tên `YYYYMMDD_backup_*.sql` hoặc move ra khỏi thư mục migrations.
+  3. Trước khi refactor RPC, LUÔN verify RPC thực sự tồn tại: `supabase db diff` hoặc check Supabase dashboard SQL Editor.
+  4. Luôn có fallback trong TypeScript: khi RPC fail, gọi direct SELECT từ table thay vì return null.
+- Scope: `module:database:rpc`
+- Timestamp: 2026-04-16
 - What Failed: Sidebar "Library" link sometimes returned to default list instead of active roadmap after starting a session.
 - Why It Failed: Brittle Supab- 🏆 Master Goal: Stabilize learning flow & finalize progress tracking.
 - 🎯 Active Goal: Study Page Rescue & Build Hardening.
@@ -364,7 +379,15 @@ src/
 - Timestamp: 2026-04-12
 - Agent: Antigravity
 
-### Pattern: Implicit Any Indexing
+### Pattern: RPC backup files with underscore prefix = NEVER deployed by Supabase CLI
+- What Failed: `get_initial_app_data_v2` đang được gọi trong code nhưng không tồn tại trên Supabase — vì nó chỉ nằm trong `_orphan_rpc_backup.sql` (underscore prefix).
+- Why It Failed: Supabase CLI chỉ deploy migrations thường, không deploy file backup. Underscore prefix không phải quy ước chuẩn — dễ gây nhầm lẫn giữa "đang dùng" và "đã bỏ".
+- How to Prevent:
+  1. Đặt tên backup: `YYYYMMDD_backup_*.sql` hoặc move ra khỏi `migrations/`
+  2. Luôn verify: chạy `supabase db diff` hoặc check SQL Editor trên Supabase dashboard trước khi dùng RPC
+  3. Hoặc đơn giản: giữ RPC trong migrations chính thức, không tách ra backup
+- Scope: `global`
+- Timestamp: 2026-04-16
 - What Failed: `topics[someSlug]` errored as type 'string' can't index type 'RoadmapTopics'.
 - Why It Failed: TypeScript strict mode doesn't allow indexing objects with dynamic strings unless typed as `Record<string, T>`.
 - How to Prevent: Explicitly cast dynamic keys or use proper `Record<>` types for map objects.

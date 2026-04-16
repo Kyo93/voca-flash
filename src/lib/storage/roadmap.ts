@@ -3,11 +3,19 @@ import type { Topic, Roadmap, InitialAppData, ProgressPageData, LibraryPageData,
 
 export async function fetchInitialAppData(userId: string): Promise<InitialAppData> {
   const { data, error } = await supabase.rpc('get_initial_app_data_v2', { p_user_id: userId })
-  
+
   if (error) {
     console.error('[Storage] Error fetching initial app data:', error)
+    // Fallback: load profile directly from user_profiles table
+    // (handles case where RPC not deployed yet on Supabase)
+    const { data: profileData } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle()
+
     return {
-      profile: null,
+      profile: profileData || null,
       stats: { total_words: 0, mastered: 0, learning: 0 },
       health: {
         retention_rate: 0.9,

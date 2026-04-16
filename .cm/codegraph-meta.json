@@ -1,0 +1,14 @@
+{
+  "intelligenceLevel": "LITE",
+  "lastIndexed": "2026-04-16T09:52:00+07:00",
+  "stats": {
+    "sourceFiles": 70,
+    "symbols": 87,
+    "edges": 0,
+    "languages": ["typescript"]
+  },
+  "diagramGenerated": "2026-04-16T09:52:00+07:00",
+  "layersAvailable": ["LAYER_0_SKELETON", "LAYER_2_ARCHITECTURE"],
+  "layersNotAvailable": ["LAYER_1_CODEGRAPH", "LAYER_3_QMD"],
+  "note": "CodeGraph not installed (npx @colbymchenry/codegraph). Project < 50 files → LITE level sufficient."
+}

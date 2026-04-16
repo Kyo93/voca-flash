@@ -19,8 +19,5 @@ dist/
 local-data/
 *.local.json
 
-# Working memory
-.cm/
-
 # Supabase temporary files
 supabase/.temp/
