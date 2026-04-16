@@ -405,12 +405,6 @@ export default function StudyPage() {
                 />
               )
             })()}
-            <button
-              onClick={handleSkipChallenge}
-              className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase"
-            >
-              Bỏ qua quiz → tự đánh giá
-            </button>
           </div>
         ) : (
           // ── CARD: front OR back ──
