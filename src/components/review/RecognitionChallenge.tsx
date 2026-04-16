@@ -8,6 +8,8 @@ interface RecognitionChallengeProps {
   onSubmit: (isCorrect: boolean) => void
 }
 
+const CHOICE_LABELS = ['A', 'B', 'C', 'D']
+
 export default function RecognitionChallenge({ word, choices, onSubmit }: RecognitionChallengeProps) {
   const [selected, setSelected] = useState<string | null>(null)
   const [isDone, setIsDone] = useState(false)
@@ -17,91 +19,111 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
     if (isDone) return
     setSelected(choice)
     setIsDone(true)
-
     const isCorrect = choice === word.definition
     setFeedback(isCorrect ? 'correct' : 'wrong')
-
-    setTimeout(() => {
-      onSubmit(isCorrect)
-    }, 1200)
+    setTimeout(() => onSubmit(isCorrect), 1000)
   }
 
-  // Handle keyboard shortcuts (A, B, C, D)
+  // Keyboard shortcuts A/B/C/D
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (isDone) return
-      const index = ['a', 'b', 'c', 'd'].indexOf(e.key.toLowerCase())
-      if (index !== -1 && index < choices.length) {
-        handleChoice(choices[index])
-      }
+      const idx = ['a', 'b', 'c', 'd'].indexOf(e.key.toLowerCase())
+      if (idx !== -1 && idx < choices.length) handleChoice(choices[idx])
     }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
   }, [choices, isDone])
 
+  const stateOf = (choice: string) => {
+    if (!isDone) return 'idle'
+    if (choice === word.definition) {
+      if (feedback === 'wrong') return 'reveal-correct'
+      return 'correct'
+    }
+    if (choice === selected && feedback === 'wrong') return 'wrong'
+    if (choice !== selected && choice !== word.definition) return 'dimmed'
+    return 'idle'
+  }
+
   return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
-      <div className="text-center mb-16 w-full">
-        <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] block mb-8 text-shadow-glow">
-          Chọn nghĩa đúng nhất
+    <div className="w-full flex flex-col items-center">
+      {/* Header */}
+      <div className="w-full bg-surface-container-low rounded-2xl p-6 mb-8 flex flex-col gap-3 text-center">
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
+          <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
+          Chọn nghĩa
         </span>
-        
-        <h2 className="text-8xl font-black text-white tracking-tighter mb-8 text-shadow-glow">
-          {word.word}
-        </h2>
-        
-        <p className="text-white/40 font-black text-[10px] uppercase tracking-[0.2em] mb-12">
-          {word.phonetic || '/.../'} • {word.pos}
-        </p>
+        <h2 className="text-4xl font-black font-headline text-primary tracking-tight">{word.word}</h2>
+        {word.phonetic && (
+          <p className="text-secondary font-medium text-sm tracking-wide">/{word.phonetic}/</p>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full px-4">
-        {choices.map((choice, i) => (
-          <motion.button
-            key={i}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleChoice(choice)}
-            disabled={isDone}
-            className={`
-              glass-arena-item p-6 text-left relative overflow-hidden transition-all duration-300 min-h-[100px] flex items-center
-              ${selected === choice ? (feedback === 'correct' ? 'border-primary ring-2 ring-primary/20' : 'border-red-500 ring-2 ring-red-500/20') : 'border-white/5 hover:border-white/20'}
-              ${isDone && choice === word.definition && feedback === 'wrong' ? 'border-primary/50 text-primary' : ''}
-              ${isDone && choice !== word.definition && selected !== choice ? 'opacity-40' : ''}
-            `}
-          >
-            <div className="flex items-start gap-4">
-              <span className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-black text-xs transition-colors ${selected === choice ? 'bg-white text-black' : 'bg-white/5 text-white/40'}`}>
-                {String.fromCharCode(65 + i)}
+      {/* Choices */}
+      <div className="w-full max-w-sm space-y-3">
+        {choices.map((choice, i) => {
+          const state = stateOf(choice)
+          return (
+            <motion.button
+              key={i}
+              onClick={() => handleChoice(choice)}
+              disabled={isDone}
+              whileHover={!isDone ? { scale: 1.01 } : {}}
+              whileTap={!isDone ? { scale: 0.98 } : {}}
+              className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all ${
+                state === 'correct'
+                  ? 'bg-primary/10 border-primary shadow-md'
+                  : state === 'wrong'
+                    ? 'bg-error/8 border-error'
+                    : state === 'reveal-correct'
+                      ? 'bg-primary/5 border-primary/40'
+                      : state === 'dimmed'
+                        ? 'opacity-40 border-outline-variant/15'
+                        : 'bg-surface-container-low border-outline-variant/20 hover:border-primary/30 hover:bg-surface-container'
+              }`}
+            >
+              {/* Letter badge */}
+              <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-black text-sm transition-colors ${
+                state === 'correct'
+                  ? 'bg-primary text-white'
+                  : state === 'wrong'
+                    ? 'bg-error text-white'
+                    : 'bg-surface-container-high text-secondary'
+              }`}>
+                {CHOICE_LABELS[i]}
               </span>
-              <span className={`text-lg font-bold leading-tight ${selected === choice ? 'text-white' : 'text-white/70'}`}>
+
+              <span className={`font-bold font-headline leading-tight flex-1 ${
+                state === 'correct' ? 'text-primary' : state === 'wrong' ? 'text-error' : 'text-on-surface'
+              }`}>
                 {choice}
               </span>
-            </div>
-            
-            {/* Feedback Overlays */}
-            <AnimatePresence>
-              {selected === choice && feedback === 'correct' && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.5 }} 
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="absolute inset-0 bg-primary/10 flex items-center justify-end pr-6 pointer-events-none"
-                >
-                  <span className="material-symbols-outlined text-primary text-3xl font-black">check_circle</span>
-                </motion.div>
-              )}
-              {selected === choice && feedback === 'wrong' && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.5 }} 
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="absolute inset-0 bg-red-500/10 flex items-center justify-end pr-6 pointer-events-none"
-                >
-                  <span className="material-symbols-outlined text-red-500 text-3xl font-black">cancel</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
-        ))}
+
+              {/* Feedback icon */}
+              <AnimatePresence>
+                {state === 'correct' && (
+                  <motion.span
+                    initial={{ scale: 0 }} animate={{ scale: 1 }}
+                    className="material-symbols-outlined text-primary text-2xl font-black"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    check_circle
+                  </motion.span>
+                )}
+                {state === 'wrong' && (
+                  <motion.span
+                    initial={{ scale: 0 }} animate={{ scale: 1 }}
+                    className="material-symbols-outlined text-error text-2xl font-black"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    cancel
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          )
+        })}
       </div>
     </div>
   )

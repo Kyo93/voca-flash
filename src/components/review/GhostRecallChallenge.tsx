@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
-import { speakWord, cancelSpeech } from '../../lib/tts'
+import { speak, stop } from '../../lib/tts'
 
 interface GhostRecallChallengeProps {
   word: Word
@@ -11,135 +11,117 @@ interface GhostRecallChallengeProps {
 export default function GhostRecallChallenge({ word, onSubmit }: GhostRecallChallengeProps) {
   const [input, setInput] = useState('')
   const [isWrong, setIsWrong] = useState(false)
-  const [hintLevel, setHintLevel] = useState(0) // 0: none, 1: first letter, 2: first + last
-  const [showDefinition, setShowDefinition] = useState(false)
+  const [showHint, setShowHint] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     inputRef.current?.focus()
-    speakWord(word.word)
-
-    return () => cancelSpeech()
+    speak(word.word)
+    return () => stop()
   }, [word])
-
-  const handlePlayAudio = () => speakWord(word.word)
 
   const handleSubmit = (e?: React.FormEvent) => {
     e?.preventDefault()
     if (!input.trim()) return
 
-    const target = word.word.trim().toLowerCase()
-    const userVal = input.trim().toLowerCase()
-    const isCorrect = userVal === target
-
+    const isCorrect = input.trim().toLowerCase() === word.word.trim().toLowerCase()
     if (isCorrect) {
       onSubmit(true)
       setInput('')
     } else {
       setIsWrong(true)
-      setTimeout(() => setIsWrong(false), 500)
-    }
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSubmit()
-    } else if (e.key.toLowerCase() === 'h' && e.ctrlKey) {
-      // Shortcut for hint
-      e.preventDefault()
-      setHintLevel(prev => Math.min(prev + 1, 2))
+      setTimeout(() => setIsWrong(false), 600)
     }
   }
 
   const getHintWord = () => {
     const w = word.word
-    if (hintLevel === 0) return '_'.repeat(w.length)
-    if (hintLevel === 1) return w[0] + '_'.repeat(w.length - 1)
-    return w[0] + '_'.repeat(w.length - 2) + w[w.length - 1]
+    if (!showHint) return '●'.repeat(w.length)
+    return w[0] + '●'.repeat(w.length - 1)
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
-      <div className="text-center mb-16 w-full">
-        <span className="text-red-500 font-black uppercase tracking-[0.4em] text-[10px] block mb-8 flex items-center justify-center gap-2 text-shadow-glow">
-          <span className="material-symbols-outlined text-lg">skull</span>
-          Ghost Recall
-        </span>
-        
-        {/* Definition Blur Area - The "Memory Palace" logic */}
-        <div className="w-full flex justify-center mb-12">
-          <div 
-            className="glass-arena-container px-10 py-12 cursor-help group relative overflow-hidden transition-all hover:bg-white/[0.08]"
-            onMouseDown={() => setShowDefinition(true)}
-            onMouseUp={() => setShowDefinition(false)}
-            onMouseLeave={() => setShowDefinition(false)}
-            onTouchStart={() => setShowDefinition(true)}
-            onTouchEnd={() => setShowDefinition(false)}
+    <div className="w-full flex flex-col items-center">
+      {/* Header */}
+      <div className="w-full bg-surface-container-low rounded-2xl p-6 mb-8 flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/8 border border-primary/15">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            Nghe lại
+          </span>
+          <button
+            onClick={() => speak(word.word)}
+            className="p-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-primary flex items-center justify-center border border-outline-variant/10 active:scale-95 transition-all"
           >
-            <div className={`text-4xl font-black text-white transition-all duration-500 text-shadow-glow leading-tight ${!showDefinition ? 'blur-[30px] opacity-10 scale-95' : 'blur-0 opacity-100 scale-100'}`}>
+            <span className="material-symbols-outlined text-xl">volume_up</span>
+          </button>
+        </div>
+
+        {/* Definition Blur — press and hold to reveal */}
+        <div className="flex justify-center">
+          <div
+            className="relative w-full max-w-sm mx-auto cursor-pointer select-none"
+            onMouseDown={() => setShowHint(true)}
+            onMouseUp={() => setShowHint(false)}
+            onMouseLeave={() => setShowHint(false)}
+            onTouchStart={() => setShowHint(true)}
+            onTouchEnd={() => setShowHint(false)}
+          >
+            <div className={`text-4xl font-black font-headline text-center transition-all duration-500 ${!showHint ? 'blur-[12px] opacity-30' : 'blur-0 opacity-100'}`}>
               {word.definition}
             </div>
-            {!showDefinition && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-4">
-                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border border-white/20 animate-pulse">
-                  <span className="material-symbols-outlined text-white/40">visibility_off</span>
-                </div>
-                <span className="text-white/30 text-[9px] font-black uppercase tracking-[0.3em] font-body bg-white/5 py-1.5 px-4 rounded-full border border-white/10 backdrop-blur-sm">Giữ để hiện nghĩa</span>
+            {!showHint && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2">
+                <span className="material-symbols-outlined text-primary/30 text-3xl">visibility_off</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-outline">Giữ để hiện nghĩa</span>
               </div>
             )}
           </div>
         </div>
-
-        <div className="flex justify-center gap-6">
-           <button 
-             onClick={handlePlayAudio}
-             className="w-16 h-16 rounded-[1.5rem] glass-arena-item text-white/40 hover:text-white flex items-center justify-center border border-white/10 shadow-xl group"
-           >
-             <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">volume_up</span>
-           </button>
-           <button 
-             onClick={() => setHintLevel(prev => Math.min(prev + 1, 2))}
-             disabled={hintLevel >= 2}
-             className="px-8 h-16 rounded-[1.5rem] glass-arena-item text-white/40 hover:text-white flex items-center justify-center border border-white/10 font-black text-[10px] uppercase tracking-[0.2em] disabled:opacity-10 shadow-xl group"
-           >
-             <span className="material-symbols-outlined text-lg mr-3 group-hover:rotate-12 transition-transform">lightbulb</span>
-             Cần gợi ý
-           </button>
-        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full relative px-4">
+      {/* Input */}
+      <form onSubmit={handleSubmit} className="w-full max-w-sm relative">
         <div className="relative">
           <input
             ref={inputRef}
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
             placeholder={getHintWord()}
-            className={`w-full bg-transparent border-0 border-b-8 text-center text-7xl font-black text-white outline-none py-8 transition-all tracking-tighter placeholder:text-white/[0.02] ${
-              isWrong ? 'border-red-500 animate-shake' : 'border-white/5 focus:border-primary primary-glow'
+            className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center text-3xl font-black font-headline text-primary outline-none transition-all placeholder:font-mono placeholder:text-primary/20 ${
+              isWrong
+                ? 'border-error bg-error/5 animate-[shake_0.4s_cubic-bezier(.36,.07,.19,.97)_both]'
+                : 'border-outline-variant/20 focus:border-primary shadow-sm'
             }`}
-            autoFocus
             autoComplete="off"
-            spellCheck="false"
+            spellCheck={false}
           />
           <AnimatePresence>
             {input.length > 0 && !isWrong && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="absolute -bottom-16 left-0 right-0 text-center"
+                className="absolute -bottom-10 left-0 right-0 text-center"
               >
-                <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
-                  <span className="text-primary font-black text-[9px] uppercase tracking-widest leading-none">Nhấn ENTER để xác nhận</span>
-                </div>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
+                  Nhấn ENTER để xác nhận
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </form>
+
+      {/* Hint Toggle */}
+      <button
+        onClick={() => setShowHint(h => !h)}
+        className="mt-6 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors"
+      >
+        {showHint ? '▲ Ẩn gợi ý chữ' : '▼ Hiện gợi ý chữ'}
+      </button>
     </div>
   )
 }
