@@ -230,6 +230,7 @@ export default function StudyPage() {
   const [suggestedRating, setSuggestedRating] = useState<SrsRating | null>(null)
   const [intervalPreviews, setIntervalPreviews] = useState<IntervalPreview[]>([])
   const [timerSeconds, setTimerSeconds] = useState(30)
+  const [currentChallengeType, setCurrentChallengeType] = useState<StudyChallengeType>('recognition')
   const challengeStartTimeRef = useRef<number>(0)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const timerTickRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -259,12 +260,17 @@ export default function StudyPage() {
     setSuggestedRating(null)
     setIntervalPreviews([])
     setTimerSeconds(30)
+    setCurrentChallengeType('recognition')
   }, [currentCard?.id])
 
   // READY_FOR_QUIZ → auto-start challenge + timer countdown
   useEffect(() => {
     if (phase !== 'READY_FOR_QUIZ' || !currentCard) return
 
+    // Pick ONE challenge type — stays fixed for this card
+    const types: StudyChallengeType[] = ['cloze', 'listen', 'recognition']
+    const picked = types[Math.floor(Math.random() * types.length)]
+    setCurrentChallengeType(picked)
     challengeStartTimeRef.current = Date.now()
     setTimerSeconds(30)
     setPhase('CHALLENGING')
@@ -417,35 +423,25 @@ export default function StudyPage() {
                   {timerSeconds}s
                 </span>
               </div>
-              {(() => {
-                const challengeType = (['cloze', 'listen', 'recognition'][Math.floor(Math.random() * 3)] as StudyChallengeType)
-                return (
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
-                    challengeType === 'cloze'
-                      ? 'text-primary bg-primary/8 border-primary/20'
-                      : challengeType === 'listen'
-                        ? 'text-secondary bg-secondary/8 border-secondary/20'
-                        : 'text-tertiary bg-tertiary/8 border-tertiary/20'
-                  }`}>
-                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                    {challengeType === 'cloze' ? 'Điền từ' : challengeType === 'listen' ? 'Nghe lại' : 'Chọn nghĩa'}
-                  </span>
-                )
-              })()}
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+                currentChallengeType === 'cloze'
+                  ? 'text-primary bg-primary/8 border-primary/20'
+                  : currentChallengeType === 'listen'
+                    ? 'text-secondary bg-secondary/8 border-secondary/20'
+                    : 'text-tertiary bg-tertiary/8 border-tertiary/20'
+              }`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                {currentChallengeType === 'cloze' ? 'Điền từ' : currentChallengeType === 'listen' ? 'Nghe lại' : 'Chọn nghĩa'}
+              </span>
             </div>
 
             {/* Challenge body */}
             <div className="bg-surface-container-lowest p-6">
-              {(() => {
-                const challengeType = (['cloze', 'listen', 'recognition'][Math.floor(Math.random() * 3)] as StudyChallengeType)
-                return (
-                  <StudyChallengeShell
-                    type={challengeType}
-                    word={cardToWord(currentCard)}
-                    onSubmit={handleChallengeSubmit}
-                  />
-                )
-              })()}
+              <StudyChallengeShell
+                type={currentChallengeType}
+                word={cardToWord(currentCard)}
+                onSubmit={handleChallengeSubmit}
+              />
               <button
                 onClick={handleSkipChallenge}
                 className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase w-full"
