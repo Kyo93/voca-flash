@@ -229,8 +229,10 @@ export default function StudyPage() {
   const [phase, setPhase] = useState<StudyPhase>('FLIPPED')
   const [suggestedRating, setSuggestedRating] = useState<SrsRating | null>(null)
   const [intervalPreviews, setIntervalPreviews] = useState<IntervalPreview[]>([])
+  const [timerSeconds, setTimerSeconds] = useState(30)
   const challengeStartTimeRef = useRef<number>(0)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const timerTickRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Convert Card (useFlashcard) → Word shape for challenge components
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -251,33 +253,38 @@ export default function StudyPage() {
 
   // Reset phase when card changes
   useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
+    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
     setPhase('FLIPPED')
     setSuggestedRating(null)
     setIntervalPreviews([])
+    setTimerSeconds(30)
   }, [currentCard?.id])
 
-  // READY_FOR_QUIZ → auto-start challenge after card back is briefly shown
+  // READY_FOR_QUIZ → auto-start challenge + timer countdown
   useEffect(() => {
     if (phase !== 'READY_FOR_QUIZ' || !currentCard) return
 
     challengeStartTimeRef.current = Date.now()
+    setTimerSeconds(30)
     setPhase('CHALLENGING')
 
+    // Countdown tick
+    timerTickRef.current = setInterval(() => {
+      setTimerSeconds(s => Math.max(0, s - 1))
+    }, 1000)
+
+    // Hard timeout
     timeoutRef.current = setTimeout(() => {
+      if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
       handleChallengeTimeout()
     }, 30_000)
   }, [phase])
 
   // Handle challenge completion
   const handleChallengeSubmit = useCallback((isCorrect: boolean) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
+    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
 
     const responseTime = Date.now() - challengeStartTimeRef.current
     const suggested = mapTestResultToRating(isCorrect, responseTime)
@@ -293,10 +300,8 @@ export default function StudyPage() {
 
   // Timeout → auto-challenging with Hard suggestion
   const handleChallengeTimeout = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
+    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
 
     const previews = computeIntervalPreviews(
       currentProgress ?? createInitialProgress(''),
@@ -314,10 +319,8 @@ export default function StudyPage() {
 
   // Skip → flashcard back with NO suggestion (user self-rates)
   const handleSkipChallenge = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
+    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
     setSuggestedRating(null)
     setIntervalPreviews([])
     setPhase('RATING')
@@ -325,9 +328,11 @@ export default function StudyPage() {
 
   // User clicks rating → rate card + next card
   const handleRate = useCallback((rating: SrsRating) => {
+    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
     setPhase('FLIPPED')
     setSuggestedRating(null)
     setIntervalPreviews([])
+    setTimerSeconds(30)
     setTimeout(() => rate(rating), 0)
   }, [rate])
 
@@ -393,24 +398,61 @@ export default function StudyPage() {
 
         {/* Main Content Area */}
         {phase === 'CHALLENGING' ? (
-          // ── CHALLENGING: quiz REPLACES flashcard ──
-          <div className="w-full flex flex-col">
-            {(() => {
-              const challengeType = (['cloze', 'listen', 'recognition'][Math.floor(Math.random() * 3)] as StudyChallengeType)
-              return (
-                <StudyChallengeShell
-                  type={challengeType}
-                  word={cardToWord(currentCard)}
-                  onSubmit={handleChallengeSubmit}
-                />
-              )
-            })()}
-            <button
-              onClick={handleSkipChallenge}
-              className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase"
-            >
-              Bỏ qua quiz → tự đánh giá
-            </button>
+          // ── CHALLENGING: quiz with timer countdown + shrinking border ──
+          <div
+            className="w-full relative rounded-2xl overflow-hidden"
+            style={{ border: `3px solid ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}` }}
+          >
+            {/* Shrinking top border — top border shrinks left-to-right as time runs out */}
+            <div
+              className="absolute top-0 left-0 h-full bg-primary/20 transition-all duration-1000 ease-linear"
+              style={{ width: `${(timerSeconds / 30) * 100}%` }}
+            />
+
+            {/* Timer bar */}
+            <div className="flex items-center justify-between px-5 py-3 bg-surface-container-low">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-xl">timer</span>
+                <span className={`font-headline font-black text-lg tabular-nums ${timerSeconds <= 10 ? 'text-error animate-pulse' : 'text-primary'}`}>
+                  {timerSeconds}s
+                </span>
+              </div>
+              {(() => {
+                const challengeType = (['cloze', 'listen', 'recognition'][Math.floor(Math.random() * 3)] as StudyChallengeType)
+                return (
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+                    challengeType === 'cloze'
+                      ? 'text-primary bg-primary/8 border-primary/20'
+                      : challengeType === 'listen'
+                        ? 'text-secondary bg-secondary/8 border-secondary/20'
+                        : 'text-tertiary bg-tertiary/8 border-tertiary/20'
+                  }`}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                    {challengeType === 'cloze' ? 'Điền từ' : challengeType === 'listen' ? 'Nghe lại' : 'Chọn nghĩa'}
+                  </span>
+                )
+              })()}
+            </div>
+
+            {/* Challenge body */}
+            <div className="bg-surface-container-lowest p-6">
+              {(() => {
+                const challengeType = (['cloze', 'listen', 'recognition'][Math.floor(Math.random() * 3)] as StudyChallengeType)
+                return (
+                  <StudyChallengeShell
+                    type={challengeType}
+                    word={cardToWord(currentCard)}
+                    onSubmit={handleChallengeSubmit}
+                  />
+                )
+              })()}
+              <button
+                onClick={handleSkipChallenge}
+                className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase w-full"
+              >
+                Bỏ qua quiz → tự đánh giá
+              </button>
+            </div>
           </div>
         ) : (
           // ── CARD: front OR back ──
