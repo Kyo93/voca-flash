@@ -61,9 +61,9 @@ export default function MasteryPage() {
     loadStats()
   }, [user, debouncedSearch, activeFilter])
 
-  // 3. Re-fetch stats when page becomes visible (e.g. user returns from study)
-  //    This fixes stale data: MasteryPage loaded 12 words, user studies 2 new
-  //    words → back to MasteryPage → visibilitychange fires → re-fetch → shows 14
+  // 3. Re-fetch everything when page becomes visible (e.g. user returns from study)
+  //    This fixes stale data: MasteryPage loaded with N words, user studies more
+  //    words → back to MasteryPage → visibilitychange fires → re-fetch → shows fresh count
   useEffect(() => {
     if (!user) return
 
@@ -72,7 +72,9 @@ export default function MasteryPage() {
         setPage(0)
         setWords([])
         setHasMore(true)
+        // Refresh both: stat cards (getMasteryStats) AND totalCount (loadData → getUserVocabulary)
         getMasteryStats(user.id).then(s => setStats(s))
+        loadData(0)
       }
     }
 
