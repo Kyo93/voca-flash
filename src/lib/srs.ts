@@ -176,6 +176,48 @@ export function mapIntensityToRetention(intensity: number): number {
   return 0.8 // Relaxed
 }
 
+// ── Study Post-Flip Challenge ───────────────────────────────
+export type StudyChallengeType = 'cloze' | 'listen' | 'recognition'
+
+export interface IntervalPreview {
+  rating: SrsRating
+  label: string
+}
+
+function formatInterval(scheduledDays: number): string {
+  if (scheduledDays < 1) {
+    const minutes = Math.round(scheduledDays * 24 * 60)
+    return minutes <= 1 ? '1 phút' : `${minutes} phút`
+  }
+  if (scheduledDays < 30) return `${Math.round(scheduledDays)} ngày`
+  return `${Math.round(scheduledDays / 30)} tháng`
+}
+
+/**
+ * Map challenge result → FSRS rating (sau khi flip card trong Study session).
+ * Thresholds: <3s=Easy, <8s=Good, ≥8s=Hard, sai=Again
+ */
+export function mapTestResultToRating(
+  isCorrect: boolean,
+  responseTimeMs: number,
+): SrsRating {
+  if (!isCorrect) return 1
+  if (responseTimeMs < 3000) return 4
+  if (responseTimeMs < 8000) return 3
+  return 2
+}
+
+export function computeIntervalPreviews(
+  currentProgress: CardProgress,
+  intensity: number,
+): IntervalPreview[] {
+  const retention = mapIntensityToRetention(intensity)
+  return ([1, 2, 3, 4] as SrsRating[]).map(rating => {
+    const result = calculateFSRSReview(currentProgress, rating, retention)
+    return { rating, label: formatInterval(result.scheduledDays) }
+  })
+}
+
 // ── SrsRecord → CardProgress mapping ─────────────────────────
 // Single source of truth for mapping DB records to in-memory CardProgress.
 // Used by fetchSrsStates, fetchReviewWords in storage/session.ts.

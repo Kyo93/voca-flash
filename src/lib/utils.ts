@@ -32,3 +32,24 @@ export function slugify(name: string): string {
     .replace(/-+/g, '-')
     .trim();
 }
+
+// ── Study Post-Flip Challenge ─────────────────────────────────
+
+const HARD_CODED_DISTRACTORS = [
+  'để nhớ lại điều gì đó',
+  'học thuộc một cách có hệ thống',
+  'ghi nhớ thông tin quan trọng',
+  'tập trung chú ý vào điều gì',
+  'hiểu rõ vấn đề cốt lõi',
+  'áp dụng kiến thức vào thực tế',
+  'phân tích tình huống cụ thể',
+  'đánh giá kết quả công việc',
+]
+
+export function generateChoices(word: import('./types').Word): string[] {
+  const correct = word.definition
+  const distractors = HARD_CODED_DISTRACTORS
+    .filter(d => d !== correct)
+    .slice(0, 3)
+  return shuffleArray([correct, ...distractors])
+}

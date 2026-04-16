@@ -1,10 +1,14 @@
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
 import { useAuth } from '../contexts/AuthContext'
 import StudyPrepScreen from '../components/StudyPrepScreen'
 import type { Card } from '../lib/srs'
+import { SrsRating, mapTestResultToRating, computeIntervalPreviews, createInitialProgress, type StudyChallengeType, type IntervalPreview } from '../lib/srs'
+import SRSButtons from '../components/SRSButtons'
+import StudyChallengeShell from '../components/StudyChallengeShell'
+import type { Word } from '../lib/types'
 
 interface AudioButtonProps {
   text: string
@@ -74,7 +78,7 @@ function FlashcardFront({ card }: { card: Card }) {
               Contextual usage
             </span>
             <blockquote className="text-on-surface-variant leading-relaxed text-lg italic border-l-2 border-surface-container-highest pl-4 py-1">
-              “{card.example}”
+              &ldquo;{card.example}&rdquo;
             </blockquote>
           </div>
         )}
@@ -94,7 +98,7 @@ function FlashcardBack({ card }: { card: Card }) {
           backgroundSize: '24px 24px',
         }}
       />
-      
+
       <div className="relative z-10 w-full h-full flex flex-col">
         {/* English Word (Small, Above) */}
         <div className="flex flex-col items-center mt-2 mb-4">
@@ -128,11 +132,11 @@ function FlashcardBack({ card }: { card: Card }) {
                 <span className="material-symbols-outlined text-secondary text-lg mt-0.5 opacity-40">format_quote</span>
                 <div className="space-y-2">
                   <p className="text-on-surface-variant font-body text-sm italic leading-relaxed">
-                    "{card.example}"
+                    &ldquo;{card.example}&rdquo;
                   </p>
                   {card.example_vi && (
                     <p className="text-on-surface-variant font-body text-xs leading-relaxed border-t border-outline-variant/10 pt-2 oceanic-pulse oceanic-glow opacity-70">
-                      "{card.example_vi}"
+                      &ldquo;{card.example_vi}&rdquo;
                     </p>
                   )}
                 </div>
@@ -154,59 +158,9 @@ function FlashcardBack({ card }: { card: Card }) {
   )
 }
 
-function SRSButtons({ onRate }: { onRate: (rating: 1 | 2 | 3 | 4) => void }) {
-  return (
-    <div className="w-full max-w-md grid grid-cols-4 gap-2 px-1">
-      {/* Again Button */}
-      <button
-        onClick={() => onRate(1)}
-        className="group flex flex-col items-center gap-1.5"
-      >
-        <div className="w-full py-4 bg-error-container text-on-error-container font-headline font-bold rounded-lg border border-error/10 group-active:scale-95 transition-all flex items-center justify-center text-xs">
-          Quên
-        </div>
-        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Lại</span>
-      </button>
-
-      {/* Hard Button */}
-      <button
-        onClick={() => onRate(2)}
-        className="group flex flex-col items-center gap-1.5"
-      >
-        <div className="w-full py-4 bg-surface-container-highest text-on-surface-variant font-headline font-bold rounded-lg border border-outline-variant/10 group-active:scale-95 transition-all flex items-center justify-center text-xs">
-          Khó
-        </div>
-        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Trễ</span>
-      </button>
-
-      {/* Good Button */}
-      <button
-        onClick={() => onRate(3)}
-        className="group flex flex-col items-center gap-1.5"
-      >
-        <div className="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center shadow-lg shadow-primary/20 text-xs text-nowrap px-1">
-          Vừa
-        </div>
-        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Chuẩn</span>
-      </button>
-
-      {/* Easy Button */}
-      <button
-        onClick={() => onRate(4)}
-        className="group flex flex-col items-center gap-1.5"
-      >
-        <div className="w-full py-4 bg-secondary-fixed text-on-secondary-fixed font-headline font-bold rounded-lg group-active:scale-95 transition-all flex items-center justify-center border border-secondary/10 text-xs">
-          Dễ
-        </div>
-        <span className="text-outline text-[9px] font-bold uppercase tracking-tighter">Sớm</span>
-      </button>
-    </div>
-  )
-}
-
 function StudyComplete({ total }: { total: number }) {
   const [searchParams] = useSearchParams()
-  
+
   // Preserve current topic/roadmap context
   const currentQuery = searchParams.toString()
   const studyLink = currentQuery ? `/study?${currentQuery}` : '/study'
@@ -231,6 +185,8 @@ function StudyComplete({ total }: { total: number }) {
   )
 }
 
+type StudyPhase = 'FLIPPED' | 'READY_FOR_QUIZ' | 'CHALLENGING' | 'RATING'
+
 export default function StudyPage() {
   const { profile } = useAuth()
   const [searchParams] = useSearchParams()
@@ -240,6 +196,7 @@ export default function StudyPage() {
 
   const {
     currentCard,
+    currentProgress,
     total,
     remaining,
     isFlipped,
@@ -263,10 +220,123 @@ export default function StudyPage() {
   useEffect(() => {
     if (currentCard && !isLoading && !isComplete) {
       if (profile?.auto_play_audio !== false) {
-        speak(currentCard.front);
+        speak(currentCard.front)
       }
     }
-  }, [currentCard?.id, isFlipped, isLoading, isComplete, profile?.auto_play_audio]);
+  }, [currentCard?.id, isFlipped, isLoading, isComplete, profile?.auto_play_audio])
+
+  // ── Study Post-Flip Challenge state ──────────────────────────
+  const [phase, setPhase] = useState<StudyPhase>('FLIPPED')
+  const [suggestedRating, setSuggestedRating] = useState<SrsRating | null>(null)
+  const [intervalPreviews, setIntervalPreviews] = useState<IntervalPreview[]>([])
+  const challengeStartTimeRef = useRef<number>(0)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Convert Card (useFlashcard) → Word shape for challenge components
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cardToWord = (card: Card): Word => ({
+    id: card.id,
+    word: card.front,
+    definition: card.back,
+    phonetic: card.phonetic ?? null,
+    pos: null,
+    difficulty: 3,
+    example: card.example ?? null,
+    example_vi: card.example_vi ?? null,
+    image_url: card.image_url ?? null,
+    image_position: card.image_position ?? null,
+    created_at: '',
+    updated_at: '',
+  } as Word)
+
+  // Reset phase when card changes
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    setPhase('FLIPPED')
+    setSuggestedRating(null)
+    setIntervalPreviews([])
+  }, [currentCard?.id])
+
+  // READY_FOR_QUIZ → auto-start challenge after card back is briefly shown
+  useEffect(() => {
+    if (phase !== 'READY_FOR_QUIZ' || !currentCard) return
+
+    challengeStartTimeRef.current = Date.now()
+    setPhase('CHALLENGING')
+
+    timeoutRef.current = setTimeout(() => {
+      handleChallengeTimeout()
+    }, 30_000)
+  }, [phase])
+
+  // Handle challenge completion
+  const handleChallengeSubmit = useCallback((isCorrect: boolean) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+
+    const responseTime = Date.now() - challengeStartTimeRef.current
+    const suggested = mapTestResultToRating(isCorrect, responseTime)
+    const previews = computeIntervalPreviews(
+      currentProgress ?? createInitialProgress(''),
+      profile?.srs_intensity ?? 1.0,
+    )
+
+    setSuggestedRating(suggested)
+    setIntervalPreviews(previews)
+    setPhase('RATING')
+  }, [currentProgress, profile?.srs_intensity])
+
+  // Timeout → auto-challenging with Hard suggestion
+  const handleChallengeTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+
+    const previews = computeIntervalPreviews(
+      currentProgress ?? createInitialProgress(''),
+      profile?.srs_intensity ?? 1.0,
+    )
+
+    // Hard suggestion (rating=2) on timeout
+    const hardPreview = previews.find(p => p.rating === 2)
+
+    setSuggestedRating(2)
+    setIntervalPreviews(previews)
+    setPhase('RATING')
+    void hardPreview // used via display, not needed as separate var
+  }, [currentProgress, profile?.srs_intensity])
+
+  // Skip → flashcard back with NO suggestion (user self-rates)
+  const handleSkipChallenge = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    setSuggestedRating(null)
+    setIntervalPreviews([])
+    setPhase('RATING')
+  }, [])
+
+  // User clicks rating → rate card + next card
+  const handleRate = useCallback((rating: SrsRating) => {
+    setPhase('FLIPPED')
+    setSuggestedRating(null)
+    setIntervalPreviews([])
+    setTimeout(() => rate(rating), 0)
+  }, [rate])
+
+  // User clicks "Next" on flipped card → start challenge
+  const handleNextToChallenge = useCallback(() => {
+    setPhase('READY_FOR_QUIZ')
+  }, [])
+
+  // ── End Study Post-Flip Challenge ────────────────────────────
 
   const onStartCallback = useCallback((includeMastered: boolean) => {
     startSession(roadmapId, topicId || '', includeMastered)
@@ -301,6 +371,9 @@ export default function StudyPage() {
     )
   }
 
+  // Derive whether to show the card back (flipped)
+  const showCardBack = isFlipped && phase !== 'CHALLENGING' && phase !== 'READY_FOR_QUIZ'
+
   return (
     <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12">
       <div className="max-w-md w-full space-y-8">
@@ -318,37 +391,78 @@ export default function StudyPage() {
           </div>
         </div>
 
-        {/* Flashcard — flips between front and back */}
-        <div className="group relative mb-4">
-          <div
-            onClick={flip}
-            className="perspective-1000 cursor-pointer w-full aspect-[3/4]"
-          >
-            <div
-              className={`preserve-3d transition-all duration-700 w-full h-full relative ${
-                isFlipped ? 'rotate-y-180' : ''
-              }`}
-            >
-              {/* Front */}
-              <div className="backface-hidden w-full h-full absolute inset-0">
-                <FlashcardFront card={currentCard} />
-              </div>
+        {/* Main Content Area */}
+        {phase === 'CHALLENGING' ? (
+          // ── CHALLENGING: quiz REPLACES flashcard ──
+          <div className="w-full aspect-[3/4] flex flex-col items-center justify-center px-2">
+            {(() => {
+              const challengeType = (['cloze', 'listen', 'recognition'][Math.floor(Math.random() * 3)] as StudyChallengeType)
+              return (
+                <div className="w-full flex flex-col gap-4">
+                  {/* Challenge type badge */}
+                  <div className="flex items-center justify-center">
+                    <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+                      challengeType === 'cloze'
+                        ? 'text-primary bg-primary/5 border-primary/20'
+                        : challengeType === 'listen'
+                          ? 'text-secondary bg-secondary/5 border-secondary/20'
+                          : 'text-tertiary bg-tertiary/5 border-tertiary/20'
+                    }`}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                      {challengeType === 'cloze' ? 'Điền từ' : challengeType === 'listen' ? 'Nghe lại' : 'Chọn nghĩa'}
+                    </span>
+                  </div>
 
-              {/* Back */}
-              <div className="backface-hidden w-full h-full absolute inset-0 rotate-y-180">
-                <FlashcardBack card={currentCard} />
+                  {/* Challenge component */}
+                  <StudyChallengeShell
+                    type={challengeType}
+                    word={cardToWord(currentCard)}
+                    onSubmit={handleChallengeSubmit}
+                  />
+                </div>
+              )
+            })()}
+            <button
+              onClick={handleSkipChallenge}
+              className="mt-6 text-outline text-xs hover:text-on-surface transition-colors tracking-wide"
+            >
+              Bỏ qua → tự đánh giá
+            </button>
+          </div>
+        ) : (
+          // ── CARD: front OR back ──
+          <div className="group relative">
+            <div
+              onClick={!isFlipped ? flip : undefined}
+              className={`perspective-1000 w-full aspect-[3/4] ${!isFlipped ? 'cursor-pointer' : ''}`}
+            >
+              <div
+                className={`preserve-3d transition-all duration-700 w-full h-full relative ${
+                  showCardBack ? 'rotate-y-180' : ''
+                }`}
+              >
+                {/* Front */}
+                <div className="backface-hidden w-full h-full absolute inset-0">
+                  <FlashcardFront card={currentCard} />
+                </div>
+
+                {/* Back */}
+                <div className="backface-hidden w-full h-full absolute inset-0 rotate-y-180">
+                  <FlashcardBack card={currentCard} />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Aesthetic accent shadow */}
-          <div className="absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 rounded-xl border border-primary/10 pointer-events-none" />
-        </div>
+            {/* Aesthetic accent shadow */}
+            <div className="absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 rounded-xl border border-primary/10 pointer-events-none" />
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex flex-col gap-4 mt-8">
           {!isFlipped ? (
             <>
+              {/* Show Answer */}
               <button
                 onClick={flip}
                 className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
@@ -364,9 +478,39 @@ export default function StudyPage() {
                 <span className="material-symbols-outlined">check_circle</span>
               </button>
             </>
-          ) : (
-            <SRSButtons onRate={(rating) => rate(rating)} />
-          )}
+          ) : phase === 'RATING' ? (
+            // ── RATING: SRS buttons with suggestion (or self-rate if skip) ──
+            <div className="flex flex-col items-center">
+              {suggestedRating !== null && (
+                <p className="text-center text-primary text-xs mb-3 font-bold tracking-widest uppercase">
+                  Hệ thống gợi ý
+                </p>
+              )}
+              <SRSButtons
+                onRate={handleRate}
+                suggestedRating={suggestedRating}
+                intervalPreviews={intervalPreviews}
+              />
+            </div>
+          ) : showCardBack ? (
+            // ── FLIPPED (card back shown, waiting for user to click Next) ──
+            <>
+              <button
+                onClick={handleNextToChallenge}
+                className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+              >
+                <span className="tracking-wide">Next</span>
+                <span className="material-symbols-outlined">arrow_forward</span>
+              </button>
+              <button
+                onClick={handleSkipChallenge}
+                className="w-full bg-surface-container-high text-on-surface-variant font-headline font-bold py-4 rounded-lg hover:bg-surface-container-highest active:scale-95 transition-all flex items-center justify-center gap-3"
+              >
+                <span className="tracking-wide">Bỏ quiz → tự đánh giá</span>
+                <span className="material-symbols-outlined">skip_next</span>
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
     </div>
