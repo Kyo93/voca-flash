@@ -145,7 +145,12 @@ export function useFlashcard() {
   }, [user])
 
   const markLearned = useCallback(() => {
-    rate(3) // Good rating
+    // Flip the card first so user sees the answer, then defer rating
+    // until after the flip animation completes (~300ms)
+    flip()
+    requestAnimationFrame(() => {
+      setTimeout(() => rate(3), 1000)
+    })
   }, [rate])
 
   const currentCard = state.queue[state.currentIndex] || null

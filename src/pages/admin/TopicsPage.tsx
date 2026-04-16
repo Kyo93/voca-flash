@@ -31,6 +31,8 @@ function SortableItem({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: topic.id })
 
+  void roadmapNameMap // TODO: wire up roadmap name display in topic badge
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,

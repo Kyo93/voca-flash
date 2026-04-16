@@ -1,10 +1,10 @@
 import { supabase } from '../supabase'
 import type { MasteryWord, MasteryStats } from '../types'
 
-export async function fetchMasteryStats(userId: string): Promise<MasteryStats> {
+export async function getMasteryStats(userId: string): Promise<MasteryStats> {
   const { data, error } = await supabase.rpc('get_mastery_stats', { p_user_id: userId })
   if (error) {
-    console.error('[Storage] fetchMasteryStats error:', error)
+    console.error('[Storage] getMasteryStats error:', error)
     return { total: 0, mastered: 0, due: 0, weak: 0, orphaned: 0, learning: 0 }
   }
   return data as MasteryStats
@@ -17,7 +17,7 @@ interface FetchVocabularyOptions {
   filter?: 'all' | 'due' | 'weak' | 'orphaned' | 'mastered'
 }
 
-export async function fetchUserVocabulary(
+export async function getUserVocabulary(
   userId: string,
   options: FetchVocabularyOptions = {}
 ): Promise<{ data: MasteryWord[]; total: number }> {
@@ -32,7 +32,7 @@ export async function fetchUserVocabulary(
   })
 
   if (error) {
-    console.error('[Storage] fetchUserVocabulary error:', error)
+    console.error('[Storage] getUserVocabulary error:', error)
     throw error
   }
 

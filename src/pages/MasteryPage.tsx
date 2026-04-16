@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { fetchUserVocabulary, fetchMasteryStats } from '../lib/storage/mastery'
+import { getUserVocabulary, getMasteryStats } from '../lib/storage/mastery'
 import { MasteryWord } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -55,7 +55,7 @@ export default function MasteryPage() {
     
     async function loadStats() {
       if (!user) return
-      const s = await fetchMasteryStats(user.id)
+      const s = await getMasteryStats(user.id)
       setStats(s)
     }
     loadStats()
@@ -70,7 +70,7 @@ export default function MasteryPage() {
     else setLoadingMore(true)
 
     try {
-      const { data, total } = await fetchUserVocabulary(user.id, {
+      const { data, total } = await getUserVocabulary(user.id, {
         limit: PAGE_SIZE,
         offset: pageNum * PAGE_SIZE,
         search: debouncedSearch,

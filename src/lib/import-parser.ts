@@ -175,14 +175,21 @@ export function slugify(name: string): string {
 
 /**
  * Generate a slug that is unique within existingSlugs.
+ * If roadmapSlug is provided, prefix the slug with "roadmapSlug-" to avoid
+ * cross-roadmap collisions (e.g., two roadmaps creating "Animals" topic).
  * If base slug is not taken → return it.
  * Otherwise append -1, -2, ... until unique.
  */
-export function generateUniqueSlug(base: string, existingSlugs: Set<string>): string {
-  if (!existingSlugs.has(base)) return base
+export function generateUniqueSlug(
+  base: string,
+  existingSlugs: Set<string>,
+  roadmapSlug?: string,
+): string {
+  const prefixed = roadmapSlug ? `${roadmapSlug}-${base}` : base
+  if (!existingSlugs.has(prefixed)) return prefixed
   let i = 1
-  while (existingSlugs.has(`${base}-${i}`)) i++
-  return `${base}-${i}`
+  while (existingSlugs.has(`${prefixed}-${i}`)) i++
+  return `${prefixed}-${i}`
 }
 
 // ── Normalize Row ──────────────────────────────────────────

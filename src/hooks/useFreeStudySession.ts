@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { CardProgress } from '../lib/srs'
-import { upsertFreeStudyFail, fetchUserVocabulary } from '../lib/supabase-storage'
+import { upsertFreeStudyFail, getUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
-import { QuadrantType, ReviewChallenge } from './useReviewSession'
+import { QuadrantType, ReviewChallenge } from '../lib/challenge-logic'
 
 export function useFreeStudySession(deckId: string = 'all', wordsOverride?: MasteryWord[]) {
   const { user } = useAuth()
@@ -51,7 +51,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
       if (wordsOverride && wordsOverride.length > 0) {
         sourceWords = wordsOverride
       } else {
-        const { data: allWords } = await fetchUserVocabulary(user.id)
+        const { data: allWords } = await getUserVocabulary(user.id)
         if (deckId === 'all') {
           // Default: Take 20 random words for free study if none selected
           sourceWords = (allWords ?? []).sort(() => Math.random() - 0.5).slice(0, 20)
@@ -79,7 +79,6 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
 
         const wordObj: Word = {
           id: w.word_id,
-          topic_id: null, // v2 does not return topic_id
           word: w.word,
           definition: w.definition,
           phonetic: w.phonetic,
@@ -89,8 +88,9 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
           image_position: null, // v2 does not return image_position
           example: w.example,
           example_vi: null, // v2 does not return example_vi
+          tags: [], // v2 does not return tags
           created_at: '',
-          updated_at: ''
+          updated_at: '',
         }
 
         return {
