@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
 import { speak, stop } from '../../lib/tts'
@@ -8,7 +8,7 @@ interface GhostRecallChallengeProps {
   onSubmit: (isCorrect: boolean) => void
 }
 
-export default function GhostRecallChallenge({ word, onSubmit }: GhostRecallChallengeProps) {
+export default memo(function GhostRecallChallengeInner({ word, onSubmit }: GhostRecallChallengeProps) {
   const [input, setInput] = useState('')
   const [isWrong, setIsWrong] = useState(false)
   const [showHint, setShowHint] = useState(false)
@@ -124,4 +124,4 @@ export default function GhostRecallChallenge({ word, onSubmit }: GhostRecallChal
       </button>
     </div>
   )
-}
+})
