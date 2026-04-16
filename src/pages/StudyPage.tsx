@@ -312,17 +312,7 @@ export default function StudyPage() {
     void hardPreview // used via display, not needed as separate var
   }, [currentProgress, profile?.srs_intensity])
 
-  // Skip → flashcard back with NO suggestion (user self-rates)
-  const handleSkipChallenge = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
-    }
-    setSuggestedRating(null)
-    setIntervalPreviews([])
-    setPhase('RATING')
-  }, [])
-
+  
   // User clicks rating → rate card + next card
   const handleRate = useCallback((rating: SrsRating) => {
     setPhase('FLIPPED')
@@ -471,22 +461,13 @@ export default function StudyPage() {
             </div>
           ) : showCardBack ? (
             // ── FLIPPED (card back shown, waiting for user to click Next) ──
-            <>
-              <button
-                onClick={handleNextToChallenge}
-                className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
-              >
-                <span className="tracking-wide">Next</span>
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </button>
-              <button
-                onClick={handleSkipChallenge}
-                className="w-full bg-surface-container-high text-on-surface-variant font-headline font-bold py-4 rounded-lg hover:bg-surface-container-highest active:scale-95 transition-all flex items-center justify-center gap-3"
-              >
-                <span className="tracking-wide">Bỏ quiz → tự đánh giá</span>
-                <span className="material-symbols-outlined">skip_next</span>
-              </button>
-            </>
+            <button
+              onClick={handleNextToChallenge}
+              className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+            >
+              <span className="tracking-wide">Next</span>
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </button>
           ) : null}
         </div>
       </div>
