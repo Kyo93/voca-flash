@@ -312,7 +312,17 @@ export default function StudyPage() {
     void hardPreview // used via display, not needed as separate var
   }, [currentProgress, profile?.srs_intensity])
 
-  
+  // Skip → flashcard back with NO suggestion (user self-rates)
+  const handleSkipChallenge = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    setSuggestedRating(null)
+    setIntervalPreviews([])
+    setPhase('RATING')
+  }, [])
+
   // User clicks rating → rate card + next card
   const handleRate = useCallback((rating: SrsRating) => {
     setPhase('FLIPPED')
@@ -395,6 +405,12 @@ export default function StudyPage() {
                 />
               )
             })()}
+            <button
+              onClick={handleSkipChallenge}
+              className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase"
+            >
+              Bỏ qua quiz → tự đánh giá
+            </button>
           </div>
         ) : (
           // ── CARD: front OR back ──
