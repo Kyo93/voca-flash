@@ -394,39 +394,22 @@ export default function StudyPage() {
         {/* Main Content Area */}
         {phase === 'CHALLENGING' ? (
           // ── CHALLENGING: quiz REPLACES flashcard ──
-          <div className="w-full aspect-[3/4] flex flex-col items-center justify-center px-2">
+          <div className="w-full flex flex-col">
             {(() => {
               const challengeType = (['cloze', 'listen', 'recognition'][Math.floor(Math.random() * 3)] as StudyChallengeType)
               return (
-                <div className="w-full flex flex-col gap-4">
-                  {/* Challenge type badge */}
-                  <div className="flex items-center justify-center">
-                    <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
-                      challengeType === 'cloze'
-                        ? 'text-primary bg-primary/5 border-primary/20'
-                        : challengeType === 'listen'
-                          ? 'text-secondary bg-secondary/5 border-secondary/20'
-                          : 'text-tertiary bg-tertiary/5 border-tertiary/20'
-                    }`}>
-                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                      {challengeType === 'cloze' ? 'Điền từ' : challengeType === 'listen' ? 'Nghe lại' : 'Chọn nghĩa'}
-                    </span>
-                  </div>
-
-                  {/* Challenge component */}
-                  <StudyChallengeShell
-                    type={challengeType}
-                    word={cardToWord(currentCard)}
-                    onSubmit={handleChallengeSubmit}
-                  />
-                </div>
+                <StudyChallengeShell
+                  type={challengeType}
+                  word={cardToWord(currentCard)}
+                  onSubmit={handleChallengeSubmit}
+                />
               )
             })()}
             <button
               onClick={handleSkipChallenge}
-              className="mt-6 text-outline text-xs hover:text-on-surface transition-colors tracking-wide"
+              className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase"
             >
-              Bỏ qua → tự đánh giá
+              Bỏ qua quiz → tự đánh giá
             </button>
           </div>
         ) : (
