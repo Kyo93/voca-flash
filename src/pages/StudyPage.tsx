@@ -409,10 +409,18 @@ export default function StudyPage() {
             className="w-full relative rounded-2xl overflow-hidden"
             style={{ border: `3px solid ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}` }}
           >
-            {/* Shrinking top border — top border shrinks left-to-right as time runs out */}
+            {/* Shrinking border overlay — covers border segments clockwise from bottom-right */}
             <div
-              className="absolute top-0 left-0 h-full bg-primary/20 transition-all duration-1000 ease-linear"
-              style={{ width: `${(timerSeconds / 30) * 100}%` }}
+              className="absolute inset-0 pointer-events-none transition-all duration-1000 ease-linear z-10"
+              style={{
+                background: `conic-gradient(
+                  from 225deg at 100% 100%,
+                  var(--color-surface-container-lowest) 0deg,
+                  var(--color-surface-container-lowest) ${((1 - timerSeconds / 30) * 360) * 1}deg,
+                  transparent ${((1 - timerSeconds / 30) * 360) * 1}deg
+                )`,
+                borderRadius: '0.75rem',
+              }}
             />
 
             {/* Timer bar */}
