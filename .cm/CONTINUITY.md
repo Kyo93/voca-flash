@@ -1,7 +1,32 @@
-# CM Working Memory — VocaFlash
+﻿# CM Working Memory — VocaFlash
 
 > Auto-updated by CM skills. Read at session start.
 
+
+## Active Goal
+Study Post-Flip Challenge — Evidence-Based Rating — PLANNING DONE (2026-04-16)
+-> Next: cm-execution to implement
+
+## Next Actions
+### Study Post-Flip Challenge (READY — 2026-04-16)
+- [x] cm-brainstorm-idea -> proposal.md
+- [x] cm-planning -> design.md + tasks.md
+- [ ] Phase 1: mapTestResultToRating + computeIntervalPreviews + generateChoices
+- [ ] Phase 2: StudyChallengeShell + StudyChallengeType enum
+- [ ] Phase 3: SRSButtons enhanced with suggestion + interval preview
+- [ ] Phase 4: StudyPage state machine (FLIPPED -> CHALLENGING -> RATING)
+- [ ] Phase 5: handleChallengeSubmit + timeout + skip button
+- [ ] Phase 6: Animation + polish + tests
+
+## Study Post-Flip Challenge Working Context
+- **New Flow:** Card -> Flip -> Challenge (1 trong 3 loại ngẫu nhiên) -> Rating gợi ý -> User rate
+- **3 Challenge Types:** cloze (ContextGap), listen (GhostRecall), recognition (Recognition)
+- **Rating Mapping:** sai->1, đúng+<3s->4, đúng+<8s->3, đúng+>=8s->2
+- **Interval Preview:** Tính trước 4 intervals hiện bên dưới mỗi nút
+- **Review Session giữ nguyên** — KHÔNG thay đổi Arena flow
+- **Plan location:** openspec/changes/study-post-flip-challenge/
+
+---
 ## Active Goal
 Milestone Reward Character Collection — PLANNING DONE ✅ (2026-04-16)
 → Next: cm-execution to implement
