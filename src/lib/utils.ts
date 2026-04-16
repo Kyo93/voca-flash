@@ -11,17 +11,24 @@ export function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
+// ── String utilities ─────────────────────────────────────────
+
+/**
+ * Strips Unicode diacritical marks (accents) from text.
+ * Used by both slugify and tag-engine for case-insensitive matching.
+ */
+export function stripDiacritics(text: string): string {
+  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 /**
  * Converts a string to a URL-safe slug.
  * Handles Unicode characters, special characters, and whitespace.
  */
 export function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+  return stripDiacritics(name.toLowerCase())
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .trim()
+    .trim();
 }

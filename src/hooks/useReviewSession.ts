@@ -3,18 +3,10 @@ import { CardProgress, SrsRating, calculateFSRSReview, mapIntensityToRetention }
 import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word } from '../lib/types'
-import { selectQuadrant as sharedSelectQuadrant } from '../lib/challenge-logic'
+import { selectQuadrant as sharedSelectQuadrant, type ReviewChallenge, type QuadrantType } from '../lib/challenge-logic'
 
-// Re-export types for backward compatibility
-export type QuadrantType = 'recognition' | 'phonetics' | 'context_gap' | 'construction' | 'usage_master' | 'ghost_recall'
-
-export interface ReviewChallenge {
-  id: string
-  word: Word
-  progress: CardProgress
-  choices: string[]
-  quadrant: QuadrantType
-}
+// Re-export for backward compatibility (used by other hooks)
+export type { ReviewChallenge, QuadrantType }
 
 export function useReviewSession() {
   const { user, profile } = useAuth()

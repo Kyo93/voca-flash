@@ -143,17 +143,17 @@ export default function ProgressPage() {
                       <div className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-secondary text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10">
                         {count} từ
                       </div>
-                      <div 
-                      className={`w-full rounded-t-lg transition-all duration-700 ${
-                        isToday 
-                          ? 'bg-orange-500 shadow-[0_4px_12px_rgba(249,115,22,0.3)]' 
-                          : 'bg-blue-500/10 group-hover:bg-blue-500/20'
-                      }`}
-                      style={{ 
-                        height: `${height}%`,
-                        transitionDelay: `${i * 100}ms`
-                      }}
-                    />
+                      <div
+                        className={`w-full rounded-t-lg transition-all duration-700 ${
+                          isToday
+                            ? 'bg-orange-500 shadow-[0_4px_12px_rgba(249,115,22,0.3)]'
+                            : 'bg-blue-500/10 group-hover:bg-blue-500/20'
+                        }`}
+                        style={{
+                          height: `${height}%`,
+                          transitionDelay: `${i * 100}ms`
+                        }}
+                      />
                     </div>
                     <div className="text-center">
                       <p className={`text-[9px] font-black uppercase tracking-tighter ${isToday ? 'text-primary' : 'text-stone-300'}`}>

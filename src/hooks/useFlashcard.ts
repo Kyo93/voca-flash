@@ -71,8 +71,8 @@ export function useFlashcard() {
       if (!s.prepStats) return s
       const { unlearned, learning, mastered } = s.prepStats
       
-      // unlearned + ALL learning is fine, or just due learning. Let's use unlearned + leaning.
-      // Wait, getDueCards only gets DUE cards. Let's combine unlearned and due cards.
+      // Queue = unlearned words + words currently in learning phase.
+      // Mastered words included only if includeMastered=true.
       let combined = [...unlearned, ...learning]
       if (includeMastered) {
         combined = [...combined, ...mastered]

@@ -1,6 +1,8 @@
 import Papa from 'papaparse'
 import type { RawRow, NormalizedWord } from './types'
 import type { Topic } from './types'
+import { slugify } from './utils'
+export { slugify }
 
 // ── Type for parser output ─────────────────────────────────
 export type { RawRow, NormalizedWord } from './types'
@@ -168,10 +170,7 @@ const DIFFICULTY_LABEL_MAP: Record<string, number> = {
 }
 
 // ── Slug Utilities ────────────────────────────────────────────
-/** Convert a topic name to a URL-safe slug. */
-export function slugify(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-}
+// slugify imported from ./utils (single source of truth)
 
 /**
  * Generate a slug that is unique within existingSlugs.
@@ -317,8 +316,7 @@ export async function parseSheetsUrl(
   return processRows(rawRows, topicMap)
 }
 
-// Alias for backward compat
-export { parseSheetsUrl as parseSheetsUrlIntoRows }
+// Alias for backward compat — removed. Use parseSheetsUrl directly.
 
 // ── Process rows ───────────────────────────────────────────
 // Returns rows + list of unique topic names for auto-creation.

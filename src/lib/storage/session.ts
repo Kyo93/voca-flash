@@ -1,6 +1,6 @@
 import { supabase } from '../supabase'
 import type { Word, SrsRecord, WordChoice, ResumePointer } from '../types'
-import { CardProgress } from '../srs'
+import { CardProgress, mapSrsRecordToCardProgress } from '../srs'
 
 export async function fetchSrsStates(userId: string): Promise<Map<string, CardProgress>> {
   const PAGE_SIZE = 1000
@@ -22,17 +22,7 @@ export async function fetchSrsStates(userId: string): Promise<Map<string, CardPr
 
     const progressList = (data as SrsRecord[]) ?? []
     for (const p of progressList) {
-      map.set(p.word_id, {
-        cardId: p.word_id,
-        stability: p.fsrs_stability ?? 0,
-        difficulty: p.fsrs_difficulty ?? 0.5,
-        state: p.fsrs_state ?? 0,
-        reps: p.fsrs_reps ?? 0,
-        lapses: p.fsrs_lapses ?? 0,
-        scheduledDays: p.fsrs_scheduled_days ?? 0,
-        due: p.next_review_at ? new Date(p.next_review_at).getTime() : Date.now(),
-        lastReview: p.last_reviewed ? new Date(p.last_reviewed).getTime() : 0,
-      })
+      map.set(p.word_id, mapSrsRecordToCardProgress(p))
     }
 
     hasMore = progressList.length === PAGE_SIZE
@@ -47,42 +37,32 @@ export async function upsertSrsRecord(
   cardId: string,
   update: CardProgress & { incrementWrong?: number }
 ): Promise<void> {
-  const { data: existing } = await supabase
-    .from('user_srs_records')
-    .select('lapse_count')
-    .eq('user_id', userId)
-    .eq('word_id', cardId)
-    .maybeSingle()
-
-  const newLapseLegacy = (existing?.lapse_count ?? 0) + (update.incrementWrong ?? 0)
-  const isMasteredStatus = update.stability >= 21 && update.state !== 3
-
   if (isNaN(update.stability) || isNaN(update.difficulty)) {
     console.warn('[Storage] Skipping upsert due to NaN values in FSRS data', update)
     return
   }
 
-  const { error } = await supabase
-    .from('user_srs_records')
-    .upsert({
-      user_id: userId,
-      word_id: cardId,
-      repetitions: update.reps,
-      lapse_count: newLapseLegacy,
-      ease_factor: 3.0 - (update.difficulty * 1.7),
-      interval_days: update.scheduledDays ?? update.scheduledDays,
-      fsrs_stability: update.stability,
-      fsrs_difficulty: update.difficulty,
-      fsrs_state: update.state,
-      fsrs_scheduled_days: update.scheduledDays ?? update.scheduledDays,
-      fsrs_reps: update.reps,
-      fsrs_lapses: update.lapses,
-      next_review_at: new Date(update.due).toISOString(),
-      mastered: isMasteredStatus,
-      last_reviewed: new Date().toISOString(),
-    }, {
-      onConflict: 'user_id,word_id',
-    })
+  const isMasteredStatus = update.stability >= 21 && update.state !== 3
+
+  // Single RPC call — atomic upsert, no SELECT needed
+  const { error } = await supabase.rpc('upsert_srs_record', {
+    p_user_id: userId,
+    p_word_id: cardId,
+    p_reps: update.reps,
+    p_lapse_count: 0,
+    p_ease_factor: 3.0 - (update.difficulty * 1.7),
+    p_interval_days: update.scheduledDays,
+    p_fsrs_stability: update.stability,
+    p_fsrs_difficulty: update.difficulty,
+    p_fsrs_state: update.state,
+    p_fsrs_scheduled_days: update.scheduledDays,
+    p_fsrs_reps: update.reps,
+    p_fsrs_lapses: update.lapses,
+    p_next_review_at: new Date(update.due).toISOString(),
+    p_mastered: isMasteredStatus,
+    p_last_reviewed: new Date().toISOString(),
+    p_increment_wrong: update.incrementWrong ?? 0,
+  })
 
   if (error) {
     console.error('[Storage] upsertSrsRecord error:', error)
@@ -126,17 +106,7 @@ export async function fetchReviewWords(userId: string): Promise<{ word: Word; pr
 
     return {
       word: w,
-      progress: {
-        cardId: record.word_id,
-        stability: record.fsrs_stability ?? 0,
-        difficulty: record.fsrs_difficulty ?? 0.5,
-        state: record.fsrs_state ?? 0,
-        reps: record.fsrs_reps ?? 0,
-        lapses: record.fsrs_lapses ?? 0,
-        scheduledDays: record.fsrs_scheduled_days ?? 0,
-        due: record.next_review_at ? new Date(record.next_review_at).getTime() : Date.now(),
-        lastReview: record.last_reviewed ? new Date(record.last_reviewed).getTime() : 0,
-      },
+      progress: mapSrsRecordToCardProgress(record),
       choices: wordChoices
     }
   })

@@ -1,6 +1,7 @@
 import { supabase } from '../supabase'
 import type { UserProfile, MasteryStats } from '../types'
 import { fetchInitialAppData } from './roadmap'
+import { getMasteryStats } from './mastery'
 
 export async function updateUserSettings(userId: string, settings: Partial<UserProfile>): Promise<void> {
   const { error } = await supabase
@@ -90,15 +91,18 @@ export async function recordStreak(userId: string): Promise<number> {
 }
 
 export async function fetchDashboardStats(userId: string): Promise<MasteryStats> {
-  const appData = await fetchInitialAppData(userId)
-  
+  const [mastery, appData] = await Promise.all([
+    getMasteryStats(userId),
+    fetchInitialAppData(userId),
+  ])
+
   return {
-    total: appData.stats.total_words,
-    mastered: appData.stats.mastered,
-    learning: appData.stats.learning,
-    due: appData.global_review_count,
-    weak: 0, 
-    orphaned: 0,
+    total: mastery.total,
+    mastered: mastery.mastered,
+    learning: mastery.learning,
+    due: mastery.due,
+    weak: mastery.weak,
+    orphaned: mastery.orphaned,
     streak_days: appData.profile?.streak_days ?? 0,
   }
 }

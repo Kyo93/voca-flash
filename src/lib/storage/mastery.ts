@@ -64,14 +64,14 @@ export async function getUserVocabulary(
 }
 
 export async function fetchTopicWordCounts(): Promise<Record<string, number>> {
-  const { data } = await supabase
-    .from('topic_words')
-    .select('topic_id, topics(slug)')
-  
+  const { data, error } = await supabase.rpc('get_topic_word_counts')
+  if (error) {
+    console.error('[Storage] fetchTopicWordCounts error:', error)
+    return {}
+  }
   const counts: Record<string, number> = {}
-  for (const row of (data ?? [])) {
-    const slug = (row as any).topics?.slug
-    if (slug) counts[slug] = (counts[slug] ?? 0) + 1
+  for (const row of (data ?? []) as { slug: string; count: number }[]) {
+    counts[row.slug] = row.count
   }
   return counts
 }

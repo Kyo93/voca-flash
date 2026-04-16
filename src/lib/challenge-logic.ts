@@ -35,55 +35,41 @@ export interface ReviewChallenge {
 }
 
 /**
- * Adaptive Quadrant Selection
- * Chooses the hardest appropriate challenge for the word's current mastery level.
- *
- * Based on FSRS stability (days):
- *   < 3  days → Beginner: Recognition, Construction, or Context Gap
- *   < 14 days → Intermediate: Phonetics, Construction, or Context Gap
- *   ≥ 14 days → Advanced: Ghost Recall or Usage Master
+ * Unified quadrant selector.
+ * Supports two call signatures:
+ *   (card: ChallengeCard)  — for useReviewSession (backward compat)
+ *   (stability, hasExample, hasChoices?) — for useFreeStudySession
  */
-export function selectQuadrant(card: ChallengeCard): QuadrantType {
-  const { progress, word, choices } = card
-  const hasExample = !!word.example
-  const hasChoices = choices.length >= 3
-
-  if (progress.stability < 3) {
-    // Beginner
-    const options: QuadrantType[] = ['construction']
-    if (hasChoices) options.push('recognition')
-    if (hasExample) options.push('context_gap')
-    return options[Math.floor(Math.random() * options.length)]
-  } else if (progress.stability < 14) {
-    // Intermediate
-    const options: QuadrantType[] = ['construction', 'phonetics']
-    if (hasExample) options.push('context_gap')
-    return options[Math.floor(Math.random() * options.length)]
-  } else {
-    // Advanced
-    if (hasExample && Math.random() > 0.5) return 'usage_master'
-    return 'ghost_recall'
-  }
-}
-
-/**
- * Select quadrant for free study — simplified version used in useFreeStudySession.
- * Uses MasteryWord shape (stability from fsrs_stability field).
- */
-export function selectQuadrantFreeStudy(
-  fsrsStability: number,
-  hasExample: boolean
+export function selectQuadrant(
+  cardOrStability: ChallengeCard | number,
+  hasExample?: boolean,
+  hasChoices?: boolean,
 ): QuadrantType {
-  if (fsrsStability < 3) {
-    const options: QuadrantType[] = ['construction', 'recognition']
-    if (hasExample) options.push('context_gap')
+  let stability: number
+  let example: boolean
+  let choicesAvailable: boolean
+
+  if (typeof cardOrStability === 'number') {
+    stability = cardOrStability
+    example = hasExample ?? false
+    choicesAvailable = hasChoices ?? false
+  } else {
+    stability = cardOrStability.progress?.stability ?? 0
+    example = !!cardOrStability.word?.example
+    choicesAvailable = (cardOrStability.choices?.length ?? 0) >= 3
+  }
+
+  if (stability < 3) {
+    const options: QuadrantType[] = ['construction']
+    if (choicesAvailable) options.push('recognition')
+    if (example) options.push('context_gap')
     return options[Math.floor(Math.random() * options.length)]
-  } else if (fsrsStability < 14) {
+  } else if (stability < 14) {
     const options: QuadrantType[] = ['construction', 'phonetics']
-    if (hasExample) options.push('context_gap')
+    if (example) options.push('context_gap')
     return options[Math.floor(Math.random() * options.length)]
   } else {
-    if (hasExample && Math.random() > 0.5) return 'usage_master'
+    if (example && Math.random() > 0.5) return 'usage_master'
     return 'ghost_recall'
   }
 }

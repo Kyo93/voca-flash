@@ -19,9 +19,12 @@ describe('Streak System', () => {
   })
 
   it('recordStudy increments streak on consecutive days', () => {
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-    const yesterdayStr = yesterday.toISOString().split('T')[0]
+    // Use todayBoundaryStr to match what recordStudy() uses internally.
+    // This ensures lastStudyDate is always "1 day behind" relative to 4 AM boundary.
+    const today = new Date()
+    today.setHours(4, 0, 0, 0)
+    if (today.getHours() > 12) today.setDate(today.getDate() - 1)
+    const yesterdayStr = new Date(today.getTime() - 86400000).toISOString().split('T')[0]
 
     saveStreak({
       currentStreak: 3,
@@ -35,9 +38,11 @@ describe('Streak System', () => {
   })
 
   it('recordStudy resets streak when missed > 1 day', () => {
-    const threeDaysAgo = new Date()
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
-    const threeDaysAgoStr = threeDaysAgo.toISOString().split('T')[0]
+    // 4 AM boundary minus 3 days
+    const today = new Date()
+    today.setHours(4, 0, 0, 0)
+    if (today.getHours() > 12) today.setDate(today.getDate() - 1)
+    const threeDaysAgoStr = new Date(today.getTime() - 3 * 86400000).toISOString().split('T')[0]
 
     saveStreak({
       currentStreak: 10,

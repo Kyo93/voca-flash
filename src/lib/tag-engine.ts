@@ -6,6 +6,8 @@
  * Case-insensitive matching.
  */
 
+import { stripDiacritics } from './utils'
+
 // ─── Tag definitions ────────────────────────────────────────
 export const TAG_META: Record<string, { label: string; color: string }> = {
   'work':           { label: 'Công việc',        color: '#F97316' },
@@ -219,10 +221,7 @@ const TAG_KEYWORDS: [string, string[]][] = [
 
 // ─── Normalize text for matching ──────────────────────────────
 function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // strip diacritics
+  return stripDiacritics(text.toLowerCase())
     .replace(/[^a-z0-9\s]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()

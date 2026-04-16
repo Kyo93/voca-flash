@@ -3,7 +3,7 @@ import { CardProgress } from '../lib/srs'
 import { upsertFreeStudyFail, getUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
-import { QuadrantType, ReviewChallenge } from '../lib/challenge-logic'
+import { ReviewChallenge, selectQuadrant } from '../lib/challenge-logic'
 
 export function useFreeStudySession(deckId: string = 'all', wordsOverride?: MasteryWord[]) {
   const { user } = useAuth()
@@ -19,25 +19,6 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
   })
   const [syncError, setSyncError] = useState<string | null>(null)
   const isInitializing = useRef(false)
-
-  // Quadrant selection logic (Stability-based)
-  const selectQuadrant = (word: MasteryWord): QuadrantType => {
-    const hasExample = !!word.example
-    const stability = word.fsrs_stability ?? 0
-
-    if (stability < 3) {
-      const options: QuadrantType[] = ['construction', 'recognition']
-      if (hasExample) options.push('context_gap')
-      return options[Math.floor(Math.random() * options.length)]
-    } else if (stability < 14) {
-      const options: QuadrantType[] = ['construction', 'phonetics']
-      if (hasExample) options.push('context_gap')
-      return options[Math.floor(Math.random() * options.length)]
-    } else {
-      if (hasExample && Math.random() > 0.5) return 'usage_master'
-      return 'ghost_recall'
-    }
-  }
 
   const initialize = useCallback(async () => {
     if (!user || isInitializing.current) return
@@ -98,7 +79,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
           word: wordObj,
           progress: progress,
           choices: [], // We'll skip recognition for now in Free Study for simplicity
-          quadrant: selectQuadrant(w)
+          quadrant: selectQuadrant(w.fsrs_stability ?? 0, !!w.example)
         }
       })
 

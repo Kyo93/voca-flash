@@ -1,4 +1,5 @@
 import { fsrs, createEmptyCard, State, type Card as FSRSCard } from 'ts-fsrs'
+import type { SrsRecord } from './types'
 
 export interface Card {
   id: string
@@ -173,4 +174,21 @@ export function mapIntensityToRetention(intensity: number): number {
   if (intensity <= 1.0) return 0.90
   if (intensity <= 1.2) return 0.85
   return 0.8 // Relaxed
+}
+
+// ── SrsRecord → CardProgress mapping ─────────────────────────
+// Single source of truth for mapping DB records to in-memory CardProgress.
+// Used by fetchSrsStates, fetchReviewWords in storage/session.ts.
+export function mapSrsRecordToCardProgress(record: SrsRecord): CardProgress {
+  return {
+    cardId: record.word_id,
+    stability: record.fsrs_stability ?? 0,
+    difficulty: record.fsrs_difficulty ?? 0.5,
+    state: record.fsrs_state ?? 0,
+    reps: record.fsrs_reps ?? 0,
+    lapses: record.fsrs_lapses ?? 0,
+    scheduledDays: record.fsrs_scheduled_days ?? 0,
+    due: record.next_review_at ? new Date(record.next_review_at).getTime() : Date.now(),
+    lastReview: record.last_reviewed ? new Date(record.last_reviewed).getTime() : 0,
+  }
 }

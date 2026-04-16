@@ -2,7 +2,7 @@ import { supabase } from '../supabase'
 import type { Topic, Roadmap, InitialAppData, ProgressPageData, LibraryPageData, DashboardSummary } from '../types'
 
 export async function fetchInitialAppData(userId: string): Promise<InitialAppData> {
-  const { data, error } = await supabase.rpc('get_initial_app_data', { p_user_id: userId })
+  const { data, error } = await supabase.rpc('get_initial_app_data_v2', { p_user_id: userId })
   
   if (error) {
     console.error('[Storage] Error fetching initial app data:', error)
@@ -43,7 +43,7 @@ export async function fetchInitialAppData(userId: string): Promise<InitialAppDat
 }
 
 export async function fetchProgressPageData(userId: string): Promise<ProgressPageData> {
-  const { data, error } = await supabase.rpc('get_progress_page_data', { p_user_id: userId })
+  const { data, error } = await supabase.rpc('get_progress_page_data_v2', { p_user_id: userId })
   
   if (error) {
     console.error('[Storage] Error fetching progress page data:', error)

@@ -8,6 +8,7 @@
  */
 
 import { supabase } from './supabase'
+import { getTodayBoundary } from './supabase-storage'
 
 const STREAK_KEY = 'vocamaster-streak'
 
@@ -19,8 +20,12 @@ export interface StreakData {
 
 // ── localStorage helpers (offline fallback) ──────────────────
 
-function todayStr(): string {
-  return new Date().toISOString().split('T')[0]
+/**
+ * Returns today's date string using 4 AM boundary.
+ * Sessions before 4 AM are grouped into "yesterday".
+ */
+function todayBoundaryStr(): string {
+  return getTodayBoundary().toISOString().split('T')[0]
 }
 
 function daysDiff(date1: string, date2: string): number {
@@ -70,7 +75,7 @@ export async function fetchStreakFromSupabase(userId: string): Promise<StreakDat
  */
 export function recordStudy(): StreakData {
   const data = loadStreak()
-  const today = todayStr()
+  const today = todayBoundaryStr()
 
   if (data.lastStudyDate === today) {
     return data

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Topic, NormalizedWord, BatchInsertResult } from '../../lib/types'
 import {
   parseFile,
-  parseSheetsUrlIntoRows,
+  parseSheetsUrl,
   parseErrorToMessage,
   resolveUnmatchedTopics,
   generateUniqueSlug,
@@ -171,7 +171,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
     setState('parsing')
     setErrorMessage('')
     try {
-      const parsed = await parseSheetsUrlIntoRows(sheetsUrl, topicMap)
+      const parsed = await parseSheetsUrl(sheetsUrl, topicMap)
       await handleParse(parsed)
     } catch (err) {
       const code = err instanceof Error ? err.message : 'PARSE_ERROR'
