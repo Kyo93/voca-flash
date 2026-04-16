@@ -74,12 +74,11 @@ export function parseCSV(file: File): Promise<RawRow[]> {
             return
           }
         }
-        // Normalize rows
+        // Keys already normalized via transformHeader — use row directly
         const rows = (results.data as Record<string, unknown>[]).map(row => {
           const normalized: Record<string, string> = {}
           for (const [key, val] of Object.entries(row)) {
-            const normalizedKey = normalizeKey(key)
-            normalized[normalizedKey] = parseRawValue(val)
+            normalized[key] = parseRawValue(val) // key is already normalized
           }
           return normalized as unknown as RawRow
         })
@@ -139,10 +138,11 @@ export function parseGoogleSheetsUrl(url: string): Promise<RawRow[]> {
         throw new Error('EMPTY_FILE')
       }
 
+      // Keys already normalized via transformHeader — use row directly
       const rows: RawRow[] = results.data.map(row => {
         const normalized: Record<string, string> = {}
         for (const [key, val] of Object.entries(row)) {
-          normalized[normalizeKey(key)] = parseRawValue(val)
+          normalized[key] = parseRawValue(val) // key is already normalized
         }
         return normalized as unknown as RawRow
       })

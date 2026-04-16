@@ -49,7 +49,7 @@ export async function upsertSrsRecord(
     p_user_id: userId,
     p_word_id: cardId,
     p_reps: update.reps,
-    p_lapse_count: 0,
+    p_increment_lapse: update.lapses - (update.lapses > 0 ? 1 : 0), // seed = current lapses (not counting this review yet)
     p_ease_factor: 3.0 - (update.difficulty * 1.7),
     p_interval_days: update.scheduledDays,
     p_fsrs_stability: update.stability,

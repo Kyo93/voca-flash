@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION upsert_srs_record(
   p_user_id UUID,
   p_word_id UUID,
   p_reps INTEGER,
-  p_lapse_count INTEGER,
+  p_increment_lapse INTEGER,
   p_ease_factor FLOAT8,
   p_interval_days INTEGER,
   p_fsrs_stability FLOAT8,
@@ -30,7 +30,7 @@ BEGIN
   ) VALUES (
     p_user_id, p_word_id,
     p_reps,
-    GREATEST(p_lapse_count, 0) + COALESCE(p_increment_wrong, 0),
+    p_increment_lapse + COALESCE(p_increment_wrong, 0),
     p_ease_factor,
     p_interval_days,
     p_fsrs_stability, p_fsrs_difficulty, p_fsrs_state,

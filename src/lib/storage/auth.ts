@@ -28,7 +28,7 @@ export async function recordStreak(userId: string): Promise<number> {
 
   const { data: profile, error: fetchError } = await supabase
     .from('user_profiles')
-    .select('streak_days, last_study_date')
+    .select('streak_days, last_study_date, longest_streak')
     .eq('id', userId)
     .maybeSingle()
 
@@ -44,6 +44,7 @@ export async function recordStreak(userId: string): Promise<number> {
         id: userId,
         streak_days: 1,
         last_study_date: today,
+        longest_streak: 1,
         daily_target: 20,
         theme_mode: 'light',
       })
@@ -74,11 +75,15 @@ export async function recordStreak(userId: string): Promise<number> {
     newStreak = 1
   }
 
+  const currentLongest = (profile as any).longest_streak ?? 0
+  const newLongest = Math.max(currentLongest, newStreak)
+
   const { error: updateError } = await supabase
     .from('user_profiles')
     .update({
       streak_days: newStreak,
       last_study_date: today,
+      longest_streak: newLongest,
     })
     .eq('id', userId)
 

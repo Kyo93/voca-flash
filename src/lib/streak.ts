@@ -52,7 +52,7 @@ export function saveStreak(data: StreakData): void {
 export async function fetchStreakFromSupabase(userId: string): Promise<StreakData> {
   const { data, error } = await supabase
     .from('user_profiles')
-    .select('streak_days, last_study_date')
+    .select('streak_days, last_study_date, longest_streak')
     .eq('id', userId)
     .single()
 
@@ -63,7 +63,7 @@ export async function fetchStreakFromSupabase(userId: string): Promise<StreakDat
   return {
     currentStreak: (data.streak_days as number) ?? 0,
     lastStudyDate: (data.last_study_date as string) ?? '',
-    longestStreak: (data.streak_days as number) ?? 0, // TODO: add longest_streak column
+    longestStreak: (data.longest_streak as number) ?? 0,
   }
 }
 
