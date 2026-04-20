@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
 import NoteDrawer from '../components/NoteDrawer'
 import WordDetailPanel from '../components/WordDetailPanel'
+import AudioButton from '../components/common/AudioButton'
+import CardRow from '../components/mastery/CardRow'
 import { format } from 'date-fns'
+
 import { vi, enUS, type Locale } from 'date-fns/locale'
 
 type FilterType = 'all' | 'due' | 'weak' | 'orphaned' | 'mastered'
@@ -372,85 +375,4 @@ export default function MasteryPage() {
   )
 }
 
-import React from 'react'
-const CardRow = React.forwardRef<HTMLTableRowElement, {
-  word: MasteryWord
-  isSelected: boolean
-  onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
-  isSelectedFocus: boolean
-  onSelectFocus: () => void
-  isNotebookSaved: boolean
-  locale: Locale
-}>(({ word, isSelected, onSelect, isSelectedFocus, onSelectFocus, isNotebookSaved, locale }, ref) => {
-  const nextReviewDate = word.next_review_at ? new Date(word.next_review_at) : null
-  const isDue = nextReviewDate && nextReviewDate <= new Date()
-  
-  const stability = Number(word.fsrs_stability ?? 0)
-  
-  // Levels: Fresh (<3d), Learning (3-21d), Mastered (21-90d), Rooted (>90d)
-  const getLevel = (s: number) => {
-    if (s >= 90) return { label: 'Rooted', color: 'bg-secondary', text: 'text-secondary', bg: 'bg-secondary/10', glow: 'shadow-[0_0_15px_rgba(130,148,96,0.3)]' }
-    if (s >= 21) return { label: 'Mastered', color: 'bg-secondary/70', text: 'text-secondary/80', bg: 'bg-secondary/5', glow: '' }
-    if (s >= 3) return { label: 'Learning', color: 'bg-primary/50', text: 'text-primary/70', bg: 'bg-primary/5', glow: '' }
-    return { label: 'Fresh', color: 'bg-primary', text: 'text-primary', bg: 'bg-primary/10', glow: '' }
-  }
 
-  const level = getLevel(stability)
-  const strengthPercent = Math.min(100, (stability / 21) * 100)
-
-  return (
-    <tr 
-      ref={ref}
-      className={`group hover:bg-surface-container-low transition-all cursor-pointer ${isSelectedFocus ? 'bg-primary/10' : ''}`}
-      onClick={onSelectFocus}
-    >
-      <td className="py-4 px-8">
-        <input 
-          type="checkbox" 
-          checked={isSelected}
-          onChange={onSelect}
-          className="w-5 h-5 rounded-lg border-surface-container-highest text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
-        />
-      </td>
-      <td className="py-4 px-2">
-        <div className="flex items-center gap-4">
-          <span className="text-lg font-bold text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight">{word.word}</span>
-          <span className="text-xs text-on-surface-variant font-normal truncate max-w-[200px] italic">{word.definition}</span>
-          
-          {/* Level Badge */}
-          <span className={`px-2.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest ${level.bg} ${level.text} ${level.glow}`}>
-            {level.label}
-          </span>
-        </div>
-      </td>
-      <td className="py-4 px-8 hidden lg:table-cell">
-        {word.is_orphaned ? (
-          <span className="inline-flex px-3 py-1 bg-red-50 text-red-500 text-[10px] font-semibold uppercase tracking-widest rounded-md">Mồ côi</span>
-        ) : (
-          <span className="inline-flex px-3 py-1 bg-surface-container text-on-surface-variant/60 text-[10px] font-semibold uppercase tracking-widest rounded-md">{word.topic_names?.split(',')[0]}</span>
-        )}
-      </td>
-      <td className="py-4 px-8">
-        {isNotebookSaved && (
-          <span className="material-symbols-outlined text-primary text-xl fill-icon animate-in zoom-in duration-300">favorite</span>
-        )}
-      </td>
-      <td className="py-4 px-8">
-        <div className="flex items-center gap-3">
-          <div className="w-20 h-2 bg-surface-container-low rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${level.color} transition-all duration-1000 ${level.glow ? 'animate-pulse' : ''}`} 
-              style={{ width: `${strengthPercent}%` }}
-            />
-          </div>
-          <p className="text-[10px] font-normal text-on-surface-variant/40 uppercase leading-none">{stability.toFixed(1)}d</p>
-        </div>
-      </td>
-      <td className="py-4 px-8 text-right">
-        <span className={`text-[13px] font-medium ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
-          {nextReviewDate ? format(nextReviewDate, 'dd/MM/yy', { locale }) : '--'}
-        </span>
-      </td>
-    </tr>
-  )
-})

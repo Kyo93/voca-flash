@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { MasteryWord } from '../lib/types'
 import { format } from 'date-fns'
 import { vi, enUS } from 'date-fns/locale'
+import AudioButton from './common/AudioButton'
+import { getSrsLevelConfig } from '../lib/srs'
+
 
 interface WordDetailPanelProps {
   word: MasteryWord | null
@@ -87,10 +90,14 @@ export default function WordDetailPanel({
                       favorite
                     </span>
                   </button>
-                  <button className="p-2.5 primary-gradient text-on-primary rounded-xl transition-all sun-drenched-shadow">
-                    <span className="material-symbols-outlined text-2xl font-variation-fill">volume_up</span>
-                  </button>
+                  <AudioButton 
+                    text={word.word} 
+                    className="sun-drenched-shadow"
+                    variant="tactile"
+                    size="lg"
+                  />
                 </div>
+
               </div>
 
               <div className="space-y-3">
@@ -100,11 +107,24 @@ export default function WordDetailPanel({
                     <span className="text-lg text-on-surface-variant/60 font-normal font-mono italic">{word.phonetic}</span>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2 text-editorial-asymmetry">
+                 <div className="flex flex-wrap gap-2 text-editorial-asymmetry items-center">
                    <span className="px-3 py-1 bg-surface-container text-on-surface-variant text-[10px] font-semibold uppercase tracking-widest rounded-md">
                     {word.topic_names?.split(',')[0] || 'Chưa gán'}
                   </span>
+                  
+                  {/* SRS Level Badge */}
+                  {(() => {
+                    const level = getSrsLevelConfig(word.fsrs_stability)
+                    return (
+                      <span className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 ${level.bg} ${level.text} ${level.glow}`}>
+                        <span className="material-symbols-outlined text-sm">{level.icon}</span>
+                        {level.label}
+                      </span>
+                    )
+                  })()}
+
                   {word.is_orphaned && (
+
                     <span className="px-3 py-1 bg-red-50 text-red-500 text-[10px] font-semibold uppercase tracking-widest rounded-md">
                       Mồ côi
                     </span>
