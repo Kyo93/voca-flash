@@ -31,7 +31,11 @@ export default function FlashcardFront({ card }: FlashcardFrontProps) {
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <h1 className="text-4xl font-headline font-extrabold text-primary tracking-tight">{card.front}</h1>
-            <p className="text-secondary font-medium tracking-wide text-lg">/{card.front}/</p>
+            {(() => {
+              const p = card.phonetic || card.front;
+              const display = p.startsWith('/') ? p : `/${p}/`;
+              return <p className="text-secondary font-medium tracking-wide text-lg">{display}</p>;
+            })()}
           </div>
           <div className="flex gap-2">
             <AudioButton text={card.front} variant="tactile" size="md" />

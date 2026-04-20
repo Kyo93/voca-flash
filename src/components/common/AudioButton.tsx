@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { speak } from '../../lib/tts'
 
 interface AudioButtonProps {
@@ -20,6 +21,7 @@ export default function AudioButton({
   size = 'md',
   variant = 'tactile'
 }: AudioButtonProps) {
+  const { t } = useTranslation()
   const [speaking, setSpeaking] = useState(false)
 
   const handleSpeak = (e: React.MouseEvent) => {
@@ -57,8 +59,8 @@ export default function AudioButton({
         ${variant !== 'minimal' ? sizeClasses[size] : ''}
         ${className}
       `}
-      title={slow ? 'Nghe chậm' : 'Phát âm'}
-      aria-label={slow ? `Nghe chậm: ${text}` : `Phát âm: ${text}`}
+      title={slow ? t('flashcard.audioSlow') : t('flashcard.audioNormal')}
+      aria-label={`${slow ? t('flashcard.audioSlow') : t('flashcard.audioNormal')}: ${text}`}
     >
       <span className={`
         material-symbols-outlined 

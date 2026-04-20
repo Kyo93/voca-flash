@@ -10,6 +10,7 @@ import WordDetailPanel from '../components/WordDetailPanel'
 import AudioButton from '../components/common/AudioButton'
 import CardRow from '../components/mastery/CardRow'
 import { format } from 'date-fns'
+import { MASTERY_CONFIG } from '../lib/constants'
 
 import { vi, enUS, type Locale } from 'date-fns/locale'
 
@@ -49,7 +50,7 @@ export default function MasteryPage() {
   const [isPanelOpen, setIsPanelOpen] = useState(false)
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
-  const PAGE_SIZE = 50
+  const PAGE_SIZE = MASTERY_CONFIG.DEFAULT_PAGE_SIZE
   const observer = useRef<IntersectionObserver | null>(null)
 
   // 1. Debounce search query
@@ -193,9 +194,13 @@ export default function MasteryPage() {
       {/* Hero Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div className="space-y-3">
-          <h1 className="text-4xl font-black text-on-surface tracking-tighter text-editorial-asymmetry">Kho Từ Vựng</h1>
-          <p className="text-on-surface-variant font-medium max-w-lg leading-relaxed">
-            Hệ thống đang lưu trữ {totalCount} từ vựng trong kho tri thức của bạn. Hãy kiên trì bồi đắp mỗi ngày.
+          <h1 className="text-4xl font-black text-on-surface tracking-tighter text-editorial-asymmetry">{t('mastery.title')}</h1>
+          <p className="text-on-surface-variant font-medium max-w-lg leading-relaxed h-6">
+            {loading && totalCount === 0 ? (
+              <span className="inline-block w-48 h-4 bg-surface-container-highest animate-pulse rounded-full" />
+            ) : (
+              t('mastery.subtitle', { count: totalCount })
+            )}
           </p>
         </div>
         
@@ -221,7 +226,7 @@ export default function MasteryPage() {
             }`}
           >
             <span className="material-symbols-outlined font-variation-fill">bolt</span>
-            ÔN TẬP TỰ DO ({selectedIds.size})
+            {t('mastery.freeStudy', { count: selectedIds.size })}
           </button>
         </div>
       </div>
@@ -229,12 +234,12 @@ export default function MasteryPage() {
       {/* Stats Quick Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
         {stats ? [
-          { label: 'Đang học', value: stats.learning, icon: 'school', color: 'text-primary', bg: 'bg-primary/10' },
-          { label: 'Tổng số từ', value: stats.total, icon: 'book', color: 'text-on-surface-variant', bg: 'bg-surface-container-highest' },
-          { label: 'Đã thuộc', value: stats.mastered, icon: 'verified', color: 'text-secondary', bg: 'bg-secondary/10' },
-          { label: 'Đến hạn', value: stats.due, icon: 'schedule', color: 'text-primary', bg: 'bg-primary/10' },
-          { label: 'Mồ côi', value: stats.orphaned, icon: 'broken_image', color: 'text-red-500', bg: 'bg-red-50' },
-          { label: 'Yếu', value: stats.weak, icon: 'trending_down', color: 'text-red-400', bg: 'bg-red-50' }
+          { label: t('mastery.stats.learning'), value: stats.learning, icon: 'school', color: 'text-primary', bg: 'bg-primary/10' },
+          { label: t('mastery.stats.total'), value: stats.total, icon: 'book', color: 'text-on-surface-variant', bg: 'bg-surface-container-highest' },
+          { label: t('mastery.stats.mastered'), value: stats.mastered, icon: 'verified', color: 'text-secondary', bg: 'bg-secondary/10' },
+          { label: t('mastery.stats.due'), value: stats.due, icon: 'schedule', color: 'text-primary', bg: 'bg-primary/10' },
+          { label: t('mastery.stats.orphaned'), value: stats.orphaned, icon: 'broken_image', color: 'text-red-500', bg: 'bg-red-50' },
+          { label: t('mastery.stats.weak'), value: stats.weak, icon: 'trending_down', color: 'text-red-400', bg: 'bg-red-50' }
         ].map(s => (
           <div key={s.label} className="p-5 bg-surface rounded-2xl sun-drenched-shadow flex items-center gap-4 group hover:scale-[1.02] transition-all">
             <div className={`w-12 h-12 ${s.bg} ${s.color} rounded-2xl flex items-center justify-center shrink-0`}>
@@ -264,7 +269,7 @@ export default function MasteryPage() {
                 : 'bg-surface-container text-on-surface-variant/60 hover:bg-surface-container-highest hover:text-on-surface'
             }`}
           >
-            {f === 'all' ? 'Tất cả' : f === 'due' ? 'Đến hạn' : f === 'weak' ? 'Từ còn yếu' : f === 'orphaned' ? 'Từ mồ côi' : 'Đã thuộc'}
+            {t(`mastery.filters.${f}`)}
           </button>
         ))}
       </div>
@@ -283,11 +288,11 @@ export default function MasteryPage() {
                     className="w-5 h-5 rounded-lg border-surface-container-highest text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
                   />
                 </th>
-                <th className="py-6 px-2 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">Từ vựng</th>
-                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] hidden lg:table-cell">Chủ đề</th>
-                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">Sổ tay</th>
-                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">Sức mạnh</th>
-                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] text-right">Ôn tập tiếp</th>
+                <th className="py-6 px-2 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.word')}</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] hidden lg:table-cell">{t('mastery.table.topic')}</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.notebook')}</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.strength')}</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] text-right">{t('mastery.table.nextReview')}</th>
               </tr>
             </thead>
             <tbody className="">
@@ -332,8 +337,8 @@ export default function MasteryPage() {
         {!loading && words.length === 0 && (
           <div className="py-32 text-center">
             <span className="material-symbols-outlined text-stone-100 text-8xl mb-6">folder_off</span>
-            <p className="text-stone-400 font-black text-xl">Không tìm thấy từ vựng nào.</p>
-            <p className="text-stone-300 text-sm mt-2">Dữ liệu không tồn tại hoặc filter quá hẹp.</p>
+            <p className="text-stone-400 font-black text-xl">{t('mastery.empty.title')}</p>
+            <p className="text-stone-300 text-sm mt-2">{t('mastery.empty.subtitle')}</p>
           </div>
         )}
 

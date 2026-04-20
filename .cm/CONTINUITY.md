@@ -3,21 +3,24 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-Clean Code Unification — PHASE 1: Modularization (2026-04-20)
--> Next: Refactor StudyPage and extract common components
+MasteryPage Optimization (Master-Detail Refactor) — EXECUTION (2026-04-20)
+-> Next: Implement WordDetailPanel component foundations
 
 ## Next Actions
-### Clean Code Unification (PLANNING — 2026-04-20)
-- [ ] 1.1 Extract `AudioButton` to common components
-- [ ] 1.2 Implement `getSrsLevelConfig` helper in `srs.ts`
-- [ ] 2.1 Refactor StudyPage components (Front/Back/Complete)
+### MasteryPage Optimization (READY — 2026-04-20)
+- [x] cm-brainstorm-idea -> Side Panel approach
+- [x] cm-planning -> design.md + tasks.md
+- [ ] 1.1 Create `WordDetailPanel.tsx` skeleton with `framer-motion`
+- [ ] 1.2 Implement the "Halo Modern" drawer container (Right-side slide-in)
+- [ ] 1.3 Add responsive logic (Full-screen for mobile, Max-width for desktop)
 
-## Clean Code Unification Working Context
-- **Strategy**: Segmentation (extracting components) and Taking Out (extracting hooks).
-- **Target Files**: `StudyPage.tsx` (633 lines), `MasteryPage.tsx` (457 lines), `RoadmapTopicsPage.tsx` (422 lines).
-- **Quality Gate**: Must pass `npm run test:gate` (197 tests) after each modularization step.
-- **Mastery Refactor**: Integrated into the Clean Code goal (Side Panel approach preserved).
-- **Plan location**: `openspec/changes/clean-code-unification/`
+## MasteryPage Optimization Working Context
+- **Master-Detail Pattern**: Replacing inline expansion with a side panel sheet.
+- **Clean List**: Inline actions (Audio/Heart) hidden, revealed in panel.
+- **Mobile Policy**: Full-screen slide-in from right.
+- **Aesthetic**: Halo Modern (Glassmorphism, backdrop-blur-xl).
+- **Tabbed Content**: Overview, Linguistic, Notes, Stats.
+- **Plan location**: `openspec/changes/mastery-page-optimization/`
 
 ---
 

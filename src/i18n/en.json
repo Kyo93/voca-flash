@@ -41,9 +41,20 @@
     "good": "Good",
     "easy": "Easy",
     "again": "Again",
-    "interval1d": "1 Day",
-    "interval4d": "4 Days",
-    "interval7d": "7 Days"
+    "subLabels": {
+      "again": "Review",
+      "hard": "Stale",
+      "good": "Normal",
+      "easy": "Early"
+    },
+    "interval": {
+      "minute": "{{count}} min",
+      "minute_other": "{{count}} mins",
+      "day": "{{count}} day",
+      "day_other": "{{count}} days",
+      "month": "{{count}} month",
+      "month_other": "{{count}} months"
+    }
   },
   "roadmap": {
     "title": "Choose Your Journey",
@@ -223,12 +234,66 @@
   },
   "notebook": {
     "title": "Personal Notebook",
-    "noteLabel": "Personal Note",
+    "noteLabel": "Note for {{word}}",
     "notePlaceholder": "Add your note here (mnemonic, personal example, context)...",
     "saveSuccess": "Note saved",
     "removeSuccess": "Removed from notebook",
     "editNote": "Edit Note",
     "addNote": "Add Note",
     "noNote": "No personal note yet."
+  },
+  "mastery": {
+    "title": "Mastery Vault",
+    "subtitle": "Currently storing {{count}} words in your knowledge vault. Keep building every day.",
+    "freeStudy": "FREE STUDY ({{count}})",
+    "stats": {
+      "learning": "Learning",
+      "mastered": "Mastered",
+      "weak": "Weak",
+      "due": "Due",
+      "total": "Total Words",
+      "orphaned": "Orphaned"
+    },
+    "filters": {
+      "all": "All Words",
+      "due": "Due Now",
+      "weak": "Weak Words",
+      "orphaned": "Orphaned",
+      "mastered": "Mastered"
+    },
+    "table": {
+      "word": "Vocabulary",
+      "topic": "Topic",
+      "notebook": "Notebook",
+      "strength": "Strength",
+      "nextReview": "Next Review"
+    },
+    "empty": {
+      "title": "No words found.",
+      "subtitle": "Try a different search or loosen your filters."
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Overview",
+        "linguistic": "Expanded",
+        "notes": "Notes",
+        "stats": "Progress"
+      },
+      "untagged": "Untagged",
+      "orphaned": "Orphaned",
+      "definitionAndExample": "Definition & Example",
+      "editingLinguistic": "Expanded data under editorial",
+      "editingLinguisticDesc": "Scholar system is indexing Synonyms, Antonyms, and Collocations for \"{{word}}\".",
+      "personalNote": "Personal Notebook",
+      "edit": "Edit",
+      "notePlaceholder": "Mnemonic or personal context helps anchor this memory.",
+      "retentionStatus": "Memory Status",
+      "stability": "Stability",
+      "difficulty": "Difficulty",
+      "reps": "Repetitions",
+      "lapses": "Lapses",
+      "scholarSchedule": "Scholar Schedule",
+      "nextReview": "Next Review Due"
+    }
   }
 }

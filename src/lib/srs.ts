@@ -1,5 +1,7 @@
 import { fsrs, createEmptyCard, State, type Card as FSRSCard } from 'ts-fsrs'
+import i18n from '../i18n'
 import type { SrsRecord } from './types'
+import { SRS_STABILITY_LEVELS, STUDY_SESSION_DEFAULTS } from './constants'
 
 export interface Card {
   id: string
@@ -95,7 +97,7 @@ export function calculateFSRSReview(
  * FSRS Criteria: Stability is at least 21 days AND not in Relearning state.
  */
 export function isMastered(progress: CardProgress): boolean {
-  return progress.stability >= 21 && progress.state !== State.Relearning
+  return progress.stability >= SRS_STABILITY_LEVELS.MASTERED && progress.state !== State.Relearning
 }
 
 /**
@@ -187,10 +189,12 @@ export interface IntervalPreview {
 function formatInterval(scheduledDays: number): string {
   if (scheduledDays < 1) {
     const minutes = Math.round(scheduledDays * 24 * 60)
-    return minutes <= 1 ? '1 phút' : `${minutes} phút`
+    return i18n.t('srs.interval.minute', { count: minutes <= 1 ? 1 : minutes })
   }
-  if (scheduledDays < 30) return `${Math.round(scheduledDays)} ngày`
-  return `${Math.round(scheduledDays / 30)} tháng`
+  if (scheduledDays < 30) {
+    return i18n.t('srs.interval.day', { count: Math.round(scheduledDays) })
+  }
+  return i18n.t('srs.interval.month', { count: Math.round(scheduledDays / 30) })
 }
 
 /**
@@ -202,8 +206,8 @@ export function mapTestResultToRating(
   responseTimeMs: number,
 ): SrsRating {
   if (!isCorrect) return 1
-  if (responseTimeMs < 3000) return 4
-  if (responseTimeMs < 8000) return 3
+  if (responseTimeMs < STUDY_SESSION_DEFAULTS.RATING_THRESHOLD_EASY_MS) return 4
+  if (responseTimeMs < STUDY_SESSION_DEFAULTS.RATING_THRESHOLD_GOOD_MS) return 3
   return 2
 }
 
@@ -250,7 +254,7 @@ export interface SrsLevelConfig {
  * Used by MasteryPage, WordDetailPanel, and Library.
  */
 export function getSrsLevelConfig(stability: number): SrsLevelConfig {
-  if (stability >= 90) {
+  if (stability >= SRS_STABILITY_LEVELS.ROOTED) {
     return { 
       label: 'Rooted', 
       color: 'bg-secondary', 
@@ -260,7 +264,7 @@ export function getSrsLevelConfig(stability: number): SrsLevelConfig {
       icon: 'park'
     }
   }
-  if (stability >= 21) {
+  if (stability >= SRS_STABILITY_LEVELS.MASTERED) {
     return { 
       label: 'Mastered', 
       color: 'bg-secondary/70', 
@@ -270,7 +274,7 @@ export function getSrsLevelConfig(stability: number): SrsLevelConfig {
       icon: 'verified'
     }
   }
-  if (stability >= 3) {
+  if (stability >= SRS_STABILITY_LEVELS.LEARNING) {
     return { 
       label: 'Learning', 
       color: 'bg-primary/50', 
@@ -288,4 +292,4 @@ export function getSrsLevelConfig(stability: number): SrsLevelConfig {
     glow: '',
     icon: 'target'
   }
-}
+}

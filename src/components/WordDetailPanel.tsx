@@ -43,10 +43,10 @@ export default function WordDetailPanel({
   if (!word && isOpen) return null
 
   const tabs: { id: TabType; label: string; icon: string }[] = [
-    { id: 'overview', label: 'Tổng quát', icon: 'visibility' },
-    { id: 'linguistic', label: 'Mở rộng', icon: 'account_tree' },
-    { id: 'notes', label: 'Ghi chú', icon: 'edit_note' },
-    { id: 'stats', label: 'Tiến độ', icon: 'analytics' }
+    { id: 'overview', label: t('mastery.detail.tabs.overview'), icon: 'visibility' },
+    { id: 'linguistic', label: t('mastery.detail.tabs.linguistic'), icon: 'account_tree' },
+    { id: 'notes', label: t('mastery.detail.tabs.notes'), icon: 'edit_note' },
+    { id: 'stats', label: t('mastery.detail.tabs.stats'), icon: 'analytics' }
   ]
 
   return (
@@ -109,7 +109,7 @@ export default function WordDetailPanel({
                 </div>
                  <div className="flex flex-wrap gap-2 text-editorial-asymmetry items-center">
                    <span className="px-3 py-1 bg-surface-container text-on-surface-variant text-[10px] font-semibold uppercase tracking-widest rounded-md">
-                    {word.topic_names?.split(',')[0] || 'Chưa gán'}
+                    {word.topic_names?.split(',')[0] || t('mastery.detail.untagged')}
                   </span>
                   
                   {/* SRS Level Badge */}
@@ -126,7 +126,7 @@ export default function WordDetailPanel({
                   {word.is_orphaned && (
 
                     <span className="px-3 py-1 bg-red-50 text-red-500 text-[10px] font-semibold uppercase tracking-widest rounded-md">
-                      Mồ côi
+                      {t('mastery.detail.orphaned')}
                     </span>
                   )}
                 </div>
@@ -177,7 +177,7 @@ export default function WordDetailPanel({
                   )}
 
                   <section className="space-y-4">
-                    <h3 className="label-md text-on-surface-variant">Định nghĩa & Ví dụ</h3>
+                    <h3 className="label-md text-on-surface-variant">{t('mastery.detail.definitionAndExample')}</h3>
                     <div className="p-8 bg-surface rounded-3xl sun-drenched-shadow space-y-6">
                       <p className="text-2xl font-bold text-on-surface leading-tight">{word.definition}</p>
                       {word.example && (
@@ -202,8 +202,8 @@ export default function WordDetailPanel({
                     <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center mx-auto mb-6">
                       <span className="material-symbols-outlined text-on-surface-variant transform scale-150">account_tree</span>
                     </div>
-                    <p className="text-on-surface font-semibold text-lg">Dữ liệu mở rộng đang được biên tập</p>
-                    <p className="text-sm text-on-surface-variant px-12 font-normal">Hệ thống Scholar đang xử lý dữ liệu về Đồng nghĩa, Trái nghĩa và Collocations cho từ "{word.word}".</p>
+                    <p className="text-on-surface font-semibold text-lg">{t('mastery.detail.editingLinguistic')}</p>
+                    <p className="text-sm text-on-surface-variant px-12 font-normal">{t('mastery.detail.editingLinguisticDesc', { word: word.word })}</p>
                   </div>
                 </motion.div>
               )}
@@ -215,18 +215,18 @@ export default function WordDetailPanel({
                    className="space-y-6"
                 >
                   <div className="flex items-center justify-between">
-                    <h3 className="label-md text-on-surface-variant">Sổ tay cá nhân</h3>
+                    <h3 className="label-md text-on-surface-variant">{t('mastery.detail.personalNote')}</h3>
                     <button 
                       onClick={onEditNote}
                       className="label-md text-primary hover:underline transition-all"
                     >
-                      Chỉnh sửa
+                      {t('mastery.detail.edit')}
                     </button>
                   </div>
                   <div className="p-10 bg-surface-container-highest/30 rounded-3xl relative overflow-hidden group min-h-[250px] sun-drenched-shadow">
                      <span className="material-symbols-outlined absolute -right-6 -bottom-6 text-9xl text-primary/5 rotate-12 group-hover:rotate-0 transition-transform duration-700">edit_note</span>
                      <p className={`text-on-surface text-xl italic leading-relaxed relative z-10 font-normal ${!personalNote ? 'opacity-30' : ''}`}>
-                        {personalNote || 'Bút sa gà chết. Một vài ghi chú cá nhân sẽ giúp bạn khắc sâu từ vựng này vào tâm trí.'}
+                        {personalNote || t('mastery.detail.notePlaceholder')}
                      </p>
                   </div>
                 </motion.div>
@@ -239,32 +239,32 @@ export default function WordDetailPanel({
                    className="space-y-10"
                 >
                    <section className="space-y-4">
-                    <h3 className="label-md text-on-surface-variant">Trạng thái ghi nhớ</h3>
+                    <h3 className="label-md text-on-surface-variant">{t('mastery.detail.retentionStatus')}</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                         <p className="label-md text-on-surface-variant mb-2">Độ ổn định</p>
-                         <p className="text-3xl font-bold text-on-surface">{word.fsrs_stability.toFixed(1)}d</p>
-                       </div>
-                       <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                         <p className="label-md text-on-surface-variant mb-2">Độ khó</p>
-                         <p className="text-3xl font-bold text-on-surface">{word.fsrs_difficulty.toFixed(1)}</p>
-                       </div>
-                       <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                         <p className="label-md text-on-surface-variant mb-2">Lượt ôn tập</p>
-                         <p className="text-3xl font-bold text-on-surface">{word.fsrs_reps}</p>
-                       </div>
-                       <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                         <p className="label-md text-on-surface-variant mb-2">Số lần quên</p>
-                         <p className="text-3xl font-bold text-red-500">{word.fsrs_lapses}</p>
-                       </div>
+                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.stability')}</p>
+                          <p className="text-3xl font-bold text-on-surface">{word.fsrs_stability.toFixed(1)}d</p>
+                        </div>
+                        <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
+                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.difficulty')}</p>
+                          <p className="text-3xl font-bold text-on-surface">{word.fsrs_difficulty.toFixed(1)}</p>
+                        </div>
+                        <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
+                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.reps')}</p>
+                          <p className="text-3xl font-bold text-on-surface">{word.fsrs_reps}</p>
+                        </div>
+                        <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
+                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.lapses')}</p>
+                          <p className="text-3xl font-bold text-red-500">{word.fsrs_lapses}</p>
+                        </div>
                     </div>
                    </section>
 
                    <section className="space-y-4">
-                    <h3 className="label-md text-on-surface-variant">Lịch trình Scholar</h3>
+                    <h3 className="label-md text-on-surface-variant">{t('mastery.detail.scholarSchedule')}</h3>
                     <div className="p-8 secondary-gradient text-on-secondary rounded-3xl flex justify-between items-center sun-drenched-shadow">
                        <div>
-                         <p className="label-md text-on-secondary/60 mb-2">Cần ôn lại vào</p>
+                         <p className="label-md text-on-secondary/60 mb-2">{t('mastery.detail.nextReview')}</p>
                          <p className="text-2xl font-bold">
                            {word.next_review_at ? format(new Date(word.next_review_at), 'dd MMMM, yyyy', { locale }) : '--'}
                          </p>

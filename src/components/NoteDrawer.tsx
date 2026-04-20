@@ -61,7 +61,7 @@ export default function NoteDrawer({
                   {t('notebook.title')}
                 </h3>
                 <p className="text-sm text-on-surface-variant font-normal tracking-wide">
-                  {t('notebook.noteLabel')} for <span className="text-primary font-bold font-headline">{word}</span>
+                  {t('notebook.noteLabel', { word })}
                 </p>
               </div>
 

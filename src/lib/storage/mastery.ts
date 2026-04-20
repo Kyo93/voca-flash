@@ -76,11 +76,12 @@ export async function fetchTopicWordCounts(): Promise<Record<string, number>> {
   return counts
 }
 
-function mapWordToCard(word: any, topicSlug?: string): any {
+export function mapWordToCard(word: any, topicSlug?: string): any {
   return {
     id: word.id,
     front: word.word,
     back: word.definition,
+    phonetic: word.phonetic ?? undefined,
     example: word.example ?? undefined,
     image_url: word.image_url ?? undefined,
     image_position: word.image_position ?? 'center',

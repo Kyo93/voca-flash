@@ -41,10 +41,21 @@
     "hard": "Khó",
     "good": "Vừa",
     "easy": "Dễ",
-    "again": "Lại",
-    "interval1d": "1 ngày",
-    "interval4d": "4 ngày",
-    "interval7d": "7 ngày"
+    "again": "Quên",
+    "subLabels": {
+      "again": "Lại",
+      "hard": "Trễ",
+      "good": "Chuẩn",
+      "easy": "Sớm"
+    },
+    "interval": {
+      "minute": "{{count}} phút",
+      "minute_other": "{{count}} phút",
+      "day": "{{count}} ngày",
+      "day_other": "{{count}} ngày",
+      "month": "{{count}} tháng",
+      "month_other": "{{count}} tháng"
+    }
   },
   "roadmap": {
     "title": "Chọn lộ trình của bạn",
@@ -231,12 +242,66 @@
   },
   "notebook": {
     "title": "Sổ tay cá nhân",
-    "noteLabel": "Ghi chú cá nhân",
+    "noteLabel": "Ghi chú cho từ {{word}}",
     "notePlaceholder": "Thêm ghi chú của bạn (cách nhớ, ví dụ riêng, ngữ cảnh)...",
     "saveSuccess": "Đã lưu ghi chú",
     "removeSuccess": "Đã xóa khỏi sổ tay",
     "editNote": "Sửa ghi chú",
     "addNote": "Thêm ghi chú",
     "noNote": "Chưa có ghi chú cá nhân."
+  },
+  "mastery": {
+    "title": "Kho từ vựng",
+    "subtitle": "Hệ thống đang lưu trữ {{count}} từ vựng trong kho tri thức của bạn. Hãy kiên trì bồi đắp mỗi ngày.",
+    "freeStudy": "ÔN TẬP TỰ DO ({{count}})",
+    "stats": {
+      "learning": "Đang học",
+      "mastered": "Đã thuộc",
+      "weak": "Yếu",
+      "due": "Đến hạn",
+      "total": "Tổng số từ",
+      "orphaned": "Mồ côi"
+    },
+    "filters": {
+      "all": "Tất cả",
+      "due": "Đến hạn",
+      "weak": "Từ còn yếu",
+      "orphaned": "Từ mồ côi",
+      "mastered": "Đã thuộc"
+    },
+    "table": {
+      "word": "Từ vựng",
+      "topic": "Chủ đề",
+      "notebook": "Sổ tay",
+      "strength": "Sức mạnh",
+      "nextReview": "Ôn tập tiếp"
+    },
+    "empty": {
+      "title": "Không tìm thấy từ vựng nào.",
+      "subtitle": "Dữ liệu không tồn tại hoặc bộ lọc quá hẹp."
+    },
+    "detail": {
+      "tabs": {
+        "overview": "Tổng quát",
+        "linguistic": "Mở rộng",
+        "notes": "Ghi chú",
+        "stats": "Tiến độ"
+      },
+      "untagged": "Chưa gán",
+      "orphaned": "Mồ côi",
+      "definitionAndExample": "Định nghĩa & Ví dụ",
+      "editingLinguistic": "Dữ liệu mở rộng đang được biên tập",
+      "editingLinguisticDesc": "Hệ thống Scholar đang xử lý dữ liệu về Đồng nghĩa, Trái nghĩa và Collocations cho từ \"{{word}}\".",
+      "personalNote": "Sổ tay cá nhân",
+      "edit": "Chỉnh sửa",
+      "notePlaceholder": "Bút sa gà chết. Một vài ghi chú cá nhân sẽ giúp bạn khắc sâu từ vựng này vào tâm trí.",
+      "retentionStatus": "Trạng thái ghi nhớ",
+      "stability": "Độ ổn định",
+      "difficulty": "Độ khó",
+      "reps": "Lượt ôn tập",
+      "lapses": "Số lần quên",
+      "scholarSchedule": "Lịch trình Scholar",
+      "nextReview": "Cần ôn lại vào"
+    }
   }
 }

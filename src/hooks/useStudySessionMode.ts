@@ -2,12 +2,14 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { 
   SrsRating, 
   Card, 
+  CardProgress,
   StudyChallengeType, 
   IntervalPreview, 
   mapTestResultToRating, 
   computeIntervalPreviews, 
   createInitialProgress 
 } from '../lib/srs'
+import { STUDY_SESSION_DEFAULTS } from '../lib/constants'
 import { generateChoices } from '../lib/utils'
 import { Word } from '../lib/types'
 
@@ -15,7 +17,7 @@ export type StudyPhase = 'FLIPPED' | 'READY_FOR_QUIZ' | 'CHALLENGING' | 'RATING'
 
 interface UseStudySessionModeProps {
   currentCard: Card | null
-  currentProgress: any // from useFlashcard
+  currentProgress: CardProgress | null
   srsIntensity?: number
   onRate: (rating: SrsRating) => void
 }
@@ -33,7 +35,7 @@ export function useStudySessionMode({
   const [phase, setPhase] = useState<StudyPhase>('FLIPPED')
   const [suggestedRating, setSuggestedRating] = useState<SrsRating | null>(null)
   const [intervalPreviews, setIntervalPreviews] = useState<IntervalPreview[]>([])
-  const [timerSeconds, setTimerSeconds] = useState(30)
+  const [timerSeconds, setTimerSeconds] = useState(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
   const [currentChallengeType, setCurrentChallengeType] = useState<StudyChallengeType>('recognition')
   const [precomputedChoices, setPrecomputedChoices] = useState<string[]>([])
   
@@ -65,7 +67,7 @@ export function useStudySessionMode({
     setPhase('FLIPPED')
     setSuggestedRating(null)
     setIntervalPreviews([])
-    setTimerSeconds(30)
+    setTimerSeconds(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
     setPrecomputedChoices([])
   }, [currentCard?.id])
 
@@ -87,7 +89,7 @@ export function useStudySessionMode({
     
     setPrecomputedChoices(generateChoices(cardToWord(currentCard)))
     challengeStartTimeRef.current = Date.now()
-    setTimerSeconds(30)
+    setTimerSeconds(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
     setPhase('CHALLENGING')
 
     timerTickRef.current = setInterval(() => {
@@ -96,7 +98,7 @@ export function useStudySessionMode({
 
     timeoutRef.current = setTimeout(() => {
       handleChallengeTimeout()
-    }, 30000)
+    }, STUDY_SESSION_DEFAULTS.TIMEOUT_MS)
 
     return () => {
       if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
@@ -137,17 +139,23 @@ export function useStudySessionMode({
   const handleSkipChallenge = useCallback(() => {
     if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
     if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
+    
+    const previews = computeIntervalPreviews(
+      currentProgress ?? createInitialProgress(currentCard?.id || ''),
+      srsIntensity,
+    )
+    
     setSuggestedRating(null)
-    setIntervalPreviews([])
+    setIntervalPreviews(previews)
     setPhase('RATING')
-  }, [])
+  }, [currentCard?.id, currentProgress, srsIntensity])
 
   const handleRateInternal = useCallback((rating: SrsRating) => {
     if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
     setPhase('FLIPPED')
     setSuggestedRating(null)
     setIntervalPreviews([])
-    setTimerSeconds(30)
+    setTimerSeconds(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
     // Delay slightly to allow state to settle before next card loads
     setTimeout(() => onRate(rating), 0)
   }, [onRate])
