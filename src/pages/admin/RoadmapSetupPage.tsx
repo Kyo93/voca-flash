@@ -503,14 +503,13 @@ function TopicPanel({
             return (
               <div
                 key={topic.id}
-                ref={(el) => { /* outer ref not used in RoadmapSetupPage */ void el }}
                 onClick={() => onViewWords(topic.id)}
                 draggable
                 onDragStart={(e) => handleDragStart(e, topic.id)}
                 onDragOver={(e) => handleDragOver(e, topic.id)}
                 onDrop={(e) => handleDrop(e, topic.id)}
                 onDragEnd={handleDragEnd}
-                className={`group flex items-center gap-0 rounded-lg transition-all cursor-pointer select-none ${
+                className={`relative group rounded-lg transition-all cursor-pointer select-none ${
                   isDraggingThis
                     ? 'opacity-40'
                     : isDragOverThis
@@ -521,33 +520,21 @@ function TopicPanel({
                 }`}
                 style={{ backgroundColor: `${topicColor}1A` }}
               >
-                {/* Color accent bar (left edge) */}
-                <div
-                  className="w-1 self-stretch rounded-l-lg shrink-0"
-                  style={{ backgroundColor: topicColor }}
-                />
-
-                {/* Icon badge */}
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mx-2 my-2 shrink-0"
-                  style={{ backgroundColor: topicColor + '18', border: `2.5px solid ${topicColor}40` }}
-                >
-                  <span className="material-symbols-outlined text-lg" style={{ color: topicColor }}>
-                    {topic.icon}
-                  </span>
-                </div>
-
-                {/* Card content */}
-                <div className="flex-1 min-w-0 py-2 pr-2">
-                  {/* Top row: drag handle + name + slug badge + status */}
-                  <div className="flex items-center gap-2">
+                {/* Card body */}
+                <div className="p-3">
+                  {/* Top row: icon + drag handle + name */}
+                  <div className="flex items-center gap-2 mb-1">
+                    {/* Icon badge */}
+                    <span
+                      className="material-symbols-outlined text-base shrink-0"
+                      style={{ color: topicColor }}
+                    >
+                      {topic.icon}
+                    </span>
                     <span className="material-symbols-outlined text-stone-300 text-base cursor-grab shrink-0">drag_indicator</span>
-                    <p className={`flex-1 font-bold text-sm leading-tight truncate min-w-0 ${isActive ? 'text-primary' : 'text-secondary'}`}>
+                    <p className={`flex-1 font-bold text-sm leading-tight min-w-0 truncate ${isActive ? 'text-primary' : 'text-secondary'}`}>
                       {topic.name}
                     </p>
-                    <span className="shrink-0 text-[10px] font-mono text-stone-400 bg-white/60 px-1.5 py-0.5 rounded-md border border-stone-200/50">
-                      /{topic.slug}
-                    </span>
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
                         status === 'PUBLISHED'
@@ -559,14 +546,23 @@ function TopicPanel({
                     </span>
                   </div>
 
-                  {/* Bottom row: description + word count + inline actions */}
-                  <div className="flex items-center justify-between mt-0.5">
-                    <div className="flex items-center gap-2 min-w-0">
-                      {topic.description && (
-                        <p className="text-xs text-stone-400 truncate">{topic.description}</p>
-                      )}
-                      <span className="text-[10px] font-bold text-stone-500 shrink-0">{count} từ</span>
-                    </div>
+                  {/* Slug — muted mono text */}
+                  {topic.slug && (
+                    <p className="text-[10px] text-stone-400 font-mono mb-1 pl-[calc(0.875rem+0.5rem)] truncate">
+                      /{topic.slug}
+                    </p>
+                  )}
+
+                  {/* Description */}
+                  {topic.description && (
+                    <p className="text-xs text-stone-400 mb-2 pl-[calc(0.875rem+0.5rem)] line-clamp-1">
+                      {topic.description}
+                    </p>
+                  )}
+
+                  {/* Bottom row: word count + inline actions */}
+                  <div className="flex items-center justify-between pl-[calc(0.875rem+0.5rem)]">
+                    <span className="text-[10px] font-bold text-stone-500">{count} từ</span>
 
                     {/* Inline action buttons — shown on hover */}
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150"

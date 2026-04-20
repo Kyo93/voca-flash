@@ -19,40 +19,34 @@ function readFile(relativePath: string): string {
   return fs.readFileSync(path.join(SRC, relativePath), 'utf8')
 }
 
-describe('TopicPanel — outer icon/slug bar + inner card layout', () => {
+describe('TopicPanel — clean flat cards with icon inside, name prominent, slug below', () => {
 
-  it('must have color accent bar (left of card)', () => {
+  it('card must have topic icon shown inside (material-symbols-outlined with topic.icon)', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // Color bar: div with className including 'w-1' and rounded-left style, style=backgroundColor
-    expect(source).toMatch(/className="w-1.*rounded-l/)
-    expect(source).toMatch(/style=\{\{\s*backgroundColor:\s*topicColor/)
-  })
-
-  it('must have icon badge outside the card (left of card)', () => {
-    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // Icon badge: w-10 h-10 rounded-xl, shows topic.icon
     expect(source).toMatch(/topic\.icon/)
-    expect(source).toMatch(/w-10.*h-10.*rounded-xl/)
   })
 
-  it('must display slug as badge tag next to topic name', () => {
+  it('topic name must be displayed prominently (text-sm)', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // Slug badge: /{topic.slug} inside a tag near the name
-    expect(source).toMatch(/\/{topic\.slug}/)
+    expect(source).toMatch(/text-sm/)          // font-size 14px
+    expect(source).toMatch(/\{topic\.name\}/)  // name value rendered
   })
 
-  it('action buttons must be icon-only (no text label), shown on hover', () => {
+  it('slug must be displayed as mono text', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // Hover reveal pattern present
+    expect(source).toMatch(/font-mono/)         // mono font
+    expect(source).toMatch(/\/{topic\.slug\}/) // slug value
+  })
+
+  it('action buttons (edit/delete) must be shown on hover via group-hover', () => {
+    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
     expect(source).toMatch(/opacity-0 group-hover:opacity-100/)
-    // No text labels on action buttons
     expect(source).not.toContain('>Sửa<')
     expect(source).not.toContain('>Xóa<')
   })
 
-  it('card must have subtle full-card background tint in the topic color', () => {
+  it('card background must be tinted with topic color', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // backgroundColor with topicColor variable (opacity ~8%)
     expect(source).toMatch(/backgroundColor:.*topicColor.*1A/)
   })
 })

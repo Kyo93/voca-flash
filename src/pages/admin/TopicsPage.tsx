@@ -44,83 +44,71 @@ function SortableItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-0 bg-white rounded-xl border border-stone-100 hover:shadow-md transition-all overflow-hidden ${
+      className={`flex items-center gap-4 p-4 bg-white rounded-xl border border-stone-100 hover:shadow-md transition-all ${
         isDragging ? 'shadow-xl z-10' : ''
       }`}
     >
-      {/* Color accent bar (left edge) */}
+      {/* Drag handle */}
+      <button
+        {...attributes}
+        {...listeners}
+        className="cursor-grab text-stone-300 hover:text-stone-500 active:cursor-grabbing p-1"
+        title="Kéo để sắp xếp"
+      >
+        <span className="material-symbols-outlined text-xl">drag_indicator</span>
+      </button>
+
+      {/* Icon */}
+      <span
+        className="material-symbols-outlined text-2xl shrink-0"
+        style={{ color: topic.color ?? '#F97316' }}
+      >
+        {topic.icon}
+      </span>
+
+      {/* Color dot */}
       <div
-        className="w-1 self-stretch shrink-0 rounded-l-xl"
+        className="w-4 h-4 rounded-full shrink-0"
         style={{ backgroundColor: topic.color ?? '#F97316' }}
       />
 
-      {/* Icon badge (left of card content) */}
-      <div
-        className="w-10 h-10 rounded-xl flex items-center justify-center mx-3 my-2 shrink-0"
-        style={{ backgroundColor: (topic.color ?? '#F97316') + '18', border: `2.5px solid ${topic.color ?? '#F97316'}40` }}
-      >
-        <span className="material-symbols-outlined text-lg" style={{ color: topic.color ?? '#F97316' }}>
-          {topic.icon}
-        </span>
-      </div>
-
-      {/* Card content */}
-      <div className="flex-1 min-w-0 py-2 pr-2">
-        {/* Top row: name + slug badge + actions */}
-        <div className="flex items-center gap-2">
-          {/* Drag handle */}
-          <button
-            {...attributes}
-            {...listeners}
-            className="cursor-grab text-stone-300 hover:text-stone-500 active:cursor-grabbing p-1 shrink-0"
-            title="Kéo để sắp xếp"
-          >
-            <span className="material-symbols-outlined text-base">drag_indicator</span>
-          </button>
-
-          {/* Topic name */}
-          <p className="flex-1 font-black text-secondary truncate text-sm">{topic.name}</p>
-
-          {/* Slug badge */}
-          <span className="shrink-0 text-[10px] font-mono text-stone-400 bg-stone-100 px-2 py-0.5 rounded-md">
-            /{topic.slug}
-          </span>
-
-          {/* Actions */}
-          <div className="flex items-center gap-0.5 shrink-0">
-            <button
-              onClick={onEdit}
-              className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-orange-100 transition-colors cursor-pointer"
-              title="Sửa"
-            >
-              <span className="material-symbols-outlined text-stone-400 text-sm">edit</span>
-            </button>
-            <button
-              onClick={onDelete}
-              className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
-              title="Xóa"
-            >
-              <span className="material-symbols-outlined text-red-400 text-sm">delete</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Bottom row: description + timestamps */}
-        <div className="flex items-center gap-3 mt-0.5">
-          {topic.description && (
-            <p className="text-xs text-on-surface-variant truncate">{topic.description}</p>
-          )}
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className="font-black text-secondary truncate">{topic.name}</p>
+        <p className="text-xs text-stone-400 font-mono truncate">{topic.slug}</p>
+        {topic.description && (
+          <p className="text-xs text-on-surface-variant truncate mt-1">{topic.description}</p>
+        )}
+        <div className="flex items-center gap-3 mt-1.5">
           {topic.created_at && (
-            <span className="text-[10px] text-stone-400 font-mono shrink-0">
+            <span className="text-[10px] text-stone-400 font-mono">
               +{formatDetailedDate(topic.created_at)}
             </span>
           )}
           {topic.updated_at && topic.updated_at !== topic.created_at && (
-            <span className="text-[10px] text-stone-400 font-mono shrink-0">
+            <span className="text-[10px] text-stone-400 font-mono">
               · ↑{formatDetailedDate(topic.updated_at)}
             </span>
           )}
         </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex items-center gap-1 shrink-0">
+        <button
+          onClick={onEdit}
+          className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-orange-100 transition-colors cursor-pointer"
+          title="Sửa"
+        >
+          <span className="material-symbols-outlined text-stone-400 text-lg">edit</span>
+        </button>
+        <button
+          onClick={onDelete}
+          className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
+          title="Xóa"
+        >
+          <span className="material-symbols-outlined text-red-400 text-lg">delete</span>
+        </button>
       </div>
     </div>
   )
