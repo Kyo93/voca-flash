@@ -108,7 +108,7 @@ function WordPool({
   const someSelected = visibleWords.some(w => selectedWordIds.has(w.id))
 
   return (
-    <div className="flex flex-col h-full p-4">
+    <div className="flex flex-col h-full px-6 py-4">
 
       {/* ── Breadcrumb (uppercase, bold, tracking-widest) ── */}
       <div className="flex items-center gap-2 text-[10px] text-stone-500 mb-2 font-bold uppercase tracking-widest">
@@ -447,7 +447,7 @@ function TopicPanel({
   const isDragOver = (id: string) => dragOverId === id
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full px-6 py-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-black text-on-surface-variant tracking-tight">Chủ đề</h2>
@@ -463,7 +463,7 @@ function TopicPanel({
       {/* Uncategorized bucket */}
       <button
         onClick={() => onViewWords(null)}
-        className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all mb-2 ${
+        className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all mb-2 mr-4 ${
           activeTopicId === null
             ? 'bg-surface-container-lowest shadow-[inset_4px_0_0_#944a00]'
             : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
@@ -482,7 +482,7 @@ function TopicPanel({
       </button>
 
       {/* Topics list — flat cards, no expand */}
-      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-4">
         {topics.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-8">
             <span className="material-symbols-outlined text-4xl text-stone-200">folder_open</span>
@@ -773,7 +773,7 @@ export default function RoadmapSetupPage() {
       </div>
 
       {/* 2-column layout — full height, each column scrolls independently */}
-      <div className="flex gap-6 min-h-0" style={{ height: 'calc(100vh - 10rem)' }}>
+      <div className="flex gap-8 min-h-0" style={{ height: 'calc(100vh - 10rem)' }}>
         {/* Left: Topic Panel (scrollable internally) */}
         <div className="w-96 shrink-0 bg-white rounded-xl border border-stone-100 flex flex-col overflow-hidden">
           <TopicPanel
