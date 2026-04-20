@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, type FormEvent } from 'react'
 import type { Topic, Roadmap } from '../../lib/types'
-import { slugify } from '../../lib/utils'
+import { slugify, formatDetailedDate } from '../../lib/utils'
 
 // ─── Icon Suggestion Map ──────────────────────────────────────
 const ICON_MAP: [string[], string][] = [
@@ -130,23 +130,6 @@ export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initi
     return ICON_OPTIONS.filter(ic => ic.toLowerCase().includes(q))
   }, [iconSearch])
 
-  // Format "last edited" relative time
-  function formatRelativeTime(dateStr: string): string {
-    try {
-      const date = new Date(dateStr)
-      const now = new Date()
-      const diffMs = now.getTime() - date.getTime()
-      const diffMin = Math.floor(diffMs / 60000)
-      if (diffMin < 1) return 'vừa xong'
-      if (diffMin < 60) return `${diffMin} phút trước`
-      const diffH = Math.floor(diffMin / 60)
-      if (diffH < 24) return `${diffH} giờ trước`
-      const diffD = Math.floor(diffH / 24)
-      return `${diffD} ngày trước`
-    } catch {
-      return ''
-    }
-  }
 
   useEffect(() => {
     if (topic) {
@@ -528,13 +511,18 @@ export default function TopicFormModal({ open, topic, roadmaps, roadmapId: initi
         {/* Footer */}
         <div className="px-6 py-4 border-t border-stone-100 shrink-0">
           <div className="flex items-center justify-between">
-            {/* Metadata */}
-            {(lastEditedBy || lastEditedAt) && (
-              <p className="text-xs text-stone-300 italic">
-                {lastEditedBy && `Last edited by ${lastEditedBy}`}
-                {lastEditedBy && lastEditedAt && ' · '}
-                {lastEditedAt && formatRelativeTime(lastEditedAt)}
-              </p>
+            {/* Metadata — show if lastEditedAt exists */}
+            {lastEditedAt && (
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-stone-400">
+                  {lastEditedBy
+                    ? `Last edited by ${lastEditedBy}`
+                    : 'Last edited'}
+                </span>
+                <span className="text-[11px] font-mono text-stone-400">
+                  ↑{formatDetailedDate(lastEditedAt)}
+                </span>
+              </div>
             )}
             {/* Spacer when no metadata */}
             {!lastEditedBy && !lastEditedAt && <span />}

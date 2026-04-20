@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import RoadmapFormModal from '../../components/admin/RoadmapFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import type { Roadmap } from '../../lib/types'
+import { formatDetailedDate } from '../../lib/utils'
 
 function StatusBadge({ active }: { active: boolean }) {
   return (
@@ -119,6 +120,8 @@ export default function AdminRoadmapsPage() {
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Slug</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Mô tả</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Trạng thái</th>
+                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ngày tạo</th>
+                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Cập nhật</th>
                 <th className="px-4 py-3 text-right text-xs font-black text-stone-500 uppercase tracking-wider">Hành động</th>
               </tr>
             </thead>
@@ -143,6 +146,12 @@ export default function AdminRoadmapsPage() {
                   </td>
                   <td className="px-4 py-4">
                     <StatusBadge active={r.is_active} />
+                  </td>
+                  <td className="px-4 py-4">
+                    <p className="text-xs text-stone-400 font-mono">{r.created_at ? formatDetailedDate(r.created_at) : '—'}</p>
+                  </td>
+                  <td className="px-4 py-4">
+                    <p className="text-xs text-stone-400 font-mono">{r.updated_at ? formatDetailedDate(r.updated_at) : '—'}</p>
                   </td>
                   <td className="px-4 py-4 text-right">
                     <div className="flex items-center justify-end gap-1">

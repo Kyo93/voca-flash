@@ -15,6 +15,7 @@ import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import TopicFormModal from '../../components/admin/TopicFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import type { Topic } from '../../lib/types'
+import { formatDetailedDate } from '../../lib/utils'
 
 // ── Sortable item ─────────────────────────────────────────────
 function SortableItem({
@@ -73,6 +74,18 @@ function SortableItem({
         {topic.description && (
           <p className="text-xs text-on-surface-variant truncate mt-1">{topic.description}</p>
         )}
+        <div className="flex items-center gap-3 mt-1.5">
+          {topic.created_at && (
+            <span className="text-[10px] text-stone-400 font-mono">
+              +{formatDetailedDate(topic.created_at)}
+            </span>
+          )}
+          {topic.updated_at && topic.updated_at !== topic.created_at && (
+            <span className="text-[10px] text-stone-400 font-mono">
+              · ↑{formatDetailedDate(topic.updated_at)}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Actions */}
@@ -245,6 +258,7 @@ export default function AdminTopicsPage() {
         roadmaps={roadmaps}
         roadmapId={selectedRoadmap?.id ?? undefined}
         roadmapSlug={selectedRoadmap?.slug ?? undefined}
+        lastEditedAt={editTopicData?.updated_at}
         onSave={handleSave}
         onClose={() => { setShowModal(false); setEditTopicData(null) }}
       />

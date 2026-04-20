@@ -54,6 +54,48 @@ export function generateChoices(word: import('./types').Word): string[] {
   return shuffleArray([correct, ...distractors])
 }
 
+// ── Time formatting ──────────────────────────────────────────
+
+/**
+ * Format a ISO timestamp to Vietnamese relative time or absolute date.
+ * Used for displaying created_at / updated_at in admin lists and modals.
+ */
+export function formatRelativeTime(dateStr: string): string {
+  try {
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMin = Math.floor(diffMs / 60000)
+    if (diffMin < 1) return 'vừa xong'
+    if (diffMin < 60) return `${diffMin} phút trước`
+    const diffH = Math.floor(diffMin / 60)
+    if (diffH < 24) return `${diffH} giờ trước`
+    const diffD = Math.floor(diffH / 24)
+    return `${diffD} ngày trước`
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * Format a ISO timestamp to a compact detailed date string.
+ * e.g. "25Mar26-13:30" (DDMMMYY-HH:mm in UTC/local)
+ */
+export function formatDetailedDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr)
+    const day = String(d.getDate()).padStart(2, '0')
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const month = months[d.getMonth()]
+    const year2 = String(d.getFullYear()).slice(-2)
+    const hour = String(d.getHours()).padStart(2, '0')
+    const min = String(d.getMinutes()).padStart(2, '0')
+    return `${day}${month}${year2}-${hour}:${min}`
+  } catch {
+    return ''
+  }
+}
+
 // ── Slug Utilities ─────────────────────────────────────────
 
 /**

@@ -5,6 +5,7 @@ import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import WordFormModal from '../../components/admin/WordFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import type { Word, Topic } from '../../lib/types'
+import { formatDetailedDate } from '../../lib/utils'
 
 const POS_LABELS: Record<string, string> = {
   noun: 'DT', verb: 'ĐT', adj: 'TT', adv: 'TrT', phrase: 'CT', other: 'Khác',
@@ -275,6 +276,7 @@ export default function AdminWordsPage() {
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ví dụ</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Dịch</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Tags</th>
+                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ngày tạo</th>
                 <th className="px-4 py-3 text-right text-xs font-black text-stone-500 uppercase tracking-wider">Hành động</th>
               </tr>
             </thead>
@@ -290,7 +292,7 @@ export default function AdminWordsPage() {
                 </tr>
               ) : paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-stone-400">
+                  <td colSpan={9} className="px-4 py-12 text-center text-stone-400">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl">search_off</span>
                       <p>Không tìm thấy từ vựng nào</p>
@@ -343,6 +345,9 @@ export default function AdminWordsPage() {
                     ) : (
                       <span className="text-xs text-stone-300">—</span>
                     )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="text-xs text-stone-400 font-mono">{w.created_at ? formatDetailedDate(w.created_at) : '—'}</p>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">

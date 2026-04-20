@@ -824,6 +824,7 @@ export default function RoadmapSetupPage() {
         roadmaps={roadmap ? [roadmap] : []}
         roadmapId={roadmapId}
         roadmapSlug={roadmap?.slug}
+        lastEditedAt={editTopic?.updated_at}
         onSave={handleSaveTopic}
         onClose={() => { setShowTopicModal(false); setEditTopic(null) }}
       />
