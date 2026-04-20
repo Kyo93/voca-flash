@@ -23,8 +23,8 @@ describe('TopicPanel — outer icon/slug bar + inner card layout', () => {
 
   it('must have color accent bar (left of card)', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // Color bar: div with className including 'w-1' and style backgroundColor
-    expect(source).toMatch(/className="w-1.*rounded-full/)
+    // Color bar: div with className including 'w-1' and rounded-left style, style=backgroundColor
+    expect(source).toMatch(/className="w-1.*rounded-l/)
     expect(source).toMatch(/style=\{\{\s*backgroundColor:\s*topicColor/)
   })
 
