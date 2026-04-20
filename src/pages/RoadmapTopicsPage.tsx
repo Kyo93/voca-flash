@@ -228,7 +228,7 @@ export default function RoadmapTopicsPage() {
                 <div className="flex justify-between items-start">
                   <div className="space-y-6 flex-1">
                     <div className="flex items-center gap-4">
-                      <div className={`w-16 h-16 rounded-2xl ${isCompleted ? 'bg-green-100 text-green-700' : 'bg-primary-fixed text-primary'} flex items-center justify-center shadow-inner`}>
+                      <div className={`w-16 h-16 rounded-2xl ${isCompleted ? 'bg-secondary/10 text-secondary' : 'bg-primary-fixed text-primary'} flex items-center justify-center shadow-inner`}>
                         <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                           {isCompleted ? 'check_circle' : (topic.icon || (topic.slug.includes('animal') ? 'pets' : 'menu_book'))}
                         </span>
@@ -248,7 +248,7 @@ export default function RoadmapTopicsPage() {
                         {topic.description}
                       </p>
                     )}
-                    <button className={`${isCompleted ? 'bg-green-600' : 'primary-gradient'} text-white px-8 py-3.5 rounded-2xl font-black text-sm flex items-center gap-2 group-hover:shadow-2xl transition-all active:scale-95 mt-6 border-none uppercase tracking-widest `}>
+                    <button className={`${isCompleted ? 'bg-secondary' : 'primary-gradient'} text-white px-8 py-3.5 rounded-2xl font-black text-sm flex items-center gap-2 group-hover:shadow-2xl transition-all active:scale-95 mt-6 border-none uppercase tracking-widest `}>
                       <span>{isCompleted ? 'Hoàn thành' : isStarted ? 'Học tiếp (Resume)' : 'Bắt đầu học'}</span>
                       {!isCompleted && <span className="material-symbols-outlined font-variation-fill">bolt</span>}
                     </button>
@@ -369,7 +369,7 @@ export default function RoadmapTopicsPage() {
 
               <div className="flex items-center justify-between mt-auto">
                 {isCompleted ? (
-                  <div className="flex items-center gap-2 text-green-600 transition-colors">
+                  <div className="flex items-center gap-2 text-secondary transition-colors">
                     <span className="material-symbols-outlined text-[18px] font-variation-fill">check_circle</span>
                     <span className="text-[10px] font-black uppercase tracking-widest">Mastered</span>
                   </div>

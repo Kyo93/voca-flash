@@ -187,8 +187,6 @@
       "parsing": "Reading file...",
       "or": "or",
       "csv": "CSV",
-      "parsing": "Reading file...",
-      "or": "or",
       "sheets": "Google Sheets",
       "dragDrop": "Drag and drop CSV file here",
       "orClick": "or click to select a file",
@@ -222,5 +220,15 @@
       "invalidUrl": "Invalid URL",
       "fileRequired": "Please select a file or paste a URL"
     }
+  },
+  "notebook": {
+    "title": "Personal Notebook",
+    "noteLabel": "Personal Note",
+    "notePlaceholder": "Add your note here (mnemonic, personal example, context)...",
+    "saveSuccess": "Note saved",
+    "removeSuccess": "Removed from notebook",
+    "editNote": "Edit Note",
+    "addNote": "Add Note",
+    "noNote": "No personal note yet."
   }
 }

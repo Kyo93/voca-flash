@@ -88,7 +88,7 @@ describe('mapSrsRecordToCardProgress — RED', () => {
     const result = mod.mapSrsRecordToCardProgress(record)
 
     expect(result.stability).toBe(0)
-    expect(result.difficulty).toBe(0.5) // default fallback
+    expect(result.difficulty).toBe(5.0) // default fallback (1-10 scale)
   })
 
   it('session.ts fetchSrsStates and fetchReviewWords must use the shared function', async () => {

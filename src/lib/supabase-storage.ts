@@ -7,6 +7,7 @@ export * from './storage/auth'
 export * from './storage/mastery'
 export * from './storage/roadmap'
 export * from './storage/session'
+export * from './storage/notebook'
 
 // Common Types (Centrally managed in lib/types.ts)
 export type { 

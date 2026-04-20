@@ -3,60 +3,54 @@
 @theme {
   /* === VocabMaster Design System — The Tactile Scholar === */
 
-  /* Colors synced with Stitch precisely */
-  --color-primary: #D35400;
+  /* Primary: Terracotta (E67E22) - Emotional Anchor: Excitement */
+  --color-primary: #E67E22;
   --color-on-primary: #ffffff;
-  --color-primary-container: #FAD7A0;
-  --color-on-primary-container: #502600;
+  --color-primary-container: #ffdcc5;
+  --color-on-primary-container: #481b00;
 
-  --color-secondary: #2E4053;
+  /* Secondary: Sage (829460) - Emotional Anchor: Focus/Mastery */
+  --color-secondary: #829460;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #D5DBDB;
+  --color-secondary-container: #d6eaaf;
+  --color-on-secondary-container: #1b2600;
 
+  /* Surface: Heavy Weight Paper - Neutral intent derived from #4A4741 */
   --color-surface: #FFFBF2;
-  --color-on-surface: #2C3E50;
-  --color-on-surface-variant: #566573;
+  --color-on-surface: #4A4741;
+  --color-on-surface-variant: #6b665c;
   --color-background: #FFFBF2;
 
   --color-outline: #897365;
   --color-outline-variant: #dcc1b1;
 
-  --color-tertiary-fixed-dim: #e4c192;
-  --color-primary-fixed-dim: #ffb783;
-  --color-secondary-fixed-dim: #bbce95;
+  --color-tertiary: #a44e00;
+  --color-on-tertiary: #ffffff;
+
+  /* Error: Alert Red (#B3261E) - For urgency and warnings */
+  --color-error: #B3261E;
+  --color-on-error: #ffffff;
+  --color-error-container: #f9dedc;
+  --color-on-error-container: #410e0b;
+  
   --color-surface-dim: #dfd9d1;
   --color-surface-bright: #fff8f0;
-
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-
-  --color-surface-tint: #D35400;
   
-  --color-surface-container-low: #f9f3ea;
-  --color-surface-container: #f3ede4;
-  --color-surface-container-high: #ede7df;
-  --color-surface-container-highest: #e8e2d9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #fdf7ee;
+  --color-surface-container: #f9f3ea;
+  --color-surface-container-high: #f3ede4;
+  --color-surface-container-highest: #ede7df;
 
-  --color-tertiary: #755a33;
-  --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #b49469;
-
-  --color-primary-fixed: #ffdcc5;
-  --color-on-primary-fixed-variant: #713700;
-  --color-secondary-fixed: #d6eaaf;
-  --color-on-secondary-fixed-variant: #3c4c20;
-  --color-tertiary-fixed: #ffddb2;
-  --color-on-tertiary-fixed-variant: #5b421e;
-
-  /* Border Radius */
+  /* Border Radius: Approachable Roundedness (Level 2) */
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.75rem;
+  --radius-2xl: 2.5rem;
   --radius-full: 9999px;
 
-  /* Font Family */
+  /* Font Family: Be Vietnam Pro */
   --font-headline: "Be Vietnam Pro", system-ui, sans-serif;
   --font-body: "Be Vietnam Pro", system-ui, sans-serif;
   --font-label: "Be Vietnam Pro", system-ui, sans-serif;
@@ -67,42 +61,35 @@
   --bg-app: #FFFBF2;
   --bg-sidebar: #ffffff;
   --surface-card: #ffffff;
-  --surface-mixed: #f9f3ea;
-  --text-main: #2C3E50;
-  --text-muted: #566573;
-  --border-subtle: #f3ede4;
-  --glass-bg: rgba(255, 248, 240, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.5);
+  --surface-mixed: #fdf7ee;
+  --text-main: #4A4741;
+  --text-muted: #6b665c;
+  --border-subtle: #f9f3ea;
+  --glass-bg: rgba(255, 251, 242, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  
+  /* Core Alert Colors for Inline Styles */
+  --color-error: #B3261E;
+  --color-secondary-stable: #829460;
 }
 
 .dark {
-  --bg-app: #0f172a;
-  --bg-sidebar: #1e293b;
-  --surface-card: #1e293b;
-  --surface-mixed: #334155;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --border-subtle: #334155;
-  --glass-bg: rgba(15, 23, 42, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.1);
+  --bg-app: #121211;
+  --bg-sidebar: #1a1a19;
+  --surface-card: #1a1a19;
+  --surface-mixed: #242422;
+  --text-main: #e2e2e0;
+  --text-muted: #9c9a94;
+  --border-subtle: #2a2a28;
+  --glass-bg: rgba(18, 18, 17, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.05);
 
-  /* Arena Vibrant Tokens */
-  --arena-primary: #FF8C42; /* Lighter primary for better dark contrast */
-  --arena-cyan: #0891B2;
-  --arena-slate: #1E293B;
-  --primary-rgb: 211, 84, 0;
+  --primary-rgb: 230, 126, 34;
 
-  /* Override Tailwind colors for dark mode */
-  --color-surface: #0f172a;
-  --color-on-surface: #f8fafc;
-  --color-background: #0f172a;
-  --color-surface-container-lowest: #0f172a;
-  --color-surface-container-low: #1e293b;
-  --color-surface-container: #1e293b;
-  --color-surface-container-high: #334155;
-  --color-surface-container-highest: #475569;
-  --color-on-surface-variant: #94a3b8;
-  --color-outline-variant: #334155;
+  /* Overrides */
+  --color-surface: #121211;
+  --color-on-surface: #e2e2e0;
+  --color-background: #121211;
 }
 
 /* === Global Styles === */
@@ -138,7 +125,7 @@ body {
 .label-md {
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.75rem;
 }
 
@@ -150,13 +137,13 @@ body {
   border: 1px solid var(--glass-border);
 }
 
-/* Hero gradient from Stitch */
+/* Hero gradient - Terracotta Flare */
 .hero-gradient {
-  background: linear-gradient(135deg, #F39C12 0%, #E67E22 50%, #D35400 100%);
+  background: linear-gradient(135deg, #FF9E4A 0%, #E67E22 50%, #B35F14 100%);
 }
 
 .primary-gradient {
-  background: linear-gradient(135deg, #E67E22 0%, #944a00 100%);
+  background: linear-gradient(135deg, #E67E22 0%, #b4621a 100%);
 }
 
 /* Oceanic pulse gradient (from Stitch design) */
@@ -175,11 +162,11 @@ body {
 
 /* Sun-drenched shadow — warm, natural light */
 .sun-drenched-shadow {
-  box-shadow: 0 10px 48px -4px rgba(29, 27, 22, 0.08);
+  box-shadow: 0 10px 48px -4px rgba(74, 71, 65, 0.1);
 }
 
 .sun-drenched-shadow-lg {
-  box-shadow: 0 32px 48px -4px rgba(29, 27, 22, 0.1);
+  box-shadow: 0 32px 48px -4px rgba(74, 71, 65, 0.12);
 }
 
 /* Glassmorphism nav */
@@ -342,11 +329,17 @@ body {
   color: var(--color-on-primary-fixed);
 }
 
-/* Focus ring */
+/* Focus ring - Inner Sage Glow */
 :focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-secondary);
   border-radius: var(--radius-sm);
+}
+
+.input-tactile-focus:focus {
+  outline: none;
+  background-color: var(--color-surface-container-highest);
+  box-shadow: inset 0 0 0 2px var(--color-secondary);
 }
 /* === Aesthetic Roadmap Utilities === */
 .glass-wow-card {

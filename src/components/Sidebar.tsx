@@ -61,7 +61,7 @@ export default function Sidebar() {
         {!collapsed && (
           <div className="overflow-hidden">
             <h1 className="text-xl font-black text-primary leading-none whitespace-nowrap">VocabMaster</h1>
-            <p className="text-[10px] text-stone-500 font-medium tracking-widest uppercase whitespace-nowrap">The Tactile Scholar</p>
+            <p className="text-[10px] text-stone-500 font-normal tracking-widest uppercase whitespace-nowrap">The Tactile Scholar</p>
           </div>
         )}
       </div>
@@ -75,7 +75,7 @@ export default function Sidebar() {
               key={item.path}
               to={item.path}
               title={collapsed ? t(item.labelKey) : undefined}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all text-sm ${
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all text-sm ${
                 isActive
                   ? 'bg-white text-primary shadow-sm border border-stone-100'
                   : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
@@ -91,7 +91,7 @@ export default function Sidebar() {
         <Link
           to="/admin"
           title={collapsed ? 'Quản trị' : undefined}
-          className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all text-sm ${
+          className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all text-sm ${
             location.pathname.startsWith('/admin')
               ? 'bg-white text-primary shadow-sm border border-stone-100'
               : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
@@ -113,7 +113,7 @@ export default function Sidebar() {
           <span className="material-symbols-outlined text-lg transition-transform duration-300 shrink-0" style={{ transform: collapsed ? 'rotate(180deg)' : 'none' }}>
             menu_open
           </span>
-          {!collapsed && <span className="text-xs font-bold whitespace-nowrap">Thu nhỏ</span>}
+          {!collapsed && <span className="text-xs font-medium whitespace-nowrap">Thu nhỏ</span>}
         </button>
 
         {/* Quick Study CTA */}
@@ -143,8 +143,8 @@ export default function Sidebar() {
           {!collapsed && (
             <>
               <div className="overflow-hidden flex-1">
-                <p className="text-[13px] font-black truncate">{displayName}</p>
-                <p className="text-[10px] text-stone-400 font-bold uppercase truncate">
+                <p className="text-[13px] font-bold truncate">{displayName}</p>
+                <p className="text-[10px] text-stone-400 font-normal uppercase truncate">
                   {profile?.streak_days ? `${streakData.currentStreak} 🔥 ngày` : 'Học viên'}
                 </p>
               </div>

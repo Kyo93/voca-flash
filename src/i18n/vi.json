@@ -19,7 +19,7 @@
     "welcome": "Chào mừng trở lại!",
     "subtitle": "Bạn đã học {{count}} từ mới tuần này. Hãy tiếp tục nhé!",
     "continueChallenge": "Tiếp tục thôi nào",
-    "currentGoal": "MỤC TIÊU HÔM NAY",
+    "currentGoal": "MỤC TIỆU HÔM NAY",
     "newWords": "Từ mới",
     "mastered": "Đã thuộc",
     "continueLearning": "Tiếp tục học",
@@ -228,5 +228,15 @@
       "invalidUrl": "URL không hợp lệ",
       "fileRequired": "Vui lòng chọn file hoặc dán URL"
     }
+  },
+  "notebook": {
+    "title": "Sổ tay cá nhân",
+    "noteLabel": "Ghi chú cá nhân",
+    "notePlaceholder": "Thêm ghi chú của bạn (cách nhớ, ví dụ riêng, ngữ cảnh)...",
+    "saveSuccess": "Đã lưu ghi chú",
+    "removeSuccess": "Đã xóa khỏi sổ tay",
+    "editNote": "Sửa ghi chú",
+    "addNote": "Thêm ghi chú",
+    "noNote": "Chưa có ghi chú cá nhân."
   }
 }

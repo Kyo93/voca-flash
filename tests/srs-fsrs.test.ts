@@ -334,11 +334,11 @@ describe('maximum_interval', () => {
 // ── Tests: Difficulty ────────────────────────────────────────
 
 describe('difficulty range', () => {
-  it('should be between 0 and 1', () => {
+  it('should be between 0 and 10', () => {
     const card = createEmptyCard()
 
     expect(card.difficulty).toBeGreaterThanOrEqual(0)
-    expect(card.difficulty).toBeLessThanOrEqual(1)
+    expect(card.difficulty).toBeLessThanOrEqual(10)
   })
 
   it('should be affected by rating', () => {

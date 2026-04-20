@@ -150,6 +150,7 @@ export interface MasteryWord {
   mastered: boolean
   is_orphaned: boolean
   topic_names: string | null
+  personal_note: string | null
 }
 
 // ── Data Transfer Objects (DTOs) ──────────────────────────

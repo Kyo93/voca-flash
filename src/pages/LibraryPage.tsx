@@ -205,7 +205,7 @@ export default function LibraryPage() {
                 {roadmap.description || 'Chương trình học bài bản được thiết kế để tối ưu lộ trình học tập của bạn.'}
               </p>
               
-              <button className={`mt-auto w-full py-3 ${isCompleted ? 'bg-green-100 text-green-700' : specs.btnClass} text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95`}>
+              <button className={`mt-auto w-full py-3 ${isCompleted ? 'bg-secondary/15 text-secondary' : specs.btnClass} text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95`}>
                 {isCompleted ? 'Hoàn thành' : isResuming ? 'Học tiếp' : 'Start Journey'}
                 {!isCompleted && <span className="material-symbols-outlined text-xs">arrow_forward</span>}
               </button>

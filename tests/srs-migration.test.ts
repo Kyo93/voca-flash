@@ -38,10 +38,8 @@ describe('sm2ToFsrs() conversion logic', () => {
     // Initial stability should be based on interval (min 0.1)
     expect(fsrs.stability).toBeGreaterThanOrEqual(0.1)
     
-    // Normal difficulty mapping: (3.0 - 2.5) / 1.7 = ~0.29
-    expect(fsrs.difficulty).toBeDefined()
-    expect(fsrs.difficulty).toBeGreaterThan(0.2)
-    expect(fsrs.difficulty).toBeLessThan(0.4)
+    // Normal difficulty mapping: 5 + (3.0 - 2.5) * 2 = 6.0
+    expect(fsrs.difficulty).toBe(6.0)
 
     // state = 3 (Relearning) for reps=0
     expect(fsrs.state).toBe(3)
@@ -140,9 +138,9 @@ describe('Migration Edge Cases', () => {
 
     const fsrs = sm2ToFsrs(sm2)
 
-    // Difficulty should be high (closer to 1.0)
-    expect(fsrs.difficulty).toBeGreaterThan(0.9)
-    expect(fsrs.difficulty).toBeLessThanOrEqual(1.0)
+    // Difficulty should be high (closer to 10)
+    // 5 + (3.0 - 1.3) * 2 = 8.4
+    expect(fsrs.difficulty).toBe(8.4)
   })
 
   it('should handle extreme high ease', () => {
@@ -157,7 +155,8 @@ describe('Migration Edge Cases', () => {
 
     const fsrs = sm2ToFsrs(sm2)
 
-    // Difficulty should be low (clamped to 0.0)
-    expect(fsrs.difficulty).toBe(0)
+    // Difficulty should be low (clamped to 1.0)
+    // 5 + (3.0 - 5.0) * 2 = 1.0
+    expect(fsrs.difficulty).toBe(1)
   })
 })

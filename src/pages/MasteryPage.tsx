@@ -4,6 +4,9 @@ import { getUserVocabulary, getMasteryStats } from '../lib/storage/mastery'
 import { MasteryWord } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useNotebook } from '../hooks/useNotebook'
+import NoteDrawer from '../components/NoteDrawer'
+import WordDetailPanel from '../components/WordDetailPanel'
 import { format } from 'date-fns'
 import { vi, enUS, type Locale } from 'date-fns/locale'
 
@@ -33,6 +36,14 @@ export default function MasteryPage() {
   // interaction State
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  const { isSaved, toggle, updateNote, getNote } = useNotebook()
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [editingWord, setEditingWord] = useState<MasteryWord | null>(null)
+  
+  // Master-Detail State
+  const [selectedWord, setSelectedWord] = useState<MasteryWord | null>(null)
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
   const PAGE_SIZE = 50
@@ -148,27 +159,53 @@ export default function MasteryPage() {
     navigate('/free-study', { state: { words: selectedWords } })
   }
 
+  const handleOpenDrawer = (word: MasteryWord, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setEditingWord(word)
+    setIsDrawerOpen(true)
+  }
+
+  const handleToggleNotebook = async (wordId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    await toggle(wordId)
+    
+    // Update selectedWord state if it's the one being toggled
+    if (selectedWord?.word_id === wordId) {
+      // Logic handled via hook reactivity usually, but if needed we can force update
+    }
+  }
+
+  const handleSelectWord = (word: MasteryWord) => {
+    setSelectedWord(word)
+    setIsPanelOpen(true)
+  }
+
+  const handleSaveNote = async (note: string) => {
+    if (!editingWord) return
+    await updateNote(editingWord.word_id, note)
+  }
+
   return (
     <div className="px-6 md:px-10 py-8 max-w-7xl mx-auto w-full">
       {/* Hero Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="space-y-2">
-          <h1 className="text-4xl font-black text-secondary tracking-tight">Kho Từ Vựng</h1>
-          <p className="text-stone-500 font-medium max-w-lg">
-            Quản lý {totalCount} từ vựng bạn đã bắt đầu học. Tối ưu hóa lộ trình ghi nhớ của bạn.
+        <div className="space-y-3">
+          <h1 className="text-4xl font-black text-on-surface tracking-tighter text-editorial-asymmetry">Kho Từ Vựng</h1>
+          <p className="text-on-surface-variant font-medium max-w-lg leading-relaxed">
+            Hệ thống đang lưu trữ {totalCount} từ vựng trong kho tri thức của bạn. Hãy kiên trì bồi đắp mỗi ngày.
           </p>
         </div>
         
         <div className="flex items-center gap-3">
           <div className="relative group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-primary transition-colors">search</span>
-            <input 
-              type="text"
-              placeholder={t('nav.searchPlaceholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-3.5 bg-white border border-stone-100 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all w-full md:w-80 font-bold text-sm"
-            />
+            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors">search</span>
+              <input 
+                type="text"
+                placeholder={t('nav.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 pr-6 py-3.5 bg-surface-container border-none rounded-2xl sun-drenched-shadow input-tactile-focus transition-all w-full md:w-80 font-medium text-sm"
+              />
           </div>
           
           <button 
@@ -176,8 +213,8 @@ export default function MasteryPage() {
             onClick={handleStartFreeStudy}
             className={`px-8 py-3.5 rounded-2xl font-black text-sm flex items-center gap-3 transition-all shadow-lg active:scale-95 ${
               selectedIds.size > 0 
-                ? 'bg-primary text-white shadow-primary/20 cursor-pointer' 
-                : 'bg-stone-200 text-stone-400 cursor-not-allowed shadow-none'
+                ? 'primary-gradient text-on-primary sun-drenched-shadow cursor-pointer' 
+                : 'bg-surface-container-highest text-on-surface-variant/40 cursor-not-allowed shadow-none font-medium'
             }`}
           >
             <span className="material-symbols-outlined font-variation-fill">bolt</span>
@@ -189,39 +226,39 @@ export default function MasteryPage() {
       {/* Stats Quick Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
         {stats ? [
-          { label: 'Đang học', value: stats.learning, icon: 'school', color: 'text-blue-600', bg: 'bg-blue-50' },
-          { label: 'Tổng số từ', value: stats.total, icon: 'leaderboard', color: 'text-stone-600', bg: 'bg-stone-50' },
-          { label: 'Đã thuộc', value: stats.mastered, icon: 'military_tech', color: 'text-orange-500', bg: 'bg-orange-50' },
-          { label: 'Đến hạn', value: stats.due, icon: 'history_toggle_off', color: 'text-blue-500', bg: 'bg-blue-50' },
+          { label: 'Đang học', value: stats.learning, icon: 'school', color: 'text-primary', bg: 'bg-primary/10' },
+          { label: 'Tổng số từ', value: stats.total, icon: 'book', color: 'text-on-surface-variant', bg: 'bg-surface-container-highest' },
+          { label: 'Đã thuộc', value: stats.mastered, icon: 'verified', color: 'text-secondary', bg: 'bg-secondary/10' },
+          { label: 'Đến hạn', value: stats.due, icon: 'schedule', color: 'text-primary', bg: 'bg-primary/10' },
           { label: 'Mồ côi', value: stats.orphaned, icon: 'broken_image', color: 'text-red-500', bg: 'bg-red-50' },
-          { label: 'Yếu', value: stats.weak, icon: 'trending_down', color: 'text-purple-500', bg: 'bg-purple-50' }
+          { label: 'Yếu', value: stats.weak, icon: 'trending_down', color: 'text-red-400', bg: 'bg-red-50' }
         ].map(s => (
-          <div key={s.label} className="p-4 bg-white rounded-2xl border border-stone-100 shadow-sm flex items-center gap-4 group hover:border-primary/20 transition-all">
-            <div className={`w-10 h-10 ${s.bg} ${s.color} rounded-xl flex items-center justify-center shrink-0`}>
-              <span className="material-symbols-outlined font-variation-fill">{s.icon}</span>
+          <div key={s.label} className="p-5 bg-surface rounded-2xl sun-drenched-shadow flex items-center gap-4 group hover:scale-[1.02] transition-all">
+            <div className={`w-12 h-12 ${s.bg} ${s.color} rounded-2xl flex items-center justify-center shrink-0`}>
+              <span className="material-symbols-outlined font-variation-fill text-2xl">{s.icon}</span>
             </div>
             <div>
-              <p className="text-2xl font-black text-secondary leading-none">{s.value}</p>
-              <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">{s.label}</p>
+              <p className="text-2xl font-bold text-on-surface leading-none">{s.value}</p>
+              <p className="text-[10px] font-normal text-on-surface-variant/60 uppercase tracking-widest mt-1.5">{s.label}</p>
             </div>
           </div>
         )) : (
           Array(6).fill(0).map((_, i) => (
-            <div key={i} className="h-20 bg-stone-50 animate-pulse rounded-2xl w-full" />
+            <div key={i} className="h-24 bg-surface-container-low animate-pulse rounded-2xl w-full" />
           ))
         )}
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+      <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">
         {(['all', 'due', 'weak', 'orphaned', 'mastered'] as FilterType[]).map(f => (
           <button
             key={f}
             onClick={() => setActiveFilter(f)}
-            className={`px-6 py-2.5 rounded-full font-bold text-xs uppercase tracking-widest transition-all whitespace-nowrap ${
+            className={`px-8 py-3 rounded-full font-semibold text-[10px] uppercase tracking-widest transition-all whitespace-nowrap ${
               activeFilter === f 
-                ? 'bg-secondary text-white shadow-md' 
-                : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                ? 'bg-secondary text-on-secondary sun-drenched-shadow scale-105' 
+                : 'bg-surface-container text-on-surface-variant/60 hover:bg-surface-container-highest hover:text-on-surface'
             }`}
           >
             {f === 'all' ? 'Tất cả' : f === 'due' ? 'Đến hạn' : f === 'weak' ? 'Từ còn yếu' : f === 'orphaned' ? 'Từ mồ côi' : 'Đã thuộc'}
@@ -230,26 +267,27 @@ export default function MasteryPage() {
       </div>
 
       {/* Word Table */}
-      <div className="bg-white rounded-[2rem] border border-stone-100 shadow-sm overflow-hidden mb-12">
+      <div className="bg-surface rounded-3xl sun-drenched-shadow overflow-hidden mb-12">
         <div className="w-full overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-stone-100 bg-stone-50/50">
-                <th className="py-5 px-6 w-12">
+              <tr className="bg-surface-container/50">
+                <th className="py-6 px-8 w-12">
                   <input 
                     type="checkbox" 
                     checked={selectedIds.size === words.length && words.length > 0}
                     onChange={toggleSelectAll}
-                    className="w-5 h-5 rounded-lg border-stone-300 text-primary focus:ring-primary/20 accent-primary cursor-pointer"
+                    className="w-5 h-5 rounded-lg border-surface-container-highest text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
                   />
                 </th>
-                <th className="py-5 px-2 text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Từ vựng</th>
-                <th className="py-5 px-6 text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] hidden lg:table-cell">Chủ đề</th>
-                <th className="py-5 px-6 text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Sức mạnh</th>
-                <th className="py-5 px-6 text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] text-right">Ôn tập tiếp</th>
+                <th className="py-6 px-2 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">Từ vựng</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] hidden lg:table-cell">Chủ đề</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">Sổ tay</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">Sức mạnh</th>
+                <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] text-right">Ôn tập tiếp</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-50">
+            <tbody className="">
               {words.map((w, index) => (
                 <CardRow 
                   key={w.word_id} 
@@ -258,8 +296,14 @@ export default function MasteryPage() {
                   isSelected={selectedIds.has(w.word_id)}
                   onSelect={(e) => toggleSelect(w.word_id, e)}
 
-                  isExpanded={expandedId === w.word_id}
-                  onToggleExpand={() => setExpandedId(expandedId === w.word_id ? null : w.word_id)}
+                  isSelectedFocus={selectedWord?.word_id === w.word_id}
+                  onSelectFocus={() => handleSelectWord(w)}
+                  
+                  isNotebookSaved={isSaved(w.word_id)}
+                  onToggleNotebook={(e) => handleToggleNotebook(w.word_id, e)}
+                  onEditNote={(e) => handleOpenDrawer(w, e)}
+                  personalNote={getNote(w.word_id)}
+                  
                   locale={dateLocale}
                 />
               ))}
@@ -269,10 +313,10 @@ export default function MasteryPage() {
                   <tr key={i} className="animate-pulse">
                     <td className="py-6 px-6"><div className="w-5 h-5 bg-stone-100 rounded" /></td>
                     <td className="py-6 px-2">
-                      <div className="h-4 bg-stone-100 rounded w-24 mb-2" />
-                      <div className="h-3 bg-stone-50 rounded w-48" />
+                       <div className="h-4 bg-stone-100 rounded w-24 mb-2" />
                     </td>
-                    <td className="py-6 px-6"><div className="h-4 bg-stone-100 rounded w-20" /></td>
+                    <td className="py-6 px-6 hidden lg:table-cell"><div className="h-4 bg-stone-100 rounded w-20" /></td>
+                    <td className="py-6 px-6"><div className="h-4 bg-stone-100 rounded w-10" /></td>
                     <td className="py-6 px-6"><div className="h-6 bg-stone-100 rounded w-32" /></td>
                     <td className="py-6 px-6"><div className="h-8 bg-stone-100 rounded w-16 float-right" /></td>
                   </tr>
@@ -296,6 +340,34 @@ export default function MasteryPage() {
            </div>
         )}
       </div>
+
+      {/* Word Detail Side Panel */}
+      <WordDetailPanel
+        isOpen={isPanelOpen}
+        onClose={() => setIsPanelOpen(false)}
+        word={selectedWord}
+        isNotebookSaved={selectedWord ? isSaved(selectedWord.word_id) : false}
+        onToggleNotebook={handleToggleNotebook}
+        personalNote={selectedWord ? getNote(selectedWord.word_id) : null}
+        onEditNote={() => {
+          if (selectedWord) {
+             setEditingWord(selectedWord)
+             setIsDrawerOpen(true)
+          }
+        }}
+      />
+
+      {/* Note Drawer for Editing */}
+      <NoteDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => {
+          setIsDrawerOpen(false)
+          setEditingWord(null)
+        }}
+        onSave={handleSaveNote}
+        initialNote={editingWord ? getNote(editingWord.word_id) : ''}
+        word={editingWord?.word || ''}
+      />
     </div>
   )
 }
@@ -305,10 +377,11 @@ const CardRow = React.forwardRef<HTMLTableRowElement, {
   word: MasteryWord
   isSelected: boolean
   onSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
-  isExpanded: boolean
-  onToggleExpand: () => void
+  isSelectedFocus: boolean
+  onSelectFocus: () => void
+  isNotebookSaved: boolean
   locale: Locale
-}>(({ word, isSelected, onSelect, isExpanded, onToggleExpand, locale }, ref) => {
+}>(({ word, isSelected, onSelect, isSelectedFocus, onSelectFocus, isNotebookSaved, locale }, ref) => {
   const nextReviewDate = word.next_review_at ? new Date(word.next_review_at) : null
   const isDue = nextReviewDate && nextReviewDate <= new Date()
   
@@ -316,117 +389,68 @@ const CardRow = React.forwardRef<HTMLTableRowElement, {
   
   // Levels: Fresh (<3d), Learning (3-21d), Mastered (21-90d), Rooted (>90d)
   const getLevel = (s: number) => {
-    if (s >= 90) return { label: 'Rooted', color: 'bg-purple-500', text: 'text-purple-600', bg: 'bg-purple-50', glow: 'shadow-[0_0_15px_rgba(168,85,247,0.4)]' }
-    if (s >= 21) return { label: 'Mastered', color: 'bg-green-500', text: 'text-green-600', bg: 'bg-green-50', glow: '' }
-    if (s >= 3) return { label: 'Learning', color: 'bg-blue-500', text: 'text-blue-600', bg: 'bg-blue-50', glow: '' }
-    return { label: 'Fresh', color: 'bg-red-500', text: 'text-red-500', bg: 'bg-red-50', glow: '' }
+    if (s >= 90) return { label: 'Rooted', color: 'bg-secondary', text: 'text-secondary', bg: 'bg-secondary/10', glow: 'shadow-[0_0_15px_rgba(130,148,96,0.3)]' }
+    if (s >= 21) return { label: 'Mastered', color: 'bg-secondary/70', text: 'text-secondary/80', bg: 'bg-secondary/5', glow: '' }
+    if (s >= 3) return { label: 'Learning', color: 'bg-primary/50', text: 'text-primary/70', bg: 'bg-primary/5', glow: '' }
+    return { label: 'Fresh', color: 'bg-primary', text: 'text-primary', bg: 'bg-primary/10', glow: '' }
   }
 
   const level = getLevel(stability)
-  // Progress bar logic: 0-21 days takes 100% of the bar width
   const strengthPercent = Math.min(100, (stability / 21) * 100)
 
   return (
-    <>
-      <tr 
-        ref={ref}
-        className={`group hover:bg-stone-50/50 transition-colors cursor-pointer ${isExpanded ? 'bg-stone-50' : ''}`}
-        onClick={onToggleExpand}
-      >
-        <td className="py-4 px-6">
-          <input 
-            type="checkbox" 
-            checked={isSelected}
-            onChange={onSelect}
-            className="w-5 h-5 rounded-lg border-stone-300 text-primary focus:ring-primary/20 accent-primary cursor-pointer"
-          />
-        </td>
-        <td className="py-4 px-2">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-black text-secondary group-hover:text-primary transition-colors">{word.word}</span>
-              {word.phonetic && <span className="text-xs text-stone-400 font-medium">{word.phonetic}</span>}
-              <span className={`material-symbols-outlined text-stone-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>expand_more</span>
-              
-              {/* Level Badge */}
-              <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest ${level.bg} ${level.text} border border-current/10 ${level.glow}`}>
-                {level.label}
-              </span>
-            </div>
-            <span className="text-xs text-stone-500 line-clamp-1 group-hover:line-clamp-none transition-all mr-4">{word.definition}</span>
+    <tr 
+      ref={ref}
+      className={`group hover:bg-surface-container-low transition-all cursor-pointer ${isSelectedFocus ? 'bg-primary/10' : ''}`}
+      onClick={onSelectFocus}
+    >
+      <td className="py-4 px-8">
+        <input 
+          type="checkbox" 
+          checked={isSelected}
+          onChange={onSelect}
+          className="w-5 h-5 rounded-lg border-surface-container-highest text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
+        />
+      </td>
+      <td className="py-4 px-2">
+        <div className="flex items-center gap-4">
+          <span className="text-lg font-bold text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight">{word.word}</span>
+          <span className="text-xs text-on-surface-variant font-normal truncate max-w-[200px] italic">{word.definition}</span>
+          
+          {/* Level Badge */}
+          <span className={`px-2.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest ${level.bg} ${level.text} ${level.glow}`}>
+            {level.label}
+          </span>
+        </div>
+      </td>
+      <td className="py-4 px-8 hidden lg:table-cell">
+        {word.is_orphaned ? (
+          <span className="inline-flex px-3 py-1 bg-red-50 text-red-500 text-[10px] font-semibold uppercase tracking-widest rounded-md">Mồ côi</span>
+        ) : (
+          <span className="inline-flex px-3 py-1 bg-surface-container text-on-surface-variant/60 text-[10px] font-semibold uppercase tracking-widest rounded-md">{word.topic_names?.split(',')[0]}</span>
+        )}
+      </td>
+      <td className="py-4 px-8">
+        {isNotebookSaved && (
+          <span className="material-symbols-outlined text-primary text-xl fill-icon animate-in zoom-in duration-300">favorite</span>
+        )}
+      </td>
+      <td className="py-4 px-8">
+        <div className="flex items-center gap-3">
+          <div className="w-20 h-2 bg-surface-container-low rounded-full overflow-hidden">
+            <div 
+              className={`h-full ${level.color} transition-all duration-1000 ${level.glow ? 'animate-pulse' : ''}`} 
+              style={{ width: `${strengthPercent}%` }}
+            />
           </div>
-        </td>
-        <td className="py-4 px-6 hidden lg:table-cell">
-          {word.is_orphaned ? (
-            <span className="inline-flex px-2 py-0.5 bg-red-50 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-md border border-red-100">Mồ côi</span>
-          ) : (
-            <span className="inline-flex px-2 py-0.5 bg-stone-100 text-stone-500 text-[10px] font-black uppercase tracking-widest rounded-md">{word.topic_names?.split(',')[0]}</span>
-          )}
-        </td>
-        <td className="py-4 px-6">
-          <div className="flex flex-col gap-1.5">
-            <div className="w-24 h-1.5 bg-stone-100 rounded-full overflow-hidden">
-              <div 
-                className={`h-full ${level.color} transition-all duration-1000 ${level.glow ? 'animate-pulse' : ''}`} 
-                style={{ width: `${strengthPercent}%` }}
-              />
-            </div>
-            <p className="text-[10px] font-black text-stone-400 uppercase leading-none">Stability: {stability.toFixed(1)}d</p>
-          </div>
-        </td>
-        <td className="py-4 px-6 text-right">
-          <div className="flex flex-col items-end">
-            <span className={`text-[13px] font-bold ${isDue ? 'text-primary' : 'text-secondary'}`}>
-              {nextReviewDate ? format(nextReviewDate, 'dd/MM/yyyy', { locale }) : '--'}
-            </span>
-            <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest leading-none">
-              {isDue ? 'Cần ôn ngay' : 'Sắp tới'}
-            </span>
-          </div>
-        </td>
-      </tr>
-      
-      {isExpanded && (
-        <tr className="bg-stone-50/80 border-t border-stone-100">
-          <td />
-          <td colSpan={4} className="py-6 px-2 pr-6">
-            <div className="flex gap-6 animate-in slide-in-from-top-2 duration-300">
-              {word.image_url && (
-                <div className="w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-sm border border-stone-200">
-                  <img src={word.image_url} alt={word.word} className="w-full h-full object-cover" />
-                </div>
-              )}
-              <div className="space-y-4 flex-1">
-                <div className="space-y-1">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-widest">Ngữ cảnh sử dụng</p>
-                  <div className="space-y-2">
-                    <p className="text-secondary font-semibold leading-relaxed text-sm">
-                      {word.example ? `"${word.example}"` : 'Chưa có ví dụ.'}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-8 pt-4 border-t border-stone-200/50">
-                  <div>
-                    <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Lần học cuối</p>
-                    <p className="text-xs font-bold text-secondary">
-                      {word.last_reviewed ? format(new Date(word.last_reviewed), 'dd MMMM', { locale }) : 'Chưa ôn tập'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Tần suất sai</p>
-                    <p className="text-xs font-bold text-red-500">{word.fsrs_lapses} lần</p>
-                  </div>
-                   <div>
-                    <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Gán cho</p>
-                    <p className="text-xs font-bold text-secondary truncate max-w-[120px]">{word.topic_names || 'Chưa gán'}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-      )}
-    </>
+          <p className="text-[10px] font-normal text-on-surface-variant/40 uppercase leading-none">{stability.toFixed(1)}d</p>
+        </div>
+      </td>
+      <td className="py-4 px-8 text-right">
+        <span className={`text-[13px] font-medium ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
+          {nextReviewDate ? format(nextReviewDate, 'dd/MM/yy', { locale }) : '--'}
+        </span>
+      </td>
+    </tr>
   )
 })

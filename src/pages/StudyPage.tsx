@@ -10,6 +10,8 @@ import { SrsRating, mapTestResultToRating, computeIntervalPreviews, createInitia
 import SRSButtons from '../components/SRSButtons'
 import StudyChallengeShell from '../components/StudyChallengeShell'
 import type { Word } from '../lib/types'
+import { useNotebook } from '../hooks/useNotebook'
+import NoteDrawer from '../components/NoteDrawer'
 
 interface AudioButtonProps {
   text: string
@@ -88,7 +90,15 @@ function FlashcardFront({ card }: { card: Card }) {
   )
 }
 
-function FlashcardBack({ card }: { card: Card }) {
+function FlashcardBack({ 
+  card, 
+  isSaved, 
+  onToggle 
+}: { 
+  card: Card
+  isSaved: boolean
+  onToggle: () => void 
+}) {
   return (
     <div className="relative w-full h-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col items-center text-center p-12 transition-all border border-outline-variant/10">
       {/* Background Texture (Subtle) */}
@@ -101,6 +111,21 @@ function FlashcardBack({ card }: { card: Card }) {
       />
 
       <div className="relative z-10 w-full h-full flex flex-col">
+        {/* Notebook Toggle (Top Right) */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggle()
+          }}
+          className="absolute top-0 right-0 p-2 text-outline-variant hover:text-red-500 transition-all active:scale-90 group"
+          title={isSaved ? 'Xóa khỏi sổ tay' : 'Lưu vào sổ tay'}
+        >
+          <span className={`material-symbols-outlined text-2xl transition-colors ${isSaved ? 'text-[var(--color-error,#B3261E)] fill-icon' : ''}`} 
+                style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
+            favorite
+          </span>
+        </button>
+
         {/* English Word (Small, Above) */}
         <div className="flex flex-col items-center mt-2 mb-4">
           <span className="text-secondary font-label font-bold tracking-widest text-[10px] uppercase mb-1">English Word</span>
@@ -212,10 +237,42 @@ export default function StudyPage() {
     markLearned,
   } = useFlashcard()
 
+  const { isSaved, toggle, getNote, updateNote } = useNotebook()
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [pendingWordId, setPendingWordId] = useState<string | null>(null)
+
+  const handleToggleNotebook = useCallback(async () => {
+    if (!currentCard) return
+    
+    // If saving (not currently saved), open drawer
+    const alreadySaved = isSaved(currentCard.id)
+    if (!alreadySaved) {
+      setPendingWordId(currentCard.id)
+      setIsDrawerOpen(true)
+    }
+    
+    await toggle(currentCard.id)
+  }, [currentCard, isSaved, toggle])
+
+  const handleSaveNote = useCallback(async (note: string) => {
+    if (!currentCard) return
+    await updateNote(currentCard.id, note)
+  }, [currentCard, updateNote])
+
+  // Track initialized state to prevent redundant resets on re-renders or identity changes
+  const initializedTopicRef = useRef<string | undefined>(null)
+
   useEffect(() => {
-    initialize(topic)
-    return () => stop()
+    // Only initialize if we haven't for this specific topic yet
+    if (initializedTopicRef.current !== topic) {
+      initialize(topic)
+      initializedTopicRef.current = topic
+    }
   }, [initialize, topic])
+
+  useEffect(() => {
+    return () => stop()
+  }, [])
 
   // Tự động phát âm khi thẻ xuất hiện hoặc khi lật thẻ
   useEffect(() => {
@@ -290,7 +347,7 @@ export default function StudyPage() {
       if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
       handleChallengeTimeout()
     }, 30_000)
-  }, [phase])
+  }, [phase, currentCard])
 
   // Handle challenge completion
   const handleChallengeSubmit = useCallback((isCorrect: boolean) => {
@@ -319,13 +376,9 @@ export default function StudyPage() {
       profile?.srs_intensity ?? 1.0,
     )
 
-    // Hard suggestion (rating=2) on timeout
-    const hardPreview = previews.find(p => p.rating === 2)
-
     setSuggestedRating(2)
     setIntervalPreviews(previews)
     setPhase('RATING')
-    void hardPreview // used via display, not needed as separate var
   }, [currentProgress, profile?.srs_intensity])
 
   // Skip → flashcard back with NO suggestion (user self-rates)
@@ -414,46 +467,45 @@ export default function StudyPage() {
             className="w-full relative rounded-2xl overflow-hidden bg-surface-container-lowest"
             style={{ padding: '0' }}
           >
-            {/* Snake border: 4 edges shrink clockwise from corner A */}
-            {/* Edge color: primary → error as time runs low */}
+            {/* Snake border */}
             <div
               className="absolute top-0 left-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
               style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
                 width: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
               }}
             />
             <div
               className="absolute top-0 right-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
               style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
                 height: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
               }}
             />
             <div
               className="absolute bottom-0 right-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
               style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
                 width: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
               }}
             />
             <div
               className="absolute bottom-0 left-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
               style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)',
+                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
                 height: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error)' : 'var(--color-primary)'}`,
+                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
               }}
             />
 
             {/* Timer bar */}
             <div className="flex items-center justify-between px-5 py-3 bg-surface-container-low">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-xl">timer</span>
-                <span className={`font-headline font-black text-lg tabular-nums ${timerSeconds <= 10 ? 'text-error animate-pulse' : 'text-primary'}`}>
+                <span className={`material-symbols-outlined text-xl ${timerSeconds <= 10 ? 'text-error animate-pulse' : 'text-secondary'}`}>timer</span>
+                <span className={`font-headline font-black text-lg tabular-nums ${timerSeconds <= 10 ? 'text-error animate-pulse' : 'text-secondary'}`}>
                   {timerSeconds}s
                 </span>
               </div>
@@ -504,7 +556,11 @@ export default function StudyPage() {
 
                 {/* Back */}
                 <div className="backface-hidden w-full h-full absolute inset-0 rotate-y-180">
-                  <FlashcardBack card={currentCard} />
+                  <FlashcardBack 
+                    card={currentCard} 
+                    isSaved={isSaved(currentCard.id)}
+                    onToggle={handleToggleNotebook}
+                  />
                 </div>
               </div>
             </div>
@@ -535,7 +591,7 @@ export default function StudyPage() {
               </button>
             </>
           ) : phase === 'RATING' ? (
-            // ── RATING: SRS buttons with suggestion (or self-rate if skip) ──
+            // ── RATING: SRS buttons ──
             <div className="flex flex-col items-center">
               {suggestedRating !== null && (
                 <p className="text-center text-primary text-xs mb-3 font-bold tracking-widest uppercase">
@@ -549,7 +605,7 @@ export default function StudyPage() {
               />
             </div>
           ) : showCardBack ? (
-            // ── FLIPPED (card back shown, waiting for user to click Next) ──
+            // ── FLIPPED ──
             <button
               onClick={handleNextToChallenge}
               className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
@@ -560,6 +616,18 @@ export default function StudyPage() {
           ) : null}
         </div>
       </div>
+
+      {/* Notebook Note Drawer */}
+      <NoteDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => {
+          setIsDrawerOpen(false)
+          setPendingWordId(null)
+        }}
+        onSave={handleSaveNote}
+        initialNote={currentCard ? getNote(currentCard.id) : ''}
+        word={currentCard?.front || ''}
+      />
     </div>
   )
 }
