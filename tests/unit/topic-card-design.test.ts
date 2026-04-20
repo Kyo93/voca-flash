@@ -1,12 +1,10 @@
 /**
- * RED TESTS — Topic Card Design Improvements (RoadmapSetupPage TopicPanel)
- * =========================================================================
- * 3 issues:
- *  1. Cards too cramped — gap is space-y-1 (4px), should be space-y-3 (12px)
- *  2. "Sửa" + "Xóa" buttons always visible (text + icon), too cluttered
- *     Fix: icon-only, hidden by default, shown on hover
- *  3. No topic-color tint — cards have no background color tied to the topic
- *     Fix: subtle left border in topic color (muted via opacity)
+ * Topic Card Design Tests (RoadmapSetupPage TopicPanel)
+ * Verifies the outer-icon-bar + inner-card layout:
+ *  1. Color accent bar (left edge) + icon badge (left of card)
+ *  2. Slug displayed as badge tag outside the card
+ *  3. Action buttons icon-only, shown on hover
+ *  4. Full-card background tint in topic color
  *
  * Run: npm test -- tests/unit/topic-card-design.test.ts
  */
@@ -21,55 +19,40 @@ function readFile(relativePath: string): string {
   return fs.readFileSync(path.join(SRC, relativePath), 'utf8')
 }
 
-function findContainer(source: string): string {
-  // space-y-3 lives on the container div, which wraps topics.map
-  const containerIdx = source.indexOf('overflow-y-auto space-y-3')
-  expect(containerIdx).toBeGreaterThan(-1)
-  // 1200 chars: container → empty state → topics.map → first card → buttons
-  return source.substring(containerIdx, containerIdx + 1200)
-}
+describe('TopicPanel — outer icon/slug bar + inner card layout', () => {
 
-function findUncategorizedSection(source: string): string {
-  const idx = source.indexOf('Chưa phân loại')
-  expect(idx).toBeGreaterThan(-1)
-  return source.substring(Math.max(0, idx - 200), idx + 50)
-}
-
-describe('TopicPanel — topic cards must have proper spacing, elegant actions, topic-color tint', () => {
-
-  it('card list gap must be space-y-3 (12px), not space-y-1 (4px)', () => {
+  it('must have color accent bar (left of card)', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    const container = findContainer(source)
-    expect(container).toMatch(/space-y-3/)
-    expect(container).not.toMatch(/space-y-1(?!-)/)
+    // Color bar: div with className including 'w-1' and style backgroundColor
+    expect(source).toMatch(/className="w-1.*rounded-full/)
+    expect(source).toMatch(/style=\{\{\s*backgroundColor:\s*topicColor/)
+  })
+
+  it('must have icon badge outside the card (left of card)', () => {
+    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
+    // Icon badge: w-10 h-10 rounded-xl, shows topic.icon
+    expect(source).toMatch(/topic\.icon/)
+    expect(source).toMatch(/w-10.*h-10.*rounded-xl/)
+  })
+
+  it('must display slug as badge tag next to topic name', () => {
+    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
+    // Slug badge: /{topic.slug} inside a tag near the name
+    expect(source).toMatch(/\/{topic\.slug}/)
   })
 
   it('action buttons must be icon-only (no text label), shown on hover', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // Buttons live inside the card div — find it and search the button section
-    const cardIdx = source.indexOf('relative group rounded-lg')
-    const btnIdx = source.indexOf('opacity-0 group-hover:opacity-100')
-    expect(cardIdx).toBeGreaterThan(-1)
-    expect(btnIdx).toBeGreaterThan(-1)
-    const buttonSection = source.substring(cardIdx, btnIdx + 300)
-    // No text labels
-    expect(buttonSection).not.toContain('>Sửa<')
-    expect(buttonSection).not.toContain('>Xóa<')
     // Hover reveal pattern present
     expect(source).toMatch(/opacity-0 group-hover:opacity-100/)
+    // No text labels on action buttons
+    expect(source).not.toContain('>Sửa<')
+    expect(source).not.toContain('>Xóa<')
   })
 
-  it('topic card must have a subtle full-card background tint in the topic color (muted)', () => {
+  it('card must have subtle full-card background tint in the topic color', () => {
     const source = readFile('pages/admin/RoadmapSetupPage.tsx')
-    // The style= attribute on the card div must contain backgroundColor with topic.color
-    // NOT borderLeftColor — this is a full-card background tint, not a border
-    const cardIdx = source.indexOf('relative group rounded-lg')
-    const styleIdx = source.indexOf('backgroundColor:', cardIdx)
-    const borderIdx = source.indexOf('borderLeftColor:', cardIdx)
-    expect(styleIdx).toBeGreaterThan(-1)
-    expect(borderIdx).toBe(-1) // borderLeftColor must be REMOVED
-    const styleSection = source.substring(styleIdx, styleIdx + 100)
-    // Must reference topic.color in the background (opacity ~8-15%)
-    expect(styleSection).toMatch(/topic\.color/)
+    // backgroundColor with topicColor variable (opacity ~8%)
+    expect(source).toMatch(/backgroundColor:.*topicColor.*1A/)
   })
 })

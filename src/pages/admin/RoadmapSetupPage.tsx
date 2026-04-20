@@ -498,88 +498,105 @@ function TopicPanel({
             void getProgressPercent(topic.id)
             const isDraggingThis = isDragging(topic.id)
             const isDragOverThis = isDragOver(topic.id)
+            const topicColor = topic.color ?? '#F97316'
 
             return (
               <div
                 key={topic.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, topic.id)}
-                onDragOver={(e) => handleDragOver(e, topic.id)}
-                onDrop={(e) => handleDrop(e, topic.id)}
-                onDragEnd={handleDragEnd}
-                onClick={() => onViewWords(topic.id)}
-                className={`relative group rounded-lg transition-all cursor-pointer select-none ${
-                  isDraggingThis
-                    ? 'opacity-40'
-                    : isDragOverThis
-                    ? 'border border-primary shadow-md'
-                    : isActive
-                    ? 'border border-stone-200 shadow-[inset_4px_0_0_#944a00]'
-                    : 'border border-stone-200 hover:bg-surface-container transition-colors'
-                }`}
-                style={{
-                  // Full-card background tint in topic color — muted (~8%) so it doesn't overpower text
-                  backgroundColor: `${topic.color ?? '#F97316'}1A`,
-                }}
+                className="flex items-center gap-2"
               >
-                {/* Card body — always visible */}
-                <div className="p-4">
-                  {/* Top row: drag handle + color dot + name */}
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="material-symbols-outlined text-stone-300 text-base cursor-grab shrink-0">drag_indicator</span>
-                    {/* Color dot — matches design reference */}
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: topic.color ?? '#F97316' }}
-                    />
-                    <p className={`flex-1 font-bold text-sm leading-tight min-w-0 truncate ${isActive ? 'text-primary' : 'text-secondary'}`}>
-                      {topic.name}
-                    </p>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
-                        status === 'PUBLISHED'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-stone-200 text-stone-600'
-                      }`}
-                    >
-                      {status}
-                    </span>
-                  </div>
+                {/* Color accent bar (left edge) */}
+                <div
+                  className="w-1 rounded-full shrink-0"
+                  style={{ backgroundColor: topicColor, minHeight: 52 }}
+                />
 
-                  {/* Slug — muted mono text */}
-                  {topic.slug && (
-                    <p className="text-[10px] text-stone-400 font-mono mt-0.5 pl-[calc(0.625rem+0.625rem)] truncate">
-                      {topic.slug}
-                    </p>
-                  )}
+                {/* Icon badge (left of card) */}
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                  style={{ backgroundColor: topicColor + '18', border: `2px solid ${topicColor}40` }}
+                >
+                  <span className="material-symbols-outlined text-lg" style={{ color: topicColor }}>
+                    {topic.icon}
+                  </span>
+                </div>
 
-                  {/* Description — truncated 1 line */}
-                  {topic.description && (
-                    <p className="text-xs text-stone-400 mb-2 pl-[calc(0.625rem+0.625rem)] line-clamp-1">
-                      {topic.description}
-                    </p>
-                  )}
+                {/* Card body */}
+                <div
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, topic.id)}
+                  onDragOver={(e) => handleDragOver(e, topic.id)}
+                  onDrop={(e) => handleDrop(e, topic.id)}
+                  onDragEnd={handleDragEnd}
+                  onClick={() => onViewWords(topic.id)}
+                  className={`flex-1 group rounded-lg transition-all cursor-pointer select-none ${
+                    isDraggingThis
+                      ? 'opacity-40'
+                      : isDragOverThis
+                      ? 'border border-primary shadow-md'
+                      : isActive
+                      ? 'border border-stone-200 shadow-[inset_4px_0_0_#944a00]'
+                      : 'border border-stone-200 hover:bg-surface-container transition-colors'
+                  }`}
+                  style={{
+                    backgroundColor: `${topicColor}1A`,
+                  }}
+                >
+                  {/* Card body — always visible */}
+                  <div className="p-3">
+                    {/* Top row: drag handle + name + slug badge + status */}
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="material-symbols-outlined text-stone-300 text-base cursor-grab shrink-0">drag_indicator</span>
+                      <p className={`flex-1 font-bold text-sm leading-tight min-w-0 truncate ${isActive ? 'text-primary' : 'text-secondary'}`}>
+                        {topic.name}
+                      </p>
+                      {/* Slug badge */}
+                      <span
+                        className="shrink-0 text-[10px] font-mono text-stone-400 bg-white/60 px-1.5 py-0.5 rounded-md border border-stone-200/50"
+                      >
+                        /{topic.slug}
+                      </span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
+                          status === 'PUBLISHED'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-stone-200 text-stone-600'
+                        }`}
+                      >
+                        {status}
+                      </span>
+                    </div>
 
-                  {/* Word count badge */}
-                  <span className="text-[10px] font-bold text-stone-500 shrink-0">{count} từ</span>
+                    {/* Description — truncated 1 line */}
+                    {topic.description && (
+                      <p className="text-xs text-stone-400 mb-1.5 pl-[calc(0.625rem+0.625rem)] line-clamp-1">
+                        {topic.description}
+                      </p>
+                    )}
 
-                  {/* Inline action buttons — icon-only, shown on hover */}
-                  <div className="flex items-center gap-1 mt-2 pl-[calc(0.625rem+0.625rem)] opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                    onClick={(e) => e.stopPropagation()}>
-                    <button
-                      onClick={() => onEditTopic(topic)}
-                      className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-primary hover:bg-orange-50 transition-all"
-                      title="Sửa"
-                    >
-                      <span className="material-symbols-outlined text-sm">edit</span>
-                    </button>
-                    <button
-                      onClick={() => onDeleteTopic(topic)}
-                      className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                      title="Xóa"
-                    >
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
+                    {/* Bottom row: word count + inline actions */}
+                    <div className="flex items-center justify-between pl-[calc(0.625rem+0.625rem)]">
+                      <span className="text-[10px] font-bold text-stone-500">{count} từ</span>
+
+                      {/* Inline action buttons — shown on hover */}
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                        onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => onEditTopic(topic)}
+                          className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-primary hover:bg-orange-50 transition-all"
+                          title="Sửa"
+                        >
+                          <span className="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button
+                          onClick={() => onDeleteTopic(topic)}
+                          className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                          title="Xóa"
+                        >
+                          <span className="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

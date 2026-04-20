@@ -277,13 +277,14 @@ export default function AdminWordsPage() {
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Dịch</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Tags</th>
                 <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ngày tạo</th>
+                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Cập nhật</th>
                 <th className="px-4 py-3 text-right text-xs font-black text-stone-500 uppercase tracking-wider">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {loading && words.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-12 text-center text-stone-400">
+                  <td colSpan={10} className="px-4 py-12 text-center text-stone-400">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl animate-spin">progress_activity</span>
                       <p>Đang tải...</p>
@@ -292,7 +293,7 @@ export default function AdminWordsPage() {
                 </tr>
               ) : paginated.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-12 text-center text-stone-400">
+                  <td colSpan={10} className="px-4 py-12 text-center text-stone-400">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl">search_off</span>
                       <p>Không tìm thấy từ vựng nào</p>
@@ -348,6 +349,13 @@ export default function AdminWordsPage() {
                   </td>
                   <td className="px-4 py-3">
                     <p className="text-xs text-stone-400 font-mono">{w.created_at ? formatDetailedDate(w.created_at) : '—'}</p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="text-xs text-stone-400 font-mono">
+                      {w.updated_at && w.updated_at !== w.created_at
+                        ? `↑${formatDetailedDate(w.updated_at)}`
+                        : '—'}
+                    </p>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
