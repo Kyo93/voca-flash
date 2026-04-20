@@ -53,3 +53,24 @@ export function generateChoices(word: import('./types').Word): string[] {
     .slice(0, 3)
   return shuffleArray([correct, ...distractors])
 }
+
+// ── Slug Utilities ─────────────────────────────────────────
+
+/**
+ * Generate a slug that is unique within existingSlugs.
+ * If roadmapSlug is provided, prefix the slug with "roadmapSlug-" to avoid
+ * cross-roadmap collisions (e.g., two roadmaps creating "Animals" topic).
+ * If base slug is not taken → return it.
+ * Otherwise append -1, -2, ... until unique.
+ */
+export function generateUniqueSlug(
+  base: string,
+  existingSlugs: Set<string>,
+  roadmapSlug?: string,
+): string {
+  const prefixed = roadmapSlug ? `${roadmapSlug}-${base}` : base
+  if (!existingSlugs.has(prefixed)) return prefixed
+  let i = 1
+  while (existingSlugs.has(`${prefixed}-${i}`)) i++
+  return `${prefixed}-${i}`
+}

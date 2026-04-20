@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAdminWords } from '../../hooks/admin/useAdminWords'
-import { getAllTopics, getAllRoadmaps } from '../../lib/admin-queries'
+import { getAllTopics } from '../../lib/admin-queries'
 import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import WordFormModal from '../../components/admin/WordFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -29,7 +29,6 @@ export default function AdminWordsPage() {
   const { words, loading, error, fetch, addWord, editWord, removeWord, bulkDelete, bulkAssignTopic, loadChoices } = useAdminWords()
   const { selectedRoadmap } = useRoadmapContext()
   const [topics, setTopics] = useState<Topic[]>([])
-  const [roadmapNameMap, setRoadmapNameMap] = useState<Map<string, string>>(new Map())
 
   // Filters
   const [search, setSearch] = useState('')
@@ -57,13 +56,9 @@ export default function AdminWordsPage() {
     return () => clearTimeout(t)
   }, [search])
 
-  // Load topics + roadmap name map once
+  // Load topics once
   useEffect(() => {
     getAllTopics().then(({ data }) => setTopics((data as Topic[]) ?? []))
-    getAllRoadmaps().then(({ data }) => {
-      const rMap = new Map((data as any[] ?? []).map((r: any) => [r.id, r.name]))
-      setRoadmapNameMap(rMap)
-    })
   }, [])
 
   // Fetch words when filters change

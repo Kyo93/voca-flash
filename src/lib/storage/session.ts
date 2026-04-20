@@ -1,9 +1,10 @@
 import { supabase } from '../supabase'
+import { FETCH_PAGE_SIZE, SRS_STABILITY_LEVELS } from '../constants'
 import type { Word, SrsRecord, WordChoice, ResumePointer } from '../types'
 import { CardProgress, mapSrsRecordToCardProgress } from '../srs'
 
 export async function fetchSrsStates(userId: string): Promise<Map<string, CardProgress>> {
-  const PAGE_SIZE = 1000
+  const PAGE_SIZE = FETCH_PAGE_SIZE
   const map = new Map<string, CardProgress>()
   let from = 0
   let hasMore = true
@@ -42,7 +43,7 @@ export async function upsertSrsRecord(
     return
   }
 
-  const isMasteredStatus = update.stability >= 21 && update.state !== 3
+  const isMasteredStatus = update.stability >= SRS_STABILITY_LEVELS.MASTERED && update.state !== 3
   const nextReviewAt = new Date(update.due).toISOString()
   const lastReviewed = new Date(update.lastReview || Date.now()).toISOString()
 

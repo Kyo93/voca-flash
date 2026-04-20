@@ -2,29 +2,17 @@ import { useEffect, useCallback, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
-import { generateChoices } from '../lib/utils'
 import { useAuth } from '../contexts/AuthContext'
 import StudyPrepScreen from '../components/StudyPrepScreen'
-import type { Card } from '../lib/srs'
-import { SrsRating, mapTestResultToRating, computeIntervalPreviews, createInitialProgress, type StudyChallengeType, type IntervalPreview } from '../lib/srs'
 import SRSButtons from '../components/SRSButtons'
 import StudyChallengeShell from '../components/StudyChallengeShell'
 import { useNotebook } from '../hooks/useNotebook'
 import NoteDrawer from '../components/NoteDrawer'
-import AudioButton from '../components/common/AudioButton'
 import FlashcardFront from '../components/study/FlashcardFront'
 import FlashcardBack from '../components/study/FlashcardBack'
 import StudyComplete from '../components/study/StudyComplete'
 import { useStudySessionMode } from '../hooks/useStudySessionMode'
-
-
-
-
-
-
-
-
-type StudyPhase = 'FLIPPED' | 'READY_FOR_QUIZ' | 'CHALLENGING' | 'RATING'
+import { STUDY_SESSION_DEFAULTS } from '../lib/constants'
 
 export default function StudyPage() {
   const { profile } = useAuth()
@@ -52,7 +40,6 @@ export default function StudyPage() {
 
   const { isSaved, toggle, getNote, updateNote } = useNotebook()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [pendingWordId, setPendingWordId] = useState<string | null>(null)
 
   const handleToggleNotebook = useCallback(async () => {
     if (!currentCard) return
@@ -60,7 +47,6 @@ export default function StudyPage() {
     // If saving (not currently saved), open drawer
     const alreadySaved = isSaved(currentCard.id)
     if (!alreadySaved) {
-      setPendingWordId(currentCard.id)
       setIsDrawerOpen(true)
     }
     
@@ -109,14 +95,11 @@ export default function StudyPage() {
     handleNextToChallenge,
     word
   } = useStudySessionMode({
-    currentCard,
-    currentProgress,
+    currentCard: currentCard ?? null,
+    currentProgress: currentProgress ?? null,
     srsIntensity: profile?.srs_intensity,
     onRate: rate
   })
-
-
-  // ── End Study Post-Flip Challenge ────────────────────────────
 
   const onStartCallback = useCallback((includeMastered: boolean) => {
     startSession(roadmapId, topicId || '', includeMastered)
@@ -172,51 +155,34 @@ export default function StudyPage() {
         </div>
 
         {/* Main Content Area */}
-        {phase === 'CHALLENGING' ? (
+        {phase === 'CHALLENGING' ? (() => {
+          const isWarning = timerSeconds <= STUDY_SESSION_DEFAULTS.WARNING_THRESHOLD_S
+          const borderColor = isWarning ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'
+          const borderGlow = `0 0 8px ${borderColor}`
+          const timerProgress = `${(timerSeconds / STUDY_SESSION_DEFAULTS.TIMER_SECONDS) * 100}%`
+          const timerTextClass = isWarning ? 'text-error animate-pulse' : 'text-secondary'
+
+          return (
           // ── CHALLENGING: quiz with timer countdown + shrinking border ──
           <div
             className="w-full relative rounded-2xl overflow-hidden bg-surface-container-lowest"
             style={{ padding: '0' }}
           >
-            {/* Snake border */}
-            <div
-              className="absolute top-0 left-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
-              style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
-                width: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
-              }}
-            />
-            <div
-              className="absolute top-0 right-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
-              style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
-                height: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
-              }}
-            />
-            <div
-              className="absolute bottom-0 right-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
-              style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
-                width: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
-              }}
-            />
-            <div
-              className="absolute bottom-0 left-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
-              style={{
-                backgroundColor: timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)',
-                height: `${(timerSeconds / 30) * 100}%`,
-                boxShadow: `0 0 8px ${timerSeconds <= 10 ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'}`,
-              }}
-            />
+            {/* Snake border — 4 edges */}
+            <div className="absolute top-0 left-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
+              style={{ backgroundColor: borderColor, width: timerProgress, boxShadow: borderGlow }} />
+            <div className="absolute top-0 right-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
+              style={{ backgroundColor: borderColor, height: timerProgress, boxShadow: borderGlow }} />
+            <div className="absolute bottom-0 right-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
+              style={{ backgroundColor: borderColor, width: timerProgress, boxShadow: borderGlow }} />
+            <div className="absolute bottom-0 left-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
+              style={{ backgroundColor: borderColor, height: timerProgress, boxShadow: borderGlow }} />
 
             {/* Timer bar */}
             <div className="flex items-center justify-between px-5 py-3 bg-surface-container-low">
               <div className="flex items-center gap-2">
-                <span className={`material-symbols-outlined text-xl ${timerSeconds <= 10 ? 'text-error animate-pulse' : 'text-secondary'}`}>timer</span>
-                <span className={`font-headline font-black text-lg tabular-nums ${timerSeconds <= 10 ? 'text-error animate-pulse' : 'text-secondary'}`}>
+                <span className={`material-symbols-outlined text-xl ${timerTextClass}`}>timer</span>
+                <span className={`font-headline font-black text-lg tabular-nums ${timerTextClass}`}>
                   {timerSeconds}s
                 </span>
               </div>
@@ -248,7 +214,8 @@ export default function StudyPage() {
               </button>
             </div>
           </div>
-        ) : (
+          )
+        })() : (
           // ── CARD: front OR back ──
           <div className="group relative">
             <div
@@ -334,7 +301,6 @@ export default function StudyPage() {
         isOpen={isDrawerOpen}
         onClose={() => {
           setIsDrawerOpen(false)
-          setPendingWordId(null)
         }}
         onSave={handleSaveNote}
         initialNote={currentCard ? getNote(currentCard.id) : ''}

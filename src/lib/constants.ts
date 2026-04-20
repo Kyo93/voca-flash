@@ -25,3 +25,5 @@ export const STUDY_SESSION_DEFAULTS = {
 export const MASTERY_CONFIG = {
   DEFAULT_PAGE_SIZE: 50,
 } as const;
+
+export const FETCH_PAGE_SIZE = 1000;

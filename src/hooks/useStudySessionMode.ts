@@ -43,6 +43,12 @@ export function useStudySessionMode({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const timerTickRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  /** Clear all active timers (timeout + interval tick) */
+  const clearTimers = useCallback(() => {
+    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
+    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
+  }, [])
+
   // Convert Card → Word shape for challenge components
   const cardToWord = useCallback((card: Card): Word => ({
     id: card.id,
@@ -61,8 +67,7 @@ export function useStudySessionMode({
 
   // Reset session state when card changes
   useEffect(() => {
-    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
-    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
+    clearTimers()
     
     setPhase('FLIPPED')
     setSuggestedRating(null)
@@ -73,13 +78,10 @@ export function useStudySessionMode({
 
   // Cleanup on unmount
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-      if (timerTickRef.current) clearInterval(timerTickRef.current)
-    }
+    return clearTimers
   }, [])
 
-  // Start challenge logic
+  // 1. Challenge Initialization Effect: Listen for READY_FOR_QUIZ, prepare data, and flip to CHALLENGING
   useEffect(() => {
     if (phase !== 'READY_FOR_QUIZ' || !currentCard) return
 
@@ -90,25 +92,13 @@ export function useStudySessionMode({
     setPrecomputedChoices(generateChoices(cardToWord(currentCard)))
     challengeStartTimeRef.current = Date.now()
     setTimerSeconds(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
+    
+    // Move to active challenge phase
     setPhase('CHALLENGING')
-
-    timerTickRef.current = setInterval(() => {
-      setTimerSeconds(s => Math.max(0, s - 1))
-    }, 1000)
-
-    timeoutRef.current = setTimeout(() => {
-      handleChallengeTimeout()
-    }, STUDY_SESSION_DEFAULTS.TIMEOUT_MS)
-
-    return () => {
-      if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
-      if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
-    }
   }, [phase, currentCard, cardToWord])
 
   const handleChallengeTimeout = useCallback(() => {
-    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
-    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
+    clearTimers()
 
     const previews = computeIntervalPreviews(
       currentProgress ?? createInitialProgress(''),
@@ -120,9 +110,23 @@ export function useStudySessionMode({
     setPhase('RATING')
   }, [currentProgress, srsIntensity])
 
+  // 2. Active Challenge Timer Effect: Run setInterval/setTimeout ONLY while in CHALLENGING phase
+  useEffect(() => {
+    if (phase !== 'CHALLENGING') return
+
+    timerTickRef.current = setInterval(() => {
+      setTimerSeconds(s => Math.max(0, s - 1))
+    }, 1000)
+
+    timeoutRef.current = setTimeout(() => {
+      handleChallengeTimeout()
+    }, STUDY_SESSION_DEFAULTS.TIMEOUT_MS)
+
+    return clearTimers
+  }, [phase, handleChallengeTimeout])
+
   const handleChallengeSubmit = useCallback((isCorrect: boolean) => {
-    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
-    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
+    clearTimers()
 
     const responseTime = Date.now() - challengeStartTimeRef.current
     const suggested = mapTestResultToRating(isCorrect, responseTime)
@@ -137,8 +141,7 @@ export function useStudySessionMode({
   }, [currentProgress, srsIntensity])
 
   const handleSkipChallenge = useCallback(() => {
-    if (timeoutRef.current) { clearTimeout(timeoutRef.current); timeoutRef.current = null }
-    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
+    clearTimers()
     
     const previews = computeIntervalPreviews(
       currentProgress ?? createInitialProgress(currentCard?.id || ''),

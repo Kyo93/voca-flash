@@ -1,14 +1,8 @@
 import { useState, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Topic, NormalizedWord, BatchInsertResult } from '../../lib/types'
-import {
-  parseFile,
-  parseSheetsUrl,
-  parseErrorToMessage,
-  resolveUnmatchedTopics,
-  generateUniqueSlug,
-  slugify,
-} from '../../lib/import-parser'
+import { parseFile, parseSheetsUrl, parseErrorToMessage, resolveUnmatchedTopics } from '../../lib/import-parser'
+import { generateUniqueSlug, slugify } from '../../lib/utils'
 import { batchInsertWords, createTopic, findDuplicateWords } from '../../lib/admin-queries'
 
 // ── Props ─────────────────────────────────────────────────

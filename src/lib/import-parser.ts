@@ -1,7 +1,7 @@
 import Papa from 'papaparse'
 import type { RawRow, NormalizedWord } from './types'
 import type { Topic } from './types'
-import { slugify } from './utils'
+import { slugify, generateUniqueSlug } from './utils'
 export { slugify }
 
 // ── Type for parser output ─────────────────────────────────
@@ -51,6 +51,21 @@ function parseRawValue(val: unknown): string {
   if (typeof val === 'number') return String(val)
   return String(val).trim()
 }
+
+/**
+ * Normalizes parsed PapaParse rows into RawRow format.
+ * Keys are already normalized via transformHeader — this just normalizes values.
+ * Extracted to eliminate duplicate mapping logic in parseCSV and parseGoogleSheetsUrl.
+ */
+function normalizeParsedRows(parsedData: Record<string, unknown>[]): RawRow[] {
+  return parsedData.map(row => {
+    const normalized: Record<string, string> = {}
+    for (const [key, val] of Object.entries(row)) {
+      normalized[key] = parseRawValue(val)
+    }
+    return normalized as unknown as RawRow
+  })
+}
 export function parseCSV(file: File): Promise<RawRow[]> {
   return new Promise((resolve, reject) => {
     if (file.size > MAX_FILE_SIZE) {
@@ -74,15 +89,7 @@ export function parseCSV(file: File): Promise<RawRow[]> {
             return
           }
         }
-        // Keys already normalized via transformHeader — use row directly
-        const rows = (results.data as Record<string, unknown>[]).map(row => {
-          const normalized: Record<string, string> = {}
-          for (const [key, val] of Object.entries(row)) {
-            normalized[key] = parseRawValue(val) // key is already normalized
-          }
-          return normalized as unknown as RawRow
-        })
-        resolve(rows)
+        resolve(normalizeParsedRows(results.data as Record<string, unknown>[]))
       },
       error: (err) => reject(new Error(`PARSE_ERROR: ${err.message}`)),
     })
@@ -138,16 +145,7 @@ export function parseGoogleSheetsUrl(url: string): Promise<RawRow[]> {
         throw new Error('EMPTY_FILE')
       }
 
-      // Keys already normalized via transformHeader — use row directly
-      const rows: RawRow[] = results.data.map(row => {
-        const normalized: Record<string, string> = {}
-        for (const [key, val] of Object.entries(row)) {
-          normalized[key] = parseRawValue(val) // key is already normalized
-        }
-        return normalized as unknown as RawRow
-      })
-
-      return rows
+      return normalizeParsedRows(results.data)
     })
 }
 
@@ -167,28 +165,6 @@ const DIFFICULTY_LABEL_MAP: Record<string, number> = {
   trung_bình: 3, trung_binh: 3, medium: 3, trungbình: 3, trungbinh: 3,
   khó: 4, kho: 4, hard: 4,
   rất_khó: 5, rat_kho: 5, very_hard: 5,
-}
-
-// ── Slug Utilities ────────────────────────────────────────────
-// slugify imported from ./utils (single source of truth)
-
-/**
- * Generate a slug that is unique within existingSlugs.
- * If roadmapSlug is provided, prefix the slug with "roadmapSlug-" to avoid
- * cross-roadmap collisions (e.g., two roadmaps creating "Animals" topic).
- * If base slug is not taken → return it.
- * Otherwise append -1, -2, ... until unique.
- */
-export function generateUniqueSlug(
-  base: string,
-  existingSlugs: Set<string>,
-  roadmapSlug?: string,
-): string {
-  const prefixed = roadmapSlug ? `${roadmapSlug}-${base}` : base
-  if (!existingSlugs.has(prefixed)) return prefixed
-  let i = 1
-  while (existingSlugs.has(`${prefixed}-${i}`)) i++
-  return `${prefixed}-${i}`
 }
 
 // ── Normalize Row ──────────────────────────────────────────

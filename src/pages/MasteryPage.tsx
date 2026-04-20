@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
 import NoteDrawer from '../components/NoteDrawer'
 import WordDetailPanel from '../components/WordDetailPanel'
-import AudioButton from '../components/common/AudioButton'
+
 import CardRow from '../components/mastery/CardRow'
-import { format } from 'date-fns'
+
 import { MASTERY_CONFIG } from '../lib/constants'
 
-import { vi, enUS, type Locale } from 'date-fns/locale'
+import { vi, enUS } from 'date-fns/locale'
 
 type FilterType = 'all' | 'due' | 'weak' | 'orphaned' | 'mastered'
 
@@ -39,7 +39,7 @@ export default function MasteryPage() {
   
   // interaction State
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [expandedId, setExpandedId] = useState<string | null>(null)
+
 
   const { isSaved, toggle, updateNote, getNote } = useNotebook()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)

@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
-import { CardProgress, SrsRating, calculateFSRSReview, mapIntensityToRetention } from '../lib/srs'
+import { SrsRating, calculateFSRSReview, mapIntensityToRetention } from '../lib/srs'
 import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word } from '../lib/types'

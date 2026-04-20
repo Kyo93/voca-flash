@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Topic, Roadmap } from '../../lib/types'
+import { Topic } from '../../lib/types'
 
 interface TopicCardProps {
   topic: Topic

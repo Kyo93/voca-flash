@@ -151,7 +151,7 @@ const TAG_KEYWORDS: [string, string[]][] = [
     'law', 'legal', 'court', 'judge', 'lawyer', 'attorney', 'defendant',
     'plaintiff', 'witness', 'evidence', 'verdict', 'trial', 'jury', 'crime',
     'criminal', 'prison', 'jail', 'arrest', 'detain', 'charge', 'bail',
-    'civil', 'rights', 'justice', 'justice', 'statute', 'amendment',
+    'civil', 'rights', 'justice', 'statute', 'amendment',
   ]],
   ['politics', [
     'politics', 'political', 'government', 'president', 'minister', 'parliament',
@@ -204,7 +204,7 @@ const TAG_KEYWORDS: [string, string[]][] = [
   ]],
   ['relationship', [
     'relationship', 'friend', 'enemy', 'colleague', 'mentor', 'mentee',
-    'colleague', 'neighbor', 'partner', 'spouse', 'acquaintance',
+    'neighbor', 'partner', 'spouse', 'acquaintance',
     'collaboration', 'cooperation', 'trust', 'betrayal', 'loyalty', 'friendship',
   ]],
   ['communication-type', [

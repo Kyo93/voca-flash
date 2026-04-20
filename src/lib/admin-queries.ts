@@ -180,18 +180,7 @@ export async function getWordsWithTopicsByRoadmap(roadmapId: string) {
     junctionMap.get(j.word_id)!.push(j.topic_id)
   }
 
-  // Lấy TẤT CẢ words trong roadmap (bao gồm uncategorized)
-  // Bằng cách join qua topic_words hoặc lấy trực tiếp từ words
-  let wordIds: string[] = [] // TODO: used for uncategorized word filtering — wire up in future
-
-  if (topicIds.length > 0 && junctions.length > 0) {
-    // Có topic → lấy words từ junction + words chưa gán (uncategorized)
-    wordIds = [...new Set(junctions.map(j => j.word_id))]
-  }
-  // Nếu wordIds rỗng vẫn tiếp tục để lấy uncategorized words
-  void (wordIds) // TODO(M2): wire up uncategorized word filtering
-
-  // Lấy tất cả words (bất kể có junction hay không)
+  // Lấy tất cả words (bất kể có junction hay không — includes uncategorized)
   const { data: words, error } = await supabase
     .from('words')
     .select('*')

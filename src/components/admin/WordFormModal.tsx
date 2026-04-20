@@ -66,9 +66,9 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
       setDefinition(word.definition ?? '')
       setExample(word.example ?? '')
       setExampleVi(word.example_vi ?? '')
-      setSynonyms((word as any).synonyms?.join(', ') ?? '')
-      setAntonyms((word as any).antonyms?.join(', ') ?? '')
-      setWordFamily((word as any).word_family?.join(', ') ?? '')
+      setSynonyms(word?.synonyms?.join(', ') ?? '')
+      setAntonyms(word?.antonyms?.join(', ') ?? '')
+      setWordFamily(word?.word_family?.join(', ') ?? '')
 
       setImageUrl(word.image_url ?? '')
       setImagePosition(word.image_position ?? 'center')
