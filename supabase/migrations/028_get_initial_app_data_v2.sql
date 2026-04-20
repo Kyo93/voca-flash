@@ -17,7 +17,7 @@ DECLARE
     v_active_roadmap JSON;
     v_due_count INT;
     v_forecast INT[];
-    v_boundary TIMESTAMPTZ := (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh' - INTERVAL '4 hours')::DATE + INTERVAL '4 hours';
+    v_boundary TIMESTAMPTZ := ((CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh' - INTERVAL '4 hours')::DATE + INTERVAL '4 hours') AT TIME ZONE 'Asia/Ho_Chi_Minh';
 BEGIN
     -- Profile: lấy đầy đủ fields (display_name, avatar_url, v.v.)
     SELECT json_build_object(

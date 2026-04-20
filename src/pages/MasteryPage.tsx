@@ -313,7 +313,17 @@ const CardRow = React.forwardRef<HTMLTableRowElement, {
   const isDue = nextReviewDate && nextReviewDate <= new Date()
   
   const stability = Number(word.fsrs_stability ?? 0)
-  const strengthColor = stability >= 21 ? 'bg-green-500' : stability >= 7 ? 'bg-primary' : stability >= 3 ? 'bg-orange-400' : 'bg-red-500'
+  
+  // Levels: Fresh (<3d), Learning (3-21d), Mastered (21-90d), Rooted (>90d)
+  const getLevel = (s: number) => {
+    if (s >= 90) return { label: 'Rooted', color: 'bg-purple-500', text: 'text-purple-600', bg: 'bg-purple-50', glow: 'shadow-[0_0_15px_rgba(168,85,247,0.4)]' }
+    if (s >= 21) return { label: 'Mastered', color: 'bg-green-500', text: 'text-green-600', bg: 'bg-green-50', glow: '' }
+    if (s >= 3) return { label: 'Learning', color: 'bg-blue-500', text: 'text-blue-600', bg: 'bg-blue-50', glow: '' }
+    return { label: 'Fresh', color: 'bg-red-500', text: 'text-red-500', bg: 'bg-red-50', glow: '' }
+  }
+
+  const level = getLevel(stability)
+  // Progress bar logic: 0-21 days takes 100% of the bar width
   const strengthPercent = Math.min(100, (stability / 21) * 100)
 
   return (
@@ -337,6 +347,11 @@ const CardRow = React.forwardRef<HTMLTableRowElement, {
               <span className="text-base font-black text-secondary group-hover:text-primary transition-colors">{word.word}</span>
               {word.phonetic && <span className="text-xs text-stone-400 font-medium">{word.phonetic}</span>}
               <span className={`material-symbols-outlined text-stone-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>expand_more</span>
+              
+              {/* Level Badge */}
+              <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest ${level.bg} ${level.text} border border-current/10 ${level.glow}`}>
+                {level.label}
+              </span>
             </div>
             <span className="text-xs text-stone-500 line-clamp-1 group-hover:line-clamp-none transition-all mr-4">{word.definition}</span>
           </div>
@@ -352,7 +367,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, {
           <div className="flex flex-col gap-1.5">
             <div className="w-24 h-1.5 bg-stone-100 rounded-full overflow-hidden">
               <div 
-                className={`h-full ${strengthColor} transition-all duration-1000`} 
+                className={`h-full ${level.color} transition-all duration-1000 ${level.glow ? 'animate-pulse' : ''}`} 
                 style={{ width: `${strengthPercent}%` }}
               />
             </div>

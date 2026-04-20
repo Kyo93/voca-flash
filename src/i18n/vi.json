@@ -172,7 +172,9 @@
     "faqQ1": "Tại sao tôi vừa học thêm từ mà Arena không có từ ôn tập?",
     "faqA1": "Từ bạn vừa học sẽ không xuất hiện ngay. Theo thuật toán Spaced Repetition, não bộ cần khoảng nghỉ để 'thấm' kiến thức. Lần ôn tập đầu tiên thường đến sau 24 giờ kể từ khi bạn học xong.",
     "faqQ2": "Hệ thống Cấp độ (Rank) được tính như thế nào?",
-    "faqA2": "Hiện tại cấp độ phản ánh sự chăm chỉ của bạn dựa trên Mục tiêu hằng ngày. Khi bạn hoàn thành số từ mới đặt ra trong ngày, bạn sẽ 'thăng hạng' hoàn thành mục tiêu. Trong tương lai, hệ thống sẽ mở rộng dựa trên tổng số từ bạn đã làm chủ (Mastered)."
+    "faqA2": "Hiện tại cấp độ phản ánh sự chăm chỉ của bạn dựa trên Mục tiêu hằng ngày. Khi bạn hoàn thành số từ mới đặt ra trong ngày, bạn sẽ 'thăng hạng' hoàn thành mục tiêu. Trong tương lai, hệ thống sẽ mở rộng dựa trên tổng số từ bạn đã làm chủ (Mastered).",
+    "faqQ3": "Tại sao Sức mạnh trí nhớ (Stability) thấp nhưng ngày ôn tập tiếp theo lại ở rất xa?",
+    "faqA3": "Đây là cơ chế thông minh của FSRS 5 để xử lý ôn tập sớm (Early Review):\n1. Hình phạt ôn tập sớm: Nếu học xong ôn tập ngay, bộ não chưa thực sự bị thử thách nên chỉ số Sức mạnh (Stability) sẽ không tăng mạnh để phản ánh đúng thực tế trí nhớ vẫn còn mới.\n2. Ưu tiên hiệu quả: Vì bạn chọn 'Dễ', hệ thống chủ động dời lịch đi xa để tránh làm phiền bạn liên tục với từ bạn đã biết rõ.\n3. Lời khuyên: Hãy đợi đến khi từ vựng đến hạn (Due) mới ôn tập để tối ưu hóa tốc độ tăng trưởng Stability."
   },
   "meta": {
     "title": "VocabMaster — Học từ vựng hiệu quả",

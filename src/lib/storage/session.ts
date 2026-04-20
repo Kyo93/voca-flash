@@ -43,7 +43,8 @@ export async function upsertSrsRecord(
   }
 
   const isMasteredStatus = update.stability >= 21 && update.state !== 3
-  const now = new Date().toISOString()
+  const nextReviewAt = new Date(update.due).toISOString()
+  const lastReviewed = new Date(update.lastReview || Date.now()).toISOString()
 
   const { data: existing } = await supabase
     .from('user_srs_records')
@@ -61,7 +62,6 @@ export async function upsertSrsRecord(
       .from('user_srs_records')
       .update({
         repetitions: update.reps,
-        ease_factor: 3.0 - (update.difficulty * 1.7),
         interval_days: update.scheduledDays,
         fsrs_stability: update.stability,
         fsrs_difficulty: update.difficulty,
@@ -70,9 +70,9 @@ export async function upsertSrsRecord(
         fsrs_reps: update.reps,
         fsrs_lapses: update.lapses,
         lapse_count: newLapseCount,
-        next_review_at: now,
+        next_review_at: nextReviewAt,
         mastered: isMasteredStatus,
-        last_reviewed: now,
+        last_reviewed: lastReviewed,
       })
       .eq('id', existing.id)
 
@@ -87,7 +87,7 @@ export async function upsertSrsRecord(
       p_user_id: userId,
       p_word_id: cardId,
       p_reps: update.reps,
-      p_ease_factor: 3.0 - (update.difficulty * 1.7),
+      p_ease_factor: 2.5, // Constant placeholder
       p_interval_days: update.scheduledDays,
       p_fsrs_stability: update.stability,
       p_fsrs_difficulty: update.difficulty,
@@ -95,9 +95,9 @@ export async function upsertSrsRecord(
       p_fsrs_scheduled_days: update.scheduledDays,
       p_fsrs_reps: update.reps,
       p_fsrs_lapses: update.lapses,
-      p_next_review_at: now,
+      p_next_review_at: nextReviewAt,
       p_mastered: isMasteredStatus,
-      p_last_reviewed: now,
+      p_last_reviewed: lastReviewed,
     }
 
     const { error: rpcError } = await supabase.rpc('insert_srs_record', rpcPayload)

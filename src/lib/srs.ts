@@ -21,7 +21,7 @@ export interface Card {
 export interface CardProgress {
   cardId: string
   stability: number      // Recall stability (days)
-  difficulty: number     // Intrinsic difficulty (0-1)
+  difficulty: number     // Intrinsic difficulty (1-10)
   state: number          // 0=New, 1=Learning, 2=Review, 3=Relearning
   reps: number           // Total review count
   lapses: number         // Times forgotten
@@ -155,7 +155,7 @@ export function resetFSRSCard(progress: CardProgress): CardProgress {
 export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: number, lapse_count?: number }): Partial<CardProgress> {
   return {
     stability: Math.max(0.1, sm2.interval),
-    difficulty: Math.max(0, Math.min(1, (3.0 - sm2.ease) / 1.7)),
+    difficulty: Math.max(1, Math.min(10, 5 + (3.0 - sm2.ease) * 2)), // Rough mapping to 1-10
     state: sm2.repetitions === 0 ? 3 : (sm2.repetitions < 2 ? 1 : 2),
     reps: sm2.repetitions,
     lapses: sm2.lapse_count ?? 0,
@@ -225,7 +225,7 @@ export function mapSrsRecordToCardProgress(record: SrsRecord): CardProgress {
   return {
     cardId: record.word_id,
     stability: record.fsrs_stability ?? 0,
-    difficulty: record.fsrs_difficulty ?? 0.5,
+    difficulty: record.fsrs_difficulty && record.fsrs_difficulty > 0 ? record.fsrs_difficulty : 5.0,
     state: record.fsrs_state ?? 0,
     reps: record.fsrs_reps ?? 0,
     lapses: record.fsrs_lapses ?? 0,

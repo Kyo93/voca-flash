@@ -231,9 +231,11 @@ const MethodologyPage: React.FC = () => {
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ1')}
             </h3>
-            <p className="text-on-surface-variant leading-relaxed pl-11">
-              {t('methodology.faqA1')}
-            </p>
+            <div className="text-on-surface-variant leading-relaxed pl-11 space-y-2">
+              {t('methodology.faqA1').split('\n').map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
           </div>
 
           {/* Q2 */}
@@ -242,9 +244,24 @@ const MethodologyPage: React.FC = () => {
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ2')}
             </h3>
-            <p className="text-on-surface-variant leading-relaxed pl-11">
-              {t('methodology.faqA2')}
-            </p>
+            <div className="text-on-surface-variant leading-relaxed pl-11 space-y-2">
+              {t('methodology.faqA2').split('\n').map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
+          </div>
+
+          {/* Q3 */}
+          <div className="p-8 rounded-[2rem] bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
+            <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
+              <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
+              {t('methodology.faqQ3')}
+            </h3>
+            <div className="text-on-surface-variant leading-relaxed pl-11 space-y-2">
+              {t('methodology.faqA3').split('\n').map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
           </div>
         </div>
       </section>

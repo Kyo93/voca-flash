@@ -169,7 +169,9 @@
     "faqQ1": "Why aren't there words in Arena immediately after I study?",
     "faqA1": "Newly learned words don't appear immediately. Per Spaced Repetition, brains need a rest interval. The first review typically arrives 24 hours after completion.",
     "faqQ2": "How is the Rank calculated?",
-    "faqA2": "Currently, rank reflects your diligence based on your **Daily Goal**. When you complete your target new words, you 'rank up' for the day. Future levels will be based on Total Mastered words."
+    "faqA2": "Currently, rank reflects your diligence based on your **Daily Goal**. When you complete your target new words, you 'rank up' for the day. Future levels will be based on Total Mastered words.",
+    "faqQ3": "Why is my memory stability low but the next review date is far away?",
+    "faqA3": "This is a smart mechanism in FSRS 5 to handle Early Reviews:\n1. Early Review Penalty: If you review immediately after learning, your brain hasn't been truly challenged, so Stability won't increase significantly to accurately reflect that the memory is still fresh.\n2. Efficiency Priority: Since you chose 'Easy', the system proactively pushes the next review out to avoid bothering you with words you already know well.\n3. Advice: Wait until a word is 'Due' before reviewing to maximize your Stability growth rate."
   },
   "meta": {
     "title": "VocabMaster — Learn Vocabulary Effectively",
