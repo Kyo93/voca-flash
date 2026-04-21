@@ -30,7 +30,7 @@ describe('slugify re-export — RED', () => {
     // Read source directly to verify no local definition
     const fs = await import('fs')
     const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/lib/import-parser.ts',
+      'C:/Users/Ocean/Documents/VibeCode/English/voca-flash/src/lib/import-parser.ts',
       'utf-8'
     )
     // Should NOT have "export function slugify" defined locally

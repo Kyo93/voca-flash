@@ -20,21 +20,6 @@ export interface StreakData {
 
 // ── localStorage helpers (offline fallback) ──────────────────
 
-/**
- * Returns today's date string using 4 AM boundary.
- * Sessions before 4 AM are grouped into "yesterday".
- */
-function todayBoundaryStr(): string {
-  return getTodayBoundary().toISOString().split('T')[0]
-}
-
-function daysDiff(date1: string, date2: string): number {
-  const d1 = new Date(date1)
-  const d2 = new Date(date2)
-  if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return -1
-  return Math.floor(Math.abs((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)))
-}
-
 export function loadStreak(): StreakData {
   try {
     const raw = localStorage.getItem(STREAK_KEY)
@@ -45,6 +30,14 @@ export function loadStreak(): StreakData {
 
 export function saveStreak(data: StreakData): void {
   localStorage.setItem(STREAK_KEY, JSON.stringify(data))
+}
+
+/**
+ * Synchronous display — localStorage only.
+ * For Supabase-backed data use fetchStreakFromSupabase().
+ */
+export function getStreakDisplay(): StreakData {
+  return loadStreak()
 }
 
 // ── Supabase-backed streak (logged-in users) ────────────────
@@ -61,32 +54,37 @@ export async function fetchStreakFromSupabase(userId: string): Promise<StreakDat
   }
 
   return {
-    currentStreak: (data.streak_days as number) ?? 0,
-    lastStudyDate: (data.last_study_date as string) ?? '',
-    longestStreak: (data.longest_streak as number) ?? 0,
+    currentStreak: data.streak_days ?? 0,
+    lastStudyDate: data.last_study_date ?? '',
+    longestStreak: data.longest_streak ?? 0,
   }
 }
 
-// ── recordStudy ──────────────────────────────────────────────
+// ── recordStudy (localStorage fallback for anonymous/offline users) ──
+
+function daysDiff(date1: string, date2: string): number {
+  const d1 = new Date(date1)
+  const d2 = new Date(date2)
+  if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return -1
+  return Math.floor(Math.abs((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)))
+}
 
 /**
- * Local fallback: record study in localStorage.
- * useFlashcard now calls recordStreak() from supabase-storage instead.
+ * Records study activity for anonymous/offline users in localStorage.
+ * Uses the 4 AM boundary so sessions before 4 AM belong to "yesterday".
+ * Production logged-in users use recordStreak() in storage/auth.ts instead.
  */
 export function recordStudy(): StreakData {
   const data = loadStreak()
-  const today = todayBoundaryStr()
+  const today = getTodayBoundary().toISOString().split('T')[0]
 
-  if (data.lastStudyDate === today) {
-    return data
-  }
+  if (data.lastStudyDate === today) return data
 
   const daysSinceLastStudy = data.lastStudyDate
     ? daysDiff(data.lastStudyDate, today)
     : -1
 
   let newStreak: number
-
   if (daysSinceLastStudy === 1) {
     newStreak = data.currentStreak + 1
   } else if (daysSinceLastStudy === 0) {
@@ -103,22 +101,4 @@ export function recordStudy(): StreakData {
 
   saveStreak(newData)
   return newData
-}
-
-/**
- * Get streak display — tries Supabase first, falls back to localStorage.
- */
-export async function getStreakDisplayAsync(userId?: string): Promise<StreakData> {
-  if (userId) {
-    return fetchStreakFromSupabase(userId)
-  }
-  return loadStreak()
-}
-
-/**
- * Synchronous version — localStorage only.
- * Use getStreakDisplayAsync(userId) for Supabase data.
- */
-export function getStreakDisplay(): StreakData {
-  return loadStreak()
 }

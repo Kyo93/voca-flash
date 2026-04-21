@@ -24,7 +24,7 @@ describe('streak today boundary — RED', () => {
     // chứ không tự định nghĩa todayStr() với UTC
     const fs = await import('fs')
     const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/lib/streak.ts',
+      'C:/Users/Ocean/Documents/VibeCode/English/voca-flash/src/lib/streak.ts',
       'utf-8'
     )
     // Phải có getTodayBoundary, KHÔNG có function todayStr() riêng
@@ -35,7 +35,7 @@ describe('streak today boundary — RED', () => {
   it('streak module must NOT define todayStr with UTC date', async () => {
     const fs = await import('fs')
     const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/lib/streak.ts',
+      'C:/Users/Ocean/Documents/VibeCode/English/voca-flash/src/lib/streak.ts',
       'utf-8'
     )
     // todayStr = () => new Date().toISOString().split('T')[0] là BUG

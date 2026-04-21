@@ -1,8 +1,10 @@
 import Papa from 'papaparse'
 import type { RawRow, NormalizedWord } from './types'
 import type { Topic } from './types'
-import { slugify, generateUniqueSlug } from './utils'
-export { slugify }
+import { slugify } from './utils'
+
+// Re-export slugify for consumers of import-parser
+export { slugify } from './utils'
 
 // ── Type for parser output ─────────────────────────────────
 export type { RawRow, NormalizedWord } from './types'
@@ -292,7 +294,7 @@ export async function parseSheetsUrl(
   return processRows(rawRows, topicMap)
 }
 
-// Alias for backward compat — removed. Use parseSheetsUrl directly.
+// ── Process rows ────────────────────────────────────────────
 
 // ── Process rows ───────────────────────────────────────────
 // Returns rows + list of unique topic names for auto-creation.
