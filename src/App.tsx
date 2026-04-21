@@ -3,25 +3,26 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SidebarProvider } from './contexts/SidebarContext'
 import LandingPage from './pages/LandingPage'
-import DashboardPage from './pages/DashboardPage'
-import StudyPage from './pages/StudyPage'
-import LibraryPage from './pages/LibraryPage'
-import RoadmapTopicsPage from './pages/RoadmapTopicsPage'
 import LoginPage from './pages/LoginPage'
-import SettingsPage from './pages/SettingsPage'
 import AppLayout from './components/AppLayout'
-import ReviewPage from './pages/ReviewPage'
 import AdminLayout from './components/admin/AdminLayout'
-import AdminWordsPage from './pages/admin/WordsPage'
-import AdminTopicsPage from './pages/admin/TopicsPage'
-import AdminRoadmapsPage from './pages/admin/RoadmapsPage'
-import AdminDashboardPage from './pages/admin/DashboardPage'
-import AdminUsersPage from './pages/admin/UsersPage'
-import RoadmapSetupPage from './pages/admin/RoadmapSetupPage'
-import ProgressPage from './pages/ProgressPage'
-import MethodologyPage from './pages/MethodologyPage'
-import MasteryPage from './pages/MasteryPage'
-import FreeStudyPage from './pages/FreeStudyPage'
+import { lazy } from 'react'
+import DashboardPage from './pages/DashboardPage' // Sync because it's the primary authenticated route
+const StudyPage = lazy(() => import('./pages/StudyPage'))
+const LibraryPage = lazy(() => import('./pages/LibraryPage'))
+const RoadmapTopicsPage = lazy(() => import('./pages/RoadmapTopicsPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const ReviewPage = lazy(() => import('./pages/ReviewPage'))
+const AdminWordsPage = lazy(() => import('./pages/admin/WordsPage'))
+const AdminTopicsPage = lazy(() => import('./pages/admin/TopicsPage'))
+const AdminRoadmapsPage = lazy(() => import('./pages/admin/RoadmapsPage'))
+const AdminDashboardPage = lazy(() => import('./pages/admin/DashboardPage'))
+const AdminUsersPage = lazy(() => import('./pages/admin/UsersPage'))
+const RoadmapSetupPage = lazy(() => import('./pages/admin/RoadmapSetupPage'))
+const ProgressPage = lazy(() => import('./pages/ProgressPage'))
+const MethodologyPage = lazy(() => import('./pages/MethodologyPage'))
+const MasteryPage = lazy(() => import('./pages/MasteryPage'))
+const FreeStudyPage = lazy(() => import('./pages/FreeStudyPage'))
 
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {

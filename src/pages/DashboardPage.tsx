@@ -286,6 +286,7 @@ export default function DashboardPage() {
                     <img 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                       alt={card1.name} 
+                      loading="lazy"
                       src={card1.image_url || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80"} 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />

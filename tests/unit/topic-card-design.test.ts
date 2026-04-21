@@ -22,31 +22,31 @@ function readFile(relativePath: string): string {
 describe('TopicPanel — clean flat cards with icon inside, name prominent, slug below', () => {
 
   it('card must have topic icon shown inside (material-symbols-outlined with topic.icon)', () => {
-    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
+    const source = readFile('components/admin/TopicPanel.tsx')
     expect(source).toMatch(/topic\.icon/)
   })
 
   it('topic name must be displayed prominently (text-sm)', () => {
-    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
+    const source = readFile('components/admin/TopicPanel.tsx')
     expect(source).toMatch(/text-sm/)          // font-size 14px
     expect(source).toMatch(/\{topic\.name\}/)  // name value rendered
   })
 
   it('slug must be displayed as mono text', () => {
-    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
+    const source = readFile('components/admin/TopicPanel.tsx')
     expect(source).toMatch(/font-mono/)         // mono font
     expect(source).toMatch(/\/{topic\.slug\}/) // slug value
   })
 
   it('action buttons (edit/delete) must be shown on hover via group-hover', () => {
-    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
+    const source = readFile('components/admin/TopicPanel.tsx')
     expect(source).toMatch(/opacity-0 group-hover:opacity-100/)
     expect(source).not.toContain('>Sửa<')
     expect(source).not.toContain('>Xóa<')
   })
 
   it('card background must be tinted with topic color', () => {
-    const source = readFile('pages/admin/RoadmapSetupPage.tsx')
+    const source = readFile('components/admin/TopicPanel.tsx')
     expect(source).toMatch(/backgroundColor:.*topicColor.*1A/)
   })
 })

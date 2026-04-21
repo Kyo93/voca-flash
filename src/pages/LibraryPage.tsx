@@ -183,10 +183,11 @@ export default function LibraryPage() {
               to={`/library/${roadmap.slug}`}
               className="group relative bg-surface-container hover:bg-surface-container-lowest p-6 rounded-2xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col items-start overflow-hidden border border-transparent hover:border-secondary/10"
             >
-              <div className="w-full h-40 bg-secondary-container/30 rounded-xl mb-6 flex items-center justify-center overflow-hidden relative">
+              <div className="w-full h-40 min-h-[160px] bg-secondary-container/30 rounded-xl mb-6 flex items-center justify-center overflow-hidden relative">
                 <img 
                   src={roadmap.image_url || specs.image} 
                   alt={roadmap.name} 
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />
               </div>

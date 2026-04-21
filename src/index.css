@@ -16,10 +16,10 @@
   --color-on-secondary-container: #1b2600;
 
   /* Surface: Heavy Weight Paper - Neutral intent derived from #4A4741 */
-  --color-surface: #FFFBF2;
+  --color-surface: #F7F2E8;
   --color-on-surface: #4A4741;
   --color-on-surface-variant: #6b665c;
-  --color-background: #FFFBF2;
+  --color-background: #F7F2E8;
 
   --color-outline: #897365;
   --color-outline-variant: #dcc1b1;
@@ -58,14 +58,14 @@
 
 /* === Variable Master Foundations === */
 :root {
-  --bg-app: #FFFBF2;
+  --bg-app: #F7F2E8;
   --bg-sidebar: #ffffff;
   --surface-card: #ffffff;
   --surface-mixed: #fdf7ee;
   --text-main: #4A4741;
   --text-muted: #6b665c;
   --border-subtle: #f9f3ea;
-  --glass-bg: rgba(255, 251, 242, 0.85);
+  --glass-bg: rgba(247, 242, 232, 0.85);
   --glass-border: rgba(255, 255, 255, 0.4);
   
   /* Core Alert Colors for Inline Styles */

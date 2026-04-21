@@ -23,7 +23,6 @@ export default function FlashcardFront({ card }: FlashcardFrontProps) {
           src={imageUrl}
           style={{ objectPosition: imagePosition }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/40 to-transparent" />
       </div>
 
       {/* Content Section */}

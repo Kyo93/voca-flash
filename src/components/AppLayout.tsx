@@ -3,7 +3,8 @@ import Sidebar from './Sidebar'
 import RightSidebar from './RightSidebar'
 import Header from './Header'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
+import PageLoader from './PageLoader'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 
 export default function AppLayout() {
@@ -51,7 +52,9 @@ export default function AppLayout() {
         />
         
         <main className="flex-1 overflow-y-auto">
-          <Outlet context={{ searchQuery, setSearchQuery }} />
+          <Suspense fallback={<PageLoader />}>
+            <Outlet context={{ searchQuery, setSearchQuery }} />
+          </Suspense>
         </main>
       </div>
 
