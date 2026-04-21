@@ -4,8 +4,10 @@ import { getAllTopics } from '../../lib/admin-queries'
 import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import WordFormModal from '../../components/admin/WordFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import type { Word, Topic } from '../../lib/types'
+import { Word, Topic } from '../../lib/types'
 import { formatDetailedDate } from '../../lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import AdminCard from '../../components/admin/AdminCard'
 
 const POS_LABELS: Record<string, string> = {
   noun: 'DT', verb: 'ĐT', adj: 'TT', adv: 'TrT', phrase: 'CT', other: 'Khác',
@@ -178,41 +180,46 @@ export default function AdminWordsPage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="flex-1 min-w-[200px] relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-stone-400 text-lg">search</span>
+      {/* Toolbar / Filters */}
+      <div className="admin-toolbar sticky top-24 z-30 transition-all duration-300">
+        <div className="flex-1 relative group">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-stone-300 group-focus-within:text-primary transition-colors">search</span>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm kiếm từ vựng..."
-            className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-stone-200 bg-white text-secondary placeholder:text-stone-400 font-medium outline-none focus:border-primary transition-all"
+            placeholder="Tìm kiếm từ vựng tinh tế..."
+            className="w-full pl-12 pr-4 py-3 bg-stone-50/50 border-none rounded-2xl text-sm font-medium placeholder:text-stone-300 focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all outline-none"
           />
         </div>
 
-        <select
-          value={topicFilter}
-          onChange={(e) => setTopicFilter(e.target.value)}
-          className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-white text-secondary font-medium outline-none focus:border-primary transition-all cursor-pointer"
-        >
-          <option value="">Tất cả chủ đề</option>
-          {topics
-            .filter(t => !selectedRoadmap || t.roadmap_id === selectedRoadmap.id)
-            .map((t) => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-        </select>
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-px bg-stone-100 mx-2" />
+          
+          <select
+            value={topicFilter}
+            onChange={(e) => setTopicFilter(e.target.value)}
+            className="pl-4 pr-10 py-2.5 bg-stone-50/50 hover:bg-stone-100 rounded-xl text-xs font-black text-secondary border-none outline-none cursor-pointer appearance-none relative"
+            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%23a8a29e\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'org.w3.org/2000/svg\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center', backgroundSize: '1rem' }}
+          >
+            <option value="">Tất cả chủ đề</option>
+            {topics
+              .filter(t => !selectedRoadmap || t.roadmap_id === selectedRoadmap.id)
+              .map((t) => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+          </select>
 
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as typeof sort)}
-          className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-white text-secondary font-medium outline-none focus:border-primary transition-all cursor-pointer"
-        >
-          <option value="newest">Mới nhất</option>
-          <option value="az">A → Z</option>
-          <option value="difficulty">Độ khó</option>
-        </select>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as typeof sort)}
+            className="px-4 py-2.5 bg-stone-50/50 hover:bg-stone-100 rounded-xl text-xs font-black text-secondary border-none outline-none cursor-pointer appearance-none"
+          >
+            <option value="newest">Mới nhất</option>
+            <option value="az">A → Z</option>
+            <option value="difficulty">Độ khó</option>
+          </select>
+        </div>
       </div>
 
       {/* Bulk Action Bar */}
@@ -253,138 +260,141 @@ export default function AdminWordsPage() {
         </div>
       )}
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <AdminCard className="mb-6">
+        <div className="overflow-x-auto min-h-[400px]">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-stone-100 bg-stone-50">
-                <th className="px-3 py-3 w-10">
+              <tr className="bg-stone-50/50 border-b border-stone-100">
+                <th className="px-6 py-4 w-12 sticky-col bg-stone-50/50">
                   <input
                     type="checkbox"
                     checked={allSelected}
                     ref={el => { if (el) el.indeterminate = !allSelected && someSelected }}
                     onChange={toggleAll}
-                    className="w-4 h-4 rounded accent-primary cursor-pointer"
+                    className="w-5 h-5 rounded-lg accent-primary cursor-pointer transition-all"
                     title="Chọn tất cả trên trang"
                   />
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Từ</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Loại</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Độ khó</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Nghĩa</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ví dụ</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Dịch</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Tags</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ngày tạo</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Cập nhật</th>
-                <th className="px-4 py-3 text-right text-xs font-black text-stone-500 uppercase tracking-wider">Hành động</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] sticky-col left-12 bg-stone-50/50">Từ vựng</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Loại</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Độ khó</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Nghĩa</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Ví dụ & Dịch</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Tags</th>
+                <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Thời gian</th>
+                <th className="px-6 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] sticky right-0 bg-stone-50/50 backdrop-blur-md">Hành động</th>
               </tr>
             </thead>
-            <tbody>
-              {loading && words.length === 0 ? (
-                <tr>
-                  <td colSpan={10} className="px-4 py-12 text-center text-stone-400">
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="material-symbols-outlined text-4xl animate-spin">progress_activity</span>
-                      <p>Đang tải...</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : paginated.length === 0 ? (
-                <tr>
-                  <td colSpan={10} className="px-4 py-12 text-center text-stone-400">
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="material-symbols-outlined text-4xl">search_off</span>
-                      <p>Không tìm thấy từ vựng nào</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : paginated.map((w) => (
-                <tr key={w.id} className={`border-b border-stone-50 last:border-0 transition-colors ${selectedIds.has(w.id) ? 'bg-orange-50/50' : 'hover:bg-orange-50/30'}`}>
-                  <td className="px-3 py-3">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(w.id)}
-                      onChange={() => toggleOne(w.id)}
-                      className="w-4 h-4 rounded accent-primary cursor-pointer"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div>
-                      <p className="font-black text-secondary">{w.word}</p>
-                      {w.phonetic && <p className="text-xs text-stone-400">{w.phonetic}</p>}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-xs font-bold text-stone-500 bg-stone-100 px-2 py-1 rounded-lg">
-                      {POS_LABELS[w.pos ?? 'other'] ?? '—'}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <DifficultyDots value={w.difficulty ?? 3} />
-                  </td>
-                  <td className="px-4 py-3 max-w-xs">
-                    <p className="text-sm text-on-surface-variant truncate">{w.definition}</p>
-                  </td>
-                  <td className="px-4 py-3 max-w-xs">
-                    <p className="text-sm text-on-surface-variant italic truncate">{w.example ?? '—'}</p>
-                  </td>
-                  <td className="px-4 py-3 max-w-xs">
-                    <p className="text-sm text-on-surface-variant truncate">{w.example_vi ?? '—'}</p>
-                  </td>
-                  <td className="px-4 py-3">
-                    {w.tags && w.tags.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {w.tags.slice(0, 3).map(tag => (
-                          <span key={tag} className="text-[10px] bg-stone-100 text-stone-500 px-1.5 py-0.5 rounded-full font-medium">{tag}</span>
+            <AnimatePresence mode="popLayout">
+              <tbody>
+                {loading && words.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="px-6 py-20 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <span className="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
+                        <p className="text-sm font-bold text-stone-400">Đang khởi tạo từ điển...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paginated.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="px-6 py-20 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <span className="material-symbols-outlined text-5xl text-stone-200">sentiment_dissatisfied</span>
+                        <p className="text-sm font-bold text-stone-400">Không tìm thấy từ nào khớp với tâm trạng này</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : paginated.map((w, idx) => (
+                  <motion.tr
+                    key={w.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.03 }}
+                    className={`group border-b border-stone-50 last:border-0 transition-all ${selectedIds.has(w.id) ? 'bg-primary/5' : 'hover:bg-stone-50/50'}`}
+                  >
+                    <td className="px-6 py-4 sticky-col group-hover:bg-stone-50/50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(w.id)}
+                        onChange={() => toggleOne(w.id)}
+                        className="w-5 h-5 rounded-lg accent-primary cursor-pointer"
+                      />
+                    </td>
+                    <td className="px-6 py-4 sticky-col left-12 group-hover:bg-stone-50/50 transition-colors">
+                      <div>
+                        <p className="text-lg font-black text-secondary leading-tight">{w.word}</p>
+                        {w.phonetic && <p className="text-[10px] text-stone-400 font-mono tracking-wider mt-0.5">{w.phonetic}</p>}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="px-2.5 py-1 rounded-lg bg-stone-100 text-[10px] font-black text-stone-500 uppercase tracking-wider">
+                        {POS_LABELS[w.pos ?? 'other'] ?? '—'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <DifficultyDots value={w.difficulty ?? 3} />
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-sm text-on-surface-variant font-medium line-clamp-2 max-w-[150px]">{w.definition}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="max-w-[250px]">
+                        <p className="text-sm text-secondary font-medium leading-relaxed italic line-clamp-1">{w.example ?? '—'}</p>
+                        <p className="text-xs text-stone-400 mt-1 line-clamp-1">{w.example_vi ?? '—'}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-wrap gap-1 max-w-[120px]">
+                        {w.tags?.slice(0, 2).map(tag => (
+                          <span key={tag} className="text-[9px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold uppercase">{tag}</span>
                         ))}
-                        {w.tags.length > 3 && (
-                          <span className="text-[10px] text-stone-400">+{w.tags.length - 3}</span>
+                        {w.tags && w.tags.length > 2 && (
+                          <span className="text-[9px] text-stone-300 font-bold">+{w.tags.length - 2}</span>
                         )}
                       </div>
-                    ) : (
-                      <span className="text-xs text-stone-300">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <p className="text-xs text-stone-400 font-mono">{w.created_at ? formatDetailedDate(w.created_at) : '—'}</p>
-                  </td>
-                  <td className="px-4 py-3">
-                    <p className="text-xs text-stone-400 font-mono">
-                      {w.updated_at && w.updated_at !== w.created_at
-                        ? `↑${formatDetailedDate(w.updated_at)}`
-                        : '—'}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={async () => {
-                          const choices = await loadChoices(w.id)
-                          setEditWordData(w)
-                          setEditWordWrongChoices(choices.map(c => c.choice))
-                          setShowModal(true)
-                        }}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-orange-100 transition-colors cursor-pointer"
-                        title="Sửa"
-                      >
-                        <span className="material-symbols-outlined text-stone-400 text-lg">edit</span>
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(w)}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
-                        title="Xóa"
-                      >
-                        <span className="material-symbols-outlined text-red-400 text-lg">delete</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] text-stone-400 font-mono">{formatDetailedDate(w.created_at)}</span>
+                        {w.updated_at && w.updated_at !== w.created_at && (
+                          <span className="text-[9px] text-primary/60 font-mono italic">Đã sửa</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right sticky right-0 bg-white/80 backdrop-blur-md group-hover:bg-stone-50/80 transition-colors">
+                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={async () => {
+                            const choices = await loadChoices(w.id)
+                            setEditWordData(w)
+                            setEditWordWrongChoices(choices.map(c => c.choice))
+                            setShowModal(true)
+                          }}
+                          className="w-9 h-9 rounded-xl flex items-center justify-center bg-stone-100 text-stone-500 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
+                          title="Sửa"
+                        >
+                          <span className="material-symbols-outlined text-lg">edit</span>
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(w)}
+                          className="w-9 h-9 rounded-xl flex items-center justify-center bg-stone-100 text-stone-500 hover:bg-red-500 hover:text-white transition-all shadow-sm cursor-pointer"
+                          title="Xóa"
+                        >
+                          <span className="material-symbols-outlined text-lg">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+
+              </tbody>
+
+            </AnimatePresence>
           </table>
+
         </div>
+      </AdminCard>
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -410,7 +420,6 @@ export default function AdminWordsPage() {
             </div>
           </div>
         )}
-      </div>
 
       {/* Modals */}
       <WordFormModal

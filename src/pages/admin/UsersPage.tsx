@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { getAllUsers, getUserSrsRecords } from '../../lib/admin-queries'
 import type { UserProfile, SrsRecord } from '../../lib/types'
+import { formatDetailedDate } from '../../lib/utils'
+import { motion, AnimatePresence } from 'framer-motion'
+import AdminCard from '../../components/admin/AdminCard'
+import { supabase } from '../../lib/supabase'
 
 function UserRow({
   user,
@@ -9,12 +13,6 @@ function UserRow({
   user: UserProfile
   onClick: () => void
 }) {
-  const joined = new Date(user.created_at).toLocaleDateString('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
-
   return (
     <tr
       className="border-b border-stone-50 last:border-0 hover:bg-orange-50/30 transition-colors cursor-pointer"
@@ -40,7 +38,7 @@ function UserRow({
       </td>
       {/* Joined */}
       <td className="px-4 py-3">
-        <p className="text-xs text-stone-400">{joined}</p>
+        <p className="text-xs text-stone-400">{new Date(user.created_at).toLocaleDateString('vi-VN')}</p>
       </td>
       {/* Streak */}
       <td className="px-4 py-3">
@@ -72,120 +70,104 @@ function UserRow({
   )
 }
 
-function UserSrsPanel({
-  user,
-  progress,
-  onClose,
-}: {
-  user: UserProfile
-  progress: SrsRecord[]
-  onClose: () => void
-}) {
-  const mastered = progress.filter((p) => p.mastered).length
-  const learning = progress.filter((p) => !p.mastered && (p.repetitions > 0 || p.lapse_count > 0)).length
-  const total = progress.length
+function UserSrsPanel({ user, onClose }: { user: any; onClose: () => void }) {
+  const [stats, setStats] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      const { data } = await supabase
+        .from('user_words')
+        .select('mastery_level')
+        .eq('user_id', user.id)
+      
+      const counts = (data || []).reduce((acc: any, cur: any) => {
+        acc[cur.mastery_level] = (acc[cur.mastery_level] || 0) + 1
+        return acc
+      }, {})
+      
+      setStats([
+        { label: 'Lặp lại', level: 0, count: counts[0] || 0, color: 'bg-red-500', icon: 'history' },
+        { label: 'Khó', level: 1, count: counts[1] || 0, color: 'bg-orange-500', icon: 'psychology' },
+        { label: 'Tốt', level: 2, count: counts[2] || 0, color: 'bg-green-500', icon: 'task_alt' },
+        { label: 'Dễ', level: 3, count: counts[3] || 0, color: 'bg-blue-500', icon: 'auto_awesome' },
+      ])
+      setLoading(false)
+    }
+    load()
+  }, [user.id])
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
-      <div
-        className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+    <div className="fixed inset-0 z-50 pointer-events-none">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 bg-secondary/20 backdrop-blur-sm pointer-events-auto"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-surface-container-lowest border-l border-white/20 shadow-2xl pointer-events-auto flex flex-col"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-orange-100">
-          <div>
-            <h2 className="text-xl font-black text-secondary">Chi tiết người dùng</h2>
-            <p className="text-sm text-stone-400 mt-1">{user.email}</p>
+        <div className="p-8 border-b border-stone-100 flex items-center justify-between bg-white/50 backdrop-blur-md sticky top-0 z-10">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-[1.25rem] bg-stone-50 flex items-center justify-center border border-stone-100 shadow-sm overflow-hidden">
+               {user.avatar_url ? <img src={user.avatar_url} /> : <span className="text-2xl font-black text-primary">{(user.full_name || user.username || user.email)[0].toUpperCase()}</span>}
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-secondary leading-tight">{user.full_name || user.username || user.email}</h2>
+              <p className="text-xs text-stone-400 font-medium">Chi tiết thuật toán SRS</p>
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-stone-500">close</span>
+          <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-stone-100 transition-colors">
+            <span className="material-symbols-outlined text-stone-400">close</span>
           </button>
         </div>
 
-        {/* Stats */}
-        <div className="p-6 border-b border-stone-100">
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-green-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-black text-green-600">{mastered}</p>
-              <p className="text-xs font-bold text-green-500">Đã master</p>
-            </div>
-            <div className="bg-orange-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-black text-orange-600">{learning}</p>
-              <p className="text-xs font-bold text-orange-500">Đang học</p>
-            </div>
-            <div className="bg-blue-50 rounded-xl p-4 text-center">
-              <p className="text-2xl font-black text-blue-600">{total}</p>
-              <p className="text-xs font-bold text-blue-500">Tổng số</p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="flex justify-between text-xs text-stone-400 mb-1">
-              <span>Tiến độ master</span>
-              <span>{total > 0 ? Math.round((mastered / total) * 100) : 0}%</span>
-            </div>
-            <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-green-500 rounded-full transition-all"
-                style={{ width: `${total > 0 ? (mastered / total) * 100 : 0}%` }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Progress list */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <h3 className="text-sm font-black text-stone-500 uppercase tracking-wider mb-3">
-            Lịch sử học tập
-          </h3>
-          {progress.length === 0 ? (
-            <p className="text-sm text-stone-400 text-center py-8">Chưa có tiến độ học tập</p>
-          ) : (
-            <div className="space-y-2">
-              {progress.slice(0, 20).map((p) => (
-                <div
-                  key={p.id}
-                  className={`p-3 rounded-xl border text-sm ${
-                    p.mastered
-                      ? 'bg-green-50 border-green-100'
-                      : 'bg-stone-50 border-stone-100'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-secondary text-xs">
-                      {p.word_id}
-                    </span>
-                    <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                        p.mastered
-                          ? 'bg-green-100 text-green-600'
-                          : 'bg-stone-100 text-stone-500'
-                      }`}
-                    >
-                      {p.mastered ? 'Mastered' : 'Learning'}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 mt-1 text-[10px] text-stone-400 font-mono">
-                    <div className="space-y-1">
-                      <p>Stability: {p.fsrs_stability?.toFixed(2) ?? '0.00'}</p>
-                      <p>Difficulty: {p.fsrs_difficulty?.toFixed(2) ?? '0.00'}</p>
-                      <p>State: {p.fsrs_state === 0 ? 'New' : p.fsrs_state === 1 ? 'Learning' : p.fsrs_state === 2 ? 'Review' : 'Relearning'}</p>
+        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+          <section>
+            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">Phân phối thẻ (SRS Distribution)</h3>
+            <div className="grid grid-cols-2 gap-4">
+              {stats.map((s) => (
+                <div key={s.label} className="bg-white rounded-[2rem] p-6 border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className={`w-8 h-8 rounded-xl ${s.color}/10 flex items-center justify-center`}>
+                      <span className={`material-symbols-outlined text-lg ${s.color.replace('bg-', 'text-')}`}>{s.icon}</span>
                     </div>
-                    <div className="space-y-1 text-right">
-                      <p>Reps: {p.fsrs_reps ?? 0} (Old: {p.repetitions})</p>
-                      <p>Lapses: {p.fsrs_lapses ?? 0}</p>
-                      <p>Next: {p.next_review_at ? new Date(p.next_review_at).toLocaleDateString() : 'N/A'}</p>
-                    </div>
+                    <span className="text-xs font-black text-stone-400 uppercase tracking-widest">{s.label}</span>
                   </div>
+                  <p className="text-3xl font-black text-secondary">{s.count}</p>
                 </div>
               ))}
             </div>
-          )}
+          </section>
+
+          <section className="bg-gradient-to-br from-primary/5 to-transparent rounded-[2rem] p-6 border border-primary/5">
+            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-4">Thông tin hệ thống</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
+                <span className="text-sm text-stone-500 font-medium">User ID</span>
+                <span className="text-xs font-mono text-stone-400 truncate max-w-[150px]">{user.id}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
+                <span className="text-sm text-stone-500 font-medium">Lần cuối online</span>
+                <span className="text-xs font-mono text-stone-400">Vừa xong</span>
+              </div>
+            </div>
+          </section>
         </div>
-      </div>
+
+        <div className="p-8 bg-stone-50/50 border-t border-stone-100 border-dashed">
+          <button className="w-full py-4 bg-secondary text-white rounded-2xl font-black text-sm hover:bg-primary transition-all shadow-xl shadow-secondary/10">
+            Xem tất cả từ đang học
+          </button>
+        </div>
+      </motion.div>
     </div>
   )
 }
@@ -228,58 +210,77 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-stone-100 bg-stone-50">
-              <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider w-12">Avatar</th>
-              <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Email</th>
-              <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Tên</th>
-              <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Tham gia</th>
-              <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Streak</th>
-              <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Từ đã học</th>
-              <th className="px-4 py-3 text-right text-xs font-black text-stone-500 uppercase tracking-wider">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-stone-400">
-                  <div className="flex flex-col items-center gap-2">
-                    <span className="material-symbols-outlined text-4xl animate-spin">progress_activity</span>
-                    <p>Đang tải...</p>
-                  </div>
-                </td>
+      <AdminCard title="Danh sách học viên" description="Quản lý thông tin và theo dõi tiến độ học tập của người dùng.">
+        <div className="overflow-x-auto min-h-[300px]">
+          <table className="w-full border-separate border-spacing-0">
+            <thead>
+              <tr className="bg-stone-50/50 border-b border-stone-100">
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Người dùng</th>
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Email</th>
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Streak</th>
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Tham gia</th>
+                <th className="px-8 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Hành động</th>
               </tr>
-            ) : users.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-stone-400">
-                  <div className="flex flex-col items-center gap-2">
-                    <span className="material-symbols-outlined text-4xl">group_off</span>
-                    <p>Chưa có người dùng nào</p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              users.map((user) => (
-                <UserRow
-                  key={user.id}
-                  user={user}
-                  onClick={() => handleSelectUser(user)}
-                />
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {users.map((u, idx) => (
+                <motion.tr
+                  key={u.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className={`group border-b border-stone-50 last:border-0 hover:bg-stone-50/50 transition-all cursor-pointer ${selectedUser?.id === u.id ? 'bg-primary/5' : ''}`}
+                  onClick={() => handleSelectUser(u)}
+                >
+                  <td className="px-8 py-5">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/10 shadow-sm overflow-hidden group-hover:scale-105 transition-transform">
+                        {u.avatar_url ? (
+                          <img src={u.avatar_url} alt={u.full_name || u.username} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-lg font-black text-primary">{(u.full_name || u.username || u.email || '?')[0].toUpperCase()}</span>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-black text-secondary leading-tight">{u.full_name || u.username}</p>
+                        <p className="text-[10px] text-stone-400 font-mono tracking-wider mt-0.5 uppercase">{u.role}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5">
+                    <p className="text-sm text-stone-500 font-medium">{u.email}</p>
+                  </td>
+                  <td className="px-8 py-5">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-orange-500 text-xl filled">local_fire_department</span>
+                      <span className="text-sm font-black text-secondary">{u.streak_count || 0}</span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-5">
+                    <p className="text-[10px] text-stone-400 font-mono">{formatDetailedDate(u.created_at)}</p>
+                  </td>
+                  <td className="px-8 py-5 text-right">
+                    <button
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center bg-stone-100 text-stone-400 group-hover:bg-primary group-hover:text-white transition-all shadow-sm"
+                    >
+                      <span className="material-symbols-outlined text-xl">stat_3</span>
+                    </button>
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </AdminCard>
 
-      {selectedUser && (
-        <UserSrsPanel
-          user={selectedUser}
-          progress={srsRecords}
-          onClose={() => setSelectedUser(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedUser && (
+          <UserSrsPanel
+            user={selectedUser}
+            onClose={() => setSelectedUser(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

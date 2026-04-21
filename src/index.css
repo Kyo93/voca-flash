@@ -383,3 +383,25 @@ body {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
+/* === Admin Premium Utilities === */
+.admin-glass {
+  @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-2xl;
+}
+
+.table-container {
+  @apply rounded-2xl border border-stone-200/50 overflow-hidden bg-white/50;
+}
+
+.sticky-col {
+  @apply sticky left-0 z-10 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.02)];
+}
+
+.admin-toolbar {
+  @apply flex items-center gap-4 p-4 mb-6 bg-white/60 backdrop-blur-md rounded-3xl border border-white/20 shadow-sm;
+}
+
+.roadmap-card-gradient {
+  background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(247,242,232,0.5) 100%);
+}
+

@@ -6,6 +6,7 @@ import RoadmapFormModal from '../../components/admin/RoadmapFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import type { Roadmap } from '../../lib/types'
 import { formatDetailedDate } from '../../lib/utils'
+import { motion } from 'framer-motion'
 
 function StatusBadge({ active }: { active: boolean }) {
   return (
@@ -112,77 +113,77 @@ export default function AdminRoadmapsPage() {
           <p className="text-stone-400">Chưa có lộ trình nào.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-stone-100 overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-stone-100 bg-stone-50">
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Tên</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Slug</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Mô tả</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Trạng thái</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Ngày tạo</th>
-                <th className="px-4 py-3 text-left text-xs font-black text-stone-500 uppercase tracking-wider">Cập nhật</th>
-                <th className="px-4 py-3 text-right text-xs font-black text-stone-500 uppercase tracking-wider">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {roadmaps.map((r) => (
-                <tr
-                  key={r.id}
-                  className="border-b border-stone-50 last:border-0 hover:bg-orange-50/30 transition-colors"
-                >
-                  <td className="px-4 py-4">
-                    <p className="font-black text-secondary">{r.name}</p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <span className="text-xs font-mono text-stone-400 bg-stone-100 px-2 py-1 rounded-lg">
-                      {r.slug}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4 max-w-xs">
-                    <p className="text-sm text-on-surface-variant truncate">
-                      {r.description ?? <span className="text-stone-300">—</span>}
-                    </p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <StatusBadge active={r.is_active} />
-                  </td>
-                  <td className="px-4 py-4">
-                    <p className="text-xs text-stone-400 font-mono">{r.created_at ? formatDetailedDate(r.created_at) : '—'}</p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <p className="text-xs text-stone-400 font-mono">{r.updated_at ? formatDetailedDate(r.updated_at) : '—'}</p>
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Link
-                        to={`/admin/roadmaps/${r.id}/setup`}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-500 text-xs font-bold hover:bg-orange-100 transition-colors"
-                        title="Quản lý topics & từ vựng"
-                      >
-                        <span className="material-symbols-outlined text-sm">settings</span>
-                        Setup
-                      </Link>
-                      <button
-                        onClick={() => { setEditData(r); setShowModal(true) }}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-orange-100 transition-colors cursor-pointer"
-                        title="Sửa"
-                      >
-                        <span className="material-symbols-outlined text-stone-400 text-lg">edit</span>
-                      </button>
-                      <button
-                        onClick={() => checkAndDelete(r)}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
-                        title="Xóa"
-                      >
-                        <span className="material-symbols-outlined text-red-400 text-lg">delete</span>
-                      </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {roadmaps.map((r, index) => (
+            <motion.div
+              key={r.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="group relative bg-white rounded-[2.5rem] p-4 border border-stone-100 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-500 overflow-hidden"
+            >
+              {/* Card Background Gradient */}
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-stone-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              
+              <div className="relative z-10 flex flex-col h-full">
+                {/* Thumbnail / Image Placeholder */}
+                <div className="aspect-video w-full rounded-[2rem] bg-stone-100 overflow-hidden mb-6 relative group-hover:scale-[1.02] transition-transform duration-500">
+                  {r.image_url ? (
+                    <img src={r.image_url} alt={r.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-50 to-stone-100">
+                      <span className="material-symbols-outlined text-4xl text-stone-200">route</span>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  )}
+                  <div className="absolute top-4 right-4">
+                    <StatusBadge active={r.is_active} />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="px-2 flex-grow">
+                  <div className="mb-2">
+                    <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{r.slug}</span>
+                    <h3 className="text-xl font-black text-secondary group-hover:text-primary transition-colors">{r.name}</h3>
+                  </div>
+                  <p className="text-sm text-stone-500 line-clamp-2 min-h-[2.5rem] mb-6">
+                    {r.description || 'Chưa có mô tả cho lộ trình này.'}
+                  </p>
+                </div>
+
+                {/* Footer / Actions */}
+                <div className="pt-4 px-2 border-t border-stone-50 flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-stone-300 uppercase font-bold">Ngày tạo</span>
+                    <span className="text-xs text-stone-400 font-mono">{r.created_at ? new Date(r.created_at).toLocaleDateString('vi-VN') : '—'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Link
+                      to={`/admin/roadmaps/${r.id}/setup`}
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-sm"
+                      title="Thiết lập lộ trình"
+                    >
+                      <span className="material-symbols-outlined text-xl">settings</span>
+                    </Link>
+                    <button
+                      onClick={() => { setEditData(r); setShowModal(true) }}
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center bg-stone-50 text-stone-400 hover:bg-white hover:text-primary hover:shadow-md transition-all duration-300 cursor-pointer"
+                      title="Chỉnh sửa"
+                    >
+                      <span className="material-symbols-outlined text-xl">edit</span>
+                    </button>
+                    <button
+                      onClick={() => checkAndDelete(r)}
+                      className="w-10 h-10 rounded-2xl flex items-center justify-center bg-stone-50 text-stone-400 hover:bg-red-50 hover:text-red-500 hover:shadow-md transition-all duration-300 cursor-pointer"
+                      title="Xóa"
+                    >
+                      <span className="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       )}
 
