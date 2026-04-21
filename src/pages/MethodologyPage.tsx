@@ -8,7 +8,7 @@ const MethodologyPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-12 space-y-24">
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-surface-container-high p-8 md:p-16 group">
+      <section className="relative overflow-hidden rounded-2xl bg-surface-container-high p-8 md:p-16 group">
         <div className="relative z-10 max-w-2xl">
           <h1 className="text-4xl md:text-6xl font-bold text-editorial-asymmetry leading-tight mb-6">
             {t('methodology.heroTitle')}
@@ -56,7 +56,7 @@ const MethodologyPage: React.FC = () => {
               <div className="flex-1 bg-on-surface/10 h-[10%] rounded-t-sm" title="Ngày 3: 10%" />
               <div className="flex-1 bg-on-surface/10 h-[5%] rounded-t-sm" title="Ngày 4+: 5%" />
             </div>
-            <p className="text-sm italic text-on-surface-variant italic">Kiến thức rơi rụng nhanh theo thời gian.</p>
+            <p className="text-sm italic text-on-surface-variant">Kiến thức rơi rụng nhanh theo thời gian.</p>
           </div>
 
           {/* VocaFlash Curve */}
@@ -165,7 +165,7 @@ const MethodologyPage: React.FC = () => {
       </section>
 
       {/* Pedagogical Pillars */}
-      <section className="p-12 rounded-3xl bg-surface-container-low border border-outline/5 relative overflow-hidden">
+      <section className="p-12 rounded-2xl bg-surface-container-low border border-outline/5 relative overflow-hidden">
         <h2 className="text-3xl font-bold mb-12">{t('methodology.title')}</h2>
         
         <div className="grid md:grid-cols-2 gap-12">
@@ -226,7 +226,7 @@ const MethodologyPage: React.FC = () => {
 
         <div className="grid gap-6 max-w-4xl mx-auto">
           {/* Q1 */}
-          <div className="p-8 rounded-[2rem] bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
+          <div className="p-8 rounded-3xl bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
             <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ1')}
@@ -239,7 +239,7 @@ const MethodologyPage: React.FC = () => {
           </div>
 
           {/* Q2 */}
-          <div className="p-8 rounded-[2rem] bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
+          <div className="p-8 rounded-3xl bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
             <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ2')}
@@ -252,7 +252,7 @@ const MethodologyPage: React.FC = () => {
           </div>
 
           {/* Q3 */}
-          <div className="p-8 rounded-[2rem] bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
+          <div className="p-8 rounded-3xl bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
             <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ3')}

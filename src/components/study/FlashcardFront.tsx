@@ -16,7 +16,7 @@ export default function FlashcardFront({ card }: FlashcardFrontProps) {
   return (
     <div className="w-full h-full bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(26,27,33,0.06)] overflow-hidden flex flex-col border border-outline-variant/10 relative">
       {/* 4:3 Visual Context Image */}
-      <div className="aspect-[4/3] w-full overflow-hidden bg-surface-container-low relative">
+      <div className="aspect-4/3 w-full overflow-hidden bg-surface-container-low relative">
         <img
           alt={card.front}
           className="w-full h-full object-cover"
@@ -26,7 +26,7 @@ export default function FlashcardFront({ card }: FlashcardFrontProps) {
       </div>
 
       {/* Content Section */}
-      <div className="p-8 space-y-6 flex-grow flex flex-col justify-start">
+      <div className="p-8 space-y-6 grow flex flex-col justify-start">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <h1 className="text-4xl font-headline font-extrabold text-primary tracking-tight">{card.front}</h1>

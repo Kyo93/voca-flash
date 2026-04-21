@@ -59,7 +59,7 @@ export default function WordDetailPanel({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-[2px] md:bg-transparent md:backdrop-blur-none"
+            className="fixed inset-0 z-60 bg-black/20 backdrop-blur-[2px] md:bg-transparent md:backdrop-blur-none"
           />
 
           {/* Panel */}
@@ -68,7 +68,7 @@ export default function WordDetailPanel({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full z-[70] w-full md:w-[480px] lg:w-[560px] bg-surface/95 backdrop-blur-2xl sun-drenched-shadow-lg flex flex-col"
+            className="fixed top-0 right-0 h-full z-70 w-full md:w-[480px] lg:w-[560px] bg-surface/95 backdrop-blur-2xl sun-drenched-shadow-lg flex flex-col"
           >
             {/* Header Area */}
             <div className="p-8 pb-6 space-y-6">
@@ -167,7 +167,7 @@ export default function WordDetailPanel({
                 >
                    {word.image_url && (
                     <div className="aspect-video w-full rounded-2xl overflow-hidden sun-drenched-shadow relative group">
-                      <div className="absolute inset-0 bg-gradient-to-t from-on-surface/20 to-transparent opacity-60" />
+                      <div className="absolute inset-0 bg-linear-to-t from-on-surface/20 to-transparent opacity-60" />
                       <img 
                         src={word.image_url} 
                         alt={word.word} 
@@ -178,7 +178,7 @@ export default function WordDetailPanel({
 
                   <section className="space-y-4">
                     <h3 className="label-md text-on-surface-variant">{t('mastery.detail.definitionAndExample')}</h3>
-                    <div className="p-8 bg-surface rounded-3xl sun-drenched-shadow space-y-6">
+                    <div className="p-8 bg-surface rounded-2xl sun-drenched-shadow space-y-6">
                       <p className="text-2xl font-bold text-on-surface leading-tight">{word.definition}</p>
                       {word.example && (
                         <div className="pt-6 border-t border-surface-container">
@@ -223,7 +223,7 @@ export default function WordDetailPanel({
                       {t('mastery.detail.edit')}
                     </button>
                   </div>
-                  <div className="p-10 bg-surface-container-highest/30 rounded-3xl relative overflow-hidden group min-h-[250px] sun-drenched-shadow">
+                  <div className="p-10 bg-surface-container-highest/30 rounded-2xl relative overflow-hidden group min-h-[250px] sun-drenched-shadow">
                      <span className="material-symbols-outlined absolute -right-6 -bottom-6 text-9xl text-primary/5 rotate-12 group-hover:rotate-0 transition-transform duration-700">edit_note</span>
                      <p className={`text-on-surface text-xl italic leading-relaxed relative z-10 font-normal ${!personalNote ? 'opacity-30' : ''}`}>
                         {personalNote || t('mastery.detail.notePlaceholder')}
@@ -262,7 +262,7 @@ export default function WordDetailPanel({
 
                    <section className="space-y-4">
                     <h3 className="label-md text-on-surface-variant">{t('mastery.detail.scholarSchedule')}</h3>
-                    <div className="p-8 secondary-gradient text-on-secondary rounded-3xl flex justify-between items-center sun-drenched-shadow">
+                    <div className="p-8 secondary-gradient text-on-secondary rounded-2xl flex justify-between items-center sun-drenched-shadow">
                        <div>
                          <p className="label-md text-on-secondary/60 mb-2">{t('mastery.detail.nextReview')}</p>
                          <p className="text-2xl font-bold">

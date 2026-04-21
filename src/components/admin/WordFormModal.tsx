@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { type FormEvent } from 'react'
 import type { Word } from '../../lib/types'
-import { getAllTags } from '../../lib/admin-queries'
+import { useWordForm } from '../../hooks/admin/useWordForm'
+import { WordTagsInput } from './WordTagsInput'
 
 const POS_OPTIONS = [
   { value: 'noun', label: 'Danh từ' },
@@ -22,167 +23,21 @@ interface Props {
 }
 
 export default function WordFormModal({ open, word, initialWrongChoices, onSave, onClose }: Props) {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  // Form state
-  const [wordText, setWordText] = useState('')
-  const [phonetic, setPhonetic] = useState('')
-  const [pos, setPos] = useState<Word['pos']>('noun')
-  const [difficulty, setDifficulty] = useState(3)
-  const [definition, setDefinition] = useState('')
-  const [example, setExample] = useState('')
-  const [exampleVi, setExampleVi] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
-  const [imagePosition, setImagePosition] = useState('center')
-  const [wrong1, setWrong1] = useState('')
-  const [wrong2, setWrong2] = useState('')
-  const [wrong3, setWrong3] = useState('')
-  const [synonyms, setSynonyms] = useState('')
-  const [antonyms, setAntonyms] = useState('')
-  const [wordFamily, setWordFamily] = useState('')
-
-  // Tags state
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [allTags, setAllTags] = useState<string[]>([])
-  const [tagInput, setTagInput] = useState('')
-  const [tagDropdownOpen, setTagDropdownOpen] = useState(false)
-  const tagInputRef = useRef<HTMLInputElement>(null)
-  const tagDropdownRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    // Fetch all existing tags once when modal opens
-    if (open) {
-      getAllTags().then(tags => setAllTags(tags))
-    }
-  }, [open])
-
-  useEffect(() => {
-    if (word) {
-      setWordText(word.word ?? '')
-      setPhonetic(word.phonetic ?? '')
-      setPos(word.pos ?? 'noun')
-      setDifficulty(word.difficulty ?? 3)
-      setDefinition(word.definition ?? '')
-      setExample(word.example ?? '')
-      setExampleVi(word.example_vi ?? '')
-      setSynonyms(word?.synonyms?.join(', ') ?? '')
-      setAntonyms(word?.antonyms?.join(', ') ?? '')
-      setWordFamily(word?.word_family?.join(', ') ?? '')
-
-      setImageUrl(word.image_url ?? '')
-      setImagePosition(word.image_position ?? 'center')
-      if (initialWrongChoices) {
-        setWrong1(initialWrongChoices[0] || '')
-        setWrong2(initialWrongChoices[1] || '')
-        setWrong3(initialWrongChoices[2] || '')
-      } else {
-        setWrong1('')
-        setWrong2('')
-        setWrong3('')
-      }
-      // Load existing tags for edit
-      setSelectedTags(word.tags ?? [])
-    } else {
-      setWordText('')
-      setPhonetic('')
-      setPos('noun')
-      setDifficulty(3)
-      setDefinition('')
-      setExample('')
-      setExampleVi('')
-      setImageUrl('')
-      setImagePosition('center')
-      setWrong1('')
-      setWrong2('')
-      setWrong3('')
-      setSynonyms('')
-      setAntonyms('')
-      setWordFamily('')
-      setSelectedTags([])
-    }
-    setTagInput('')
-    setError(null)
-  }, [word, open, initialWrongChoices])
-
-  // Close tag dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        tagDropdownRef.current && !tagDropdownRef.current.contains(e.target as Node) &&
-        tagInputRef.current && !tagInputRef.current.contains(e.target as Node)
-      ) {
-        setTagDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  const filteredSuggestions = tagInput.trim()
-    ? allTags.filter(t =>
-        t.toLowerCase().includes(tagInput.toLowerCase()) &&
-        !selectedTags.includes(t)
-      )
-    : allTags.filter(t => !selectedTags.includes(t)).slice(0, 20)
-
-  function addTag(tag: string) {
-    const trimmed = tag.trim()
-    if (!trimmed || selectedTags.includes(trimmed)) return
-    setSelectedTags(prev => [...prev, trimmed])
-    setTagInput('')
-    setTagDropdownOpen(false)
-  }
-
-  function removeTag(tag: string) {
-    setSelectedTags(prev => prev.filter(t => t !== tag))
-  }
-
-  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault()
-      const val = tagInput.trim().replace(/,/g, '')
-      if (val) addTag(val)
-    } else if (e.key === 'Backspace' && !tagInput && selectedTags.length > 0) {
-      removeTag(selectedTags[selectedTags.length - 1])
-    }
-  }
+  const { state, actions } = useWordForm(word, initialWrongChoices, open)
 
   if (!open) return null
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (!wordText.trim() || !definition.trim()) {
-      setError('Word và Definition không được trống')
-      return
-    }
+    const buildResult = actions.buildPayload()
+    if (!buildResult) return
 
-    setLoading(true)
-    setError(null)
+    actions.setLoading(true)
+    actions.setError(null)
 
-    const wrongChoices = [wrong1, wrong2, wrong3].filter((c) => c.trim())
-
-    await onSave(
-      {
-        word: wordText.trim(),
-        phonetic: phonetic.trim() || null,
-        pos,
-        difficulty,
-        definition: definition.trim(),
-        example: example.trim() || null,
-        example_vi: exampleVi.trim() || null,
-        topic_id: undefined,
-        image_url: imageUrl.trim() || null,
-        image_position: imagePosition || 'center',
-        tags: selectedTags.length > 0 ? selectedTags : undefined,
-        synonyms: synonyms.trim() ? synonyms.split(',').map(s => s.trim()).filter(Boolean) : undefined,
-        antonyms: antonyms.trim() ? antonyms.split(',').map(s => s.trim()).filter(Boolean) : undefined,
-        word_family: wordFamily.trim() ? wordFamily.split(',').map(s => s.trim()).filter(Boolean) : undefined,
-      },
-      wrongChoices
-    )
-
-    setLoading(false)
+    await onSave(buildResult.payload, buildResult.wrongChoices)
+    
+    actions.setLoading(false)
   }
 
   return (
@@ -195,7 +50,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl">
+        <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl z-20">
           <div>
             <h2 className="text-xl font-black text-secondary">
               {word ? 'Sửa từ vựng' : 'Thêm từ vựng mới'}
@@ -205,6 +60,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer"
           >
@@ -219,8 +75,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               <label className="block text-sm font-bold text-secondary mb-2">Word *</label>
               <input
                 type="text"
-                value={wordText}
-                onChange={(e) => setWordText(e.target.value)}
+                value={state.wordText}
+                onChange={(e) => actions.setWordText(e.target.value)}
                 placeholder="hello"
                 required
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
@@ -230,8 +86,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               <label className="block text-sm font-bold text-secondary mb-2">Phonetic</label>
               <input
                 type="text"
-                value={phonetic}
-                onChange={(e) => setPhonetic(e.target.value)}
+                value={state.phonetic}
+                onChange={(e) => actions.setPhonetic(e.target.value)}
                 placeholder="/həˈloʊ/"
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
@@ -243,8 +99,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">Từ loại</label>
               <select
-                value={pos ?? 'noun'}
-                onChange={(e) => setPos(e.target.value as Word['pos'])}
+                value={state.pos ?? 'noun'}
+                onChange={(e) => actions.setPos(e.target.value as Word['pos'])}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               >
                 {POS_OPTIONS.map((o) => (
@@ -254,14 +110,14 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
             </div>
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">
-                Độ khó: <span className="text-primary">{DIFFICULTY_LABELS[difficulty - 1]}</span>
+                Độ khó: <span className="text-primary">{DIFFICULTY_LABELS[state.difficulty - 1]}</span>
               </label>
               <input
                 type="range"
                 min={1}
                 max={5}
-                value={difficulty}
-                onChange={(e) => setDifficulty(Number(e.target.value))}
+                value={state.difficulty}
+                onChange={(e) => actions.setDifficulty(Number(e.target.value))}
                 className="w-full accent-primary"
               />
               <div className="flex justify-between text-xs text-stone-400 mt-1">
@@ -274,8 +130,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           <div>
             <label className="block text-sm font-bold text-secondary mb-2">Definition *</label>
             <textarea
-              value={definition}
-              onChange={(e) => setDefinition(e.target.value)}
+              value={state.definition}
+              onChange={(e) => actions.setDefinition(e.target.value)}
               placeholder="Nghĩa của từ..."
               rows={2}
               required
@@ -283,28 +139,28 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
             />
           </div>
 
-          {/* Example EN */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Ví dụ (EN)</label>
-            <input
-              type="text"
-              value={example}
-              onChange={(e) => setExample(e.target.value)}
-              placeholder="Hello, how are you?"
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-            />
-          </div>
-
-          {/* Example VI */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Ví dụ (VI)</label>
-            <input
-              type="text"
-              value={exampleVi}
-              onChange={(e) => setExampleVi(e.target.value)}
-              placeholder="Xin chào, bạn khỏe không?"
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-            />
+          {/* Example EN & VI */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Ví dụ (EN)</label>
+              <input
+                type="text"
+                value={state.example}
+                onChange={(e) => actions.setExample(e.target.value)}
+                placeholder="Hello, how are you?"
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-secondary mb-2">Ví dụ (VI)</label>
+              <input
+                type="text"
+                value={state.exampleVi}
+                onChange={(e) => actions.setExampleVi(e.target.value)}
+                placeholder="Xin chào, bạn khỏe không?"
+                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+              />
+            </div>
           </div>
 
           {/* Synonyms / Antonyms / Word Family */}
@@ -315,8 +171,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               </label>
               <input
                 type="text"
-                value={synonyms}
-                onChange={(e) => setSynonyms(e.target.value)}
+                value={state.synonyms}
+                onChange={(e) => actions.setSynonyms(e.target.value)}
                 placeholder="greet, salute, hello"
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
@@ -327,8 +183,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               </label>
               <input
                 type="text"
-                value={antonyms}
-                onChange={(e) => setAntonyms(e.target.value)}
+                value={state.antonyms}
+                onChange={(e) => actions.setAntonyms(e.target.value)}
                 placeholder="goodbye, farewell"
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
@@ -339,8 +195,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               </label>
               <input
                 type="text"
-                value={wordFamily}
-                onChange={(e) => setWordFamily(e.target.value)}
+                value={state.wordFamily}
+                onChange={(e) => actions.setWordFamily(e.target.value)}
                 placeholder="run, runs, running, ran, runner"
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
@@ -348,96 +204,33 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           </div>
 
           {/* Tags */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">
-              Tags <span className="font-normal text-stone-400">(chọn trong danh sách hoặc gõ enter để tạo mới)</span>
-            </label>
-            {/* Selected tag chips */}
-            {selectedTags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {selectedTags.map(tag => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-xs leading-none">close</span>
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-            {/* Tag input with dropdown */}
-            <div className="relative" ref={tagDropdownRef}>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 relative">
-                  <input
-                    ref={tagInputRef}
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => {
-                      setTagInput(e.target.value)
-                      setTagDropdownOpen(true)
-                    }}
-                    onFocus={() => setTagDropdownOpen(true)}
-                    onKeyDown={handleTagKeyDown}
-                    placeholder="gõ để tìm hoặc tạo tag..."
-                    className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-                  />
-                  {/* Dropdown */}
-                  {tagDropdownOpen && filteredSuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-orange-100 rounded-xl shadow-lg z-10 max-h-48 overflow-y-auto">
-                      {filteredSuggestions.map(tag => (
-                        <button
-                          key={tag}
-                          type="button"
-                          onMouseDown={(e) => { e.preventDefault(); addTag(tag) }}
-                          className="w-full text-left px-4 py-2.5 text-sm text-secondary hover:bg-orange-50 transition-colors first:rounded-t-xl last:rounded-b-xl"
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => { if (tagInput.trim()) addTag(tagInput.trim()) }}
-                  className="px-4 py-3 rounded-xl bg-stone-100 text-stone-500 font-bold hover:bg-stone-200 transition-all shrink-0"
-                >
-                  + Thêm
-                </button>
-              </div>
-            </div>
-          </div>
+          <WordTagsInput
+            selectedTags={state.selectedTags}
+            onAddTag={actions.addTag}
+            onRemoveTag={actions.removeTag}
+          />
 
           {/* Image URL + Focal Point + Preview */}
           <div>
             <label className="block text-sm font-bold text-secondary mb-2">Ảnh minh họa (URL)</label>
             <input
               type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              value={state.imageUrl}
+              onChange={(e) => actions.setImageUrl(e.target.value)}
               placeholder="https://images.unsplash.com/photo-xxx?w=600&q=80"
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
             />
-            {imageUrl && (
+            {state.imageUrl && (
               <div className="mt-3 space-y-3">
-                {/* Focal point selector */}
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-stone-500">Trọng tâm ảnh:</span>
                   {(['top', 'center', 'bottom'] as const).map((pos) => (
                     <button
                       key={pos}
                       type="button"
-                      onClick={() => setImagePosition(pos)}
+                      onClick={() => actions.setImagePosition(pos)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                        imagePosition === pos
+                        state.imagePosition === pos
                           ? 'bg-primary text-white shadow-md'
                           : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                       }`}
@@ -446,20 +239,19 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                     </button>
                   ))}
                 </div>
-                {/* Flashcard simulation (4:3) */}
                 <div className="bg-stone-50 rounded-xl p-3 border border-stone-200">
                   <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2">Flashcard Preview (4:3)</p>
-                  <div className="aspect-[4/3] w-full max-w-[280px] rounded-lg overflow-hidden border border-stone-200 shadow-sm relative">
+                  <div className="aspect-4/3 w-full max-w-[280px] rounded-lg overflow-hidden border border-stone-200 shadow-sm relative">
                     <img
-                      src={imageUrl}
+                      src={state.imageUrl}
                       alt="Preview"
                       className="w-full h-full object-cover transition-all duration-300"
-                      style={{ objectPosition: imagePosition }}
+                      style={{ objectPosition: state.imagePosition }}
                       onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x450?text=Invalid+URL'; }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent pointer-events-none" />
                     <div className="absolute bottom-2 left-3 text-white text-sm font-bold drop-shadow-lg">
-                      {wordText || 'word'}
+                      {state.wordText || 'word'}
                     </div>
                   </div>
                 </div>
@@ -473,35 +265,35 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               Đáp án sai (3 lựa chọn cho flashcard)
             </label>
             <div className="grid grid-cols-3 gap-3">
-              <input type="text" value={wrong1} onChange={(e) => setWrong1(e.target.value)} placeholder="Sai 1" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
-              <input type="text" value={wrong2} onChange={(e) => setWrong2(e.target.value)} placeholder="Sai 2" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
-              <input type="text" value={wrong3} onChange={(e) => setWrong3(e.target.value)} placeholder="Sai 3" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
+              <input type="text" value={state.wrong1} onChange={(e) => actions.setWrong1(e.target.value)} placeholder="Sai 1" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
+              <input type="text" value={state.wrong2} onChange={(e) => actions.setWrong2(e.target.value)} placeholder="Sai 2" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
+              <input type="text" value={state.wrong3} onChange={(e) => actions.setWrong3(e.target.value)} placeholder="Sai 3" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
             </div>
             <p className="text-xs text-stone-400 mt-1">Để trống nếu không cần flashcard dạng chọn đáp án</p>
           </div>
 
-          {error && (
+          {state.error && (
             <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium">
-              {error}
+              {state.error}
             </div>
           )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-50 transition-all"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Đang lưu...' : word ? 'Lưu thay đổi' : 'Thêm từ vựng'}
-            </button>
+               type="button"
+               onClick={onClose}
+               className="flex-1 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-50 transition-all"
+             >
+               Hủy
+             </button>
+             <button
+               type="submit"
+               disabled={state.loading}
+               className="flex-1 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+             >
+               {state.loading ? 'Đang lưu...' : word ? 'Lưu thay đổi' : 'Thêm từ vựng'}
+             </button>
           </div>
         </form>
       </div>

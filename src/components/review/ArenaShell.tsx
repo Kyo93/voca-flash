@@ -36,10 +36,10 @@ export default function ArenaShell({
   syncError
 }: ArenaShellProps) {
   return (
-    <div className="fixed inset-0 bg-[#060608] z-[9999] flex flex-col items-center overflow-hidden font-body">
+    <div className="fixed inset-0 bg-[#060608] z-9999 flex flex-col items-center overflow-hidden font-body">
       {/* Error Alert Overlay */}
       {syncError && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 duration-300">
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-top-4 duration-300">
           <div className="bg-red-500/10 border border-red-500/20 backdrop-blur-xl px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl">
             <span className="material-symbols-outlined text-red-500 text-sm animate-pulse">cloud_off</span>
             <p className="text-red-500/80 font-black text-[10px] uppercase tracking-widest">{syncError}</p>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAdminStats, getRecentWords } from '../../lib/admin-queries'
+import { getAdminStats, getRecentWords } from '../../lib/queries/stats-queries'
 import type { Word } from '../../lib/types'
 
 interface Stats {

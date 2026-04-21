@@ -93,7 +93,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
       </motion.div>
 
       {/* Built Word Area */}
-      <div className={`w-full flex flex-wrap justify-center gap-3 p-10 min-h-[140px] rounded-[2.5rem] border-2 transition-all duration-300 mb-16 ${
+      <div className={`w-full flex flex-wrap justify-center gap-3 p-10 min-h-[140px] rounded-4xl border-2 transition-all duration-300 mb-16 ${
         isWrong 
           ? 'border-red-500 bg-red-500/10 animate-shake' 
           : built.length > 0 

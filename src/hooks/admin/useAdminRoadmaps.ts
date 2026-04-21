@@ -4,7 +4,7 @@ import {
   createRoadmap,
   updateRoadmap,
   deleteRoadmap,
-} from '../../lib/admin-queries'
+} from '../../lib/queries/roadmap-queries'
 import type { Roadmap } from '../../lib/types'
 
 export function useAdminRoadmaps() {
@@ -21,7 +21,11 @@ export function useAdminRoadmaps() {
       setLoading(false)
       return
     }
-    setRoadmaps((data as Roadmap[]) ?? [])
+    const formatted = (data as any[] ?? []).map(r => ({
+      ...r,
+      topic_count: r.topics?.[0]?.count ?? 0
+    }))
+    setRoadmaps(formatted as Roadmap[])
     setLoading(false)
   }
 

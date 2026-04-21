@@ -29,19 +29,19 @@ export default function FlashcardBack({
 
       <div className="relative z-10 w-full h-full flex flex-col">
         {/* Notebook Toggle (Top Right) */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleNotebook()
-          }}
-          className="absolute top-0 right-0 p-2 text-outline-variant hover:text-red-500 transition-all active:scale-90 group"
-          title={isSaved ? 'Xóa khỏi sổ tay' : 'Lưu vào sổ tay'}
-        >
-          <span className={`material-symbols-outlined text-2xl transition-colors ${isSaved ? 'text-[var(--color-error,#B3261E)] fill-icon' : ''}`} 
-                style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
-            favorite
-          </span>
-        </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleNotebook()
+            }}
+            className="absolute top-0 right-0 p-2 text-outline-variant hover:text-red-500 transition-all active:scale-90 group"
+            title={isSaved ? 'Xóa khỏi sổ tay' : 'Lưu vào sổ tay'}
+          >
+            <span className={`material-symbols-outlined text-2xl transition-colors ${isSaved ? 'text-error fill-icon' : ''}`} 
+                  style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
+              favorite
+            </span>
+          </button>
 
         {/* English Word (Small, Above) */}
         <div className="flex flex-col items-center mt-2 mb-4">
@@ -62,7 +62,7 @@ export default function FlashcardBack({
         <div className="w-12 h-1 oceanic-pulse rounded-full mx-auto mb-10"></div>
 
         {/* Vietnamese Meaning (Prominent) */}
-        <div className="flex-grow flex flex-col items-center">
+        <div className="grow flex flex-col items-center">
           <span className="text-secondary font-label font-bold tracking-widest text-[10px] uppercase mb-2">Meaning</span>
           <p className="text-on-surface font-headline text-[32px] font-black leading-tight mb-8">
             {card.back}

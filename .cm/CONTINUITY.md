@@ -1,4 +1,4 @@
-﻿# CM Working Memory — VocaFlash
+# CM Working Memory — VocaFlash
 
 > Auto-updated by CM skills. Read at session start.
 
@@ -29,3 +29,4 @@ outer, and ui-heavy to prevent circular dependencies.
 ## Mistakes & Learnings (Latest)
 - **Suspense Layout UX Bug**: Wrapping <Routes> directly with <Suspense> unmounts the entire Layout including the Sidebar when switching routes. Fix: Place <Suspense> INSIDE the Layout component wrapping the <Outlet /> element. (2026-04-21)
 - **TopicFormModal Save Button**: Buttons in footer div OUTSIDE <form> tag don't trigger onSubmit. Fix: Add id="topic-form" to <form> and orm="topic-form" to submit button. (2026-04-20)
+- **Refactor Type Mismatch**: Extracting components without verifying child component props causes type errors. Fix: Use `view_file` on child components and run `npm run build` after refactoring to ensure type safety. (2026-04-21)

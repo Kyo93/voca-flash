@@ -1,50 +1,67 @@
-# AGENTS.md — VocaFlash
+# AGENTS.md — VocaFlash Manifest
 
-> AI collaboration manifest for VocaFlash project.
+Tài liệu này quy định các nguyên tắc hợp tác giữa AI và Developer trong dự án VocaFlash.
 
-## Project Overview
-- **Name**: voca-flash
-- **Type**: SPA (Vite + React + shadcn/ui)
-- **Primary Language**: Vietnamese (vi) — UI người dùng
-- **Target Language**: English (en) — từ vựng học
-- **Domain**: localhost (development)
+## Tổng quan Dự án
+- **Tên**: VocaFlash
+- **Stack**: Vite + React 19 + Tailwind CSS v4 + Supabase
+- **Ngôn ngữ chính**: Tiếng Việt (vi) - UI; Tiếng Anh (en) - Học thuật.
+- **Triết lý**: Tactile Scholar - Thiết kế tập trung vào cảm xúc và sự tối giản.
 
-## Commands
+## Lệnh quan trọng
 ```bash
-npm run dev      # Start local dev server
-npm run build    # Build for production
-npm run test     # Run tests
-npm run test:gate # Pre-deploy test gate
+npm run dev      # Khởi động môi trường phát triển
+npm run build    # Đóng gói sản phẩm
+npm run test     # Chạy toàn bộ unit tests (Vitest)
+npm run test:gate # Kiểm tra an toàn trước khi deploy
 ```
 
-## Project Structure
+## Cấu trúc Mã nguồn
 ```
 src/
-  components/    # React components
-  pages/         # Page components (Home, Learn, Review, Progress)
-  i18n/          # Language files (vi.json, en.json)
-  hooks/         # Custom React hooks
-  lib/           # Utilities (SRS algorithm, storage)
-  App.tsx        # Root component with routing
-  main.tsx       # Entry point
-  index.css      # Design tokens + Tailwind
+  components/    # Thành phần giao diện (Mô-đun hóa)
+  pages/         # Các trang chính (Dashboard, Study, Review, Admin...)
+  hooks/         # Custom React hooks (Logic xử lý state)
+  lib/
+    storage/     # Data Layer (Supabase, Auth, Mastery)
+    srs.ts       # Thuật toán FSRS v5
+    types.ts     # Source of truth cho tất cả các Type
+  contexts/      # global state (Auth, UI, Roadmap)
+  i18n/          # File ngôn ngữ (vi.json là gốc)
 ```
 
-## SRS Algorithm (Spaced Repetition System)
-- SM-2 algorithm variant for flashcard scheduling
-- Intervals: Again(1m) → Hard(6h) → Good(1d) → Easy(4d)
-- Ease factor adjusts based on user response
+## Quy tắc Phát triển (MANDATORY)
 
-## Code Conventions
-- **i18n**: ALL user-facing strings must use `t()` from react-i18next. vi.json = source of truth.
-- **CSS**: Use Tailwind utilities + design tokens. No raw hex colors.
-- **Components**: Functional components with hooks only.
-- **Commits**: Conventional format — `feat:`, `fix:`, `docs:`, `test:`, `chore:`
-- **Storage**: localStorage for local-first data persistence
+### 1. Quốc tế hóa (i18n)
+- KHÔNG ĐƯỢC viết cứng (hardcode) chuỗi ký tự Việt/Anh vào giao diện.
+- Sử dụng `t()` từ `react-i18next`.
+- File `vi.json` là nguồn sự thật chính (source of truth).
 
-## Important Rules
-1. Read `.cm/CONTINUITY.md` at the start of every session for context
-2. Mobile-first: design for 375px first, enhance for larger screens
-3. i18n extraction: MAX 30 strings per batch
-4. Run test:gate before every deploy
-5. Never hardcode strings in UI — always use t()
+### 2. Thiết kế & CSS
+- Sử dụng Tailwind CSS v4 Theme variables (ví dụ: `bg-primary`, `rounded-4xl`).
+- Tuyệt đối không dùng mã màu Hex trực tiếp trong code UI.
+- Luôn ưu tiên **Mobile-first** (chiều rộng chuẩn 375px).
+
+### 3. Cấu trúc Component
+- Chỉ sử dụng Functional Components và Hooks.
+- Tách biệt logic và giao diện (Logic nằm trong hooks hoặc lib).
+
+### 4. Spaced Repetition (SRS)
+- Sử dụng thuật toán FSRS.
+- Trình tự Interval: Again(1m) → Hard(6h) → Good(1d) → Easy(4d).
+- Độ ổn định (Stability) quyết định thời gian quay lại của thẻ.
+
+
+### 5. Cam kết & Git
+- Sử dụng Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`).
+- Luôn chạy `test:gate` trước khi hoàn tất một tính năng lớn.
+
+### 6. Kỷ luật Refactor & Type-Safety
+- **Kiểm tra linh kiện con**: Trước khi bọc (wrap) hoặc tách component, PHẢI kiểm tra `interface Props` của các linh kiện con để tránh sai lệch kiểu dữ liệu.
+- **Ưu tiên Explicit Types**: Luôn sử dụng các `type` định nghĩa sẵn (vd: `StudyChallengeType`) thay vì dùng `string` chung chung.
+- **Kiểm tra Build**: Luôn chạy `npm run build` sau mỗi lần tái cấu trúc (refactor) để đảm bảo không phát sinh lỗi Type tiềm ẩn.
+- **Logic Isolation**: Giữ trang (Page) gọn gàng bằng cách đẩy logic vào Custom Hooks.
+
+---
+
+*AI Agent Ghi chú: Luôn đọc CONTINUITY.md tại .cm/ trước mỗi phiên làm việc để nắm bắt ngữ cảnh hiện thời.*

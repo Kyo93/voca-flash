@@ -10,14 +10,14 @@ export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: Confirm
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
+        <div className="fixed inset-0 z-10000 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="glass-arena-container w-full max-w-sm p-12 text-center shadow-[0_0_100px_rgba(0,0,0,0.8)] border-white/20"
           >
-            <div className="w-24 h-24 rounded-[2rem] bg-red-500/10 text-red-500 flex items-center justify-center mb-10 mx-auto border border-red-500/20 shadow-2xl">
+            <div className="w-24 h-24 rounded-4xl bg-red-500/10 text-red-500 flex items-center justify-center mb-10 mx-auto border border-red-500/20 shadow-2xl">
               <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>logout</span>
             </div>
             

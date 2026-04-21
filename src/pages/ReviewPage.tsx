@@ -47,7 +47,7 @@ export default function ReviewPage() {
         onExitConfirm={() => {}}
       >
         <div className="max-w-md mx-auto text-center py-20">
-          <div className="w-24 h-24 rounded-[2rem] bg-primary/10 text-primary flex items-center justify-center mb-10 mx-auto border border-primary/20 shadow-2xl glass-arena-item">
+          <div className="w-24 h-24 rounded-4xl bg-primary/10 text-primary flex items-center justify-center mb-10 mx-auto border border-primary/20 shadow-2xl glass-arena-item">
             <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
           </div>
           <h1 className="text-4xl font-black text-white mb-6 tracking-tight">Kỷ lục tuyệt vời!</h1>

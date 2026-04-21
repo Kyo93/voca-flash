@@ -18,7 +18,7 @@ export default function ActivityHeatmap({ streakDays }: HeatmapProps) {
   }, [streakDays])
 
   return (
-    <div className="bg-white p-8 rounded-[2.5rem] border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+    <div className="activity-heatmap bg-white p-8 rounded-4xl border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-orange-400 text-lg">grid_view</span>
@@ -27,10 +27,10 @@ export default function ActivityHeatmap({ streakDays }: HeatmapProps) {
         <div className="flex items-center gap-3">
           <span className="text-[10px] text-stone-300 font-black uppercase tracking-widest">Ít</span>
           <div className="flex gap-1">
-            <div className="w-3 h-3 rounded-[4px] bg-stone-50 border border-stone-100"></div>
-            <div className="w-3 h-3 rounded-[4px] bg-orange-100/50"></div>
-            <div className="w-3 h-3 rounded-[4px] bg-orange-300/70"></div>
-            <div className="w-3 h-3 rounded-[4px] bg-primary shadow-sm shadow-primary/20"></div>
+            <div className="w-3 h-3 rounded-xs bg-stone-50 border border-stone-100"></div>
+            <div className="w-3 h-3 rounded-xs bg-orange-100/50"></div>
+            <div className="w-3 h-3 rounded-xs bg-orange-300/70"></div>
+            <div className="w-3 h-3 rounded-xs bg-primary shadow-sm shadow-primary/20"></div>
           </div>
           <span className="text-[10px] text-stone-300 font-black uppercase tracking-widest">Nhiều</span>
         </div>
@@ -40,7 +40,7 @@ export default function ActivityHeatmap({ streakDays }: HeatmapProps) {
         {days.map((day, i) => (
           <div
             key={i}
-            className={`w-full h-full rounded-[4px] transition-all duration-700 cursor-help ${
+            className={`w-full h-full rounded-xs transition-all duration-700 cursor-help ${
               day.level === 0 ? 'bg-stone-50 border border-stone-100/50' :
               day.level === 1 ? 'bg-orange-100/40' :
               day.level === 2 ? 'bg-orange-300/60' :

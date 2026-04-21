@@ -5,14 +5,14 @@ import { speak, stop } from '../lib/tts'
 import { useAuth } from '../contexts/AuthContext'
 import StudyPrepScreen from '../components/StudyPrepScreen'
 import SRSButtons from '../components/SRSButtons'
-import StudyChallengeShell from '../components/StudyChallengeShell'
 import { useNotebook } from '../hooks/useNotebook'
 import NoteDrawer from '../components/NoteDrawer'
 import FlashcardFront from '../components/study/FlashcardFront'
 import FlashcardBack from '../components/study/FlashcardBack'
 import StudyComplete from '../components/study/StudyComplete'
+import ChallengingScreen from '../components/study/ChallengingScreen'
 import { useStudySessionMode } from '../hooks/useStudySessionMode'
-import { STUDY_SESSION_DEFAULTS } from '../lib/constants'
+import { DESIGN_TOKENS } from '../lib/tokens'
 
 export default function StudyPage() {
   const { profile } = useAuth()
@@ -43,13 +43,8 @@ export default function StudyPage() {
 
   const handleToggleNotebook = useCallback(async () => {
     if (!currentCard) return
-    
-    // If saving (not currently saved), open drawer
     const alreadySaved = isSaved(currentCard.id)
-    if (!alreadySaved) {
-      setIsDrawerOpen(true)
-    }
-    
+    if (!alreadySaved) setIsDrawerOpen(true)
     await toggle(currentCard.id)
   }, [currentCard, isSaved, toggle])
 
@@ -58,11 +53,9 @@ export default function StudyPage() {
     await updateNote(currentCard.id, note)
   }, [currentCard, updateNote])
 
-  // Track initialized state to prevent redundant resets on re-renders or identity changes
   const initializedTopicRef = useRef<string | undefined>(null)
 
   useEffect(() => {
-    // Only initialize if we haven't for this specific topic yet
     if (initializedTopicRef.current !== topic) {
       initialize(topic)
       initializedTopicRef.current = topic
@@ -73,7 +66,6 @@ export default function StudyPage() {
     return () => stop()
   }, [])
 
-  // Tự động phát âm khi thẻ xuất hiện hoặc khi lật thẻ
   useEffect(() => {
     if (currentCard && !isLoading && !isComplete) {
       if (profile?.auto_play_audio !== false) {
@@ -105,6 +97,8 @@ export default function StudyPage() {
     startSession(roadmapId, topicId || '', includeMastered)
   }, [startSession, roadmapId, topicId])
 
+  // --- Guard Clauses for Loading/Prep/Completion ---
+  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -134,12 +128,12 @@ export default function StudyPage() {
     )
   }
 
-  // Derive whether to show the card back (flipped)
   const showCardBack = isFlipped && phase !== 'CHALLENGING' && phase !== 'READY_FOR_QUIZ'
 
   return (
     <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12">
       <div className="max-w-md w-full space-y-8">
+        
         {/* Session Progress */}
         <div className="flex flex-col gap-2 mb-8">
           <div className="flex justify-between items-end">
@@ -148,85 +142,30 @@ export default function StudyPage() {
           </div>
           <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
             <div
-              className="h-full bg-secondary-fixed-dim kinetic-pulse transition-all duration-500"
+              className={`h-full bg-secondary-fixed-dim kinetic-pulse transition-all duration-500`}
               style={{ width: `${((total - remaining) / total) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Main Content Area */}
-        {phase === 'CHALLENGING' ? (() => {
-          const isWarning = timerSeconds <= STUDY_SESSION_DEFAULTS.WARNING_THRESHOLD_S
-          const borderColor = isWarning ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'
-          const borderGlow = `0 0 8px ${borderColor}`
-          const timerProgress = `${(timerSeconds / STUDY_SESSION_DEFAULTS.TIMER_SECONDS) * 100}%`
-          const timerTextClass = isWarning ? 'text-error animate-pulse' : 'text-secondary'
-
-          return (
-          // ── CHALLENGING: quiz with timer countdown + shrinking border ──
-          <div
-            className="w-full relative rounded-2xl overflow-hidden bg-surface-container-lowest"
-            style={{ padding: '0' }}
-          >
-            {/* Snake border — 4 edges */}
-            <div className="absolute top-0 left-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
-              style={{ backgroundColor: borderColor, width: timerProgress, boxShadow: borderGlow }} />
-            <div className="absolute top-0 right-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
-              style={{ backgroundColor: borderColor, height: timerProgress, boxShadow: borderGlow }} />
-            <div className="absolute bottom-0 right-0 h-[3px] rounded-full transition-all duration-1000 ease-linear"
-              style={{ backgroundColor: borderColor, width: timerProgress, boxShadow: borderGlow }} />
-            <div className="absolute bottom-0 left-0 w-[3px] h-full rounded-full transition-all duration-1000 ease-linear"
-              style={{ backgroundColor: borderColor, height: timerProgress, boxShadow: borderGlow }} />
-
-            {/* Timer bar */}
-            <div className="flex items-center justify-between px-5 py-3 bg-surface-container-low">
-              <div className="flex items-center gap-2">
-                <span className={`material-symbols-outlined text-xl ${timerTextClass}`}>timer</span>
-                <span className={`font-headline font-black text-lg tabular-nums ${timerTextClass}`}>
-                  {timerSeconds}s
-                </span>
-              </div>
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
-                currentChallengeType === 'cloze'
-                  ? 'text-primary bg-primary/8 border-primary/20'
-                  : currentChallengeType === 'listen'
-                    ? 'text-secondary bg-secondary/8 border-secondary/20'
-                    : 'text-tertiary bg-tertiary/8 border-tertiary/20'
-              }`}>
-                <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                {currentChallengeType === 'cloze' ? 'Điền từ' : currentChallengeType === 'listen' ? 'Nghe lại' : 'Chọn nghĩa'}
-              </span>
-            </div>
-
-            {/* Challenge body */}
-            <div className="bg-surface-container-lowest p-6">
-              <StudyChallengeShell
-                type={currentChallengeType}
-                word={word!}
-                choices={precomputedChoices}
-                onSubmit={handleChallengeSubmit}
-              />
-              <button
-                onClick={handleSkipChallenge}
-                className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase w-full"
-              >
-                Bỏ qua quiz → tự đánh giá
-              </button>
-            </div>
-          </div>
-          )
-        })() : (
-          // ── CARD: front OR back ──
+        {phase === 'CHALLENGING' ? (
+          <ChallengingScreen
+            timerSeconds={timerSeconds}
+            currentChallengeType={currentChallengeType}
+            word={word!}
+            precomputedChoices={precomputedChoices}
+            onSubmit={handleChallengeSubmit}
+            onSkip={handleSkipChallenge}
+          />
+        ) : (
           <div className="group relative">
             <div
               onClick={!isFlipped ? flip : undefined}
-              className={`perspective-1000 w-full aspect-[3/4] ${!isFlipped ? 'cursor-pointer' : ''}`}
+              className={`perspective-1000 w-full aspect-3/4 ${!isFlipped ? 'cursor-pointer' : ''}`}
             >
-              <div
-                className={`preserve-3d transition-all duration-700 w-full h-full relative ${
-                  showCardBack ? 'rotate-y-180' : ''
-                }`}
-              >
+              <div className={`preserve-3d transition-all duration-700 w-full h-full relative ${showCardBack ? 'rotate-y-180' : ''}`}>
+                
                 {/* Front */}
                 <div className="backface-hidden w-full h-full absolute inset-0">
                   <FlashcardFront card={currentCard} />
@@ -239,38 +178,35 @@ export default function StudyPage() {
                     isSaved={isSaved(currentCard.id)}
                     onToggleNotebook={handleToggleNotebook}
                   />
-
                 </div>
               </div>
             </div>
 
             {/* Aesthetic accent shadow */}
-            <div className="absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 rounded-xl border border-primary/10 pointer-events-none" />
+            <div className={`absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 ${DESIGN_TOKENS.RADIUS['2XL']} border border-primary/10 pointer-events-none`} />
           </div>
         )}
 
-        {/* Actions */}
+        {/* Actions Area */}
         <div className="flex flex-col gap-4 mt-8">
           {!isFlipped ? (
             <>
-              {/* Show Answer */}
               <button
                 onClick={flip}
-                className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+                className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
               >
                 <span className="tracking-wide">Show Answer</span>
                 <span className="material-symbols-outlined">visibility</span>
               </button>
               <button
                 onClick={markLearned}
-                className="w-full bg-secondary text-on-secondary font-headline font-bold py-4 rounded-lg shadow-md hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+                className={`w-full bg-secondary text-on-secondary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.MD} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
               >
                 <span className="tracking-wide">Mark as Learned</span>
                 <span className="material-symbols-outlined">check_circle</span>
               </button>
             </>
           ) : phase === 'RATING' ? (
-            // ── RATING: SRS buttons ──
             <div className="flex flex-col items-center">
               {suggestedRating !== null && (
                 <p className="text-center text-primary text-xs mb-3 font-bold tracking-widest uppercase">
@@ -284,10 +220,9 @@ export default function StudyPage() {
               />
             </div>
           ) : showCardBack ? (
-            // ── FLIPPED ──
             <button
               onClick={handleNextToChallenge}
-              className="w-full oceanic-pulse text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3"
+              className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
             >
               <span className="tracking-wide">Next</span>
               <span className="material-symbols-outlined">arrow_forward</span>
@@ -299,9 +234,7 @@ export default function StudyPage() {
       {/* Notebook Note Drawer */}
       <NoteDrawer
         isOpen={isDrawerOpen}
-        onClose={() => {
-          setIsDrawerOpen(false)
-        }}
+        onClose={() => setIsDrawerOpen(false)}
         onSave={handleSaveNote}
         initialNote={currentCard ? getNote(currentCard.id) : ''}
         word={currentCard?.front || ''}

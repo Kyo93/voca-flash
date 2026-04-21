@@ -6,7 +6,7 @@ export interface ImportRow extends NormalizedWord {
   rowIndex: number
 }
 
-type DuplicateAction = 'update' | 'skip'
+export type DuplicateAction = 'update' | 'skip'
 
 interface ImportPreviewTableProps {
   rows: ImportRow[]
@@ -142,13 +142,13 @@ export default function ImportPreviewTable({
                   </div>
                 </td>
                 <td className="px-2 py-2 text-on-surface-variant leading-snug">
-                  <p className="line-clamp-2" title={row.definition}>{row.definition}</p>
+                  <p className="line-clamp-2" title={row.definition ?? undefined}>{row.definition}</p>
                 </td>
                 <td className="px-2 py-2">
-                  <p className="text-xs text-stone-500 italic line-clamp-2" title={row.example}>{row.example}</p>
+                  <p className="text-xs text-stone-500 italic line-clamp-2" title={row.example ?? undefined}>{row.example}</p>
                 </td>
                 <td className="px-2 py-2">
-                  <p className="text-xs text-stone-400 italic line-clamp-2" title={row.example_vi}>{row.example_vi}</p>
+                  <p className="text-xs text-stone-400 italic line-clamp-2" title={row.example_vi ?? undefined}>{row.example_vi}</p>
                 </td>
                 <td className="px-2 py-2">
                   <div className="flex flex-wrap gap-1">

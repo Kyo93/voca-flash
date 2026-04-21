@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
-import { getAllRoadmaps } from '../lib/admin-queries'
+import { getAllRoadmaps } from '../lib/queries/roadmap-queries'
 import type { Roadmap } from '../lib/types'
 
 interface RoadmapContextValue {

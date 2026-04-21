@@ -27,14 +27,14 @@ describe('WordFormModal must have synonyms, antonyms, word_family inputs', () =>
     expect(source.toLowerCase()).toContain('antonyms')
   })
 
-  it('must have input/textarea for word_family', () => {
+  it('must have input/textarea for wordFamily', () => {
     const source = readFile('components/admin/WordFormModal.tsx')
-    expect(source.toLowerCase()).toContain('word_family')
+    expect(source.toLowerCase()).toContain('wordfamily')
   })
 
-  it('onSave must pass synonyms, antonyms, word_family in wordData', () => {
+  it('onSave must pass synonyms, antonyms, wordFamily in wordData', () => {
     const source = readFile('components/admin/WordFormModal.tsx')
     // handleSave / onSave must include these fields in the data object
-    expect(source).toMatch(/synonyms|antonyms|word_family/)
+    expect(source).toMatch(/synonyms|antonyms|wordFamily/)
   })
 })

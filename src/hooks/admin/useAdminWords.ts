@@ -10,7 +10,7 @@ import {
   createWordChoices,
   deleteWordChoices,
   getWordTopicIds,
-} from '../../lib/admin-queries'
+} from '../../lib/queries/word-queries'
 import type { Word, WordChoice } from '../../lib/types'
 
 export function useAdminWords() {

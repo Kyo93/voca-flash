@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateChoices } from '../../src/lib/utils'
+import { generateChoices } from '../../src/lib/challenge-logic'
 import type { Word } from '../../src/lib/types'
 
 const mockWord: Word = {

@@ -1,14 +1,18 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { getUserVocabulary, getMasteryStats } from '../lib/storage/mastery'
 import { MasteryWord } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import NoteDrawer from '../components/NoteDrawer'
 import WordDetailPanel from '../components/WordDetailPanel'
 
 import CardRow from '../components/mastery/CardRow'
+import MasteryHeader from '../components/mastery/MasteryHeader'
+import MasteryStatsGrid from '../components/mastery/MasteryStatsGrid'
+import MasteryFilterTabs from '../components/mastery/MasteryFilterTabs'
 
 import { MASTERY_CONFIG } from '../lib/constants'
 
@@ -51,7 +55,6 @@ export default function MasteryPage() {
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
   const PAGE_SIZE = MASTERY_CONFIG.DEFAULT_PAGE_SIZE
-  const observer = useRef<IntersectionObserver | null>(null)
 
   // 1. Debounce search query
   useEffect(() => {
@@ -129,18 +132,11 @@ export default function MasteryPage() {
   }, [loadData, page])
 
   // 6. Infinite Scroll Observer
-  const lastElementRef = useCallback((node: HTMLTableRowElement | null) => {
-    if (loading || loadingMore) return
-    if (observer.current) observer.current.disconnect()
-    
-    observer.current = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prev => prev + 1)
-      }
-    })
-    
-    if (node) observer.current.observe(node)
-  }, [loading, loadingMore, hasMore])
+  const { lastElementRef } = useInfiniteScroll({
+    loading: loading || loadingMore,
+    hasMore,
+    onLoadMore: () => setPage(prev => prev + 1)
+  })
 
   const toggleSelectAll = () => {
     if (selectedIds.size === words.length) {
@@ -192,90 +188,26 @@ export default function MasteryPage() {
   return (
     <div className="px-6 md:px-10 py-8 max-w-7xl mx-auto w-full">
       {/* Hero Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-        <div className="space-y-3">
-          <h1 className="text-4xl font-black text-on-surface tracking-tighter text-editorial-asymmetry">{t('mastery.title')}</h1>
-          <p className="text-on-surface-variant font-medium max-w-lg leading-relaxed h-6">
-            {loading && totalCount === 0 ? (
-              <span className="inline-block w-48 h-4 bg-surface-container-highest animate-pulse rounded-full" />
-            ) : (
-              t('mastery.subtitle', { count: totalCount })
-            )}
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <div className="relative group">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors">search</span>
-              <input 
-                type="text"
-                placeholder={t('nav.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-6 py-3.5 bg-surface-container border-none rounded-2xl sun-drenched-shadow input-tactile-focus transition-all w-full md:w-80 font-medium text-sm"
-              />
-          </div>
-          
-          <button 
-            disabled={selectedIds.size === 0}
-            onClick={handleStartFreeStudy}
-            className={`px-8 py-3.5 rounded-2xl font-black text-sm flex items-center gap-3 transition-all shadow-lg active:scale-95 ${
-              selectedIds.size > 0 
-                ? 'primary-gradient text-on-primary sun-drenched-shadow cursor-pointer' 
-                : 'bg-surface-container-highest text-on-surface-variant/40 cursor-not-allowed shadow-none font-medium'
-            }`}
-          >
-            <span className="material-symbols-outlined font-variation-fill">bolt</span>
-            {t('mastery.freeStudy', { count: selectedIds.size })}
-          </button>
-        </div>
-      </div>
+      <MasteryHeader 
+        totalCount={totalCount}
+        loading={loading}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedIdsSize={selectedIds.size}
+        onStartFreeStudy={handleStartFreeStudy}
+      />
 
       {/* Stats Quick Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
-        {stats ? [
-          { label: t('mastery.stats.learning'), value: stats.learning, icon: 'school', color: 'text-primary', bg: 'bg-primary/10' },
-          { label: t('mastery.stats.total'), value: stats.total, icon: 'book', color: 'text-on-surface-variant', bg: 'bg-surface-container-highest' },
-          { label: t('mastery.stats.mastered'), value: stats.mastered, icon: 'verified', color: 'text-secondary', bg: 'bg-secondary/10' },
-          { label: t('mastery.stats.due'), value: stats.due, icon: 'schedule', color: 'text-primary', bg: 'bg-primary/10' },
-          { label: t('mastery.stats.orphaned'), value: stats.orphaned, icon: 'broken_image', color: 'text-red-500', bg: 'bg-red-50' },
-          { label: t('mastery.stats.weak'), value: stats.weak, icon: 'trending_down', color: 'text-red-400', bg: 'bg-red-50' }
-        ].map(s => (
-          <div key={s.label} className="p-5 bg-surface rounded-2xl sun-drenched-shadow flex items-center gap-4 group hover:scale-[1.02] transition-all">
-            <div className={`w-12 h-12 ${s.bg} ${s.color} rounded-2xl flex items-center justify-center shrink-0`}>
-              <span className="material-symbols-outlined font-variation-fill text-2xl">{s.icon}</span>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-on-surface leading-none">{s.value}</p>
-              <p className="text-[10px] font-normal text-on-surface-variant/60 uppercase tracking-widest mt-1.5">{s.label}</p>
-            </div>
-          </div>
-        )) : (
-          Array(6).fill(0).map((_, i) => (
-            <div key={i} className="h-24 bg-surface-container-low animate-pulse rounded-2xl w-full" />
-          ))
-        )}
-      </div>
+      <MasteryStatsGrid stats={stats} />
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 no-scrollbar">
-        {(['all', 'due', 'weak', 'orphaned', 'mastered'] as FilterType[]).map(f => (
-          <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className={`px-8 py-3 rounded-full font-semibold text-[10px] uppercase tracking-widest transition-all whitespace-nowrap ${
-              activeFilter === f 
-                ? 'bg-secondary text-on-secondary sun-drenched-shadow scale-105' 
-                : 'bg-surface-container text-on-surface-variant/60 hover:bg-surface-container-highest hover:text-on-surface'
-            }`}
-          >
-            {t(`mastery.filters.${f}`)}
-          </button>
-        ))}
-      </div>
+      <MasteryFilterTabs 
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+      />
 
       {/* Word Table */}
-      <div className="bg-surface rounded-3xl sun-drenched-shadow overflow-hidden mb-12">
+      <div className="bg-surface rounded-2xl sun-drenched-shadow overflow-hidden mb-12">
         <div className="w-full overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

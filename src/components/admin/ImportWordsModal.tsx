@@ -1,12 +1,13 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Topic, NormalizedWord, BatchInsertResult } from '../../lib/types'
-import { parseFile, parseSheetsUrl, parseErrorToMessage, resolveUnmatchedTopics } from '../../lib/import-parser'
-import { generateUniqueSlug, slugify } from '../../lib/utils'
-import { batchInsertWords, createTopic, findDuplicateWords } from '../../lib/admin-queries'
-import DifficultyDots from './DifficultyDots'
-import ImportPreviewTable, { ImportRow } from './ImportPreviewTable'
-
+import type { Topic, BatchInsertResult } from '../../lib/types'
+import { parseFile, parseSheetsUrl, parseErrorToMessage } from '../../lib/import-parser'
+import { batchInsertWords } from '../../lib/queries/word-queries'
+import ImportPreviewTable, { ImportRow, DuplicateAction } from './ImportPreviewTable'
+import { processImportData } from '../../lib/import-logic'
+import { ImportDropZone } from './import/ImportDropZone'
+import { ImportProgressIndicator } from './import/ImportProgressIndicator'
+import { ImportResultSummary } from './import/ImportResultSummary'
 
 // ── Props ─────────────────────────────────────────────────
 interface Props {
@@ -14,16 +15,10 @@ interface Props {
   onClose: () => void
   onImportComplete: () => void
   topics: Topic[]
-  /** Roadmap ID — required. Import must happen in context of a specific roadmap. */
   roadmapId: string
-  /** Display name of the roadmap for context label */
   roadmapName: string
-  /** Roadmap slug — used to prefix topic slugs to avoid cross-roadmap conflicts */
   roadmapSlug?: string
 }
-
-import type { DuplicateAction } from './ImportPreviewTable'
-
 
 // ── Helpers ──────────────────────────────────────────────
 function getTopicNameMap(topics: Topic[]): Map<string, Topic> {
@@ -34,16 +29,12 @@ function getTopicNameMap(topics: Topic[]): Map<string, Topic> {
   return map
 }
 
-// ── Difficulty dots ───────────────────────────────────────
+type ImportState = 'idle' | 'parsing' | 'preview' | 'importing' | 'done' | 'error'
 
-
-// ── Main Component ───────────────────────────────────────
 export default function ImportWordsModal({ open, onClose, onImportComplete, topics, roadmapId, roadmapName, roadmapSlug }: Props) {
   const { t } = useTranslation()
-  // Filter topics by roadmap (always filtered — roadmapId is required)
   const filteredTopics = topics.filter(t => t.roadmap_id === roadmapId)
-  const topicMap = getTopicNameMap(filteredTopics)
-
+  
   const [state, setState] = useState<ImportState>('idle')
   const [sheetsUrl, setSheetsUrl] = useState('')
   const [urlError, setUrlError] = useState('')
@@ -51,11 +42,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
   const [rows, setRows] = useState<ImportRow[]>([])
   const [progress, setProgress] = useState({ done: 0, total: 0 })
   const [result, setResult] = useState<BatchInsertResult | null>(null)
-  const [showErrorDetail, setShowErrorDetail] = useState(false)
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // ── Reset on close ──────────────────────────────────────
   const handleClose = useCallback(() => {
     setState('idle')
     setRows([])
@@ -66,74 +53,23 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
     onClose()
   }, [onClose])
 
-  // ── Unified parse handler ──────────────────────────────
-  const handleParse = useCallback(async (parsed: { rows: NormalizedWord[]; unmatchedTopics: string[] }) => {
-    // Guard: roadmapId is required — this should never be reached without one
-    if (!roadmapId) {
-      throw new Error('NO_ROADMAP_GUARD_FAILED')
+  const handleParse = useCallback(async (parsed: { rows: any[]; unmatchedTopics: string[] }) => {
+    try {
+      const topicMap = getTopicNameMap(filteredTopics)
+      const { importRows } = await processImportData(parsed, roadmapId, roadmapSlug, topicMap)
+      setRows(importRows)
+      setState('preview')
+    } catch (err) {
+      setErrorMessage('Lỗi xử lý dữ liệu sau khi parse')
+      setState('error')
     }
+  }, [filteredTopics, roadmapId, roadmapSlug])
 
-    // Auto-create missing topics with unique slugs
-    // Only create a topic if it truly doesn't exist (check currentTopicMap)
-    let currentTopicMap = topicMap
-    if (parsed.unmatchedTopics.length > 0) {
-      const newTopicMap = new Map(currentTopicMap)
-      // Build existing slugs set for uniqueness check
-      const existingSlugs = new Set([...topicMap.values()].map(t => t.slug))
-      for (const name of parsed.unmatchedTopics) {
-        const lowerName = name.toLowerCase()
-        // Skip if this topic already exists in the current roadmap
-        if (currentTopicMap.has(lowerName)) continue
-        const uniqueSlug = generateUniqueSlug(slugify(name), existingSlugs, roadmapSlug)
-        existingSlugs.add(uniqueSlug) // reserve this slug
-        const { data, error } = await createTopic({
-          name,
-          slug: uniqueSlug,
-          color: '#f97316',
-          sort_order: 999,
-          roadmap_id: roadmapId, // always set — never null
-          description: null,
-          image_url: null,
-          icon: 'label',
-        })
-        if (!error && data) {
-          newTopicMap.set(lowerName, data as Topic)
-        }
-      }
-      currentTopicMap = newTopicMap
-    }
-
-    // Re-resolve topic IDs with new topics
-    const resolvedRows = resolveUnmatchedTopics(parsed.rows, currentTopicMap)
-
-    // Clear unmatchedTopics from rows — topics were just created/verified above,
-    // so no row should show ⚠️ "unmatched" badge for a topic that actually exists
-    for (const row of resolvedRows) {
-      row.unmatchedTopics = []
-    }
-
-    // Check for duplicates in DB
-    const wordTexts = resolvedRows
-      .filter(r => r.status !== 'invalid')
-      .map(r => r.word)
-    const dupes = await findDuplicateWords(wordTexts)
-    const dupeSet = new Set(dupes.map(w => w.toLowerCase()))
-
-    const importRows: ImportRow[] = resolvedRows.map((r, idx) => ({
-      ...r,
-      rowIndex: idx + 1,
-      status: dupeSet.has(r.word.toLowerCase()) ? 'duplicate' : r.status,
-      duplicateAction: dupeSet.has(r.word.toLowerCase()) ? 'skip' : undefined,
-    }))
-    setRows(importRows)
-    setState('preview')
-  }, [topicMap])
-
-  // ── Parse file ──────────────────────────────────────────
   const handleFileSelected = useCallback(async (file: File) => {
     setState('parsing')
     setErrorMessage('')
     try {
+      const topicMap = getTopicNameMap(filteredTopics)
       const parsed = await parseFile(file, topicMap)
       await handleParse(parsed)
     } catch (err) {
@@ -141,7 +77,8 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
       setErrorMessage(parseErrorToMessage(code))
       setState('error')
     }
-  }, [topicMap, handleParse])
+  }, [filteredTopics, handleParse])
+
   const handleSheetsUrl = useCallback(async () => {
     if (!sheetsUrl.trim()) {
       setUrlError(t('admin.import.fileRequired'))
@@ -151,6 +88,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
     setState('parsing')
     setErrorMessage('')
     try {
+      const topicMap = getTopicNameMap(filteredTopics)
       const parsed = await parseSheetsUrl(sheetsUrl, topicMap)
       await handleParse(parsed)
     } catch (err) {
@@ -158,38 +96,24 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
       setErrorMessage(parseErrorToMessage(code))
       setState('error')
     }
-  }, [topicMap, sheetsUrl, t, handleParse])
+  }, [filteredTopics, sheetsUrl, t, handleParse])
 
-  // ── Duplicate action per row ─────────────────────────
   function handleDuplicateAction(rowIndex: number, action: DuplicateAction) {
-    setRows(prev => prev.map((r, i) =>
-      i === rowIndex ? { ...r, duplicateAction: action } : r
-    ))
+    setRows(prev => prev.map((r, i) => i === rowIndex ? { ...r, duplicateAction: action } : r))
   }
 
-  // ── Bulk duplicate actions ──────────────────────────────
   function handleBulkDuplicateAction(action: DuplicateAction) {
-    setRows(prev => prev.map(r =>
-      r.status === 'duplicate' ? { ...r, duplicateAction: action } : r
-    ))
+    setRows(prev => prev.map(r => r.status === 'duplicate' ? { ...r, duplicateAction: action } : r))
   }
 
-  // ── Start Import ────────────────────────────────────────
   async function handleStartImport() {
     const validRows = rows.filter(r => r.status !== 'invalid')
-    if (validRows.length === 0) return
-
-    // Exclude duplicates with 'skip' action; upsert handles everything else
-    const toImport = validRows.filter(r => {
-      if (r.status === 'duplicate' && r.duplicateAction === 'skip') return false
-      return true
-    })
+    const toImport = validRows.filter(r => !(r.status === 'duplicate' && r.duplicateAction === 'skip'))
+    if (toImport.length === 0) return
 
     setState('importing')
     setProgress({ done: 0, total: toImport.length })
-
     const insertResult = await batchInsertWords(toImport)
-
     setProgress({ done: toImport.length, total: toImport.length })
     setResult(insertResult)
     setState('done')
@@ -197,21 +121,13 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
 
   if (!open) return null
 
-  // ── Stats ─────────────────────────────────────────────
   const stats = {
     ok: rows.filter(r => r.status === 'new').length,
     duplicates: rows.filter(r => r.status === 'duplicate').length,
     errors: rows.filter(r => r.status === 'invalid').length,
-    willImport: rows.filter(r => {
-      if (r.status === 'invalid') return false
-      if (r.status === 'duplicate' && r.duplicateAction === 'skip') return false
-      return true
-    }).length,
+    willImport: rows.filter(r => r.status !== 'invalid' && !(r.status === 'duplicate' && r.duplicateAction === 'skip')).length,
   }
 
-  const canImport = stats.willImport > 0 && stats.errors === 0
-
-  // ── Header step label ──────────────────────────────────
   const stepLabel = {
     idle: t('admin.import.step1'),
     parsing: t('admin.import.parsing'),
@@ -222,140 +138,41 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
   }[state]
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-      onClick={handleClose}
-    >
-      <div
-        className="bg-white rounded-2xl shadow-2xl border border-orange-50 w-full max-w-[1400px] max-h-[90vh] overflow-hidden flex flex-col"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={handleClose}>
+      <div className="bg-white rounded-2xl shadow-2xl border border-orange-50 w-full max-w-[1400px] max-h-[90vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-6 border-b border-orange-100 shrink-0">
           <div>
             <h2 className="text-xl font-black text-secondary">{t('admin.import.title')}</h2>
             <p className="text-sm text-on-surface-variant mt-1">{stepLabel}</p>
-            {roadmapId && (
-              <p className="text-xs font-bold text-primary mt-1">📍 Đang nhập vào: {roadmapName}</p>
-            )}
+            {roadmapId && <p className="text-xs font-bold text-primary mt-1">📍 Đang nhập vào: {roadmapName}</p>}
           </div>
-          <button
-            onClick={handleClose}
-            className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer"
-          >
+          <button onClick={handleClose} className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-stone-500">close</span>
           </button>
         </div>
 
-        {/* Body */}
         <div className="flex-1 overflow-y-auto p-6">
-
-          {/* Guard: no roadmap context */}
           {!roadmapId && (
             <div className="flex flex-col items-center gap-4 py-16 text-center">
               <span className="material-symbols-outlined text-6xl text-stone-300">folder_off</span>
               <div>
                 <p className="text-lg font-black text-secondary">Cần chọn Roadmap trước</p>
-                <p className="text-sm text-on-surface-variant mt-1">
-                  Để nhập từ vựng, bạn cần mở từ một Roadmap cụ thể.
-                </p>
+                <p className="text-sm text-on-surface-variant mt-1">Để nhập từ vựng, bạn cần mở từ một Roadmap cụ thể.</p>
               </div>
-              <a
-                href="/admin/roadmaps"
-                className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
-              >
-                Đi tới Roadmaps
-              </a>
+              <a href="/admin/roadmaps" className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">Đi tới Roadmaps</a>
             </div>
           )}
 
-          {/* STEP 1: Upload or Paste URL */}
           {state === 'idle' && roadmapId && (
-            <div className="space-y-6">
-              {/* Drop zone */}
-              <div
-                className="border-2 border-dashed border-orange-200 rounded-2xl p-12 text-center hover:border-primary hover:bg-orange-50/30 transition-all cursor-pointer"
-                onDragOver={e => { e.preventDefault(); e.stopPropagation() }}
-                onDrop={e => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  const file = e.dataTransfer.files[0]
-                  if (file) handleFileSelected(file)
-                }}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <span className="material-symbols-outlined text-5xl text-orange-300 mb-3 block">upload_file</span>
-                <p className="font-bold text-secondary text-lg">{t('admin.import.dragDrop')}</p>
-                <p className="text-sm text-on-surface-variant mt-1">{t('admin.import.orClick')}</p>
-                <p className="text-xs text-stone-400 mt-2">{t('admin.import.supported')}</p>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                className="hidden"
-                onChange={e => {
-                  const file = e.target.files?.[0]
-                  if (file) handleFileSelected(file)
-                }}
-              />
-
-              {/* Divider */}
-              <div className="flex items-center gap-3">
-                <div className="flex-1 border-t border-orange-100" />
-                <span className="text-xs font-bold text-stone-400 uppercase">{t('admin.import.or')}</span>
-                <div className="flex-1 border-t border-orange-100" />
-              </div>
-
-              {/* Google Sheets URL */}
-              <div className="space-y-3">
-                <label className="block text-sm font-bold text-secondary">
-                  {t('admin.import.pasteUrl')}
-                </label>
-                <input
-                  type="url"
-                  value={sheetsUrl}
-                  onChange={e => { setSheetsUrl(e.target.value); setUrlError('') }}
-                  placeholder="https://docs.google.com/spreadsheets/d/..."
-                  className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
-                />
-                {urlError && (
-                  <p className="text-sm text-red-500 font-medium">{urlError}</p>
-                )}
-                <button
-                  onClick={handleSheetsUrl}
-                  disabled={!sheetsUrl.trim()}
-                  className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {t('admin.import.preview')}
-                </button>
-              </div>
-
-              {/* Template download */}
-              <button
-                onClick={() => {
-                  // UTF-8 BOM (\uFEFF) ensures Excel/Windows reads Vietnamese chars correctly
-                  const bom = '\uFEFF'
-                  const csv = 'word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Xin chào,Hello world!,Xin chào thế giới!,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Quả táo,An apple a day,Ăn táo mỗi ngày,,Food,pear,orange,fruit'
-                  const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' })
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url
-                  a.download = 'vocab-import-template.csv'
-                  document.body.appendChild(a)
-                  a.click()
-                  document.body.removeChild(a)
-                  URL.revokeObjectURL(url)
-                }}
-                className="flex items-center gap-2 text-sm font-bold text-primary hover:text-orange-600 transition-colors"
-              >
-                <span className="material-symbols-outlined text-lg">download</span>
-                {t('admin.import.downloadTemplate')}
-              </button>
-            </div>
+            <ImportDropZone
+              onFileSelected={handleFileSelected}
+              sheetsUrl={sheetsUrl}
+              setSheetsUrl={setSheetsUrl}
+              urlError={urlError}
+              onSheetsUrlSubmit={handleSheetsUrl}
+            />
           )}
 
-          {/* STEP 2: Preview Table */}
           {state === 'preview' && (
             <ImportPreviewTable
               rows={rows}
@@ -366,80 +183,15 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
             />
           )}
 
+          {state === 'importing' && <ImportProgressIndicator done={progress.done} total={progress.total} />}
+          {state === 'done' && result && <ImportResultSummary result={result} />}
 
-          {/* STEP 3: Importing */}
-          {state === 'importing' && (
-            <div className="space-y-4 py-8">
-              <div className="flex flex-col items-center gap-4">
-                <span className="material-symbols-outlined text-6xl text-primary animate-spin">progress_activity</span>
-                <p className="text-lg font-bold text-secondary">{t('admin.import.importing')}</p>
-                <div className="w-full max-w-md bg-stone-200 rounded-full h-3 overflow-hidden">
-                  <div
-                    className="h-full primary-gradient transition-all duration-300"
-                    style={{ width: progress.total > 0 ? `${(progress.done / progress.total) * 100}%` : '0%' }}
-                  />
-                </div>
-                <p className="text-sm text-on-surface-variant">
-                  {t('admin.import.importingProgress', { done: progress.done, total: progress.total })}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: Done */}
-          {state === 'done' && result && (
-            <div className="space-y-4 py-6">
-              <div className="flex flex-col items-center gap-3">
-                <span className="material-symbols-outlined text-6xl text-green-500">task_alt</span>
-                <p className="text-xl font-black text-secondary">
-                  {result.inserted > 0
-                    ? t('admin.import.importSuccess', { count: result.inserted })
-                    : t('admin.import.importFailed')
-                  }
-                </p>
-                {result.submitted > 0 && result.inserted !== result.submitted && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
-                    <span className="material-symbols-outlined text-red-500 text-lg">warning</span>
-                    <p className="text-sm font-bold text-red-600">
-                      ⚠️ Import lỗi nghiêm trọng: đã gửi {result.submitted} từ nhưng chỉ insert thành công {result.inserted} từ. Có thể có lỗi RPC trên server. Hãy kiểm tra Console (F12) để biết chi tiết.
-                    </p>
-                  </div>
-                )}
-                {result.errors.length > 0 && (
-                  <div className="w-full">
-                    <button
-                      onClick={() => setShowErrorDetail(d => !d)}
-                      className="text-sm font-bold text-red-600 hover:text-red-700"
-                    >
-                      {showErrorDetail ? t('admin.import.hideErrors') : t('admin.import.viewErrors')} ({result.errors.length})
-                    </button>
-                    {showErrorDetail && (
-                      <div className="mt-2 p-3 bg-red-50 rounded-xl border border-red-200 max-h-48 overflow-y-auto">
-                        {result.errors.map((e, i) => (
-                          <p key={i} className="text-sm text-red-600 font-medium">
-                            • {e.word}: {e.error}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Error State */}
           {state === 'error' && (
             <div className="space-y-4 py-6">
               <div className="flex flex-col items-center gap-3">
                 <span className="material-symbols-outlined text-6xl text-red-400">error</span>
-                <p className="text-lg font-bold text-red-600">
-                  {t(errorMessage) || errorMessage || t('admin.import.importFailed')}
-                </p>
-                <button
-                  onClick={() => { setState('idle'); setErrorMessage('') }}
-                  className="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-xl hover:bg-stone-200 transition-all"
-                >
+                <p className="text-lg font-bold text-red-600">{t(errorMessage) || errorMessage || t('admin.import.importFailed')}</p>
+                <button onClick={() => { setState('idle'); setErrorMessage('') }} className="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-xl hover:bg-stone-200 transition-all">
                   {t('admin.import.resetAndTryAgain')}
                 </button>
               </div>
@@ -447,19 +199,15 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
           )}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-3 p-6 border-t border-orange-100 shrink-0 bg-stone-50">
-          <button
-            onClick={handleClose}
-            className="px-6 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-100 transition-all"
-          >
+          <button onClick={handleClose} className="px-6 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-100 transition-all">
             {t('admin.import.cancel')}
           </button>
 
           {state === 'preview' && (
             <button
               onClick={handleStartImport}
-              disabled={!canImport}
+              disabled={stats.willImport === 0 || stats.errors > 0}
               className="flex items-center gap-2 px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined text-lg">upload</span>
@@ -468,10 +216,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
           )}
 
           {state === 'done' && (
-            <button
-              onClick={() => { onImportComplete(); handleClose() }}
-              className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
-            >
+            <button onClick={() => { onImportComplete(); handleClose() }} className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">
               {t('admin.import.close')}
             </button>
           )}

@@ -44,7 +44,7 @@ export default function TopicCard({
   // --- Variant 1: Featured (Large) ---
   if (isFeatured && !searchQuery) {
     return (
-      <Link {...commonProps} className={`${commonProps.className} col-span-12 md:col-span-7 group relative bg-surface p-8 sun-drenched-shadow-lg hover:scale-[1.01] cursor-pointer overflow-hidden border border-surface-container-highest/20 rounded-3xl`}>
+      <Link {...commonProps} className={`${commonProps.className} topic-card col-span-12 md:col-span-7 group relative bg-surface p-8 sun-drenched-shadow-lg hover:scale-[1.01] cursor-pointer overflow-hidden border border-surface-container-highest/20 rounded-2xl`}>
         <div className="flex justify-between items-start">
           <div className="space-y-6 flex-1">
             <div className="flex items-center gap-4">
@@ -78,7 +78,7 @@ export default function TopicCard({
             <img 
               alt={topic.name} 
               src={topic.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80'} 
-              className="w-full h-full object-cover rounded-[2rem] shadow-2xl relative z-10 transform -rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-700" 
+              className="w-full h-full object-cover rounded-4xl shadow-2xl relative z-10 transform -rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-700" 
             />
           </div>
         </div>
@@ -89,14 +89,14 @@ export default function TopicCard({
   // --- Variant 2: Up Next (Kinetic/Flashy) ---
   if (isUpNext && !searchQuery) {
     return (
-      <Link {...commonProps} className={`${commonProps.className} col-span-12 md:col-span-5 relative group overflow-hidden rounded-3xl h-full`}>
+      <Link {...commonProps} className={`${commonProps.className} topic-card col-span-12 md:col-span-5 relative group overflow-hidden rounded-2xl h-full`}>
         <div className="absolute inset-0 border-gradient-wow z-0"></div>
-        <div className="absolute inset-[2px] glass-wow-card rounded-[calc(1.5rem-2px)] z-10 p-8 flex flex-col justify-between transition-all group-hover:bg-surface/60">
+        <div className="absolute inset-[2px] glass-wow-card rounded-xl z-10 p-8 flex flex-col justify-between transition-all group-hover:bg-surface/60">
           <div className="flex justify-between items-start mb-12">
             <div className="flex items-center justify-center">
               <div className="relative">
                 <div className="absolute -inset-4 primary-gradient rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-all duration-500 scale-50 group-hover:scale-100"></div>
-                <div className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-2xl animate-float relative z-10 primary-gradient text-on-primary transition-all duration-500 group-hover:rotate-[10deg]">
+                <div className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl animate-float relative z-10 primary-gradient text-on-primary transition-all duration-500 group-hover:rotate-10">
                   <div className="absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:opacity-0 group-hover:scale-0">
                     <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                       {topic.icon || 'palette'}
@@ -137,11 +137,11 @@ export default function TopicCard({
   return (
     <Link 
       {...commonProps} 
-      className={`${commonProps.className} col-span-12 md:col-span-4 rounded-3xl p-6 hover:scale-[1.03] hover:shadow-xl group relative overflow-hidden border border-transparent shadow-sm`}
+      className={`${commonProps.className} topic-card col-span-12 md:col-span-4 rounded-2xl p-6 hover:scale-[1.03] hover:shadow-xl group relative overflow-hidden border border-transparent shadow-sm`}
       style={{ backgroundColor: styles.bg }}
     >
       <div className="flex items-center gap-5 mb-8">
-        <div className="w-14 h-14 rounded-[1.2rem] flex items-center justify-center shadow-lg transition-transform group-hover:rotate-12 bg-surface">
+        <div className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg transition-transform group-hover:rotate-12 bg-surface">
           <span className="material-symbols-outlined text-2xl text-secondary">
             {isCompleted ? 'verified' : (topic.icon || 'school')}
           </span>

@@ -32,8 +32,8 @@ export default function LandingPage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col overflow-hidden z-10 relative">
-        <div className="flex-grow flex items-stretch overflow-hidden max-w-[1440px] mx-auto w-full">
+      <main className="grow flex flex-col overflow-hidden z-10 relative">
+        <div className="grow flex items-stretch overflow-hidden max-w-[1440px] mx-auto w-full">
           {/* Left Column */}
           <section className="w-[45%] flex flex-col p-12 md:p-16 overflow-y-auto">
             <div className="mb-auto">
@@ -62,14 +62,14 @@ export default function LandingPage() {
 
             {/* Feature Cards */}
             <div className="grid grid-cols-2 gap-6 mt-auto">
-              <div className="group bg-white p-6 rounded-3xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] border border-orange-50 hover:border-primary/20 hover:shadow-xl transition-all duration-300">
+              <div className="group bg-white p-6 rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] border border-orange-50 hover:border-primary/20 hover:shadow-xl transition-all duration-300">
                 <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mb-5 group-hover:rotate-6 transition-transform">
                   <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>update</span>
                 </div>
                 <h3 className="text-lg font-black text-secondary mb-2">{t('landing.feature1Title')}</h3>
                 <p className="text-sm text-on-surface-variant leading-snug">{t('landing.feature1Desc')}</p>
               </div>
-              <div className="group bg-white p-6 rounded-3xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] border border-orange-50 hover:border-primary/20 hover:shadow-xl transition-all duration-300">
+              <div className="group bg-white p-6 rounded-2xl shadow-[0_8px_20px_rgba(0,0,0,0.04)] border border-orange-50 hover:border-primary/20 hover:shadow-xl transition-all duration-300">
                 <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-5 group-hover:-rotate-6 transition-transform">
                   <span className="material-symbols-outlined text-blue-600 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>library_books</span>
                 </div>
@@ -85,13 +85,13 @@ export default function LandingPage() {
               {/* Visual Showcase */}
               <div className="relative">
                 <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group">
+                <div className="relative rounded-4xl overflow-hidden shadow-2xl border-8 border-white group">
                   <img
                     alt="3D Language Learning"
                     className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-1000"
                     src="/images/hero-3d.png"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
                   <div className="absolute top-10 left-10 animate-float">
                     <div className="bg-white/90 backdrop-blur p-4 rounded-2xl shadow-xl flex items-center gap-3">
                       <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
@@ -113,14 +113,14 @@ export default function LandingPage() {
                   <h2 className="text-3xl font-black text-secondary">{t('landing.solutionTitle')}</h2>
                 </div>
                 <div className="space-y-6">
-                  <div className="group flex items-start gap-6 p-6 bg-white/60 rounded-3xl hover:bg-white transition-all shadow-sm hover:shadow-md border border-transparent hover:border-orange-100">
+                  <div className="group flex items-start gap-6 p-6 bg-white/60 rounded-2xl hover:bg-white transition-all shadow-sm hover:shadow-md border border-transparent hover:border-orange-100">
                     <span className="text-5xl font-black text-orange-200 group-hover:text-primary/20 transition-colors leading-none">01</span>
                     <div>
                       <h4 className="text-xl font-bold text-secondary mb-2 group-hover:text-primary transition-colors">{t('landing.forAllAges')}</h4>
                       <p className="text-on-surface-variant">{t('landing.forAllAgesDesc')}</p>
                     </div>
                   </div>
-                  <div className="group flex items-start gap-6 p-6 bg-white/60 rounded-3xl hover:bg-white transition-all shadow-sm hover:shadow-md border border-transparent hover:border-orange-100">
+                  <div className="group flex items-start gap-6 p-6 bg-white/60 rounded-2xl hover:bg-white transition-all shadow-sm hover:shadow-md border border-transparent hover:border-orange-100">
                     <span className="text-5xl font-black text-orange-200 group-hover:text-primary/20 transition-colors leading-none">02</span>
                     <div>
                       <h4 className="text-xl font-bold text-secondary mb-2 group-hover:text-primary transition-colors">Chế độ phụ huynh</h4>
@@ -132,8 +132,8 @@ export default function LandingPage() {
 
               {/* Bottom CTA */}
               <div className="mt-auto relative group">
-                <div className="absolute inset-0 hero-gradient rounded-[2rem] blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                <div className="relative hero-gradient rounded-[2.5rem] p-8 md:p-10 overflow-hidden flex flex-col lg:flex-row items-center justify-between shadow-2xl gap-8">
+                <div className="absolute inset-0 hero-gradient rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative hero-gradient rounded-4xl p-8 md:p-10 overflow-hidden flex flex-col lg:flex-row items-center justify-between shadow-2xl gap-8">
                   <div className="relative z-10 lg:max-w-[60%] text-center lg:text-left">
                     <h2 className="text-3xl font-black text-white mb-3">{t('landing.ready')}</h2>
                     <p className="text-white/90 text-lg">{t('landing.ctaText')}</p>

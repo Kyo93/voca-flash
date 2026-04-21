@@ -24,7 +24,25 @@
     "mastered": "Đã thuộc",
     "continueLearning": "Tiếp tục học",
     "viewLibrary": "Xem tất cả",
-    "resume": "Tiếp tục"
+    "resume": "Tiếp tục",
+    "memoryHealth": "Sức khỏe bộ nhớ",
+    "dailyMission": "Nhiệm vụ hôm nay",
+    "forecast": "Dự báo ôn tập",
+    "retention": "Khả năng ghi nhớ",
+    "avgStability": "Độ bền trung bình",
+    "masteryProgress": "Tiến độ Mastery",
+    "roadmapJourney": "Hành trình học tập",
+    "status": {
+      "fresh": "Mới/Hạt mầm",
+      "stable": "Vững chắc",
+      "rooted": "Dài hạn"
+    },
+    "arena": {
+      "title": "Đấu Trường Arena đang chờ",
+      "subtitle": "Có {{count}} từ cần ôn tập ngay bây giờ",
+      "cta": "Bắt đầu Ôn tập",
+      "actionRequired": "HÀNH ĐỘNG NGAY"
+    }
   },
   "flashcard": {
     "showAnswer": "Hiển thị đáp án",
@@ -143,7 +161,16 @@
     "logout": "Đăng xuất",
     "save": "Lưu cài đặt",
     "saving": "Đang lưu...",
-    "saveSuccess": "Đã cập nhật cài đặt!"
+    "saveSuccess": "Đã cập nhật cài đặt!",
+    "resetSuccess": "Đã xóa tiến độ thành công!",
+    "resetError": "Không thể xóa tiến độ lúc này.",
+    "resetGlobal": "Xóa sạch dữ liệu ứng dụng",
+    "resetGlobalConfirm": "Bạn chắc chắn muốn xóa toàn bộ?",
+    "resetGlobalDesc": "Toàn bộ dữ liệu ôn tập (SRS) của tất cả các chủ đề sẽ bị xóa sạch. Bạn sẽ phải bắt đầu lại từ đầu.",
+    "confirmDelete": "Xóa vĩnh viễn",
+    "deleting": "Đang xóa...",
+    "cancel": "Hủy bỏ",
+    "selectTopicRequired": "Vui lòng chọn một chủ đề."
   },
   "methodology": {
     "title": "Khoa học & Phương pháp",

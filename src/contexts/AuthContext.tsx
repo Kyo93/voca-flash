@@ -98,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(initialSession?.user ?? null)
         
         if (initialSession) {
+          const userEmail = initialSession.user.email;
+          setIsAdmin(userEmail ? ADMIN_EMAILS.includes(userEmail) : false);
           // KHÔNG await loadUserData để tránh treo màn hình "Đang tải"
           loadUserData(initialSession)
         }
@@ -119,6 +121,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(newSession?.user ?? null)
         
         if (newSession) {
+          const userEmail = newSession.user.email;
+          setIsAdmin(userEmail ? ADMIN_EMAILS.includes(userEmail) : false);
           // Bắt đầu load data ngầm, nhưng cho phép vào App ngay
           loadUserData(newSession)
           setLoading(false) 

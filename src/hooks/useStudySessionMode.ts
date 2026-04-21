@@ -10,7 +10,7 @@ import {
   createInitialProgress 
 } from '../lib/srs'
 import { STUDY_SESSION_DEFAULTS } from '../lib/constants'
-import { generateChoices } from '../lib/utils'
+import { generateChoices } from '../lib/challenge-logic'
 import { Word } from '../lib/types'
 
 export type StudyPhase = 'FLIPPED' | 'READY_FOR_QUIZ' | 'CHALLENGING' | 'RATING'
@@ -35,7 +35,7 @@ export function useStudySessionMode({
   const [phase, setPhase] = useState<StudyPhase>('FLIPPED')
   const [suggestedRating, setSuggestedRating] = useState<SrsRating | null>(null)
   const [intervalPreviews, setIntervalPreviews] = useState<IntervalPreview[]>([])
-  const [timerSeconds, setTimerSeconds] = useState(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
+  const [timerSeconds, setTimerSeconds] = useState<number>(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
   const [currentChallengeType, setCurrentChallengeType] = useState<StudyChallengeType>('recognition')
   const [precomputedChoices, setPrecomputedChoices] = useState<string[]>([])
   

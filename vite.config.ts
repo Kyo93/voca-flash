@@ -7,17 +7,19 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-core': ['react', 'react-dom'],
-          'router': ['react-router-dom'],
-          'ui-heavy': [
-            'framer-motion', 
-            '@dnd-kit/core', 
-            '@dnd-kit/sortable', 
-            '@dnd-kit/utilities', 
-            'ts-fsrs', 
-            'papaparse'
-          ]
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) return 'react-core';
+            if (id.includes('react-router-dom')) return 'router';
+            if (
+              id.includes('framer-motion') || 
+              id.includes('@dnd-kit') || 
+              id.includes('ts-fsrs') || 
+              id.includes('papaparse')
+            ) {
+              return 'ui-heavy';
+            }
+          }
         }
       }
     }

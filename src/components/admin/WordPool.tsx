@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { TAG_META } from '../../lib/tag-engine'
+import { TAG_META } from '../../lib/tag-constants'
 import DifficultyPill from './DifficultyPill'
 import type { Topic } from '../../lib/types'
 

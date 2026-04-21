@@ -11,6 +11,9 @@ interface CardRowProps {
   isSelectedFocus: boolean
   onSelectFocus: () => void
   isNotebookSaved: boolean
+  onToggleNotebook: (e: React.MouseEvent) => void
+  onEditNote: (e: React.MouseEvent) => void
+  personalNote: string | null
   locale: Locale
 }
 
@@ -25,6 +28,9 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
   isSelectedFocus, 
   onSelectFocus, 
   isNotebookSaved, 
+  onToggleNotebook,
+  onEditNote,
+  personalNote,
   locale 
 }, ref) => {
   const nextReviewDate = word.next_review_at ? new Date(word.next_review_at) : null
@@ -75,11 +81,26 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
         )}
       </td>
       <td className="py-4 px-8">
-        {isNotebookSaved && (
-          <span className="material-symbols-outlined text-primary text-xl fill-icon animate-in zoom-in duration-300">
-            favorite
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={onToggleNotebook}
+            className={`material-symbols-outlined text-xl transition-all hover:scale-110 active:scale-95 ${
+              isNotebookSaved ? 'text-primary fill-icon' : 'text-on-surface-variant/20 hover:text-primary/40'
+            }`}
+          >
+            {isNotebookSaved ? 'favorite' : 'favorite_border'}
+          </button>
+          
+          {personalNote && (
+            <button 
+              onClick={onEditNote}
+              className="material-symbols-outlined text-sm text-secondary/60 hover:text-secondary transition-colors"
+              title={personalNote}
+            >
+              sticky_note_2
+            </button>
+          )}
+        </div>
       </td>
       <td className="py-4 px-8">
         <div className="flex items-center gap-3">

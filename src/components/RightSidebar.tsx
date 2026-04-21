@@ -57,7 +57,7 @@ export default function RightSidebar() {
 
       <div className={`flex-1 overflow-y-auto ${rightCollapsed ? 'px-2' : 'px-6'} space-y-5 pb-8 custom-scrollbar`}>
         {/* Streak Widget */}
-        <div className={`bg-stone-50 rounded-[20px] ${rightCollapsed ? 'p-3' : 'p-6'} text-center transition-all`}>
+        <div className={`bg-stone-50 rounded-xl ${rightCollapsed ? 'p-3' : 'p-6'} text-center transition-all`}>
           <div className="relative inline-block mb-3">
             <div className={`${rightCollapsed ? 'w-10 h-10' : 'w-16 h-16'} rounded-full bg-white flex items-center justify-center shadow-md transition-all`}>
               <span className={`material-symbols-outlined ${rightCollapsed ? 'text-xl' : 'text-4xl'} text-primary`} style={{ fontVariationSettings: "'FILL' 1" }}>

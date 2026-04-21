@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:5173",
+      "localStorage": [
+        {
+          "name": "sb-nhnusgnlhnzwavpltbqj-auth-token",
+          "value": "{\"access_token\":\"eyJhbGciOiJFUzI1NiIsImtpZCI6IjI1ZTJlNGUzLWFkNWEtNDU0Zi05ZmQxLTU4NjhlZWM5Y2Q4OCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL25obnVzZ25saG56d2F2cGx0YnFqLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI5MTJiOTQ2My00MmViLTQ0OWItYjAwMS03NWY1ODFlYTU0MjciLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzc2NzY1MTc4LCJpYXQiOjE3NzY3NjE1NzgsImVtYWlsIjoib2NlYW4ubmd1eWVuOTkzQGdtYWlsLmNvbSIsInBob25lIjoiIiwiYXBwX21ldGFkYXRhIjp7InByb3ZpZGVyIjoiZW1haWwiLCJwcm92aWRlcnMiOlsiZW1haWwiXX0sInVzZXJfbWV0YWRhdGEiOnsiZW1haWxfdmVyaWZpZWQiOnRydWV9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzc2NzYxNTc4fV0sInNlc3Npb25faWQiOiJkZjJjODlkNi1jYzE2LTRjZTQtODM1NC04YmRkNjNkN2Q0ZDgiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.gOcL7Qo5KOhW1sMSRchou7IgWDGJ7xjNsA1LHneUPDfa__YCaA_UFmiDLQdcd_Y01_6ysXEEDNFOWrm0i7ME-Q\",\"token_type\":\"bearer\",\"expires_in\":3600,\"expires_at\":1776765178,\"refresh_token\":\"cdjhzmfdhssw\",\"user\":{\"id\":\"912b9463-42eb-449b-b001-75f581ea5427\",\"aud\":\"authenticated\",\"role\":\"authenticated\",\"email\":\"ocean.nguyen993@gmail.com\",\"email_confirmed_at\":\"2026-04-11T12:30:08.017794Z\",\"phone\":\"\",\"confirmed_at\":\"2026-04-11T12:30:08.017794Z\",\"last_sign_in_at\":\"2026-04-21T08:52:58.57062523Z\",\"app_metadata\":{\"provider\":\"email\",\"providers\":[\"email\"]},\"user_metadata\":{\"email_verified\":true},\"identities\":[{\"identity_id\":\"126161e8-57a2-425d-b208-9c085fbe0099\",\"id\":\"912b9463-42eb-449b-b001-75f581ea5427\",\"user_id\":\"912b9463-42eb-449b-b001-75f581ea5427\",\"identity_data\":{\"email\":\"ocean.nguyen993@gmail.com\",\"email_verified\":false,\"phone_verified\":false,\"sub\":\"912b9463-42eb-449b-b001-75f581ea5427\"},\"provider\":\"email\",\"last_sign_in_at\":\"2026-04-11T12:30:08.014043Z\",\"created_at\":\"2026-04-11T12:30:08.014094Z\",\"updated_at\":\"2026-04-11T12:30:08.014094Z\",\"email\":\"ocean.nguyen993@gmail.com\"}],\"created_at\":\"2026-04-11T12:30:08.011861Z\",\"updated_at\":\"2026-04-21T08:52:58.602918Z\",\"is_anonymous\":false},\"weak_password\":null}"
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import { memo } from 'react'
 import ContextGapChallenge from './review/ContextGapChallenge'
 import GhostRecallChallenge from './review/GhostRecallChallenge'
 import RecognitionChallenge from './review/RecognitionChallenge'
-import { generateChoices } from '../lib/utils'
+import { generateChoices } from '../lib/challenge-logic'
 import type { StudyChallengeType } from '../lib/srs'
 import type { Word } from '../lib/types'
 

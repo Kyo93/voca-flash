@@ -44,7 +44,7 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
 
   return (
     <div className="flex-1 flex items-center justify-center p-6 min-h-[80vh]">
-      <div className="max-w-lg w-full bg-surface-container-lowest rounded-3xl p-8 sun-drenched-shadow border border-outline-variant/10 relative overflow-hidden">
+      <div className="max-w-lg w-full bg-surface-container-lowest rounded-2xl p-8 sun-drenched-shadow border border-outline-variant/10 relative overflow-hidden">
         {/* Background blobs */}
         <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>

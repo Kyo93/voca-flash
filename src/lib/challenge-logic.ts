@@ -7,6 +7,38 @@
 
 import type { Word } from './types'
 import type { CardProgress } from './srs'
+import { shuffleArray } from './utils'
+
+const HARD_CODED_DISTRACTORS = [
+  'để nhớ lại điều gì đó',
+  'học thuộc một cách có hệ thống',
+  'ghi nhớ thông tin quan trọng',
+  'tập trung chú ý vào điều gì',
+  'hiểu rõ vấn đề cốt lõi',
+  'áp dụng kiến thức vào thực tế',
+  'phân tích tình huống cụ thể',
+  'đánh giá kết quả công việc',
+]
+
+/**
+ * Generates MC choice distractors based on the word definition.
+ * If word has custom distractors (wrongChoices), priority is given to them.
+ */
+export function generateChoices(word: Word): string[] {
+  const correct = word.definition
+  
+  // Use custom wrong choices if available
+  if (word.wrongChoices && word.wrongChoices.length > 0) {
+    const choices = [correct, ...word.wrongChoices.slice(0, 3)]
+    return shuffleArray(choices)
+  }
+
+  // Fallback to hardcoded distractors
+  const distractors = HARD_CODED_DISTRACTORS
+    .filter(d => d !== correct)
+    .slice(0, 3)
+  return shuffleArray([correct, ...distractors])
+}
 
 export type QuadrantType =
   | 'recognition'

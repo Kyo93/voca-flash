@@ -1,76 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getAllUsers, getUserSrsRecords } from '../../lib/admin-queries'
-import type { UserProfile, SrsRecord } from '../../lib/types'
+import { getAllUsers } from '../../lib/queries/user-queries'
+import type { UserProfile } from '../../lib/types'
 import { formatDetailedDate } from '../../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import AdminCard from '../../components/admin/AdminCard'
 import { supabase } from '../../lib/supabase'
 
-function UserRow({
-  user,
-  onClick,
-}: {
-  user: UserProfile
-  onClick: () => void
-}) {
-  return (
-    <tr
-      className="border-b border-stone-50 last:border-0 hover:bg-orange-50/30 transition-colors cursor-pointer"
-      onClick={onClick}
-    >
-      {/* Avatar */}
-      <td className="px-4 py-3">
-        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-          <span className="text-sm font-black text-primary">
-            {(user.display_name ?? user.email)[0].toUpperCase()}
-          </span>
-        </div>
-      </td>
-      {/* Email */}
-      <td className="px-4 py-3">
-        <p className="text-sm font-bold text-secondary">{user.email}</p>
-      </td>
-      {/* Display name */}
-      <td className="px-4 py-3">
-        <p className="text-sm text-stone-500">
-          {user.display_name ?? <span className="text-stone-300">—</span>}
-        </p>
-      </td>
-      {/* Joined */}
-      <td className="px-4 py-3">
-        <p className="text-xs text-stone-400">{new Date(user.created_at).toLocaleDateString('vi-VN')}</p>
-      </td>
-      {/* Streak */}
-      <td className="px-4 py-3">
-        {user.streak_days > 0 ? (
-          <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-500 bg-orange-50 px-2.5 py-1 rounded-full">
-            <span>🔥</span>
-            {user.streak_days} ngày
-          </span>
-        ) : (
-          <span className="text-xs text-stone-300">—</span>
-        )}
-      </td>
-      {/* Total words */}
-      <td className="px-4 py-3">
-        <span className="text-sm font-bold text-secondary">
-          {user.total_words}
-        </span>
-      </td>
-      {/* Actions */}
-      <td className="px-4 py-3 text-right">
-        <button
-          onClick={(e) => { e.stopPropagation(); onClick() }}
-          className="px-3 py-1.5 text-xs font-bold text-primary bg-orange-50 border border-orange-100 rounded-lg hover:bg-orange-100 transition-colors"
-        >
-          Chi tiết
-        </button>
-      </td>
-    </tr>
-  )
-}
-
-function UserSrsPanel({ user, onClose }: { user: any; onClose: () => void }) {
+function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => void }) {
   const [stats, setStats] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -116,11 +52,11 @@ function UserSrsPanel({ user, onClose }: { user: any; onClose: () => void }) {
       >
         <div className="p-8 border-b border-stone-100 flex items-center justify-between bg-white/50 backdrop-blur-md sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-[1.25rem] bg-stone-50 flex items-center justify-center border border-stone-100 shadow-sm overflow-hidden">
-               {user.avatar_url ? <img src={user.avatar_url} /> : <span className="text-2xl font-black text-primary">{(user.full_name || user.username || user.email)[0].toUpperCase()}</span>}
+            <div className="w-14 h-14 rounded-xl bg-stone-50 flex items-center justify-center border border-stone-100 shadow-sm overflow-hidden">
+               {user.avatar_url ? <img src={user.avatar_url} /> : <span className="text-2xl font-black text-primary">{(user.display_name || user.email)[0].toUpperCase()}</span>}
             </div>
             <div>
-              <h2 className="text-xl font-black text-secondary leading-tight">{user.full_name || user.username || user.email}</h2>
+              <h2 className="text-xl font-black text-secondary leading-tight">{user.display_name || user.email}</h2>
               <p className="text-xs text-stone-400 font-medium">Chi tiết thuật toán SRS</p>
             </div>
           </div>
@@ -132,22 +68,28 @@ function UserSrsPanel({ user, onClose }: { user: any; onClose: () => void }) {
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
           <section>
             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">Phân phối thẻ (SRS Distribution)</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((s) => (
-                <div key={s.label} className="bg-white rounded-[2rem] p-6 border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-8 h-8 rounded-xl ${s.color}/10 flex items-center justify-center`}>
-                      <span className={`material-symbols-outlined text-lg ${s.color.replace('bg-', 'text-')}`}>{s.icon}</span>
+            {loading ? (
+              <div className="flex items-center justify-center py-10">
+                <span className="material-symbols-outlined text-3xl text-stone-300 animate-spin">progress_activity</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {stats.map((s) => (
+                  <div key={s.label} className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className={`w-8 h-8 rounded-xl ${s.color}/10 flex items-center justify-center`}>
+                        <span className={`material-symbols-outlined text-lg ${s.color.replace('bg-', 'text-')}`}>{s.icon}</span>
+                      </div>
+                      <span className="text-xs font-black text-stone-400 uppercase tracking-widest">{s.label}</span>
                     </div>
-                    <span className="text-xs font-black text-stone-400 uppercase tracking-widest">{s.label}</span>
+                    <p className="text-3xl font-black text-secondary">{s.count}</p>
                   </div>
-                  <p className="text-3xl font-black text-secondary">{s.count}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </section>
 
-          <section className="bg-gradient-to-br from-primary/5 to-transparent rounded-[2rem] p-6 border border-primary/5">
+          <section className="bg-linear-to-br from-primary/5 to-transparent rounded-3xl p-6 border border-primary/5">
             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-4">Thông tin hệ thống</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
@@ -177,7 +119,6 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null)
-  const [srsRecords, setSrsRecords] = useState<SrsRecord[]>([])
 
   useEffect(() => {
     getAllUsers()
@@ -190,8 +131,6 @@ export default function AdminUsersPage() {
 
   async function handleSelectUser(user: UserProfile) {
     setSelectedUser(user)
-    const { data } = await getUserSrsRecords(user.id)
-    setSrsRecords((data as SrsRecord[]) ?? [])
   }
 
   return (
@@ -234,16 +173,16 @@ export default function AdminUsersPage() {
                 >
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/10 shadow-sm overflow-hidden group-hover:scale-105 transition-transform">
+                      <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/10 shadow-sm overflow-hidden group-hover:scale-105 transition-transform">
                         {u.avatar_url ? (
-                          <img src={u.avatar_url} alt={u.full_name || u.username} className="w-full h-full object-cover" />
+                          <img src={u.avatar_url} alt={u.display_name || u.email} className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-lg font-black text-primary">{(u.full_name || u.username || u.email || '?')[0].toUpperCase()}</span>
+                          <span className="text-lg font-black text-primary">{(u.display_name || u.email || '?')[0].toUpperCase()}</span>
                         )}
                       </div>
                       <div>
-                        <p className="font-black text-secondary leading-tight">{u.full_name || u.username}</p>
-                        <p className="text-[10px] text-stone-400 font-mono tracking-wider mt-0.5 uppercase">{u.role}</p>
+                        <p className="font-black text-secondary leading-tight">{u.display_name || u.email}</p>
+                        <p className="text-[10px] text-stone-400 font-mono tracking-wider mt-0.5 uppercase">Học viên</p>
                       </div>
                     </div>
                   </td>
@@ -253,7 +192,7 @@ export default function AdminUsersPage() {
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-orange-500 text-xl filled">local_fire_department</span>
-                      <span className="text-sm font-black text-secondary">{u.streak_count || 0}</span>
+                      <span className="text-sm font-black text-secondary">{u.streak_days || 0}</span>
                     </div>
                   </td>
                   <td className="px-8 py-5">

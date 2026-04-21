@@ -111,7 +111,7 @@ export default function LibraryPage() {
       return {
         badge: 'Professional',
         badgeClass: 'bg-primary-fixed text-on-primary-fixed-variant',
-        btnClass: 'bg-gradient-to-r from-primary-container to-primary text-white shadow-lg shadow-primary-container/20',
+        btnClass: 'bg-linear-to-r from-primary-container to-primary text-white shadow-lg shadow-primary-container/20',
         image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCDnvQt2zo_EDPwxAYPXR7-KIeaoANUjFGbYCaJBfj0VR8mgdHvTG8Q7RZ_NsCv9tzjwMaJxM78BI9UGmaBRuTBPUquXV9G8GtSOrItJDlzvSxbhXYwslqJbaDA7Lj9511sLVv84X74_Y3LRLTIMK4l5yVYjSVZDUkqGoHrGRA78m1B0oK7YM5prChBWsL_i7Cfz-IGZQlPU3WZX1S-rbqFyPGwT5OWtKEnTyWUfFbOMl1wW8GKfCLNMc0Lgn3e493I9W9xIsQxCX8'
       }
     }
@@ -181,7 +181,7 @@ export default function LibraryPage() {
             <Link 
               key={roadmap.id} 
               to={`/library/${roadmap.slug}`}
-              className="group relative bg-surface-container hover:bg-surface-container-lowest p-6 rounded-2xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col items-start overflow-hidden border border-transparent hover:border-secondary/10"
+              className="roadmap-card group relative bg-surface-container hover:bg-surface-container-lowest p-6 rounded-2xl transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col items-start overflow-hidden border border-transparent hover:border-secondary/10"
             >
               <div className="w-full h-40 min-h-[160px] bg-secondary-container/30 rounded-xl mb-6 flex items-center justify-center overflow-hidden relative">
                 <img 

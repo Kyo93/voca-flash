@@ -181,11 +181,9 @@ describe('L1 — RoadmapContext is actively used (not dead code)', () => {
     expect(source).toContain('RoadmapContext')
   })
 
-  it('WordsPage and TopicsPage must use useRoadmapContext for roadmap selection', () => {
+  it('WordsPage must use useRoadmapContext for roadmap selection', () => {
     const wordsPage = readFile('pages/admin/WordsPage.tsx')
-    const topicsPage = readFile('pages/admin/TopicsPage.tsx')
     expect(wordsPage).toContain('useRoadmapContext')
-    expect(topicsPage).toContain('useRoadmapContext')
   })
 })
 
@@ -235,5 +233,31 @@ describe('C1 — StudyPage reuses AppLayout, not its own grid', () => {
       (/<aside[^>]*gridArea[^>]*sidebar/.test(source) &&
        /import.*Sidebar.*from/.test(source))
     expect(hasDuplicateLayout).toBe(false)
+  })
+})
+
+// ─────────────────────────────────────────────────────────────
+// L3: App.tsx Assembly — No missing imports for routes
+// ─────────────────────────────────────────────────────────────
+
+describe('L3 — App.tsx Assembly smoke check', () => {
+  it('All components used in routes must be defined or imported in App.tsx', () => {
+    const source = readFile('App.tsx')
+    
+    // Find all components used in element={<Component />}
+    const elementMatches = [...source.matchAll(/element=\{<([A-Z][a-zA-Z0-9]*)\s*\/>\}/g)]
+    const usedComponents = [...new Set(elementMatches.map(m => m[1]))]
+    
+    for (const component of usedComponents) {
+      if (['Navigate', 'RequireAuth', 'RequireAdmin', 'AppLayout', 'AdminLayout'].includes(component)) continue
+      
+      // Check if it's imported or lazy-loaded
+      const isDefined = 
+        source.includes(`import ${component}`) || 
+        source.includes(`const ${component} =`) ||
+        source.includes(`import { ${component}`)
+      
+      expect(isDefined, `Component "${component}" is used in a Route but not defined/imported in App.tsx`).toBe(true)
+    }
   })
 })

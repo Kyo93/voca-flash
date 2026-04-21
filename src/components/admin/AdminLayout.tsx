@@ -13,7 +13,7 @@ export default function AdminLayout() {
     <RoadmapProvider>
       <div className="min-h-screen bg-surface flex">
         <AdminSidebar />
-        <main className="flex-grow p-8 transition-all duration-300" style={{ marginLeft: sidebarW }}>
+        <main className="grow p-8 transition-all duration-300" style={{ marginLeft: sidebarW }}>
           <Suspense fallback={<PageLoader />}>
             <Outlet />
           </Suspense>

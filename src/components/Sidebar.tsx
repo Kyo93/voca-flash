@@ -55,12 +55,12 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 mb-8 px-2 relative">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary-container to-primary rounded-lg flex items-center justify-center text-white shadow-lg shrink-0">
+        <div className="w-10 h-10 bg-linear-to-br from-primary-container to-primary rounded-lg flex items-center justify-center text-white shadow-lg shrink-0">
           <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_stories</span>
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="text-xl font-black text-primary leading-none whitespace-nowrap">VocabMaster</h1>
+            <p className="text-xl font-black text-primary leading-none whitespace-nowrap">VocabMaster</p>
             <p className="text-[10px] text-stone-500 font-normal tracking-widest uppercase whitespace-nowrap">The Tactile Scholar</p>
           </div>
         )}

@@ -10,11 +10,9 @@ import { lazy } from 'react'
 import DashboardPage from './pages/DashboardPage' // Sync because it's the primary authenticated route
 const StudyPage = lazy(() => import('./pages/StudyPage'))
 const LibraryPage = lazy(() => import('./pages/LibraryPage'))
-const RoadmapTopicsPage = lazy(() => import('./pages/RoadmapTopicsPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const ReviewPage = lazy(() => import('./pages/ReviewPage'))
 const AdminWordsPage = lazy(() => import('./pages/admin/WordsPage'))
-const AdminTopicsPage = lazy(() => import('./pages/admin/TopicsPage'))
 const AdminRoadmapsPage = lazy(() => import('./pages/admin/RoadmapsPage'))
 const AdminDashboardPage = lazy(() => import('./pages/admin/DashboardPage'))
 const AdminUsersPage = lazy(() => import('./pages/admin/UsersPage'))
@@ -23,6 +21,7 @@ const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const MethodologyPage = lazy(() => import('./pages/MethodologyPage'))
 const MasteryPage = lazy(() => import('./pages/MasteryPage'))
 const FreeStudyPage = lazy(() => import('./pages/FreeStudyPage'))
+const RoadmapTopicsPage = lazy(() => import('./pages/RoadmapTopicsPage'))
 
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -79,7 +78,6 @@ function App() {
           <Route path="/admin" element={<RequireAdmin><AdminLayout /></RequireAdmin>}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="words" element={<AdminWordsPage />} />
-            <Route path="topics" element={<AdminTopicsPage />} />
             <Route path="roadmaps" element={<AdminRoadmapsPage />} />
             <Route path="roadmaps/:roadmapId/setup" element={<RoadmapSetupPage />} />
             <Route path="users" element={<AdminUsersPage />} />

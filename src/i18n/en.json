@@ -142,7 +142,16 @@
     "logout": "Log Out",
     "save": "Save Changes",
     "saving": "Saving...",
-    "saveSuccess": "Settings successfully saved!"
+    "saveSuccess": "Settings successfully saved!",
+    "resetSuccess": "Topic progress successfully reset!",
+    "resetError": "Cannot reset progress at this time.",
+    "resetGlobal": "Clear All App Data",
+    "resetGlobalConfirm": "Are you sure you want to clear everything?",
+    "resetGlobalDesc": "All SRS review data for all topics will be permanently deleted. You will start from scratch.",
+    "confirmDelete": "Permanently Delete",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "selectTopicRequired": "Please select a topic."
   },
   "methodology": {
     "title": "Science & Methodology",

@@ -21,11 +21,11 @@ import { resolve } from 'path'
 
 const SESSION_TS_PATH = resolve(
   'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash',
-  'src/lib/admin-queries.ts'
+  'src/lib/queries/word-queries.ts'
 )
 const IMPORT_MODAL_PATH = resolve(
   'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash',
-  'src/components/admin/ImportWordsModal.tsx'
+  'src/components/admin/import/ImportResultSummary.tsx'
 )
 const TYPES_PATH = resolve(
   'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash',
@@ -60,8 +60,8 @@ describe('admin-import-word-count', () => {
 
     it('warning message is visible in done state', () => {
       const source = readFileSync(IMPORT_MODAL_PATH, 'utf-8')
-      const doneBlock = source.match(/state === 'done'[\s\S]{0,3000}/m)?.[0] ?? ''
-      expect(doneBlock).toMatch(/submitted.*!==.*inserted|inserted.*!==.*submitted/)
+      // Look for the warning text or logic in the snapshot
+      expect(source).toMatch(/result\.inserted\s*!==\s*result\.submitted/)
     })
   })
 

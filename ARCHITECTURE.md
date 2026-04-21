@@ -1,79 +1,70 @@
-# Architecture — VocaFlash
+# Kiến trúc Hệ thống — VocaFlash
 
-This document outlines the technical architecture of VocaFlash, a premium tactile vocabulary learning system.
+Tài liệu này mô tả kiến trúc kỹ thuật của VocaFlash, một hệ thống học từ vựng cao cấp dựa trên Spaced Repetition (SRS) và triết lý thiết kế Tactile Scholar.
 
-## System Overview
+## Tổng quan hệ thống
 
-VocaFlash is built with a modern React stack, focusing on visual excellence, performance, and spaced repetition.
+VocaFlash được xây dựng trên nền tảng React 19 + Vite, sử dụng Tailwind CSS v4 để quản lý giao diện và Supabase cho toàn bộ hạ tầng dữ liệu.
 
 ```mermaid
 graph TD
-    subgraph "Frontend (React + Vite)"
+    subgraph "Frontend Layer (React 19)"
         A[Pages] --> B[AppLayout]
         B --> C[Components]
         C --> D[Hooks]
         D --> E[Contexts]
     end
 
-    subgraph "Data Layer"
-        F[Supabase Storage]
-        G[SM-2 Algorithm]
-        H[i18next]
-    end
-
-    subgraph "Logic & Infrastructure"
-        G[SM-2 Algorithm]
+    subgraph "Intelligence Layer"
+        F[FSRS Algorithm]
+        G[Tag Engine]
         H[Speech Utility]
-        I[Supabase DB/Auth]
     end
 
-    A <--> F
-    F <--> I
-    A --> G
+    subgraph "Data & Infra (Supabase)"
+        I[Auth Service]
+        J[PostgreSQL DB]
+        K[RPC API]
+    end
+
+    A <--> K
+    K <--> J
+    A --> F
     A --> H
+    I <--> J
 ```
 
-## Core Architectural Pillars
+## Các trụ cột kiến trúc
 
-### 1. Pedagogical Routing Split
-VocaFlash separates learning into two distinct domains:
-- **Study Mode (`/study`)**: Passive/Contextual learning using Flashcards. Focuses on input.
-- **Review Arena (`/review`)**: Active Recall testing. Uses a varied challenge-response loop to build retrieval strength.
+### 1. Thuật toán Spaced Repetition (FSRS v5)
+VocaFlash đã chuyển từ SM-2 sang **FSRS (Free Spaced Repetition Scheduler)** để tối ưu hóa hiệu quả ghi nhớ.
+- **Stability & Difficulty**: Mỗi từ vựng có độ ổn định (stability) và độ khó (difficulty) riêng.
+- **Retention-based Planning**: Người dùng có thể tùy chỉnh mức độ ghi nhớ mong muốn (Retention) trong cài đặt (Mặc định: 90%).
+- **Lapse Handling**: Tự động chuyển từ vựng vào trạng thái `Relearning` khi người dùng quên.
 
-### 2. Review Arena Challenge Engine
-The `ChallengeManager` orchestrates 5 types of challenges based on a word's mastery level:
-- **Recognition**: Multiple choice (True/False + Distractors).
-- **Phonetics**: Auditory recognition.
-- **Construction**: Word fragment re-ordering.
-- **Context Gap**: Sentence-level fill-in-the-blanks.
-- **Ghost Recall**: Full word retrieval from thin air.
+### 2. Mô hình Dữ liệu Phân cấp (Domain Model)
+- **Roadmap**: Những lộ trình học tập lớn (ví dụ: Oxford 3000, IELTS Core).
+- **Topic**: Các chủ đề nhỏ nằm trong Roadmap (ví dụ: Technology, Environment).
+- **Word**: Các flashcard đơn lẻ, bao gồm định nghĩa, ví dụ, hình ảnh và distractor choices (cho Review Arena).
 
-**Adaptive Logic**: Challenges are chosen dynamically using `useReviewSession` which checks for the presence of examples, choices, and current SM-2 `repetitions`.
+### 3. Giao diện Tactile Scholar (Halo Modern)
+Ngôn ngữ thiết kế tập trung vào cảm giác vật lý và sự tập trung:
+- **Semantic Radius**: Sử dụng token `rounded-4xl` (40px) cho các container chính để tạo sự mềm mại.
+- **Glassmorphism**: Sử dụng hiệu ứng mờ (backdrop-blur) cho các sidebar và modal để giữ được sự liên kết không gian.
+- **Micro-animations**: Sử dụng `framer-motion` cho các tương tác lật thẻ và chuyển cảnh.
 
-### 2. Spaced Repetition (SRS)
-We implement the **SM-2 algorithm** (`src/lib/srs.ts`).
-- **Ease Factor**: Adjusts based on user ratings (0-5).
-- **Interval**: Calculated exponentially unless the user fails (Rating < 3).
-- **Due Date**: Stored as a timestamp in Supabase `user_progress`.
+### 4. Quản lý Trạng thái & Side-effects
+- **Custom Hooks**: Tách biệt logic xử lý (ví dụ: `useSettingsForm`, `useFlashcard`) khỏi UI.
+- **Supabase RPC**: Tận dụng các hàm Database Functions (RPC) để đảm bảo tính nguyên tử (atomicity) khi cập nhật tiến độ học tập phức tạp.
+- **i18n Implementation**: Sử dụng `react-i18next` với cấu trúc `vi.json` là nguồn sự thật (source of truth).
 
-### 3. Data Synchronization
-- **Phase 10 Update**: The app has migrated from `localStorage` to **Supabase** for all learner data.
-- **Offline Fallback**: `streak.ts` maintains a localStorage fallback to ensure smooth operation during flaky connections.
+## Cấu hình Layout (SidebarContext)
+Tất cả các thành phần giao diện tuân theo các token chiều rộng cố định:
+- `SIDEBAR_WIDTH`: 256px
+- `SIDEBAR_COLLAPSED_WIDTH`: 72px
+- `RIGHTBAR_WIDTH`: 280px
+- `RIGHTBAR_COLLAPSED_WIDTH`: 72px
 
-### 4. Admin Management (Integrated CMS)
-The project includes a secure `/admin` section with CRUD capabilities for:
-- **Roadmaps**: High-level learning paths.
-- **Topics**: Modular units of study.
-- **Words**: Flashcard content with image support and preview logic.
+---
 
-### 5. Media & Accessibility
-- **Robust Audio**: All speech is managed through `src/lib/speech.ts` to clear global browser buffers before each utterance, preventing audio bleeding and duplication.
-- **Zen Navigation**: Exiting immersive sessions is handled by internal custom modals (`ConfirmExitModal`) to bypass browser-native dialog limitations.
-
-
-## Layout Configuration Tokens
-Defined in `SidebarContext.tsx`:
-- `SIDEBAR_WIDTH`: 280px
-- `SIDEBAR_COLLAPSED_WIDTH`: 80px
-- `RIGHTBAR_WIDTH`: 320px
-- `RIGHTBAR_COLLAPSED_WIDTH`: 64px
+*Tài liệu này được cập nhật tự động bởi Antigravity dựa trên cấu trúc mã nguồn hiện tại.*

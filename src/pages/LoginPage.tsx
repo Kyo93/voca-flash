@@ -59,9 +59,9 @@ export default function LoginPage() {
       </header>
 
       {/* Login form */}
-      <main className="flex-grow flex items-center justify-center p-6 z-10 relative">
+      <main className="grow flex items-center justify-center p-6 z-10 relative">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-3xl shadow-2xl border border-orange-50 p-8 md:p-10">
+          <div className="bg-white rounded-2xl shadow-2xl border border-orange-50 p-8 md:p-10">
             {/* Logo */}
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-white text-2xl font-black rotate-3 mx-auto mb-4">

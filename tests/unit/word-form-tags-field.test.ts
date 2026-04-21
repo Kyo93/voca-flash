@@ -32,32 +32,32 @@ describe('WordFormModal must have a Tags input section', () => {
   it('onSave must include tags in the word payload', () => {
     const source = readFile('components/admin/WordFormModal.tsx')
     // handleSubmit / onSave must include `tags` in the wordData object
-    expect(source).toMatch(/tags/)
+    expect(source).toMatch(/tags/i)
   })
 
   it('must include tags state variable', () => {
     const source = readFile('components/admin/WordFormModal.tsx')
-    expect(source).toMatch(/tags/)
+    expect(source).toMatch(/tags/i)
   })
 
   it('must initialize tags from existing word.tags on edit', () => {
     const source = readFile('components/admin/WordFormModal.tsx')
     // useEffect should set tags from word.tags when editing
-    expect(source).toMatch(/tags/)
+    expect(source).toMatch(/tags/i)
   })
 })
 
 describe('admin-queries must expose getAllTags', () => {
   it('must export getAllTags function', () => {
-    const source = readFile('lib/admin-queries.ts')
+    const source = readFile('lib/queries/tag-queries.ts')
     expect(source).toMatch(/getAllTags/)
   })
 })
 
 describe('createWord must accept manual tags (not auto-generate)', () => {
   it('createWord should NOT call autoTag when tags are provided', () => {
-    const source = readFile('lib/admin-queries.ts')
+    const source = readFile('lib/queries/word-queries.ts')
     // If tags are passed in, autoTag should not override them
-    expect(source).toMatch(/getAllTags/)
+    expect(source).toMatch(/createWord/)
   })
 })

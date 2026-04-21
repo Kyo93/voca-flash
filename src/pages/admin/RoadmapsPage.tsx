@@ -5,7 +5,7 @@ import { supabase } from '../../lib/supabase'
 import RoadmapFormModal from '../../components/admin/RoadmapFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import type { Roadmap } from '../../lib/types'
-import { formatDetailedDate } from '../../lib/utils'
+
 import { motion } from 'framer-motion'
 
 function StatusBadge({ active }: { active: boolean }) {
@@ -120,18 +120,18 @@ export default function AdminRoadmapsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="group relative bg-white rounded-[2.5rem] p-4 border border-stone-100 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-500 overflow-hidden"
+              className="group relative bg-white rounded-4xl p-4 border border-stone-100 shadow-sm hover:shadow-xl hover:border-primary/20 transition-all duration-500 overflow-hidden"
             >
               {/* Card Background Gradient */}
-              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-stone-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-stone-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               
               <div className="relative z-10 flex flex-col h-full">
                 {/* Thumbnail / Image Placeholder */}
-                <div className="aspect-video w-full rounded-[2rem] bg-stone-100 overflow-hidden mb-6 relative group-hover:scale-[1.02] transition-transform duration-500">
+                <div className="aspect-video w-full rounded-3xl bg-stone-100 overflow-hidden mb-6 relative group-hover:scale-[1.02] transition-transform duration-500">
                   {r.image_url ? (
                     <img src={r.image_url} alt={r.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-stone-50 to-stone-100">
+                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-stone-50 to-stone-100">
                       <span className="material-symbols-outlined text-4xl text-stone-200">route</span>
                     </div>
                   )}
@@ -141,12 +141,17 @@ export default function AdminRoadmapsPage() {
                 </div>
 
                 {/* Content */}
-                <div className="px-2 flex-grow">
+                <div className="px-2 grow">
                   <div className="mb-2">
-                    <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{r.slug}</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{r.slug}</span>
+                      <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/10">
+                        {r.topic_count || 0} chủ đề
+                      </span>
+                    </div>
                     <h3 className="text-xl font-black text-secondary group-hover:text-primary transition-colors">{r.name}</h3>
                   </div>
-                  <p className="text-sm text-stone-500 line-clamp-2 min-h-[2.5rem] mb-6">
+                  <p className="text-sm text-stone-500 line-clamp-2 min-h-10 mb-6">
                     {r.description || 'Chưa có mô tả cho lộ trình này.'}
                   </p>
                 </div>

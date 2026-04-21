@@ -3,51 +3,56 @@
 @theme {
   /* === VocabMaster Design System — The Tactile Scholar === */
 
-  /* Primary: Terracotta (E67E22) - Emotional Anchor: Excitement */
-  --color-primary: #E67E22;
+  /* Primary: Deep Earth Orange (#944A00) */
+  --color-primary: #944A00;
   --color-on-primary: #ffffff;
-  --color-primary-container: #ffdcc5;
-  --color-on-primary-container: #481b00;
+  --color-primary-container: #e67e22;
+  --color-on-primary-container: #502600;
 
-  /* Secondary: Sage (829460) - Emotional Anchor: Focus/Mastery */
-  --color-secondary: #829460;
+  /* Secondary: Moss Green (#546435) */
+  --color-secondary: #546435;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #d6eaaf;
-  --color-on-secondary-container: #1b2600;
+  --color-secondary-container: #d4e7ac;
+  --color-on-secondary-container: #586839;
 
-  /* Surface: Heavy Weight Paper - Neutral intent derived from #4A4741 */
-  --color-surface: #F7F2E8;
-  --color-on-surface: #4A4741;
-  --color-on-surface-variant: #6b665c;
-  --color-background: #F7F2E8;
+  /* Surface: Sun-drenched Cream (#FFF8F0) */
+  --color-surface: #fff8f0;
+  --color-on-surface: #1d1b16;
+  --color-on-surface-variant: #564337;
+  --color-background: #fff8f0;
 
   --color-outline: #897365;
   --color-outline-variant: #dcc1b1;
 
-  --color-tertiary: #a44e00;
+  --color-tertiary: #755a33;
   --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #b49469;
+  --color-on-tertiary-container: #432d0b;
 
-  /* Error: Alert Red (#B3261E) - For urgency and warnings */
-  --color-error: #B3261E;
+  /* Error: Alert Red (#BA1A1A) */
+  --color-error: #ba1a1a;
   --color-on-error: #ffffff;
-  --color-error-container: #f9dedc;
-  --color-on-error-container: #410e0b;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
   
   --color-surface-dim: #dfd9d1;
   --color-surface-bright: #fff8f0;
   
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #fdf7ee;
-  --color-surface-container: #f9f3ea;
-  --color-surface-container-high: #f3ede4;
-  --color-surface-container-highest: #ede7df;
+  --color-surface-container-low: #f9f3ea;
+  --color-surface-container: #f3ede4;
+  --color-surface-container-high: #ede7df;
+  --color-surface-container-highest: #e8e2d9;
 
-  /* Border Radius: Approachable Roundedness (Level 2) */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1.125rem;
-  --radius-xl: 1.75rem;
-  --radius-2xl: 2.5rem;
+  /* Border Radius: Updated to match mockup tokens */
+  --radius-xs: 4px;
+  --radius-sm: 0.5rem;   /* 8px */
+  --radius-md: 0.75rem;  /* 12px */
+  --radius-lg: 1rem;     /* 16px */
+  --radius-xl: 1.5rem;   /* 24px */
+  --radius-2xl: 1.5rem;  /* 24px */
+  --radius-3xl: 2rem;    /* 32px */
+  --radius-4xl: 2.5rem;  /* 40px */
   --radius-full: 9999px;
 
   /* Font Family: Be Vietnam Pro */
@@ -58,19 +63,19 @@
 
 /* === Variable Master Foundations === */
 :root {
-  --bg-app: #F7F2E8;
+  --bg-app: #fff8f0;
   --bg-sidebar: #ffffff;
   --surface-card: #ffffff;
-  --surface-mixed: #fdf7ee;
-  --text-main: #4A4741;
-  --text-muted: #6b665c;
-  --border-subtle: #f9f3ea;
-  --glass-bg: rgba(247, 242, 232, 0.85);
+  --surface-mixed: #f9f3ea;
+  --text-main: #1d1b16;
+  --text-muted: #564337;
+  --border-subtle: #f3ede4;
+  --glass-bg: rgba(255, 248, 240, 0.85);
   --glass-border: rgba(255, 255, 255, 0.4);
   
   /* Core Alert Colors for Inline Styles */
-  --color-error: #B3261E;
-  --color-secondary-stable: #829460;
+  --color-error: #ba1a1a;
+  --color-secondary-stable: #546435;
 }
 
 .dark {
@@ -160,13 +165,13 @@ body {
   background: linear-gradient(135deg, #829460 0%, #546435 100%);
 }
 
-/* Sun-drenched shadow — warm, natural light */
+/* Sun-drenched shadow — warm, natural light (Updated to mockup) */
 .sun-drenched-shadow {
-  box-shadow: 0 10px 48px -4px rgba(74, 71, 65, 0.1);
+  box-shadow: 0 10px 48px -4px rgba(29, 27, 22, 0.08);
 }
 
 .sun-drenched-shadow-lg {
-  box-shadow: 0 32px 48px -4px rgba(74, 71, 65, 0.12);
+  box-shadow: 0 32px 48px -4px rgba(29, 27, 22, 0.12);
 }
 
 /* Glassmorphism nav */
@@ -398,7 +403,7 @@ body {
 }
 
 .admin-toolbar {
-  @apply flex items-center gap-4 p-4 mb-6 bg-white/60 backdrop-blur-md rounded-3xl border border-white/20 shadow-sm;
+  @apply flex items-center gap-4 p-4 mb-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white/20 shadow-sm;
 }
 
 .roadmap-card-gradient {

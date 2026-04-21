@@ -5,14 +5,16 @@ import {
   getRoadmapById,
   getTopicsByRoadmap,
   getWordsWithTopicsByRoadmap,
-  getTopicWordCounts,
   assignWordsToTopic,
   unassignWordsFromTopic,
+} from '../../lib/queries/roadmap-queries'
+import {
   deleteTopic,
-  deleteWord,
   createTopic,
-} from '../../lib/admin-queries'
-import { TAG_META } from '../../lib/tag-engine'
+  getTopicWordCounts,
+} from '../../lib/queries/topic-queries'
+import { deleteWord } from '../../lib/queries/word-queries'
+
 import TopicFormModal from '../../components/admin/TopicFormModal'
 import ImportWordsModal from '../../components/admin/ImportWordsModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
@@ -156,14 +158,14 @@ export default function RoadmapSetupPage() {
   async function handleReorderTopics(reordered: Topic[]) {
     setTopics(reordered)
     const updates = reordered.map((t, i) => ({ id: t.id, sort_order: i }))
-    await import('../../lib/admin-queries').then(m => m.reorderTopics(updates))
+    await import('../../lib/queries/topic-queries').then(m => m.reorderTopics(updates))
   }
   async function handleSaveTopic(data: {
     name: string; slug: string; description: string | null
     image_url: string | null; icon: string; color: string; roadmap_id: string | null
   }) {
     if (editTopic) {
-      const { updateTopic } = await import('../../lib/admin-queries')
+      const { updateTopic } = await import('../../lib/queries/topic-queries')
       await updateTopic(editTopic.id, data)
     } else {
       await createTopic({ ...data, sort_order: topics.length })

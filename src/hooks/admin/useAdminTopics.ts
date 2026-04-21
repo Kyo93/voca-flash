@@ -5,7 +5,7 @@ import {
   updateTopic,
   deleteTopic,
   reorderTopics,
-} from '../../lib/admin-queries'
+} from '../../lib/queries/topic-queries'
 import type { Topic } from '../../lib/types'
 
 export function useAdminTopics() {

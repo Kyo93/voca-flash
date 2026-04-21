@@ -175,6 +175,24 @@ export async function resetTopicProgress(topicId: string): Promise<void> {
   if (error) throw error
 }
 
+export async function resetAllProgress(): Promise<void> {
+  const { error } = await supabase.rpc('reset_all_progress')
+  if (error) {
+    // Fallback if RPC doesn't exist yet (Manual clear)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    
+    // Clear SRS records
+    const { error: srsError } = await supabase.from('user_srs_records').delete().eq('user_id', user.id)
+    if (srsError) throw srsError
+    
+    // Clear study sessions
+    const { error: sessionError } = await supabase.from('study_sessions').delete().eq('user_id', user.id)
+    if (sessionError) throw sessionError
+  }
+}
+
+
 export function getTodayBoundary(): Date {
   const boundary = new Date()
   boundary.setHours(4, 0, 0, 0)

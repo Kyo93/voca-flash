@@ -59,7 +59,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="w-24 h-24 rounded-[2.5rem] bg-primary/20 text-primary flex items-center justify-center mb-8 mx-auto shadow-[0_0_80px_rgba(var(--primary-rgb),0.3)] border border-primary/20"
+            className="w-24 h-24 rounded-4xl bg-primary/20 text-primary flex items-center justify-center mb-8 mx-auto shadow-[0_0_80px_rgba(var(--primary-rgb),0.3)] border border-primary/20"
           >
             <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
           </motion.div>
@@ -86,7 +86,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="glass-arena-item p-8 rounded-[2rem] text-center border-white/10 group overflow-hidden relative"
+            className="glass-arena-item p-8 rounded-3xl text-center border-white/10 group overflow-hidden relative"
           >
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <span className="block text-primary text-5xl font-black mb-1 relative text-shadow-glow">{displayXP}</span>
@@ -97,7 +97,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="glass-arena-item p-8 rounded-[2rem] text-center border-white/10 group"
+            className="glass-arena-item p-8 rounded-3xl text-center border-white/10 group"
           >
             <span className="block text-white text-5xl font-black mb-1 relative text-shadow-glow">{accuracy}%</span>
             <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">Tỷ lệ chính xác</span>
@@ -121,7 +121,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
               
               <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-4 custom-scrollbar">
                 {stats.mistakes.map((w, i) => (
-                  <div key={`${w.id}-${i}`} className="glass-arena-item p-4 rounded-3xl flex items-center justify-between group border-white/5 hover:border-primary/20 transition-all">
+                  <div key={`${w.id}-${i}`} className="glass-arena-item p-4 rounded-2xl flex items-center justify-between group border-white/5 hover:border-primary/20 transition-all">
                     <div>
                       <h4 className="text-white text-lg font-black group-hover:text-primary transition-colors">{w.word}</h4>
                       <p className="text-white/40 text-sm font-medium">{w.definition}</p>
@@ -144,14 +144,14 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
         >
           <button 
             onClick={onRestart}
-            className="w-full py-5 bg-primary text-white font-black rounded-[1.5rem] hover:scale-[1.02] active:scale-95 transition-all shadow-2xl primary-glow flex items-center justify-center gap-3 group"
+            className="w-full py-5 bg-primary text-white font-black rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-2xl primary-glow flex items-center justify-center gap-3 group"
           >
             <span className="material-symbols-outlined group-hover:rotate-180 transition-transform duration-700">refresh</span>
             Bắt đầu đợt mới
           </button>
           <Link 
             to="/dashboard"
-            className="w-full py-5 glass-arena-item text-white/60 font-black rounded-[1.5rem] border border-white/10 hover:bg-white/10 hover:text-white text-center transition-all tracking-[0.1em]"
+            className="w-full py-5 glass-arena-item text-white/60 font-black rounded-2xl border border-white/10 hover:bg-white/10 hover:text-white text-center transition-all tracking-widest"
           >
             Quay lại Dashboard
           </Link>
