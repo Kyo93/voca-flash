@@ -89,27 +89,36 @@ export default function TopicCard({
   // --- Variant 2: Up Next (Kinetic/Flashy) ---
   if (isUpNext && !searchQuery) {
     return (
-      <Link {...commonProps} className={`${commonProps.className} topic-card bg-surface-container-low rounded-[32px] p-6 flex flex-col justify-between border-b-4 border-secondary/20 shadow-lg shadow-secondary/5`}>
-        <div className="space-y-6">
+      <Link {...commonProps} className={`${commonProps.className} topic-card relative group overflow-hidden rounded-[40px] bg-surface-container-low min-h-[340px] flex flex-col justify-between border-b-4 border-secondary/20 shadow-lg shadow-secondary/5`}>
+        <img 
+          alt={topic.name} 
+          src={topic.image_url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80'} 
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-[#1E1B17]/90 via-[#1E1B17]/40 to-transparent"></div>
+        
+        <div className="relative p-8 space-y-6 z-10">
           <div className="flex justify-between items-start">
-            <span className="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Up Next</span>
-            <span className="material-symbols-outlined text-secondary">trending_up</span>
+            <span className="bg-secondary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Up Next</span>
+            <span className="material-symbols-outlined text-white/80">trending_up</span>
           </div>
-          <div>
-            <h3 className="text-2xl font-bold mb-2">Topic: {topic.name}</h3>
+          <div className="space-y-2">
+            <h3 className="text-3xl font-bold text-white">Topic: {topic.name}</h3>
             {topic.description && (
-              <p className="text-sm text-on-surface-variant leading-relaxed line-clamp-2">
+              <p className="text-white/70 leading-relaxed line-clamp-2 text-sm">
                 {topic.description}
               </p>
             )}
           </div>
         </div>
-        <div className="space-y-3">
-          <div className="flex justify-between text-xs font-bold text-outline">
+
+        <div className="relative p-8 pt-0 space-y-4 z-10">
+          <div className="flex justify-between text-xs font-bold text-white/60">
             <span>Preparation</span>
             <span>{stats.percent}%</span>
           </div>
-          <div className="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+          <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
             <div 
               className="h-full bg-secondary rounded-full transition-all duration-1000"
               style={{ width: `${stats.percent}%` }}

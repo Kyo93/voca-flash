@@ -41,6 +41,7 @@ export default function RoadmapTopicsPage() {
   }
 
   const overallPercent = stats.total > 0 ? Math.round((stats.mastered / stats.total) * 100) : 0
+  const learnedPercent = stats.total > 0 ? Math.round((stats.learned / stats.total) * 100) : 0
 
   return (
     <div className="max-w-[1440px] mx-auto px-12 py-10 space-y-16">
@@ -80,47 +81,71 @@ export default function RoadmapTopicsPage() {
       </header>
 
       {/* Mastery Progress Board */}
-      <section className="bg-surface-container-lowest rounded-[40px] p-10 shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)] border border-outline-variant/15">
-        <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-12">
-          <div className="md:col-span-3">
-            <span className="text-xs uppercase tracking-[0.2em] font-bold text-outline mb-2 block">{t('roadmapDetail.masteryProgress')}</span>
-            <div className="text-7xl font-black tracking-tighter text-primary leading-none">{overallPercent}%</div>
-          </div>
-          <div className="md:col-span-6 space-y-6">
-            <div className="relative h-4 w-full bg-surface-container-high rounded-full overflow-hidden">
-              <div 
-                className="absolute top-0 left-0 h-full bg-[#829460] rounded-full liquid-shine transition-all duration-1000"
-                style={{ width: `${overallPercent}%` }}
-              ></div>
+      <section className="bg-surface-container-lowest rounded-[32px] py-4 px-10 shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)] border border-outline-variant/15">
+        <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+          <div className="md:col-span-2 space-y-2">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-outline mb-0 block leading-none">HỌC TẬP</span>
+              <div className="text-5xl font-black tracking-tighter text-secondary leading-none">{learnedPercent}%</div>
             </div>
-            <p className="text-sm text-on-surface-variant font-medium leading-relaxed">
+            <div className="opacity-50">
+              <span className="text-[9px] uppercase tracking-[0.15em] font-bold text-outline mb-0 block leading-none">MASTERY</span>
+              <div className="text-xl font-black tracking-tighter text-primary leading-none">{overallPercent}%</div>
+            </div>
+          </div>
+          <div className="md:col-span-7 space-y-2">
+            {/* Learned Progress */}
+            <div className="space-y-0.5">
+              <div className="flex justify-between items-end text-[10px] font-bold text-outline uppercase tracking-wider">
+                <span>{t('roadmapDetail.learnedWords')}</span>
+                <span className="text-xs text-secondary font-medium">{stats.learned} / {stats.total}</span>
+              </div>
+              <div className="relative h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-secondary rounded-full liquid-shine transition-all duration-1000"
+                  style={{ width: `${learnedPercent}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Mastery Progress */}
+            <div className="space-y-0.5">
+              <div className="flex justify-between items-end text-[10px] font-bold text-outline uppercase tracking-wider">
+                <span>{t('roadmapDetail.masteredWords')}</span>
+                <span className="text-xs text-primary font-medium">{stats.mastered} / {stats.total}</span>
+              </div>
+              <div className="relative h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-[#829460] rounded-full liquid-shine transition-all duration-1000"
+                  style={{ width: `${overallPercent}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <p className="text-[10px] text-on-surface-variant font-medium leading-tight opacity-40 italic">
               {t('roadmapDetail.topLearner')}
             </p>
           </div>
-          <div className="md:col-span-3 grid grid-cols-1 gap-4 border-l border-surface-container-high pl-8">
+          <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-2 border-l border-surface-container-high pl-6">
             {/* Total */}
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-primary-container text-lg">book</span>
-              <div>
-                <div className="text-xl font-bold">{stats.total}</div>
-                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.totalWords')}</div>
-              </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="material-symbols-outlined text-primary-container text-base mb-0.5">book</span>
+              <span className="text-sm font-black text-primary leading-none">{stats.total}</span>
+              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">TỔNG SỐ</span>
             </div>
+
             {/* Learned */}
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>menu_book</span>
-              <div>
-                <div className="text-xl font-bold">{stats.learned}</div>
-                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.learnedWords')}</div>
-              </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="material-symbols-outlined text-secondary text-base mb-0.5">menu_book</span>
+              <span className="text-sm font-black text-secondary leading-none">{stats.learned}</span>
+              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">ĐÃ HỌC</span>
             </div>
+
             {/* Mastered */}
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[#2E7D32] text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-              <div>
-                <div className="text-xl font-bold">{stats.mastered}</div>
-                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.masteredWords')}</div>
-              </div>
+            <div className="flex flex-col items-center text-center">
+              <span className="material-symbols-outlined text-[#829460] text-base mb-0.5">stars</span>
+              <span className="text-sm font-black text-primary leading-none">{stats.mastered}</span>
+              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">ĐÃ THUỘC</span>
             </div>
           </div>
         </div>

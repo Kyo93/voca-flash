@@ -106,6 +106,11 @@ export function useFlashcard() {
   }, [])
 
   const rate = useCallback(async (rating: SrsRating) => {
+    let cardToSave: Card | null = null
+    let progressToSave: CardProgress | null = null
+    let wrong = rating === 1 ? 1 : 0
+    let duration = 0
+
     setState((s) => {
       const card = s.queue[s.currentIndex]
       if (!card) return s
@@ -122,23 +127,10 @@ export function useFlashcard() {
       const nextIndex = s.currentIndex + 1
       const isComplete = nextIndex >= s.queue.length
 
-      // Fire-and-forget Supabase sync (non-blocking)
-      if (user) {
-        const wrong = rating === 1 ? 1 : 0
-        const duration = Date.now() - (s as any).cardStartTime
-
-        upsertSrsRecord(user.id, card.id, {
-          ...newProgress,
-          incrementWrong: wrong,
-          rating,
-          duration
-        }).catch(
-          (err) => console.error('[useFlashcard] upsert progress error:', err)
-        )
-        recordStreak(user.id).catch(
-          (err) => console.error('[useFlashcard] recordStreak error:', err)
-        )
-      }
+      // Capture values for the side effect
+      cardToSave = card
+      progressToSave = newProgress
+      duration = Date.now() - s.cardStartTime
 
       return {
         ...s,
@@ -149,7 +141,22 @@ export function useFlashcard() {
         cardStartTime: Date.now(),
       }
     })
-  }, [user])
+
+    // Fire-and-forget Supabase sync (non-blocking) OUTSIDE setState
+    if (user && cardToSave && progressToSave) {
+      upsertSrsRecord(user.id, cardToSave.id, {
+        ...progressToSave,
+        incrementWrong: wrong,
+        rating,
+        duration
+      }).catch(
+        (err) => console.error('[useFlashcard] upsert progress error:', err)
+      )
+      recordStreak(user.id).catch(
+        (err) => console.error('[useFlashcard] recordStreak error:', err)
+      )
+    }
+  }, [user, profile?.srs_intensity])
 
   const markLearned = useCallback(() => {
     // Flip the card first so user sees the answer, then defer rating
