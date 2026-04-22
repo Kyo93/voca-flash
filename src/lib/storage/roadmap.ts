@@ -18,7 +18,7 @@ export async function fetchInitialAppData(userId: string): Promise<InitialAppDat
       profile: profileData || null,
       stats: { total_words: 0, mastered: 0, learning: 0 },
       health: {
-        retention_rate: 0.9,
+        retention_rate: 0,
         avg_stability: 0,
         new_today: 0,
         due_today: 0,
@@ -37,7 +37,7 @@ export async function fetchInitialAppData(userId: string): Promise<InitialAppDat
     profile: result.profile || null,
     stats: result.stats || { total_words: 0, mastered: 0, learning: 0 },
     health: { 
-      retention_rate: health.retention_rate ?? 0.9, 
+      retention_rate: health.retention_rate ?? 0, 
       avg_stability: health.avg_stability ?? 0, 
       new_today: health.new_today ?? 0, 
       due_today: health.due_today ?? 0, 
