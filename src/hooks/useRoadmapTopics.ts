@@ -14,8 +14,8 @@ export function useRoadmapTopics(roadmapSlug: string | undefined, searchQuery: s
   
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
   const [topics, setTopics] = useState<Topic[]>([])
-  const [stats, setStats] = useState({ total: 0, mastered: 0 })
-  const [topicProgress, setTopicProgress] = useState<Record<string, { total: number, learned: number, percent: number }>>({})
+  const [stats, setStats] = useState({ total: 0, learned: 0, mastered: 0 })
+  const [topicProgress, setTopicProgress] = useState<Record<string, { total: number, learned: number, mastered: number, percent: number }>>({})
   const [featuredId, setFeaturedId] = useState<string | null>(null)
   const [upNextId, setUpNextId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -43,11 +43,11 @@ export function useRoadmapTopics(roadmapSlug: string | undefined, searchQuery: s
         // 2. Fetch stats and progress
         const [roadmapStats, topicProgMapRaw, learningStates] = await Promise.all([
           fetchRoadmapStats(currentRoadmap.id, user?.id),
-          user?.id ? fetchTopicCompletionMap(user.id, roadmapTopics.map(t => t.id)) : Promise.resolve({} as Record<string, { total: number, learned: number, percent: number }>),
+          user?.id ? fetchTopicCompletionMap(user.id, roadmapTopics.map(t => t.id)) : Promise.resolve({} as Record<string, { total: number, learned: number, mastered: number, percent: number }>),
           user?.id ? fetchResumePointers(user.id) : Promise.resolve(new Map())
         ])
 
-        const topicProgMap = topicProgMapRaw as Record<string, { total: number, learned: number, percent: number }>
+        const topicProgMap = topicProgMapRaw as Record<string, { total: number, learned: number, mastered: number, percent: number }>
         setStats(roadmapStats)
         setTopicProgress(topicProgMap)
 
@@ -113,7 +113,7 @@ export function useRoadmapTopics(roadmapSlug: string | undefined, searchQuery: s
 
   // Helper to get stats for a specific topic
   const getTopicStats = (topicId: string) => {
-    return topicProgress[topicId] || { total: 0, learned: 0, percent: 0 }
+    return topicProgress[topicId] || { total: 0, learned: 0, mastered: 0, percent: 0 }
   }
 
   return {

@@ -104,28 +104,33 @@ export async function fetchAllTopics(): Promise<Topic[]> {
 
 export async function fetchRoadmapStats(roadmapId: string, userId?: string) {
   const { data: topics } = await supabase.from('topics').select('id').eq('roadmap_id', roadmapId)
-  if (!topics?.length) return { total: 0, mastered: 0 }
+  if (!topics?.length) return { total: 0, learned: 0, mastered: 0 }
 
   const topicIds = topics.map(t => t.id)
   const { data: junctions } = await supabase.from('topic_words').select('word_id').in('topic_id', topicIds)
   const wordIds = [...new Set((junctions ?? []).map(j => j.word_id))]
   const total = wordIds.length
 
-  if (!userId || total === 0) return { total, mastered: 0 }
+  if (!userId || total === 0) return { total, learned: 0, mastered: 0 }
 
   const { data: progress } = await supabase
     .from('user_srs_records')
-    .select('id')
+    .select('mastered')
     .eq('user_id', userId)
     .in('word_id', wordIds)
 
-  return { total, mastered: progress?.length ?? 0 }
+  if (!progress) return { total, learned: 0, mastered: 0 }
+
+  const learned = progress.length
+  const mastered = progress.filter(p => p.mastered).length
+
+  return { total, learned, mastered }
 }
 
 export async function fetchTopicCompletionMap(
   userId: string,
   topicIds: string[]
-): Promise<Record<string, { total: number; learned: number; percent: number }>> {
+): Promise<Record<string, { total: number; learned: number; mastered: number; percent: number }>> {
   const { data, error } = await supabase.rpc('get_topic_completion_stats', { 
     p_user_id: userId, 
     p_topic_ids: topicIds 
@@ -133,14 +138,15 @@ export async function fetchTopicCompletionMap(
 
   if (error) {
     console.error('[Storage] fetchTopicCompletionMap error:', error)
-    return Object.fromEntries(topicIds.map(id => [id, { total: 0, learned: 0, percent: 0 }]))
+    return Object.fromEntries(topicIds.map(id => [id, { total: 0, learned: 0, mastered: 0, percent: 0 }]))
   }
 
-  const result: Record<string, { total: number; learned: number; percent: number }> = {}
+  const result: Record<string, { total: number; learned: number; mastered: number; percent: number }> = {}
   for (const row of (data || [])) {
     result[row.topic_id] = {
       total: Number(row.total_words),
       learned: Number(row.learned_count),
+      mastered: Number(row.mastered_count),
       percent: Number(row.percent_complete)
     }
   }

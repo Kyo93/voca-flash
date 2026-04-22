@@ -98,6 +98,7 @@ export default function RoadmapTopicsPage() {
             </p>
           </div>
           <div className="md:col-span-3 grid grid-cols-1 gap-4 border-l border-surface-container-high pl-8">
+            {/* Total */}
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-primary-container text-lg">book</span>
               <div>
@@ -105,11 +106,20 @@ export default function RoadmapTopicsPage() {
                 <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.totalWords')}</div>
               </div>
             </div>
+            {/* Learned */}
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+              <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>menu_book</span>
+              <div>
+                <div className="text-xl font-bold">{stats.learned}</div>
+                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.learnedWords')}</div>
+              </div>
+            </div>
+            {/* Mastered */}
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[#2E7D32] text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
               <div>
                 <div className="text-xl font-bold">{stats.mastered}</div>
-                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.masteredGems')}</div>
+                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.masteredWords')}</div>
               </div>
             </div>
           </div>

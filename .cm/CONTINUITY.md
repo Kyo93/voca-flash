@@ -28,6 +28,11 @@
     - Chuyển `DashboardPage` sang lazy load để tối ưu bundle.
     - Build thành công, không lỗi Type.
 - [x] 4.1 Add loading="lazy" to <img> tags in Landing, Dashboard, Library.
+- **Tách biệt chỉ số Mastery (April 22)**:
+    - Cập nhật RPC `get_topic_completion_stats` để trả về cả `learned` và `mastered`.
+    - Cập nhật `RoadmapTopicsPage` hiển thị 3 chỉ số: Tổng số từ, Đã học, Đã thuộc.
+    - Sửa logic Progress Bar dựa trên Mastery % thực tế.
+    - Đã chạy unit test `roadmap-page-metrics.test.tsx` đạt 100%.
 
 ## Working Context
 - **Code Splitting Approach**: Lazy loading routes that are not critical for initial paint (Admin, Study, Progress).

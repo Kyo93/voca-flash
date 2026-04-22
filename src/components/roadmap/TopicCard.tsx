@@ -4,7 +4,7 @@ import { Topic } from '../../lib/types'
 interface TopicCardProps {
   topic: Topic
   roadmapId: string
-  stats: { total: number, learned: number, percent: number }
+  stats: { total: number, learned: number, mastered: number, percent: number }
   isFeatured?: boolean
   isUpNext?: boolean
   searchQuery?: string
