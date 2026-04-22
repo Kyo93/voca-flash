@@ -66,10 +66,14 @@ BEGIN
     -- 7-day forecast
     SELECT ARRAY_AGG(cnt)::INT[] INTO v_forecast FROM (
         SELECT COUNT(s.id) as cnt
-        FROM generate_series(CURRENT_DATE, CURRENT_DATE + INTERVAL '6 days', '1 day') AS d(day)
+        FROM generate_series(
+            (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::DATE, 
+            (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Ho_Chi_Minh')::DATE + INTERVAL '6 days', 
+            '1 day'
+        ) AS d(day)
         LEFT JOIN user_srs_records s ON s.user_id = p_user_id
           AND s.mastered = false
-          AND s.next_review_at::DATE = d.day
+          AND (s.next_review_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::DATE = d.day::DATE
         GROUP BY d.day
         ORDER BY d.day
     ) t;

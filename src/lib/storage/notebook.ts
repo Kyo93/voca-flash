@@ -59,9 +59,12 @@ export async function toggleNotebookEntry(userId: string, wordId: string): Promi
 export async function updateNotebookNote(userId: string, wordId: string, note: string): Promise<void> {
   const { error } = await supabase
     .from('user_notebook_entries')
-    .update({ personal_note: note, updated_at: new Date().toISOString() })
-    .eq('user_id', userId)
-    .eq('word_id', wordId)
+    .upsert({ 
+      user_id: userId, 
+      word_id: wordId, 
+      personal_note: note, 
+      updated_at: new Date().toISOString() 
+    }, { onConflict: 'user_id,word_id' })
 
   if (error) {
     console.error('[Storage] updateNotebookNote error:', error)

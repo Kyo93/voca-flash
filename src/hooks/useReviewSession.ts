@@ -21,6 +21,7 @@ export function useReviewSession() {
     mistakes: [] as Word[]
   })
   const [syncError, setSyncError] = useState<string | null>(null)
+  const [challengeStartTime, setChallengeStartTime] = useState<number>(0)
   const isInitializing = useRef(false)
 
   // C3: Delegated to shared challenge-logic.ts
@@ -45,6 +46,7 @@ export function useReviewSession() {
 
       // Shuffle the final queue
       setQueue(challenges.sort(() => Math.random() - 0.5))
+      setChallengeStartTime(Date.now())
       setIsComplete(challenges.length === 0)
     } catch (err) {
       console.error('[useReviewSession] Init failed:', err)
@@ -55,7 +57,7 @@ export function useReviewSession() {
     }
   }, [user])
 
-  const submitAnswer = useCallback(async (isCorrect: boolean, ratingFallback?: SrsRating) => {
+  const submitAnswer = useCallback(async (isCorrect: boolean, ratingFallback?: SrsRating, durationMs?: number) => {
     if (currentIndex >= queue.length) return
     if (!user) return
 
@@ -71,14 +73,14 @@ export function useReviewSession() {
     const retention = mapIntensityToRetention(intensity)
     const newProgress = calculateFSRSReview(current.progress, rating, retention)
 
+    const duration = durationMs ?? (Date.now() - challengeStartTime)
+
     // Fire-and-forget DB update with latency monitoring
-    const start = performance.now()
     upsertSrsRecord(user.id, current.word.id, {
       ...newProgress,
       incrementWrong: isCorrect ? 0 : 1,
-    }).then(() => {
-      const duration = performance.now() - start
-      if (duration > 2000) console.warn(`[useReviewSession] Slow sync: ${duration.toFixed(0)}ms`)
+      rating,
+      duration
     }).catch(err => {
       console.error('[useReviewSession] sync error:', err)
       setSyncError('Lỗi đồng bộ dữ liệu. Kết quả có thể không được lưu.')
@@ -106,9 +108,10 @@ export function useReviewSession() {
         setIsComplete(true)
         return prev
       }
+      setChallengeStartTime(Date.now())
       return nextIndex
     })
-  }, [currentIndex, queue, user])
+  }, [currentIndex, queue, user, challengeStartTime])
 
   const currentChallenge = useMemo(() => queue[currentIndex] || null, [queue, currentIndex])
 

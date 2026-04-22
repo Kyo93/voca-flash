@@ -50,7 +50,7 @@ export default function DashboardPage() {
       {/* Stats Row (Memory Health & Mission) */}
       <div className="grid grid-cols-12 gap-6 mb-8">
         <MemoryHealthCard
-          retentionRate={initialData?.health.retention_rate ?? 0.9}
+          retentionRate={initialData?.health.retention_rate ?? 0}
           avgStability={initialData?.health.avg_stability ?? 0}
         />
 

@@ -59,9 +59,16 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
       <td className="py-6 px-2">
         <div className="flex items-center gap-4">
           <div className="flex flex-col">
-            <span className="text-base font-bold text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight leading-none mb-1">
-              {word.word}
-            </span>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-base font-bold text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight leading-none">
+                {word.word}
+              </span>
+              {word.phonetic && (
+                <span className="text-[11px] font-medium text-on-surface-variant/40 font-mono tracking-wider">
+                  /{word.phonetic.replace(/\//g, '')}/
+                </span>
+              )}
+            </div>
             <span className="text-xs text-on-surface-variant/60 font-medium truncate max-w-[200px] italic leading-none">
               {word.definition}
             </span>
@@ -120,10 +127,6 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
       </td>
       <td className="py-6 px-8 text-right">
         <div className="flex items-center justify-end gap-4">
-          <span className={`text-xs font-bold tracking-tight ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
-            {nextReviewDate ? format(nextReviewDate, 'dd/MM/yy', { locale }) : '--'}
-          </span>
-          
           {/* Quick Actions (revealed on hover) */}
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <button className="p-1.5 hover:bg-white rounded-lg text-on-surface-variant/40 hover:text-primary transition-all">
@@ -133,6 +136,10 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
               <span className="material-symbols-outlined text-lg">archive</span>
             </button>
           </div>
+
+          <span className={`text-xs font-bold tracking-tight ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
+            {nextReviewDate ? format(nextReviewDate, 'dd/MM/yy', { locale }) : '--'}
+          </span>
         </div>
       </td>
     </tr>

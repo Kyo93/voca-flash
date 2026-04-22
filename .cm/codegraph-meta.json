@@ -1,28 +1,12 @@
 {
   "intelligenceLevel": "LITE",
-  "lastIndexed": "2026-04-20T22:25:00+07:00",
+  "lastIndexed": "2026-04-22T14:10:00+07:00",
   "stats": {
-    "sourceFiles": 94,
-    "symbols": 130,
+    "sourceFiles": 102,
+    "symbols": 0,
     "edges": 0,
-    "languages": ["typescript"]
+    "languages": ["typescript", "tsx", "css"]
   },
-  "diagramGenerated": "2026-04-16T09:52:00+07:00",
-  "layersAvailable": ["LAYER_0_SKELETON", "LAYER_2_ARCHITECTURE"],
-  "layersNotAvailable": ["LAYER_1_CODEGRAPH", "LAYER_3_QMD"],
-  "note": "CodeGraph not installed (npx @colbymchenry/codegraph). 94 files — LITE level sufficient.",
-  "deltaSinceLastScan": {
-    "newFiles": 24,
-    "newSymbols": 43,
-    "keyNewModules": [
-      "storage/notebook.ts — notebook entry management",
-      "useNotebook hook",
-      "useStudySessionMode hook — study phase state machine",
-      "TAG_META tag-engine.ts — tag color/label registry",
-      "WordChoice model in types.ts",
-      "AdminUsersPage",
-      "RoadmapSetupPage",
-      "WordFormModal new fields (tags, synonyms, antonyms, word_family)"
-    ]
-  }
+  "diagramGenerated": "2026-04-22T14:10:00+07:00",
+  "codegraphVersion": "0.0.0"
 }

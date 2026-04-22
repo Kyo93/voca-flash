@@ -20,7 +20,7 @@ export function useNotebook() {
     } finally {
       setIsLoading(false)
     }
-  }, [user])
+  }, [user?.id])
 
   useEffect(() => {
     loadEntries()
@@ -46,23 +46,28 @@ export function useNotebook() {
       console.error('[useNotebook] toggle error:', err)
       return null
     }
-  }, [user])
+  }, [user?.id])
 
   const updateNote = useCallback(async (wordId: string, note: string) => {
     if (!user) return
     try {
       await updateNotebookNote(user.id, wordId, note)
       setEntries(prev => {
-        const entry = prev.get(wordId)
-        if (!entry) return prev
         const next = new Map(prev)
-        next.set(wordId, { ...entry, personal_note: note, updated_at: new Date().toISOString() })
+        const entry = prev.get(wordId)
+        
+        const now = new Date().toISOString()
+        const updatedEntry: NotebookEntry = entry 
+          ? { ...entry, personal_note: note, updated_at: now }
+          : { id: `temp-${wordId}`, user_id: user.id, word_id: wordId, personal_note: note, created_at: now, updated_at: now }
+          
+        next.set(wordId, updatedEntry)
         return next
       })
     } catch (err) {
       console.error('[useNotebook] updateNote error:', err)
     }
-  }, [user])
+  }, [user?.id])
 
   const isSaved = useCallback((wordId: string) => {
     return entries.has(wordId)

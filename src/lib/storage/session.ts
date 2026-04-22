@@ -36,7 +36,7 @@ export async function fetchSrsStates(userId: string): Promise<Map<string, CardPr
 export async function upsertSrsRecord(
   userId: string,
   cardId: string,
-  update: CardProgress & { incrementWrong?: number }
+  update: CardProgress & { incrementWrong?: number; rating: number; duration?: number }
 ): Promise<void> {
   if (isNaN(update.stability) || isNaN(update.difficulty)) {
     console.warn('[Storage] Skipping upsert due to NaN values in FSRS data', update)
@@ -47,65 +47,26 @@ export async function upsertSrsRecord(
   const nextReviewAt = new Date(update.due).toISOString()
   const lastReviewed = new Date(update.lastReview || Date.now()).toISOString()
 
-  const { data: existing } = await supabase
-    .from('user_srs_records')
-    .select('id, lapse_count')
-    .eq('user_id', userId)
-    .eq('word_id', cardId)
-    .maybeSingle()
+  // Consolidate everything into a single V2 RPC that handles logs
+  const { error } = await supabase.rpc('upsert_srs_record_v2', {
+    p_user_id: userId,
+    p_word_id: cardId,
+    p_rating: update.rating,
+    p_reps: update.reps,
+    p_lapse_count: update.lapses,
+    p_stability: update.stability,
+    p_difficulty: update.difficulty,
+    p_state: update.state,
+    p_scheduled_days: update.scheduledDays,
+    p_next_review_at: nextReviewAt,
+    p_mastered: isMasteredStatus,
+    p_last_reviewed: lastReviewed,
+    p_review_duration_ms: Math.round(update.duration || 0)
+  })
 
-  if (existing) {
-    // Record exists → UPDATE via direct REST (RLS USING check passes: auth.uid() = user_id)
-    const wrongIncrement = update.incrementWrong ?? 0
-    const newLapseCount = existing.lapse_count + wrongIncrement
-
-    const { error } = await supabase
-      .from('user_srs_records')
-      .update({
-        repetitions: update.reps,
-        interval_days: update.scheduledDays,
-        fsrs_stability: update.stability,
-        fsrs_difficulty: update.difficulty,
-        fsrs_state: update.state,
-        fsrs_scheduled_days: update.scheduledDays,
-        fsrs_reps: update.reps,
-        fsrs_lapses: update.lapses,
-        lapse_count: newLapseCount,
-        next_review_at: nextReviewAt,
-        mastered: isMasteredStatus,
-        last_reviewed: lastReviewed,
-      })
-      .eq('id', existing.id)
-
-    if (error) {
-      console.error('[Storage] upsertSrsRecord UPDATE error:', error)
-      throw error
-    }
-  } else {
-    // New record → INSERT via SECURITY DEFINER RPC (bypasses RLS for INSERT)
-    // Fallback: if RPC also fails, try direct INSERT
-    const rpcPayload = {
-      p_user_id: userId,
-      p_word_id: cardId,
-      p_reps: update.reps,
-      p_ease_factor: 2.5, // Constant placeholder
-      p_interval_days: update.scheduledDays,
-      p_fsrs_stability: update.stability,
-      p_fsrs_difficulty: update.difficulty,
-      p_fsrs_state: update.state,
-      p_fsrs_scheduled_days: update.scheduledDays,
-      p_fsrs_reps: update.reps,
-      p_fsrs_lapses: update.lapses,
-      p_next_review_at: nextReviewAt,
-      p_mastered: isMasteredStatus,
-      p_last_reviewed: lastReviewed,
-    }
-
-    const { error: rpcError } = await supabase.rpc('insert_srs_record', rpcPayload)
-    if (rpcError) {
-      console.error('[Storage] upsertSrsRecord INSERT RPC error:', rpcError)
-      throw rpcError
-    }
+  if (error) {
+    console.error('[Storage] upsert_srs_record_v2 error:', error)
+    throw error
   }
 }
 

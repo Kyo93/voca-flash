@@ -12,6 +12,7 @@ interface FlashcardState {
   isLoading: boolean
   isPrepScreen: boolean
   prepStats: { unlearned: Card[], learning: Card[], mastered: Card[] } | null
+  cardStartTime: number
 }
 
 export function useFlashcard() {
@@ -26,6 +27,7 @@ export function useFlashcard() {
     isLoading: true,
     isPrepScreen: true,
     prepStats: null,
+    cardStartTime: 0,
   })
 
   const initialize = useCallback(async (topic?: string) => {
@@ -63,6 +65,7 @@ export function useFlashcard() {
       isLoading: false,
       isPrepScreen: true,
       prepStats: { unlearned, learning, mastered },
+      cardStartTime: Date.now(),
     })
   }, [user])
 
@@ -93,6 +96,7 @@ export function useFlashcard() {
         queue: combined,
         isPrepScreen: false,
         isComplete: combined.length === 0,
+        cardStartTime: Date.now(),
       }
     })
   }, [user])
@@ -120,12 +124,14 @@ export function useFlashcard() {
 
       // Fire-and-forget Supabase sync (non-blocking)
       if (user) {
-        // In FSRS, only Rating 1 (Again) counts as "wrong"
         const wrong = rating === 1 ? 1 : 0
+        const duration = Date.now() - (s as any).cardStartTime
 
         upsertSrsRecord(user.id, card.id, {
           ...newProgress,
           incrementWrong: wrong,
+          rating,
+          duration
         }).catch(
           (err) => console.error('[useFlashcard] upsert progress error:', err)
         )
@@ -140,6 +146,7 @@ export function useFlashcard() {
         currentIndex: nextIndex,
         isFlipped: false,
         isComplete,
+        cardStartTime: Date.now(),
       }
     })
   }, [user])

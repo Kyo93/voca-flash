@@ -1,16 +1,15 @@
 {
   "common": {
-    "edit": "Sửa",
-    "delete": "Xóa",
-    "save": "Lưu",
-    "cancel": "Hủy",
-    "close": "Đóng",
-    "loading": "Đang tải...",
     "dateLocale": "vi-VN",
     "later": "Để sau",
     "days": "ngày",
     "excellent": "Xuất sắc",
+    "good": "Khá tốt",
+    "needs_work": "Cần cải thiện",
+    "no_data": "Chưa có dữ liệu",
     "admin": "Quản trị",
+    "save": "Lưu",
+    "cancel": "Hủy",
     "difficulty": {
       "v-easy": "Rất dễ",
       "easy": "Dễ",
@@ -29,10 +28,14 @@
     "confirm": "Xác nhận",
     "add": "Thêm",
     "back": "Quay lại",
+    "loading": "Đang tải...",
     "search": "Tìm kiếm",
     "ok": "Đồng ý",
     "yes": "Có",
     "no": "Không",
+    "close": "Đóng",
+    "edit": "Sửa",
+    "delete": "Xóa",
     "error": "Lỗi",
     "success": "Thành công",
     "next": "Tiếp tục",
@@ -274,14 +277,35 @@
   },
   "progress": {
     "title": "Tiến độ",
-    "streak": "Ngày liên tiếp",
+    "subtitle": "Theo dõi hành trình chinh phục kiến thức của bạn qua các chỉ số khoa học.",
+    "dayStreak": "Ngày liên tiếp",
     "topStreak": "Bạn thuộc top 5% người học siêng năng. Tuyệt vời!",
     "masteredWords": "Từ đã thuộc",
     "totalWords": "Tổng số từ",
-    "dayStreak": "Ngày liên tiếp",
     "completed": "hoàn thành",
     "welcome": "Chào mừng trở lại, {{name}}. Hãy tiếp tục hành trình của bạn.",
     "activityFrequency": "Tần suất học tập",
+    "habit_heatmap": "Bản đồ thói quen",
+    "current_streak": "Chuỗi hiện tại",
+    "days": "ngày",
+    "mastery_distribution": "Phân bổ từ vựng",
+    "total_words": "Tổng số từ",
+    "workload_forecast": "Dự báo khối lượng ôn tập",
+    "memory_health": "Sức khỏe trí nhớ",
+    "retention_rate": "Tỷ lệ ghi nhớ",
+    "avg_accuracy": "Độ chính xác TB",
+    "status_excellent": "XUẤT SẮC",
+    "weak_clusters": "Vùng kiến thức yếu",
+    "badge_gallery": "Bộ sưu tập huy hiệu",
+    "mentor_strategy_title": "Chiến lược từ Mentor",
+    "mentor_strategy_text": "Dựa trên độ chính xác <0>{{accuracy}}%</0>, hãy tập trung vào các từ <1>Relearning</1> để củng cố nền tảng.",
+    "next_milestone_desc": "Học 3 ngày liên tiếp trước 7:00 AM",
+    "mastery": {
+      "new": "Mới",
+      "learning": "Đang học",
+      "review": "Ôn tập",
+      "relearning": "Học lại"
+    },
     "less": "Ít",
     "more": "Nhiều",
     "intensity": "Cường độ: {{level}}",
@@ -316,6 +340,100 @@
     "workloadForecast": {
       "today": "H.Nay",
       "dayN": "Ngày {{n}}"
+    },
+    "studySuggested": "Bắt đầu bài học đề xuất",
+    "memoryHealth": "Sức khỏe bộ nhớ",
+    "retentionAbility": "Khả năng ghi nhớ",
+    "averageAccuracy": "Độ chính xác TB",
+    "accuracyHigh": "Cao",
+    "studyActivity": "Hoạt động học tập",
+    "studyTime": "thời gian học",
+    "weakClusters": "Nhóm từ yếu",
+    "aiSuggestionTitle": "Gợi ý từ Mentor",
+    "aiSuggestionPrefix": "Dựa trên tỷ lệ ghi nhớ ",
+    "aiSuggestionMid": "%, bạn nên tập trung ôn tập nhóm từ ",
+    "aiSuggestionSuffix": " để tối ưu hóa kết quả.",
+    "newWords": "từ mới",
+    "noWeakWords": "Chưa có từ yếu nào được ghi nhận.",
+    "activity": "Hoạt động học tập",
+    "no_activity": "Hoàn thành một buổi học để xem hoạt động",
+    "day_streak": "Ngày liên tiếp",
+    "studyMinutes": "Phút học",
+    "knowledge_sunburst": "Vòng tròn tri thức",
+    "roadmap_forecast": "Roadmap Forecast",
+    "estimated_completion": "Ngày hoàn thành dự kiến",
+    "remaining_days": "{{count}} ngày nữa",
+    "avg_new_words": "Từ mới trung bình",
+    "avg_reviews": "Ôn tập trung bình",
+    "overall_mastery": "Nhuần nhuyễn tổng thể",
+    "insufficient_data": "Chưa đủ dữ liệu để dự báo",
+    "per_day": "/ ngày",
+    "badges": {
+      "first_step": {
+        "label": "Bước Đầu Tiên",
+        "desc": "Hoàn thành từ vựng đầu tiên"
+      },
+      "steady_learner": {
+        "label": "Kiên Trì",
+        "desc": "Duy trì chuỗi học 7 ngày"
+      },
+      "fire_starter": {
+        "label": "Ngọn Lửa Nhỏ",
+        "desc": "Duy trì chuỗi học 30 ngày"
+      },
+      "lexical_legend": {
+        "label": "Huyền Thoại",
+        "desc": "Làm chủ 1000 từ vựng"
+      },
+      "marathon_scholar": {
+        "label": "Học Giả Marathon",
+        "desc": "Dành 10 giờ học tập"
+      },
+      "early_bird": {
+        "label": "Chim Sớm",
+        "desc": "Học tập trước 7 giờ sáng"
+      }
+    },
+    "greeting_morning": "Chào buổi sáng, Học giả.",
+    "greeting_afternoon": "Chào buổi chiều, Học giả.",
+    "greeting_evening": "Chào buổi tối, Học giả.",
+    "subtitle_scholar": "Đây là phân tích tiến độ học tập chuyên sâu của bạn hôm nay.",
+    "current_level": "Cấp độ hiện tại",
+    "vocab_learned": "Từ vựng đã học",
+    "today_label": "hôm nay",
+    "streak_label": "Ngày liên tiếp (Streak)",
+    "new_record": "Kỷ lục mới!",
+    "stable": "Ổn định",
+    "needs_work": "Cần cải thiện",
+    "retention_metric": "Độ bám trí nhớ (Retention)",
+    "estimated_next_level": "Dự kiến hoàn thành cấp độ tiếp theo:",
+    "total_progress": "Tổng tiến độ",
+    "current_label": "Hiện tại",
+    "mentor_advice_title": "Lời khuyên từ Mentor",
+    "mentor_quote": "Việc học ngôn ngữ không phải là cuộc đua nước rút, mà là quá trình bồi đắp từng lớp phù sa kiến thức mỗi ngày.",
+    "mentor_role": "Trưởng khoa Ngôn ngữ học",
+    "review_now": "Ôn tập ngay",
+    "knowledge_structure": "Cấu trúc kiến thức",
+    "knowledge_excellent": "Tốt",
+    "knowledge_good": "Khá",
+    "knowledge_developing": "Đang phát triển",
+    "diversity": "Đa dạng",
+    "academic": "Học thuật",
+    "practical": "Thực tiễn",
+    "recent_achievements": "Thành tựu gần đây",
+    "badges_v2": {
+      "persistent": {
+        "label": "Học giả Kiên trì",
+        "desc": "Hoàn thành 100 ngày liên tiếp"
+      },
+      "vocab_master": {
+        "label": "Bậc thầy Từ vựng",
+        "desc": "Vượt mốc 4,000 từ"
+      },
+      "c1_peak": {
+        "label": "Đỉnh cao C1",
+        "desc": "Hoàn thành bài kiểm tra cuối kỳ"
+      }
     }
   },
   "rightSidebar": {

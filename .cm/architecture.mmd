@@ -1,122 +1,46 @@
-# Architecture Diagram: voca-flash
+## Architecture Diagram (VocaFlash - April 2026)
 
 ```mermaid
 graph TD
-    %% Entry
-    A["src/main.tsx\n(Vite entry)"] --> B["src/App.tsx\n(Router)"]
+    subgraph "Frontend (Pages)"
+        Landing[LandingPage]
+        Dashboard[DashboardPage]
+        Mastery[MasteryPage]
+        Library[LibraryPage]
+        Study[StudyPage]
+        RoadmapTopics[RoadmapTopicsPage]
+        Admin[Admin Pages]
+    end
 
-    %% Pages Layer
-    B --> C["pages/\n(Route → Component)"]
-    C --> C1["Home / Landing"]
-    C --> C2["DashboardPage"]
-    C --> C3["LibraryPage"]
-    C --> C4["RoadmapTopicsPage"]
-    C --> C5["StudyPage"]
-    C --> C6["ReviewPage / FreeStudyPage"]
-    C --> C7["ProgressPage"]
-    C --> C8["SettingsPage"]
-    C --> C9["admin/\n(Words, Topics, Roadmaps)"]
+    subgraph "Logic Layer (Hooks)"
+        HookMastery[useMasteryWords]
+        HookRoadmap[useRoadmapTopics]
+        HookAuth[useAuth]
+        HookStreak[useStreak]
+    end
 
-    %% Core Components
-    B -.->|"layout"| D["AppLayout"]
-    D --> D1["Header"]
-    D --> D2["Sidebar\n(Streak + Nav)"]
-    D --> D3["RightSidebar\n(Streak + Stats)"]
-    D --> D4["ActivityHeatmap"]
+    subgraph "Core Lib (SRS & Storage)"
+        SRS[srs.ts - FSRS v5]
+        Supabase[Supabase Client]
+        MasteryLib[storage/mastery.ts]
+        I18n[i18n-utils.ts]
+    end
 
-    %% Contexts
-    B --> CTX["Contexts"]
-    CTX --> Auth["AuthContext\n(useAuth)"]
-    CTX --> RoadCtx["RoadmapContext\n(TopicsPage, WordsPage, AdminLayout)"]
-    CTX --> SideCtx["SidebarContext"]
+    subgraph "External"
+        SupabaseCloud[Supabase Cloud DB]
+    end
 
-    %% Hooks
-    C5 --> H["useFlashcard"]
-    C6 --> H2["useReviewSession\n→ challenge-logic.ts"]
-    C6 --> H3["useFreeStudySession\n→ challenge-logic.ts"]
-
-    %% Review Arena
-    H2 --> ARENA["components/review/"]
-    ARENA --> A1["ArenaShell"]
-    ARENA --> A2["ChallengeManager"]
-    ARENA --> A3["RecognitionChallenge"]
-    ARENA --> A4["ConstructionChallenge"]
-    ARENA --> A5["ContextGapChallenge"]
-    ARENA --> A6["GhostRecallChallenge"]
-
-    %% Data Layer
-    H2 --> DL["lib/storage/"]
-    DL --> DL1["auth.ts\n(Supabase auth)"]
-    DL --> DL2["mastery.ts\n(fetchUserVocabulary, getMasteryStats)"]
-    DL --> DL3["roadmap.ts\n(fetchInitialAppData → RPC\nget_initial_app_data)"]
-    DL --> DL4["session.ts\n(Review session)"]
-
-    %% Admin Layer
-    C9 --> ADMINQ["lib/admin-queries.ts\n(CRUD: words, topics, roadmaps)"]
-
-    %% Utilities
-    DL -.->|"uses"| UTIL["lib/utils.ts\n(shuffle, slugify)"]
-    H2 -.->|"uses"| SRS["lib/srs.ts\n(FSRS algorithm, CardProgress)"]
-    H2 -.->|"uses"| STREAK["lib/streak.ts\n(local + Supabase streak)"]
-    C9 -.->|"uses"| TAG["lib/tag-engine.ts\n(autoTag, suggestTopic)"]
-    C5 -.->|"uses"| TTS["lib/tts.ts\n(Web Speech API)"]
-
-    %% i18n
-    C -.->|"t()"| I18N["src/i18n.ts\n(vi.json, en.json)"]
-
-    %% Types (central)
-    C -.->|"import"| TYPES["lib/types.ts\n(Roadmap, Word, SrsRecord,\nMasteryWord, InitialAppData, etc.)"]
-
-    %% External
-    DL1 -.->|"Supabase"| SB["@supabase/supabase-js\n(Auth + DB RPCs)"]
-    SRS -.->|"ts-fsrs"| FSRS["ts-fsrs\n(FSRS scheduler)"]
-
-    %% Admin components
-    C9 --> ADMIN_UI["components/admin/"]
-    ADMIN_UI --> WFM["WordFormModal\n(tags, synonyms, antonyms,\nword_family fields)"]
-    ADMIN_UI --> ITM["ImportWordsModal\n(CSV + Google Sheets)"]
-    ADMIN_UI --> TFM["TopicFormModal"]
-    ADMIN_UI --> RFM["RoadmapFormModal"]
-
-    %% Data Flow Summary
-    style A fill:#e8f5e9,stroke:#4caf50
-    style Auth fill:#e3f2fd,stroke:#2196f3
-    style DL fill:#fff3e0,stroke:#ff9800
-    style TYPES fill:#f3e5f5,stroke:#9c27b0
+    Mastery --> HookMastery
+    HookMastery --> MasteryLib
+    MasteryLib --> Supabase
+    Supabase --> SupabaseCloud
+    
+    RoadmapTopics --> HookRoadmap
+    HookRoadmap --> MasteryLib
+    
+    Study --> SRS
+    Library --> MasteryLib
+    
+    Admin --> I18n
+    Admin --> Supabase
 ```
-
-## Module Responsibilities
-
-| Module | Responsibility | Key Files |
-|--------|---------------|-----------|
-| **pages/** | Route rendering, user interaction | 12 pages |
-| **components/review/** | 5 challenge types for Arena | ArenaShell, ChallengeManager, *_Challenge.tsx |
-| **contexts/** | Global state (auth, roadmap, sidebar) | AuthContext, RoadmapContext, SidebarContext |
-| **hooks/** | Stateful logic (flashcard, review session) | useFlashcard, useReviewSession, useFreeStudySession |
-| **lib/storage/** | Supabase data fetching + caching | auth, mastery, roadmap, session |
-| **lib/admin-queries.ts** | Admin panel CRUD (direct writes) | admin-queries.ts |
-| **lib/challenge-logic.ts** | SHARED — quadrant selection | Extracted from both hooks |
-| **lib/srs.ts** | FSRS algorithm + SM-2 migration | CardProgress, calculateFSRSReview, isMastered |
-| **lib/streak.ts** | Streak tracking (localStorage + Supabase) | loadStreak, fetchStreakFromSupabase, recordStudy |
-
-## Data Flow: Initial App Load
-
-```
-1. App mount → AuthContext.init()
-2. AuthContext → supabase.auth.getSession()
-3. If logged in → fetchInitialAppData(userId)
-   → RPC: get_initial_app_data(userId)
-   ← Returns: { profile, stats, health, active_roadmap }
-4. AuthContext stores initialData → all pages read via useAuth()
-5. Per-page: fetch additional data via lib/storage/*
-```
-
-## RPC Endpoints (Supabase)
-
-| RPC | Returns |
-|-----|---------|
-| `get_initial_app_data` | profile, stats, health (retention, stability, forecast) |
-| `get_progress_page_data` | memory_health, roadmap_progress, overall_stats |
-| `get_topic_completion_map` | { topicId: { total, learned, percent } } |
-
-**Last generated: 2026-04-16**

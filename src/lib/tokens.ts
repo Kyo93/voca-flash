@@ -4,12 +4,23 @@
  */
 
 export const DESIGN_TOKENS = {
+  COLORS: {
+    PRIMARY: '#E67E22',        // Terracotta
+    PRIMARY_DARK: '#944A00',
+    SECONDARY: '#546435',      // Sage Green
+    SECONDARY_CONTAINER: '#D7EAAE',
+    SURFACE: '#FFF8F5',        // Warm Cream
+    CARD: '#FFFFFF',           // Pure White elevation
+    TEXT_PRIMARY: '#1D1B1A',   // Soft Scholar Ink
+    TEXT_SECONDARY: '#564337', // Tonal Variant
+    BORDER_GHOST: '#DCC1B126', // 15% Ghost Border
+  },
   RADIUS: {
-    '4XL': 'rounded-4xl', // 40px - Major containers
-    '3XL': 'rounded-3xl', // 32px - Cards
-    '2XL': 'rounded-2xl', // 24px - Modals/Dialogs
-    'XL': 'rounded-xl',   // 20px - Buttons
-    'LG': 'rounded-lg',   // 18px - Inputs
+    '4XL': 'rounded-[32px]',   // 32px - Major containers (Editorial standard)
+    '3XL': 'rounded-3xl',      // 24px - Large cards
+    '2XL': 'rounded-2xl',      // 16px - Small cards
+    'XL': 'rounded-xl',        // 12px - Buttons
+    'LG': 'rounded-lg',        // 8px - Inputs
   },
 
   SHADOW: {

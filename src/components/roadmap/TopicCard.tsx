@@ -10,38 +10,7 @@ interface TopicCardProps {
   searchQuery?: string
 }
 
-/**
- * Hex to RGBA helper for dynamic pastel backgrounds
- */
-function hexToRgba(hex: string, alpha: number) {
-  try {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  } catch (e) {
-    return `rgba(0, 0, 0, ${alpha})`;
-  }
-}
-
-/**
- * Darken color helper for accessible text on light backgrounds
- */
-function darkenColor(hex: string, percent: number) {
-  try {
-    let r = parseInt(hex.slice(1, 3), 16);
-    let g = parseInt(hex.slice(3, 5), 16);
-    let b = parseInt(hex.slice(5, 7), 16);
-
-    r = Math.floor(r * (1 - percent));
-    g = Math.floor(g * (1 - percent));
-    b = Math.floor(b * (1 - percent));
-
-    return `rgb(${r}, ${g}, ${b})`;
-  } catch (e) {
-    return 'inherit';
-  }
-}
+import { hexToRgba, darkenColor } from '../../lib/utils'
 
 export default function TopicCard({
   topic,
@@ -95,6 +64,7 @@ export default function TopicCard({
           alt={topic.name} 
           src={topic.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80'} 
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-linear-to-t from-[#1E1B17]/90 via-[#1E1B17]/40 to-transparent"></div>
         <div className="relative p-10 w-full space-y-5">

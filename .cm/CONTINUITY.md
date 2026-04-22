@@ -14,17 +14,20 @@
 
 ## Next Actions
 ### Performance Optimization (ACTIVE)
-- [ ] 1.1 Create src/components/PageLoader.tsx
-- [ ] 1.2 Wrap <Outlet /> with <Suspense> in AppLayout.tsx and AdminLayout.tsx
+- [x] 1.1 Create src/components/PageLoader.tsx
+- [x] 1.2 Wrap <Outlet /> with <Suspense> in AppLayout.tsx and AdminLayout.tsx
 - [x] 1.3 Refactor `MasteryPage.tsx`: Logic isolated in `useMasteryWords.ts`.
-- [ ] 2.1 Refactor App.tsx: Apply React.lazy to Route pages.
+- [x] 2.1 Refactor App.tsx: Apply React.lazy to Route pages.
+- [x] Optimize Performance: Lazy loading images & Code splitting (Vite chunks)
+- [x] Clean Code Sprint: Logic isolation (hooks) & Shared utilities (lib/utils)
 
-### Performance Optimization (PLANNED)
-- [ ] 1.1 Create src/components/PageLoader.tsx
-- [ ] 1.2 Wrap <Outlet /> with <Suspense> in AppLayout.tsx and AdminLayout.tsx
-- [ ] 2.1 Refactor App.tsx: Apply React.lazy to Route pages.
-- [ ] 3.1 Edit vite.config.ts: Define manualChunks.
-- [ ] 4.1 Add loading="lazy" to <img> tags in Landing, Dashboard, Library.
+## Hoạt động gần đây (Last Session)
+- Hoàn thành dọn dẹp code (Clean Code):
+    - Tách logic `RoadmapTopicsPage` vào hook `useRoadmapTopics.ts`.
+    - Chuẩn hóa helper màu sắc vào `lib/utils.ts`.
+    - Chuyển `DashboardPage` sang lazy load để tối ưu bundle.
+    - Build thành công, không lỗi Type.
+- [x] 4.1 Add loading="lazy" to <img> tags in Landing, Dashboard, Library.
 
 ## Working Context
 - **Code Splitting Approach**: Lazy loading routes that are not critical for initial paint (Admin, Study, Progress).

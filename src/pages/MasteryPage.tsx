@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
 import { useMasteryWords } from '../hooks/useMasteryWords'
-import NoteDrawer from '../components/NoteDrawer'
 import WordDetailPanel from '../components/WordDetailPanel'
 
 import CardRow from '../components/mastery/CardRow'
@@ -28,7 +27,6 @@ export default function MasteryPage() {
     totalCount,
     loading,
     loadingMore,
-    hasMore,
     page,
     searchQuery,
     setSearchQuery,
@@ -45,12 +43,12 @@ export default function MasteryPage() {
 
   // Interaction State
   const { isSaved, toggle, updateNote, getNote } = useNotebook()
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-  const [editingWord, setEditingWord] = useState<MasteryWord | null>(null)
   
   // Master-Detail State
   const [selectedWord, setSelectedWord] = useState<MasteryWord | null>(null)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
+  const [panelTab, setPanelTab] = useState<'overview' | 'notes'>('overview')
+  const [isNoteEditMode, setIsNoteEditMode] = useState(false)
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
 
@@ -59,10 +57,12 @@ export default function MasteryPage() {
     navigate('/free-study', { state: { words: selectedWords } })
   }
 
-  const handleOpenDrawer = (word: MasteryWord, e: React.MouseEvent) => {
+  const handleOpenNoteDetail = (word: MasteryWord, e: React.MouseEvent) => {
     e.stopPropagation()
-    setEditingWord(word)
-    setIsDrawerOpen(true)
+    setSelectedWord(word)
+    setPanelTab('notes')
+    setIsNoteEditMode(true)
+    setIsPanelOpen(true)
   }
 
   const handleToggleNotebook = async (wordId: string, e?: React.MouseEvent) => {
@@ -72,12 +72,14 @@ export default function MasteryPage() {
 
   const handleSelectWord = (word: MasteryWord) => {
     setSelectedWord(word)
+    setPanelTab('overview')
+    setIsNoteEditMode(false)
     setIsPanelOpen(true)
   }
 
   const handleSaveNote = async (note: string) => {
-    if (!editingWord) return
-    await updateNote(editingWord.word_id, note)
+    if (!selectedWord) return
+    await updateNote(selectedWord.word_id, note)
   }
 
   return (
@@ -114,7 +116,7 @@ export default function MasteryPage() {
           <div className="w-full overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10">
-                <tr className="bg-[#F9F2EF]">
+                <tr className="bg-surface-container">
                   <th className="py-6 px-8 w-12">
                     <input 
                       type="checkbox" 
@@ -144,7 +146,7 @@ export default function MasteryPage() {
                     
                     isNotebookSaved={isSaved(w.word_id)}
                     onToggleNotebook={(e) => handleToggleNotebook(w.word_id, e)}
-                    onEditNote={(e) => handleOpenDrawer(w, e)}
+                    onEditNote={(e) => handleOpenNoteDetail(w, e)}
                     personalNote={getNote(w.word_id)}
                     
                     locale={dateLocale}
@@ -154,14 +156,18 @@ export default function MasteryPage() {
                 {loading && page === 0 && (
                   Array(5).fill(0).map((_, i) => (
                     <tr key={i} className="animate-pulse">
-                      <td className="py-6 px-6"><div className="w-5 h-5 bg-stone-100 rounded" /></td>
+                      <td className="py-6 px-8"><div className="w-5 h-5 bg-stone-100 rounded" /></td>
                       <td className="py-6 px-2">
-                         <div className="h-4 bg-stone-100 rounded w-24 mb-2" />
+                         <div className="flex gap-2 mb-2 items-center">
+                            <div className="h-4 bg-stone-100 rounded w-24" />
+                            <div className="h-3 bg-stone-50 rounded w-16" />
+                         </div>
+                         <div className="h-3 bg-stone-100/50 rounded w-32" />
                       </td>
-                      <td className="py-6 px-6 hidden lg:table-cell"><div className="h-4 bg-stone-100 rounded w-20" /></td>
-                      <td className="py-6 px-6"><div className="h-4 bg-stone-100 rounded w-10" /></td>
-                      <td className="py-6 px-6"><div className="h-6 bg-stone-100 rounded w-32" /></td>
-                      <td className="py-6 px-6"><div className="h-8 bg-stone-100 rounded w-16 float-right" /></td>
+                      <td className="py-6 px-8 hidden lg:table-cell"><div className="h-4 bg-stone-100 rounded w-20" /></td>
+                      <td className="py-6 px-8"><div className="h-4 bg-stone-100 rounded w-10" /></td>
+                      <td className="py-6 px-8"><div className="h-6 bg-stone-100 rounded w-32" /></td>
+                      <td className="py-6 px-8 text-right"><div className="h-8 bg-stone-100 rounded w-16 float-right" /></td>
                     </tr>
                   ))
                 )}
@@ -192,25 +198,11 @@ export default function MasteryPage() {
           isNotebookSaved={selectedWord ? isSaved(selectedWord.word_id) : false}
           onToggleNotebook={handleToggleNotebook}
           personalNote={selectedWord ? getNote(selectedWord.word_id) : null}
-          onEditNote={() => {
-            if (selectedWord) {
-               setEditingWord(selectedWord)
-               setIsDrawerOpen(true)
-            }
-          }}
+          onSaveNote={handleSaveNote}
+          initialTab={panelTab}
+          forceEdit={isNoteEditMode}
         />
 
-        {/* Note Drawer for Editing */}
-        <NoteDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => {
-            setIsDrawerOpen(false)
-            setEditingWord(null)
-          }}
-          onSave={handleSaveNote}
-          initialNote={editingWord ? getNote(editingWord.word_id) : ''}
-          word={editingWord?.word || ''}
-        />
       </div>
     </div>
   )

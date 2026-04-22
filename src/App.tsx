@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage'
 import AppLayout from './components/AppLayout'
 import AdminLayout from './components/admin/AdminLayout'
 import { lazy } from 'react'
-import DashboardPage from './pages/DashboardPage' // Sync because it's the primary authenticated route
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const StudyPage = lazy(() => import('./pages/StudyPage'))
 const LibraryPage = lazy(() => import('./pages/LibraryPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))

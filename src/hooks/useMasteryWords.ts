@@ -39,7 +39,7 @@ export function useMasteryWords({ userId }: UseMasteryWordsProps) {
     pos: null,
     stability: null,
     abcLetter: null,
-    sortBy: 'date'
+    sortBy: MASTERY_CONFIG.DEFAULT_SORT_BY
   })
 
   // Selection State
@@ -51,7 +51,7 @@ export function useMasteryWords({ userId }: UseMasteryWordsProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery)
-    }, 400)
+    }, MASTERY_CONFIG.DEBOUNCE_DELAY_MS)
     return () => clearTimeout(timer)
   }, [searchQuery])
 

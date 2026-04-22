@@ -1,13 +1,24 @@
 import { useTranslation } from 'react-i18next'
+import { getRetentionLabel } from '../../lib/progress-utils'
 
 interface MemoryHealthCardProps {
   retentionRate: number
   avgStability: number
 }
 
+const labelKeys: Record<ReturnType<typeof getRetentionLabel>, string> = {
+  excellent: 'common.excellent',
+  good: 'common.good',
+  needs_work: 'common.needs_work',
+  no_data: 'common.no_data',
+}
+
 export default function MemoryHealthCard({ retentionRate, avgStability }: MemoryHealthCardProps) {
   const { t } = useTranslation()
-  const strokeDashoffset = 276 - (276 * retentionRate)
+  const label = getRetentionLabel(retentionRate)
+  const hasData = label !== 'no_data'
+  const displayRate = hasData ? retentionRate : 0
+  const strokeDashoffset = 276 - (276 * displayRate)
 
   return (
     <div className="col-span-3 bg-white p-8 rounded-4xl sun-drenched-shadow flex flex-col justify-between group hover:bg-surface-container-lowest transition-all duration-500">
@@ -31,14 +42,14 @@ export default function MemoryHealthCard({ retentionRate, avgStability }: Memory
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-xl font-black text-secondary">{Math.round(retentionRate * 100)}%</span>
+            <span className="text-xl font-black text-secondary">{hasData ? `${Math.round(retentionRate * 100)}%` : '—'}</span>
           </div>
         </div>
 
         <div className="flex-1">
           <div className="mb-3">
             <p className="text-[10px] font-black text-stone-400 uppercase tracking-tighter">{t('home.retention')}</p>
-            <p className="text-sm font-bold text-secondary mt-0.5">{t('common.excellent')}</p>
+            <p className="text-sm font-bold text-secondary mt-0.5">{t(labelKeys[label])}</p>
           </div>
           <div>
             <p className="text-[10px] font-black text-stone-400 uppercase tracking-tighter">{t('home.avgStability')}</p>

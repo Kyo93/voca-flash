@@ -3,13 +3,12 @@
     "later": "Later",
     "days": "days",
     "excellent": "Excellent",
+    "good": "Good",
+    "needs_work": "Needs work",
+    "no_data": "No data yet",
     "admin": "Admin",
     "save": "Save",
     "cancel": "Cancel",
-    "edit": "Edit",
-    "delete": "Delete",
-    "close": "Close",
-    "loading": "Loading...",
     "dateLocale": "en-US",
     "difficulty": {
       "v-easy": "Very Easy",
@@ -62,6 +61,7 @@
     "startQuiz": "Start Daily Quiz",
     "search": "Search...",
     "searchPlaceholder": "Search paths, words, or lessons...",
+    "methodology": "Methodology",
     "mastery": "Vocabulary Vault"
   },
   "library": {
@@ -123,6 +123,24 @@
     "continueLearning": "Continue Learning",
     "viewLibrary": "View Library",
     "resume": "Resume",
+    "memoryHealth": "Memory Health",
+    "dailyMission": "Daily Mission",
+    "forecast": "Review Forecast",
+    "retention": "Retention",
+    "avgStability": "Avg Stability",
+    "masteryProgress": "Mastery Progress",
+    "roadmapJourney": "Learning Journey",
+    "status": {
+      "fresh": "Fresh/Seedling",
+      "stable": "Stable",
+      "rooted": "Rooted"
+    },
+    "arena": {
+      "title": "Arena is waiting",
+      "subtitle": "{{count}} words need review right now",
+      "cta": "Start Review",
+      "actionRequired": "ACTION REQUIRED"
+    },
     "readyToday": "Ready to excel today",
     "continueDesc": "Continue learning from selected topics.",
     "tracking": "TRACKING",
@@ -259,7 +277,7 @@
   },
   "progress": {
     "title": "Progress",
-    "streak": "Day Streak!",
+    "subtitle": "Track your knowledge journey through scientific metrics.",
     "dayStreak": "Day Streak!",
     "topStreak": "You're in the top 5% of learners this month. Keep going!",
     "masteredWords": "Mastered Words",
@@ -267,6 +285,27 @@
     "completed": "complete",
     "welcome": "Welcome back, {{name}}. Continue your journey.",
     "activityFrequency": "Learning Frequency",
+    "habit_heatmap": "Habit Heatmap",
+    "current_streak": "Current Streak",
+    "days": "days",
+    "mastery_distribution": "Mastery Distribution",
+    "total_words": "Total Words",
+    "workload_forecast": "Workload Forecast",
+    "memory_health": "Memory Health",
+    "retention_rate": "Retention Rate",
+    "avg_accuracy": "Avg Accuracy",
+    "status_excellent": "EXCELLENT",
+    "weak_clusters": "Weak Knowledge Clusters",
+    "badge_gallery": "Badge Gallery",
+    "mentor_strategy_title": "Mentor's Strategy",
+    "mentor_strategy_text": "Based on <0>{{accuracy}}%</0> accuracy, focus on <1>Relearning</1> words to strengthen your foundation.",
+    "next_milestone_desc": "Study 3 days in a row before 7:00 AM",
+    "mastery": {
+      "new": "New",
+      "learning": "Learning",
+      "review": "Review",
+      "relearning": "Relearning"
+    },
     "less": "Less",
     "more": "More",
     "intensity": "Intensity: {{level}}",
@@ -301,6 +340,100 @@
     "workloadForecast": {
       "today": "Today",
       "dayN": "Day {{n}}"
+    },
+    "studySuggested": "Start Suggested Lesson",
+    "memoryHealth": "Memory Health",
+    "retentionAbility": "Retention Ability",
+    "averageAccuracy": "Avg Accuracy",
+    "accuracyHigh": "High",
+    "studyActivity": "Study Activity",
+    "studyTime": "study time",
+    "weakClusters": "Weak Clusters",
+    "aiSuggestionTitle": "Mentor's Suggestion",
+    "aiSuggestionPrefix": "Based on your ",
+    "aiSuggestionMid": "% retention, you should focus on ",
+    "aiSuggestionSuffix": " to optimize your results.",
+    "newWords": "new words",
+    "noWeakWords": "No weak words found yet.",
+    "activity": "Study Activity",
+    "no_activity": "Complete a study session to see your activity",
+    "day_streak": "Day Streak",
+    "studyMinutes": "Study Minutes",
+    "knowledge_sunburst": "Knowledge Sunburst",
+    "roadmap_forecast": "Roadmap Forecast",
+    "estimated_completion": "Estimated Completion",
+    "remaining_days": "{{count}} days left",
+    "avg_new_words": "Avg New Words",
+    "avg_reviews": "Avg Reviews",
+    "overall_mastery": "Overall Mastery",
+    "insufficient_data": "Insufficient data for forecast",
+    "per_day": "/ day",
+    "badges": {
+      "first_step": {
+        "label": "First Step",
+        "desc": "Complete your first vocabulary word"
+      },
+      "steady_learner": {
+        "label": "Steady Learner",
+        "desc": "Maintain a 7-day streak"
+      },
+      "fire_starter": {
+        "label": "Fire Starter",
+        "desc": "Maintain a 30-day streak"
+      },
+      "lexical_legend": {
+        "label": "Lexical Legend",
+        "desc": "Master 1000 words"
+      },
+      "marathon_scholar": {
+        "label": "Marathon Scholar",
+        "desc": "Spend 10 hours learning"
+      },
+      "early_bird": {
+        "label": "Early Bird",
+        "desc": "Study before 7:00 AM"
+      }
+    },
+    "greeting_morning": "Good morning, Scholar.",
+    "greeting_afternoon": "Good afternoon, Scholar.",
+    "greeting_evening": "Good evening, Scholar.",
+    "subtitle_scholar": "Here's your in-depth learning progress analysis for today.",
+    "current_level": "Current Level",
+    "vocab_learned": "Words Learned",
+    "today_label": "today",
+    "streak_label": "Day Streak",
+    "new_record": "New record!",
+    "stable": "Stable",
+    "needs_work": "Needs work",
+    "retention_metric": "Retention Rate",
+    "estimated_next_level": "Estimated next level completion:",
+    "total_progress": "Total Progress",
+    "current_label": "Current",
+    "mentor_advice_title": "Mentor's Advice",
+    "mentor_quote": "Language learning is not a sprint, but a process of building layers of knowledge every day.",
+    "mentor_role": "Head of Linguistics",
+    "review_now": "Review Now",
+    "knowledge_structure": "Knowledge Structure",
+    "knowledge_excellent": "Great",
+    "knowledge_good": "Good",
+    "knowledge_developing": "Developing",
+    "diversity": "Diverse",
+    "academic": "Academic",
+    "practical": "Practical",
+    "recent_achievements": "Recent Achievements",
+    "badges_v2": {
+      "persistent": {
+        "label": "Persistent Scholar",
+        "desc": "Complete 100 consecutive days"
+      },
+      "vocab_master": {
+        "label": "Vocabulary Master",
+        "desc": "Surpass 4,000 words"
+      },
+      "c1_peak": {
+        "label": "C1 Peak",
+        "desc": "Complete the final assessment"
+      }
     }
   },
   "rightSidebar": {
@@ -487,6 +620,8 @@
     "repetitionsDesc": "Choosing 'Easy', 'Hard', or 'Again' directly impacts the Ease Factor and schedule.",
     "ratingEasy": "Easy",
     "ratingEasyDesc": "Increases Ease Factor. You've mastered this; it will appear less frequently.",
+    "ratingGood": "Good",
+    "ratingGoodDesc": "Correct answer after a bit of thinking. This is the ideal review state.",
     "ratingHard": "Hard",
     "ratingHardDesc": "Decreases Ease Factor. The algorithm will bring it back sooner.",
     "ratingAgain": "Again",
@@ -681,6 +816,11 @@
       "invalidRow": "Row {{row}}: {{error}}",
       "missingWord": "Missing word",
       "missingDefinition": "Missing definition",
+      "reviewDuplicate": "Review duplicates",
+      "reviewNow": "Review now",
+      "keepAll": "Keep all",
+      "updateAll": "Update all",
+      "skipAll": "Skip all",
       "importingProgress": "Imported {{done}}/{{total}} words...",
       "done": "Done",
       "viewErrors": "View errors",

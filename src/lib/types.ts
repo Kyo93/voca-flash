@@ -49,6 +49,7 @@ export interface Word {
   updated_at: string
   // Joined
   topics?: Pick<Topic, 'id' | 'name' | 'slug' | 'color'> | null
+  wrongChoices?: string[]
 }
 
 // ── Word Choice ─────────────────────────────────────────────

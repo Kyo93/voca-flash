@@ -95,3 +95,38 @@ export function generateUniqueSlug(
   while (existingSlugs.has(`${prefixed}-${i}`)) i++
   return `${prefixed}-${i}`
 }
+
+// ── Color Utilities ──────────────────────────────────────────
+
+/**
+ * Hex to RGBA helper for dynamic backgrounds
+ */
+export function hexToRgba(hex: string, alpha: number): string {
+  try {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  } catch (e) {
+    return `rgba(0, 0, 0, ${alpha})`;
+  }
+}
+
+/**
+ * Darken color helper for accessible text
+ */
+export function darkenColor(hex: string, percent: number): string {
+  try {
+    let r = parseInt(hex.slice(1, 3), 16);
+    let g = parseInt(hex.slice(3, 5), 16);
+    let b = parseInt(hex.slice(5, 7), 16);
+
+    r = Math.floor(r * (1 - percent));
+    g = Math.floor(g * (1 - percent));
+    b = Math.floor(b * (1 - percent));
+
+    return `rgb(${r}, ${g}, ${b})`;
+  } catch (e) {
+    return 'inherit';
+  }
+}

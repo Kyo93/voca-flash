@@ -1,7 +1,7 @@
 import { fsrs, createEmptyCard, State, type Card as FSRSCard } from 'ts-fsrs'
 import i18n from '../i18n'
 import type { SrsRecord } from './types'
-import { SRS_STABILITY_LEVELS, STUDY_SESSION_DEFAULTS } from './constants'
+import { SRS_STABILITY_LEVELS, STUDY_SESSION_DEFAULTS, TIME_CONSTANTS } from './constants'
 
 export interface Card {
   id: string
@@ -67,7 +67,7 @@ export function calculateFSRSReview(
     due: new Date(progress.due),
     stability: progress.stability,
     difficulty: progress.difficulty,
-    elapsed_days: progress.lastReview ? Math.floor((Date.now() - progress.lastReview) / STUDY_SESSION_DEFAULTS.MS_PER_DAY) : 0,
+    elapsed_days: progress.lastReview ? Math.floor((Date.now() - progress.lastReview) / TIME_CONSTANTS.ONE_DAY_MS) : 0,
     scheduled_days: progress.scheduledDays,
     reps: progress.reps,
     lapses: progress.lapses,
@@ -242,56 +242,5 @@ export function mapSrsRecordToCardProgress(record: SrsRecord): CardProgress {
 }
 
 // ── SRS Level Metadata ───────────────────────────────────────
-export interface SrsLevelConfig {
-  label: string
-  color: string     // Background for bars
-  text: string      // Text color
-  bg: string        // Badges background
-  glow: string      // Glow shadow effect
-  icon: string      // Material icon name
-}
-
-/**
- * Centralized logic for SRS Levels based on stability (days).
- * Used by MasteryPage, WordDetailPanel, and Library.
- */
-export function getSrsLevelConfig(stability: number): SrsLevelConfig {
-  if (stability >= SRS_STABILITY_LEVELS.ROOTED) {
-    return {
-      label: 'Rooted',
-      color: 'bg-secondary',
-      text: 'text-secondary',
-      bg: 'bg-secondary/10',
-      glow: 'shadow-[0_0_15px_rgba(130,148,96,0.3)]',
-      icon: 'park'
-    }
-  }
-  if (stability >= SRS_STABILITY_LEVELS.MASTERED) {
-    return {
-      label: 'Mastered',
-      color: 'bg-secondary/70',
-      text: 'text-secondary/80',
-      bg: 'bg-secondary/5',
-      glow: '',
-      icon: 'verified'
-    }
-  }
-  if (stability >= SRS_STABILITY_LEVELS.LEARNING) {
-    return {
-      label: 'Learning',
-      color: 'bg-primary/50',
-      text: 'text-primary/70',
-      bg: 'bg-primary/5',
-      glow: '',
-      icon: 'auto_stories'
-    }
-  }
-  return {
-    label: 'Fresh',
-    color: 'bg-primary',
-    text: 'text-primary',
-    bg: 'bg-primary/10',
-    glow: '',
-    icon: 'target'
-  }
-}
+export type { SrsLevelConfig } from './srs-levels'
+export { getSrsLevelConfig } from './srs-levels'
