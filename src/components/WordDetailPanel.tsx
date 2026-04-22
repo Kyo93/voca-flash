@@ -80,7 +80,7 @@ export default function WordDetailPanel({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full z-70 w-full md:w-[480px] lg:w-[560px] bg-surface/95 backdrop-blur-2xl sun-drenched-shadow-lg flex flex-col"
+            className="fixed top-0 right-0 h-full z-70 w-full md:w-[480px] lg:w-[560px] bg-mint/95 backdrop-blur-2xl sun-drenched-shadow-lg flex flex-col"
           >
             {/* Header Area */}
             <div className="p-8 pb-6 space-y-6">
@@ -170,7 +170,7 @@ export default function WordDetailPanel({
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto p-8 space-y-12 custom-scrollbar bg-surface-container-low">
+            <div className="flex-1 overflow-y-auto p-8 space-y-12 custom-scrollbar bg-mint-container/30">
               {activeTab === 'overview' && (
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}

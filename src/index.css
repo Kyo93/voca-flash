@@ -68,6 +68,11 @@
 
   --color-oceanic-deep: #00236f;
   --color-oceanic-bright: #1e3a8a;
+
+  /* Mint: Fresh Accent (#F2FDFB) */
+  --color-mint: #F2FDFB;
+  --color-mint-container: #E6F7F4;
+  --color-on-mint-container: #00201A;
 }
 
 /* === Variable Master Foundations === */

@@ -33,6 +33,9 @@
     - Cập nhật `RoadmapTopicsPage` hiển thị 3 chỉ số: Tổng số từ, Đã học, Đã thuộc.
     - Sửa logic Progress Bar dựa trên Mastery % thực tế.
     - Đã chạy unit test `roadmap-page-metrics.test.tsx` đạt 100%.
+- **Cập nhật UI Mint Green (April 22)**:
+    - Thêm token màu `mint` vào `index.css`.
+    - Thay đổi màu nền `WordDetailPanel` sang xanh Mint theo yêu cầu.
 
 ## Working Context
 - **Code Splitting Approach**: Lazy loading routes that are not critical for initial paint (Admin, Study, Progress).
