@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { updateUserSettings } from '../lib/supabase-storage'
 import { setTtsConfig } from '../lib/tts'
 import { defaultSettings } from '../lib/settings-defaults'
+import { LNG_STORAGE_KEY } from '../lib/i18n-utils'
 
 export interface SettingsFormData {
   daily_target: number
@@ -66,6 +67,7 @@ export function useSettingsForm() {
       // Apply immediate side-effects
       if (formData.app_language !== i18n.language) {
         await i18n.changeLanguage(formData.app_language)
+        localStorage.setItem(LNG_STORAGE_KEY, formData.app_language)
       }
       
       if (formData.tts_voice) {

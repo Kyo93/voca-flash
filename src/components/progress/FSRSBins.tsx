@@ -26,14 +26,14 @@ export default function FSRSBins({ bins }: FSRSBinsProps) {
               <span className="material-symbols-outlined text-2xl font-variation-fill">psychology</span>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-black text-stone-300 uppercase tracking-widest leading-none mb-1">Trạng thái</p>
+              <p className="text-[10px] font-black text-stone-300 uppercase tracking-widest leading-none mb-1">{t('progress.fsrsBins.status')}</p>
               <p className={`text-[11px] font-black ${bin.color} uppercase tracking-tight`}>{t(bin.label)}</p>
             </div>
           </div>
           <div className="space-y-4">
             <div>
               <p className="text-5xl font-black text-secondary tracking-tight">{bin.value}</p>
-              <p className="text-[10px] font-bold text-stone-400 mt-1 italic">{bin.desc}</p>
+              <p className="text-[10px] font-bold text-stone-400 mt-1 italic">{t(bin.desc)}</p>
             </div>
             <div className="h-1.5 w-full bg-stone-50 rounded-full overflow-hidden">
               <div className={`h-full bg-current ${bin.color} opacity-60`} style={{ width: `${Math.max(5, bin.pct)}%` }} />

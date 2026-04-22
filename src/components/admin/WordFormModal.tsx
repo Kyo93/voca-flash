@@ -1,18 +1,25 @@
 import { type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Word } from '../../lib/types'
 import { useWordForm } from '../../hooks/admin/useWordForm'
 import { WordTagsInput } from './WordTagsInput'
 
-const POS_OPTIONS = [
-  { value: 'noun', label: 'Danh từ' },
-  { value: 'verb', label: 'Động từ' },
-  { value: 'adj', label: 'Tính từ' },
-  { value: 'adv', label: 'Trạng từ' },
-  { value: 'phrase', label: 'Cụm từ' },
-  { value: 'other', label: 'Khác' },
+const POS_OPTIONS = (t: any) => [
+  { value: 'noun', label: t('common.pos.noun') },
+  { value: 'verb', label: t('common.pos.verb') },
+  { value: 'adj', label: t('common.pos.adj') },
+  { value: 'adv', label: t('common.pos.adv') },
+  { value: 'phrase', label: t('common.pos.phrase') },
+  { value: 'other', label: t('common.pos.other') },
 ]
 
-const DIFFICULTY_LABELS = ['Rất dễ', 'Dễ', 'Trung bình', 'Khó', 'Rất khó']
+const DIFFICULTY_LABELS = (t: any) => [
+  t('common.difficulty.v-easy'),
+  t('common.difficulty.easy'),
+  t('common.difficulty.medium'),
+  t('common.difficulty.hard'),
+  t('common.difficulty.v-hard')
+]
 
 interface Props {
   open: boolean
@@ -23,7 +30,11 @@ interface Props {
 }
 
 export default function WordFormModal({ open, word, initialWrongChoices, onSave, onClose }: Props) {
+  const { t } = useTranslation()
   const { state, actions } = useWordForm(word, initialWrongChoices, open)
+  
+  const posOptions = POS_OPTIONS(t)
+  const difficultyLabels = DIFFICULTY_LABELS(t)
 
   if (!open) return null
 
@@ -53,10 +64,10 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
         <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl z-20">
           <div>
             <h2 className="text-xl font-black text-secondary">
-              {word ? 'Sửa từ vựng' : 'Thêm từ vựng mới'}
+              {word ? t('admin.wordForm.titleEdit') : t('admin.wordForm.titleAdd')}
             </h2>
             <p className="text-sm text-on-surface-variant mt-1">
-              {word ? 'Cập nhật thông tin từ vựng' : 'Điền thông tin từ vựng mới'}
+              {word ? t('admin.wordForm.subtitleEdit') : t('admin.wordForm.subtitleAdd')}
             </p>
           </div>
           <button
@@ -72,23 +83,23 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* Word + Phonetic */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Word *</label>
+              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.wordLabel')}</label>
               <input
                 type="text"
                 value={state.wordText}
                 onChange={(e) => actions.setWordText(e.target.value)}
-                placeholder="hello"
+                placeholder={t('admin.wordForm.wordPlaceholder')}
                 required
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Phonetic</label>
+              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.phoneticLabel')}</label>
               <input
                 type="text"
                 value={state.phonetic}
                 onChange={(e) => actions.setPhonetic(e.target.value)}
-                placeholder="/həˈloʊ/"
+                placeholder={t('admin.wordForm.phoneticPlaceholder')}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
             </div>
@@ -97,20 +108,20 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* POS + Difficulty */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Từ loại</label>
+              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.posLabel')}</label>
               <select
                 value={state.pos ?? 'noun'}
                 onChange={(e) => actions.setPos(e.target.value as Word['pos'])}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               >
-                {POS_OPTIONS.map((o) => (
+                {posOptions.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </select>
             </div>
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">
-                Độ khó: <span className="text-primary">{DIFFICULTY_LABELS[state.difficulty - 1]}</span>
+                {t('admin.wordForm.difficultyLabel')}: <span className="text-primary">{difficultyLabels[state.difficulty - 1]}</span>
               </label>
               <input
                 type="range"
@@ -121,18 +132,18 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 className="w-full accent-primary"
               />
               <div className="flex justify-between text-xs text-stone-400 mt-1">
-                <span>Dễ</span><span>Khó</span>
+                <span>{t('common.difficulty.easy')}</span><span>{t('common.difficulty.hard')}</span>
               </div>
             </div>
           </div>
 
           {/* Definition */}
           <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Definition *</label>
+            <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.definitionLabel')}</label>
             <textarea
               value={state.definition}
               onChange={(e) => actions.setDefinition(e.target.value)}
-              placeholder="Nghĩa của từ..."
+              placeholder={t('admin.wordForm.definitionPlaceholder')}
               rows={2}
               required
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
@@ -142,22 +153,22 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* Example EN & VI */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Ví dụ (EN)</label>
+              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.exampleEn')}</label>
               <input
                 type="text"
                 value={state.example}
                 onChange={(e) => actions.setExample(e.target.value)}
-                placeholder="Hello, how are you?"
+                placeholder={t('admin.wordForm.exampleEnPlaceholder')}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Ví dụ (VI)</label>
+              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.exampleVi')}</label>
               <input
                 type="text"
                 value={state.exampleVi}
                 onChange={(e) => actions.setExampleVi(e.target.value)}
-                placeholder="Xin chào, bạn khỏe không?"
+                placeholder={t('admin.wordForm.exampleViPlaceholder')}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
             </div>
@@ -167,37 +178,37 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">
-                Đồng nghĩa <span className="font-normal text-stone-400">(cách nhau bởi dấu phẩy)</span>
+                {t('admin.wordForm.synonyms')} <span className="font-normal text-stone-400">{t('admin.wordForm.commaSeparated')}</span>
               </label>
               <input
                 type="text"
                 value={state.synonyms}
                 onChange={(e) => actions.setSynonyms(e.target.value)}
-                placeholder="greet, salute, hello"
+                placeholder={t('admin.wordForm.synonymsPlaceholder')}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
             </div>
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">
-                Trái nghĩa <span className="font-normal text-stone-400">(cách nhau bởi dấu phẩy)</span>
+                {t('admin.wordForm.antonyms')} <span className="font-normal text-stone-400">{t('admin.wordForm.commaSeparated')}</span>
               </label>
               <input
                 type="text"
                 value={state.antonyms}
                 onChange={(e) => actions.setAntonyms(e.target.value)}
-                placeholder="goodbye, farewell"
+                placeholder={t('admin.wordForm.antonymsPlaceholder')}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
             </div>
             <div>
               <label className="block text-sm font-bold text-secondary mb-2">
-                Word Family <span className="font-normal text-stone-400">(các biến thể, cách nhau bởi dấu phẩy)</span>
+                {t('admin.wordForm.wordFamily')} <span className="font-normal text-stone-400">{t('admin.wordForm.variants')}</span>
               </label>
               <input
                 type="text"
                 value={state.wordFamily}
                 onChange={(e) => actions.setWordFamily(e.target.value)}
-                placeholder="run, runs, running, ran, runner"
+                placeholder={t('admin.wordForm.wordFamilyPlaceholder')}
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
               />
             </div>
@@ -211,19 +222,19 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           />
 
           {/* Image URL + Focal Point + Preview */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">Ảnh minh họa (URL)</label>
+            <div>
+            <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.imageUrl')}</label>
             <input
               type="text"
               value={state.imageUrl}
               onChange={(e) => actions.setImageUrl(e.target.value)}
-              placeholder="https://images.unsplash.com/photo-xxx?w=600&q=80"
+              placeholder={t('admin.wordForm.imageUrlPlaceholder')}
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
             />
             {state.imageUrl && (
               <div className="mt-3 space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-stone-500">Trọng tâm ảnh:</span>
+                  <span className="text-xs font-bold text-stone-500">{t('admin.wordForm.focalPoint')}:</span>
                   {(['top', 'center', 'bottom'] as const).map((pos) => (
                     <button
                       key={pos}
@@ -235,12 +246,12 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                           : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                       }`}
                     >
-                      {pos === 'top' ? '⬆ Trên' : pos === 'center' ? '⬛ Giữa' : '⬇ Dưới'}
+                      {pos === 'top' ? `⬆ ${t('admin.wordForm.focalTop')}` : pos === 'center' ? `⬛ ${t('admin.wordForm.focalCenter')}` : `⬇ ${t('admin.wordForm.focalBottom')}`}
                     </button>
                   ))}
                 </div>
                 <div className="bg-stone-50 rounded-xl p-3 border border-stone-200">
-                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2">Flashcard Preview (4:3)</p>
+                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2">{t('admin.wordForm.previewTitle')}</p>
                   <div className="aspect-4/3 w-full max-w-[280px] rounded-lg overflow-hidden border border-stone-200 shadow-sm relative">
                     <img
                       src={state.imageUrl}
@@ -262,14 +273,14 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* Wrong choices */}
           <div>
             <label className="block text-sm font-bold text-secondary mb-2">
-              Đáp án sai (3 lựa chọn cho flashcard)
+              {t('admin.wordForm.wrongChoices')}
             </label>
             <div className="grid grid-cols-3 gap-3">
-              <input type="text" value={state.wrong1} onChange={(e) => actions.setWrong1(e.target.value)} placeholder="Sai 1" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
-              <input type="text" value={state.wrong2} onChange={(e) => actions.setWrong2(e.target.value)} placeholder="Sai 2" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
-              <input type="text" value={state.wrong3} onChange={(e) => actions.setWrong3(e.target.value)} placeholder="Sai 3" className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
+              <input type="text" value={state.wrong1} onChange={(e) => actions.setWrong1(e.target.value)} placeholder={t('admin.wordForm.wrong1Placeholder')} className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
+              <input type="text" value={state.wrong2} onChange={(e) => actions.setWrong2(e.target.value)} placeholder={t('admin.wordForm.wrong2Placeholder')} className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
+              <input type="text" value={state.wrong3} onChange={(e) => actions.setWrong3(e.target.value)} placeholder={t('admin.wordForm.wrong3Placeholder')} className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
             </div>
-            <p className="text-xs text-stone-400 mt-1">Để trống nếu không cần flashcard dạng chọn đáp án</p>
+            <p className="text-xs text-stone-400 mt-1">{t('admin.wordForm.wrongChoicesDesc')}</p>
           </div>
 
           {state.error && (
@@ -285,14 +296,14 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                onClick={onClose}
                className="flex-1 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-50 transition-all"
              >
-               Hủy
+               {t('common.cancel')}
              </button>
              <button
                type="submit"
                disabled={state.loading}
                className="flex-1 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
              >
-               {state.loading ? 'Đang lưu...' : word ? 'Lưu thay đổi' : 'Thêm từ vựng'}
+               {state.loading ? t('common.loading') : word ? t('common.save') : t('common.add')}
              </button>
           </div>
         </form>

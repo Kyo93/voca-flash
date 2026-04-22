@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Topic } from '../../lib/types'
 
 interface TopicPanelProps {
@@ -28,6 +29,7 @@ export default function TopicPanel({
   onReorderTopics,
   activeTopicId,
 }: TopicPanelProps) {
+  const { t } = useTranslation()
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const [dragOverId, setDragOverId] = useState<string | null>(null)
 
@@ -45,10 +47,10 @@ export default function TopicPanel({
 
   function handleDrop(e: React.DragEvent, targetId: string) {
     e.preventDefault()
-    if (!draggingId || draggingId === targetId) { 
+    if (!draggingId || draggingId === targetId) {
       setDraggingId(null)
       setDragOverId(null)
-      return 
+      return
     }
     const oldIndex = topics.findIndex(t => t.id === draggingId)
     const newIndex = topics.findIndex(t => t.id === targetId)
@@ -57,7 +59,7 @@ export default function TopicPanel({
     const reordered = [...topics]
     const [moved] = reordered.splice(oldIndex, 1)
     reordered.splice(newIndex, 0, moved)
-    
+
     onReorderTopics(reordered)
     setDraggingId(null)
     setDragOverId(null)
@@ -78,29 +80,28 @@ export default function TopicPanel({
     <div className="flex flex-col h-full px-6 py-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-black text-on-surface-variant tracking-tight">Chủ đề</h2>
+        <h2 className="text-lg font-black text-on-surface-variant tracking-tight">{t('admin.topics.title')}</h2>
         <button
           onClick={onAddTopic}
           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-secondary hover:bg-secondary-container/30 text-sm font-bold transition-all"
         >
           <span className="material-symbols-outlined text-base">add_box</span>
-          Thêm
+          {t('admin.topics.add')}
         </button>
       </div>
 
       {/* Uncategorized bucket */}
       <button
         onClick={() => onViewWords(null)}
-        className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all mb-2 mr-4 ${
-          activeTopicId === null
+        className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all mb-2 mr-4 ${activeTopicId === null
             ? 'bg-surface-container-lowest shadow-[inset_4px_0_0_#944a00]'
             : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
-        }`}
+          }`}
       >
         <span className="text-lg">📦</span>
         <div className="flex-1 text-left">
-          <p className="font-bold text-sm text-secondary">Chưa phân loại</p>
-          <p className="text-xs text-stone-400">{uncategorizedCount} từ</p>
+          <p className="font-bold text-sm text-secondary">{t('admin.topics.uncategorized')}</p>
+          <p className="text-xs text-stone-400">{t('admin.topics.wordCount', { count: uncategorizedCount })}</p>
         </div>
         {uncategorizedCount > 0 && (
           <span className="bg-stone-100 text-stone-500 text-xs font-bold px-2 py-0.5 rounded-full">
@@ -115,7 +116,7 @@ export default function TopicPanel({
           <div className="flex flex-col items-center gap-2 py-8">
             <span className="material-symbols-outlined text-4xl text-stone-200">folder_open</span>
             <p className="text-stone-400 text-xs text-center">
-              Chưa có chủ đề nào.<br />Bấm "Thêm" để tạo.
+              {t('admin.topics.emptyTitle')}<br />{t('admin.topics.emptyDesc')}
             </p>
           </div>
         ) : (
@@ -134,15 +135,14 @@ export default function TopicPanel({
                 onDragOver={(e) => handleDragOver(e, topic.id)}
                 onDrop={(e) => handleDrop(e, topic.id)}
                 onDragEnd={handleDragEnd}
-                className={`relative group rounded-lg transition-all cursor-pointer select-none ${
-                  draggingId === topic.id
+                className={`relative group rounded-lg transition-all cursor-pointer select-none ${draggingId === topic.id
                     ? 'opacity-40'
                     : dragOverId === topic.id
-                    ? 'border border-primary shadow-md'
-                    : isActive
-                    ? 'border border-stone-200 shadow-[inset_4px_0_0_#944a00]'
-                    : 'border border-stone-200 hover:bg-surface-container'
-                }`}
+                      ? 'border border-primary shadow-md'
+                      : isActive
+                        ? 'border border-stone-200 shadow-[inset_4px_0_0_#944a00]'
+                        : 'border border-stone-200 hover:bg-surface-container'
+                  }`}
                 style={{ backgroundColor: `${topicColor}1A` }}
               >
                 <div className="p-3">
@@ -159,11 +159,10 @@ export default function TopicPanel({
                       {topic.name}
                     </p>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
-                        status === 'PUBLISHED'
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${status === 'PUBLISHED'
                           ? 'bg-green-100 text-green-700'
                           : 'bg-stone-200 text-stone-600'
-                      }`}
+                        }`}
                     >
                       {status}
                     </span>
@@ -171,34 +170,34 @@ export default function TopicPanel({
 
                   {/* Slug */}
                   {topic.slug && (
-                    <p className="text-[10px] text-stone-400 font-mono mb-1 pl-[calc(0.875rem+0.5rem)] truncate">
+                    <p className="text-[10px] text-stone-400 font-mono mb-1 pl-5.5 truncate">
                       /{topic.slug}
                     </p>
                   )}
 
                   {/* Description */}
                   {topic.description && (
-                    <p className="text-xs text-stone-400 mb-2 pl-[calc(0.875rem+0.5rem)] line-clamp-1">
+                    <p className="text-xs text-stone-400 mb-2 pl-5.5 line-clamp-1">
                       {topic.description}
                     </p>
                   )}
 
                   {/* Footer Stats + Actions */}
-                  <div className="flex items-center justify-between pl-[calc(0.875rem+0.5rem)]">
-                    <span className="text-[10px] font-bold text-stone-500">{count} từ</span>
+                  <div className="flex items-center justify-between pl-5.5">
+                    <span className="text-[10px] font-bold text-stone-500">{t('admin.topics.wordCount', { count })}</span>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
                       onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => onEditTopic(topic)}
                         className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-primary hover:bg-orange-50 transition-all"
-                        title="Sửa"
+                        title={t('admin.topics.edit')}
                       >
                         <span className="material-symbols-outlined text-sm">edit</span>
                       </button>
                       <button
                         onClick={() => onDeleteTopic(topic)}
                         className="flex items-center justify-center w-7 h-7 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all"
-                        title="Xóa"
+                        title={t('admin.topics.delete')}
                       >
                         <span className="material-symbols-outlined text-sm">delete</span>
                       </button>

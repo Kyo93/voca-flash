@@ -11,7 +11,7 @@ export const DESIGN_TOKENS = {
     'XL': 'rounded-xl',   // 20px - Buttons
     'LG': 'rounded-lg',   // 18px - Inputs
   },
-  
+
   SHADOW: {
     'SM': 'shadow-sm',
     'MD': 'shadow-md',

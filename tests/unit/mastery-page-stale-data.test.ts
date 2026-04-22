@@ -31,7 +31,7 @@ describe('MasteryPage — stale data fix via visibilitychange', () => {
     const fs = require('fs')
     const path = require('path')
     const source = fs.readFileSync(
-      path.resolve(__dirname, '../../src/pages/MasteryPage.tsx'),
+      path.resolve(__dirname, '../../src/hooks/useMasteryWords.ts'),
       'utf-8'
     )
 
@@ -51,7 +51,7 @@ describe('MasteryPage — stale data fix via visibilitychange', () => {
     const fs = require('fs')
     const path = require('path')
     const source = fs.readFileSync(
-      path.resolve(__dirname, '../../src/pages/MasteryPage.tsx'),
+      path.resolve(__dirname, '../../src/hooks/useMasteryWords.ts'),
       'utf-8'
     )
     expect(source).toMatch(/visibilitychange/)

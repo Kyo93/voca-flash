@@ -22,10 +22,10 @@ export default function DashboardHero({
   growth
 }: DashboardHeroProps) {
   return (
-    <div className="relative overflow-hidden rounded-4xl bg-linear-to-br from-primary-container to-primary px-10 py-8 mb-8 flex items-center shadow-2xl group border border-white/10">
+    <div className="relative overflow-hidden rounded-4xl bg-linear-[135deg] from-primary to-[#8B4513] px-10 py-10 mb-10 flex items-center shadow-2xl group">
       <div className="relative z-10 max-w-2xl animate-fade-in">
-        <h3 className="text-2xl md:text-3xl font-black text-white mb-4 tracking-tight leading-tight">
-          Sẵn sàng bứt phá hôm nay chưa, <span className="text-amber-200">{profile?.display_name || 'Scholar'}</span>?
+        <h3 className="text-4xl md:text-5xl font-black text-white mb-6 editorial-asymmetry leading-tight">
+          {t('home.readyToday')}, <span className="text-secondary-container">{profile?.display_name || 'Scholar'}</span>?
         </h3>
         
         <div className="pl-4 border-l-2 border-amber-200/50 mb-6 transform transition-all group-hover:translate-x-1 duration-500">
@@ -51,7 +51,7 @@ export default function DashboardHero({
               }}
               className="text-white/40 font-bold hover:text-white transition-colors text-xs"
             >
-              Để sau
+              {t('common.later')}
             </button>
           )}
         </div>

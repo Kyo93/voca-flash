@@ -85,7 +85,7 @@ export function ImportDropZone({
         type="button"
         onClick={() => {
           const bom = '\uFEFF'
-          const csv = 'word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Xin chào,Hello world!,Xin chào thế giới!,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Quả táo,An apple a day,Ăn táo mỗi ngày,,Food,pear,orange,fruit'
+          const csv = t('admin.import.templateCsv')
           const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8' })
           const url = URL.createObjectURL(blob)
           const a = document.createElement('a')

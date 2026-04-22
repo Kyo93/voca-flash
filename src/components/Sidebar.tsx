@@ -1,43 +1,40 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
-import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
 import { useAuth } from '../contexts/AuthContext'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
-import type { StreakData } from '../lib/streak'
+import { fetchStreakFromSupabase } from '../lib/streak'
 
 export default function Sidebar() {
   const { t } = useTranslation()
   const location = useLocation()
-  const { profile, activeRoadmapSlug, signOut, user } = useAuth()
+  const { profile, activeRoadmapSlug, signOut } = useAuth()
   const { collapsed, toggleSidebar } = useSidebar()
 
   const [avatarError, setAvatarError] = useState(false)
-  const [streakData, setStreakData] = useState<StreakData>(loadStreak())
+  const [streakData, setStreakData] = useState<any>({ currentStreak: 0 })
 
   useEffect(() => {
-    async function loadStreakData() {
-      if (user) {
-        const data = await fetchStreakFromSupabase(user.id)
+    async function load() {
+      if (profile?.id) {
+        const data = await fetchStreakFromSupabase(profile.id)
         setStreakData(data)
-      } else {
-        setStreakData(loadStreak())
       }
     }
-    loadStreakData()
-  }, [user])
-  
+    load()
+  }, [profile?.id])
+
   useEffect(() => {
     setAvatarError(false)
   }, [profile?.avatar_url])
 
   const navItems = useMemo(() => [
     { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard' },
-    { 
-      path: activeRoadmapSlug ? `/library/${activeRoadmapSlug}` : '/library', 
+    {
+      path: activeRoadmapSlug ? `/library/${activeRoadmapSlug}` : '/library',
       basePath: '/library',
-      labelKey: 'nav.library', 
-      icon: 'menu_book' 
+      labelKey: 'nav.library',
+      icon: 'menu_book'
     },
     { path: '/progress', labelKey: 'nav.progress', icon: 'bar_chart' },
     { path: '/mastery', labelKey: 'nav.mastery', icon: 'inventory_2' },
@@ -60,8 +57,8 @@ export default function Sidebar() {
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <p className="text-xl font-black text-primary leading-none whitespace-nowrap">VocabMaster</p>
-            <p className="text-[10px] text-stone-500 font-normal tracking-widest uppercase whitespace-nowrap">The Tactile Scholar</p>
+            <p className="text-xl font-black text-primary leading-none whitespace-nowrap">{t('app.name')}</p>
+            <p className="text-[10px] text-stone-500 font-normal tracking-widest uppercase whitespace-nowrap">{t('sidebar.tagline')}</p>
           </div>
         )}
       </div>
@@ -75,11 +72,10 @@ export default function Sidebar() {
               key={item.path}
               to={item.path}
               title={collapsed ? t(item.labelKey) : undefined}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all text-sm ${
-                isActive
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all text-sm ${isActive
                   ? 'bg-white text-primary shadow-sm border border-stone-100'
                   : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
-              } ${collapsed ? 'justify-center px-0' : ''}`}
+                } ${collapsed ? 'justify-center px-0' : ''}`}
             >
               <span className="material-symbols-outlined shrink-0">{item.icon}</span>
               {!collapsed && <span className="whitespace-nowrap overflow-hidden">{t(item.labelKey)}</span>}
@@ -90,15 +86,14 @@ export default function Sidebar() {
         {/* Admin link */}
         <Link
           to="/admin"
-          title={collapsed ? 'Quản trị' : undefined}
-          className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all text-sm ${
-            location.pathname.startsWith('/admin')
+          title={collapsed ? t('common.admin') : undefined}
+          className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all text-sm ${location.pathname.startsWith('/admin')
               ? 'bg-white text-primary shadow-sm border border-stone-100'
               : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
-          } ${collapsed ? 'justify-center px-0' : ''}`}
+            } ${collapsed ? 'justify-center px-0' : ''}`}
         >
           <span className="material-symbols-outlined shrink-0">admin_panel_settings</span>
-          {!collapsed && <span className="whitespace-nowrap overflow-hidden">Quản trị</span>}
+          {!collapsed && <span className="whitespace-nowrap overflow-hidden">{t('common.admin')}</span>}
         </Link>
       </nav>
 
@@ -108,12 +103,12 @@ export default function Sidebar() {
         <button
           onClick={toggleSidebar}
           className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-stone-400 hover:text-primary hover:bg-stone-100 transition-all cursor-pointer ${collapsed ? 'justify-center px-0' : ''}`}
-          title={collapsed ? 'Mở rộng menu' : 'Thu nhỏ menu'}
+          title={collapsed ? t('sidebar.expand') : t('sidebar.collapse')}
         >
           <span className="material-symbols-outlined text-lg transition-transform duration-300 shrink-0" style={{ transform: collapsed ? 'rotate(180deg)' : 'none' }}>
             menu_open
           </span>
-          {!collapsed && <span className="text-xs font-medium whitespace-nowrap">Thu nhỏ</span>}
+          {!collapsed && <span className="text-xs font-medium whitespace-nowrap">{t('sidebar.collapse')}</span>}
         </button>
 
         {/* Quick Study CTA */}
@@ -130,9 +125,9 @@ export default function Sidebar() {
         <div className={`flex items-center gap-3 p-3 bg-white rounded-2xl shadow-sm border border-stone-100 ${collapsed ? 'justify-center' : ''}`}>
           <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary/10 flex items-center justify-center shrink-0 relative group">
             {profile?.avatar_url && !avatarError ? (
-              <img 
-                src={profile.avatar_url} 
-                alt={displayName} 
+              <img
+                src={profile.avatar_url}
+                alt={displayName}
                 className="w-full h-full object-cover"
                 onError={() => setAvatarError(true)}
               />
@@ -145,12 +140,12 @@ export default function Sidebar() {
               <div className="overflow-hidden flex-1">
                 <p className="text-[13px] font-bold truncate">{displayName}</p>
                 <p className="text-[10px] text-stone-400 font-normal uppercase truncate">
-                  {profile?.streak_days ? `${streakData.currentStreak} 🔥 ngày` : 'Học viên'}
+                  {profile?.streak_days ? t('sidebar.streakDay', { count: streakData.currentStreak }) : t('sidebar.student')}
                 </p>
               </div>
               <button
                 onClick={signOut}
-                title="Đăng xuất"
+                title={t('sidebar.signout')}
                 className="material-symbols-outlined text-stone-300 text-lg hover:text-red-400 transition-colors cursor-pointer"
               >
                 logout

@@ -20,10 +20,10 @@ export default function LandingPage() {
             VocabMaster
           </div>
           <div className="hidden md:flex items-center gap-10">
-            <a className="text-primary font-bold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-primary after:rounded-full" href="#">Bài học</a>
-            <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Trắc nghiệm</a>
+            <a className="text-primary font-bold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-primary after:rounded-full" href="#">{t('landing.articles')}</a>
+            <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">{t('landing.quizzes')}</a>
             <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">{t('nav.library')}</a>
-            <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">Cộng đồng</a>
+            <a className="text-on-surface-variant font-medium hover:text-primary transition-colors" href="#">{t('landing.community')}</a>
           </div>
           <div className="flex items-center gap-6">
             <a href="/login" className="px-8 py-2.5 rounded-full font-bold text-primary border-2 border-primary hover:bg-primary hover:text-white transition-all duration-300">{t('landing.register')}</a>
@@ -39,12 +39,12 @@ export default function LandingPage() {
             <div className="mb-auto">
               <span className="inline-flex items-center gap-2 px-5 py-2 mb-8 text-xs font-bold tracking-widest uppercase bg-orange-100 text-primary rounded-full shadow-sm">
                 <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                Kỹ thuật học hiện đại
+                {t('landing.modernTechnique')}
               </span>
               <h1 className="text-5xl lg:text-6xl font-headline font-black leading-[1.1] tracking-tight text-secondary mb-8">
                 {t('landing.heroTitle')}{' '}
                 <span className="text-primary italic">{t('landing.heroTitleAccent')}</span>{' '}
-                với Spaced Repetition
+                {t('landing.withSrs')}
               </h1>
               <p className="text-xl text-on-surface-variant leading-relaxed mb-10 max-w-lg">
                 {t('landing.heroSubtitle')}
@@ -123,8 +123,8 @@ export default function LandingPage() {
                   <div className="group flex items-start gap-6 p-6 bg-white/60 rounded-2xl hover:bg-white transition-all shadow-sm hover:shadow-md border border-transparent hover:border-orange-100">
                     <span className="text-5xl font-black text-orange-200 group-hover:text-primary/20 transition-colors leading-none">02</span>
                     <div>
-                      <h4 className="text-xl font-bold text-secondary mb-2 group-hover:text-primary transition-colors">Chế độ phụ huynh</h4>
-                      <p className="text-on-surface-variant">Hệ thống báo cáo trực quan giúp theo dõi tiến độ học tập của con dễ dàng.</p>
+                      <h4 className="text-xl font-bold text-secondary mb-2 group-hover:text-primary transition-colors">{t('landing.parentMode')}</h4>
+                      <p className="text-on-surface-variant">{t('landing.parentModeDesc')}</p>
                     </div>
                   </div>
                 </div>
@@ -140,10 +140,10 @@ export default function LandingPage() {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4 relative z-10 shrink-0">
                     <a href="/dashboard" className="px-8 py-3 bg-white text-primary text-base font-black rounded-xl hover:scale-105 hover:bg-orange-50 transition-all shadow-lg">
-                      Học ngay
+                      {t('landing.studyNow')}
                     </a>
                     <button className="px-8 py-3 border-2 border-white/40 text-white text-base font-bold rounded-xl hover:bg-white/10 transition-all">
-                      Bảng giá
+                      {t('landing.pricing')}
                     </button>
                   </div>
                   <div className="absolute -right-10 -bottom-10 opacity-10 rotate-12 pointer-events-none">
@@ -164,9 +164,9 @@ export default function LandingPage() {
             <span className="text-sm text-on-surface-variant/70">© 2024 VocabMaster. The Tactile Scholar's Choice.</span>
           </div>
           <div className="flex flex-wrap justify-center gap-6 md:gap-10 text-sm font-bold text-secondary">
-            <a className="hover:text-primary transition-colors" href="#">Bài học</a>
-            <a className="hover:text-primary transition-colors" href="#">Thư viện</a>
-            <a className="hover:text-primary transition-colors" href="#">Về chúng tôi</a>
+            <a className="hover:text-primary transition-colors" href="#">{t('landing.articles')}</a>
+            <a className="hover:text-primary transition-colors" href="#">{t('nav.library')}</a>
+            <a className="hover:text-primary transition-colors" href="#">{t('landing.aboutUs')}</a>
           </div>
         </div>
       </footer>

@@ -32,14 +32,16 @@ export interface CardProgress {
   lastReview: number     // Last review timestamp (ms)
 }
 
+const DEFAULT_RETENTION = 0.9
+
 /** 
  * Internal FSRS Scheduler instance (Singleton) 
  * request_retention default is 0.9 (90% retention)
  * enable_short_term=false ensures we don't have sub-day intervals
  */
-const scheduler = fsrs({ 
+const scheduler = fsrs({
   enable_short_term: false,
-  request_retention: 0.9 
+  request_retention: DEFAULT_RETENTION
 })
 
 /**
@@ -55,17 +57,17 @@ export type SrsRating = 1 | 2 | 3 | 4
 export function calculateFSRSReview(
   progress: CardProgress,
   rating: SrsRating,
-  retention: number = 0.9
+  retention: number = DEFAULT_RETENTION
 ): CardProgress {
   // 1. Create/Configure scheduler with user retention preference
-  const s = retention === 0.9 ? scheduler : fsrs({ enable_short_term: false, request_retention: retention })
-  
+  const srsScheduler = retention === DEFAULT_RETENTION ? scheduler : fsrs({ enable_short_term: false, request_retention: retention })
+
   // 2. Map Progress to FSRS Card
   const currentCard: FSRSCard = {
     due: new Date(progress.due),
     stability: progress.stability,
     difficulty: progress.difficulty,
-    elapsed_days: progress.lastReview ? Math.floor((Date.now() - progress.lastReview) / (24 * 60 * 60 * 1000)) : 0,
+    elapsed_days: progress.lastReview ? Math.floor((Date.now() - progress.lastReview) / STUDY_SESSION_DEFAULTS.MS_PER_DAY) : 0,
     scheduled_days: progress.scheduledDays,
     reps: progress.reps,
     lapses: progress.lapses,
@@ -75,7 +77,7 @@ export function calculateFSRSReview(
   }
 
   // 3. Repeat (Calculate all 4 options, then pick the rated one)
-  const results = s.repeat(currentCard, new Date())
+  const results = srsScheduler.repeat(currentCard, new Date())
   const selected = results[rating]
   const newCard = selected.card
 
@@ -136,7 +138,7 @@ export function resetFSRSCard(progress: CardProgress): CardProgress {
   }
 
   const { card: reset } = scheduler.forget(currentCard, new Date())
-  
+
   return {
     cardId: progress.cardId,
     stability: reset.stability,
@@ -255,40 +257,40 @@ export interface SrsLevelConfig {
  */
 export function getSrsLevelConfig(stability: number): SrsLevelConfig {
   if (stability >= SRS_STABILITY_LEVELS.ROOTED) {
-    return { 
-      label: 'Rooted', 
-      color: 'bg-secondary', 
-      text: 'text-secondary', 
-      bg: 'bg-secondary/10', 
+    return {
+      label: 'Rooted',
+      color: 'bg-secondary',
+      text: 'text-secondary',
+      bg: 'bg-secondary/10',
       glow: 'shadow-[0_0_15px_rgba(130,148,96,0.3)]',
       icon: 'park'
     }
   }
   if (stability >= SRS_STABILITY_LEVELS.MASTERED) {
-    return { 
-      label: 'Mastered', 
-      color: 'bg-secondary/70', 
-      text: 'text-secondary/80', 
-      bg: 'bg-secondary/5', 
+    return {
+      label: 'Mastered',
+      color: 'bg-secondary/70',
+      text: 'text-secondary/80',
+      bg: 'bg-secondary/5',
       glow: '',
       icon: 'verified'
     }
   }
   if (stability >= SRS_STABILITY_LEVELS.LEARNING) {
-    return { 
-      label: 'Learning', 
-      color: 'bg-primary/50', 
-      text: 'text-primary/70', 
-      bg: 'bg-primary/5', 
+    return {
+      label: 'Learning',
+      color: 'bg-primary/50',
+      text: 'text-primary/70',
+      bg: 'bg-primary/5',
       glow: '',
       icon: 'auto_stories'
     }
   }
-  return { 
-    label: 'Fresh', 
-    color: 'bg-primary', 
-    text: 'text-primary', 
-    bg: 'bg-primary/10', 
+  return {
+    label: 'Fresh',
+    color: 'bg-primary',
+    text: 'text-primary',
+    bg: 'bg-primary/10',
     glow: '',
     icon: 'target'
   }

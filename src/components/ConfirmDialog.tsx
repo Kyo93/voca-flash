@@ -1,5 +1,7 @@
 
 
+import { useTranslation } from 'react-i18next'
+
 interface Props {
   open: boolean
   title: string
@@ -15,12 +17,15 @@ export default function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = 'Xác nhận',
+  confirmLabel,
   onConfirm,
   onCancel,
   danger = false,
   loading = false,
 }: Props) {
+  const { t } = useTranslation()
+  const finalConfirmLabel = confirmLabel || t('common.confirm')
+  
   if (!open) return null
 
   return (
@@ -50,7 +55,7 @@ export default function ConfirmDialog({
             onClick={onCancel}
             className="flex-1 py-2.5 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-50 transition-all"
           >
-            Hủy
+            {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
@@ -64,7 +69,7 @@ export default function ConfirmDialog({
             {loading ? (
               <span className="material-symbols-outlined text-lg animate-spin">progress_activity</span>
             ) : (
-              confirmLabel
+              finalConfirmLabel
             )}
           </button>
         </div>

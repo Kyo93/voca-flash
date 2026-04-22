@@ -21,7 +21,7 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
     const availableVoices = window.speechSynthesis.getVoices()
     const englishVoices = availableVoices.filter(v => v.lang.startsWith('en'))
     setVoices(englishVoices)
-    
+
     // Automatically select a default voice if none matches
     if (englishVoices.length > 0 && !formData.tts_voice) {
       const preferred = englishVoices.find(v => !v.name.includes('Google')) || englishVoices[0]
@@ -40,7 +40,7 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
     <SettingsSection
       icon="volume_up"
       title={t('settings.audio')}
-      description="Tùy chỉnh giọng đọc Tiếng Anh và ngôn ngữ hiển thị của ứng dụng."
+      description={t('settings.audioDesc')}
       colorClass="text-purple-600"
       bgClass="bg-purple-50"
     >
@@ -51,13 +51,13 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
             {t('settings.voice')}
           </label>
           <div className="relative group">
-            <select 
+            <select
               value={formData.tts_voice || ''}
               onChange={(e) => onChange({ tts_voice: e.target.value })}
               className="w-full px-5 py-4 bg-stone-50/50 border border-stone-200 rounded-2xl text-secondary font-medium outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all cursor-pointer appearance-none"
             >
-              {voices.length === 0 && <option value="">Đang tải giọng đọc...</option>}
-              <option value="">(Mặc định của hệ thống)</option>
+              {voices.length === 0 && <option value="">{t('settings.loadingVoices')}</option>}
+              <option value="">{t('settings.systemDefault')}</option>
               {voices.map(voice => (
                 <option key={voice.voiceURI} value={voice.voiceURI}>
                   {voice.name}
@@ -69,7 +69,7 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
             </span>
           </div>
         </div>
-        
+
         {/* Speech Rate */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -81,18 +81,18 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
             </span>
           </div>
           <div className="pt-2 px-1">
-            <input 
-              type="range" 
-              min="0.5" 
-              max="1.5" 
+            <input
+              type="range"
+              min="0.5"
+              max="1.5"
               step="0.05"
               value={formData.tts_rate}
               onChange={(e) => onChange({ tts_rate: Number(e.target.value) })}
               className="w-full h-8 appearance-none bg-transparent cursor-pointer accent-amber-500"
             />
             <div className="flex justify-between text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">
-              <span>Chậm (0.5)</span>
-              <span>Nhanh (1.5)</span>
+              <span>{t('settings.slow')} (0.5)</span>
+              <span>{t('settings.fast')} (1.5)</span>
             </div>
           </div>
         </div>
@@ -105,10 +105,10 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
             </div>
             <div>
               <span className="block text-sm font-bold text-secondary">{t('settings.autoPlay')}</span>
-              <span className="block text-[10px] text-stone-400 font-medium leading-tight">Tự phát âm thanh khi lật thẻ.</span>
+              <span className="block text-[10px] text-stone-400 font-medium leading-tight">{t('settings.autoPlayDesc')}</span>
             </div>
           </div>
-          <button 
+          <button
             onClick={() => onChange({ auto_play_audio: !formData.auto_play_audio })}
             className={`w-14 h-8 rounded-full transition-all relative ${formData.auto_play_audio ? 'bg-primary' : 'bg-stone-200'}`}
           >
@@ -124,7 +124,7 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
             </div>
             <div>
               <span className="block text-sm font-bold text-secondary">{t('settings.language')}</span>
-              <span className="block text-[10px] text-stone-400 font-medium leading-tight">Thay đổi ngôn ngữ hiển thị.</span>
+              <span className="block text-[10px] text-stone-400 font-medium leading-tight">{t('settings.languageDesc')}</span>
             </div>
           </div>
           <div className="flex bg-stone-200/50 p-1 rounded-xl">

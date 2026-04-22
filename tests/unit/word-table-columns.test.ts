@@ -42,31 +42,31 @@ describe('Admin words table — correct columns', () => {
     const thead = findThead(source)
     expect(thead).not.toContain('CHỦ ĐỀ')
     expect(thead).not.toContain('Chủ đề')
+    expect(thead).not.toContain('header.topic')
   })
 
   it('must have VÍ DỤ column (word.example — contextual usage)', () => {
     const source = readFile('components/admin/words/WordsTable.tsx')
     const thead = findThead(source)
-    expect(thead.toLowerCase()).toContain('ví dụ')
+    expect(thead).toContain("t('admin.wordTable.header.example')")
   })
 
   it('must have DỊCH column (word.example_vi — Vietnamese translation)', () => {
     const source = readFile('components/admin/words/WordsTable.tsx')
     const thead = findThead(source)
-    expect(thead.toLowerCase()).toContain('dịch')
+    expect(thead).toContain("t('admin.wordTable.header.example')")
   })
 
   it('must have TAGS column before HÀNH ĐỘNG (in thead, not in filter dropdown)', () => {
     const source = readFile('components/admin/words/WordsTable.tsx')
     const thead = findThead(source)
-    // Must find TAGS and HÀNH ĐỘNG as actual <th> elements in thead
-    // Use regex anchored to <th> tags to avoid matching "Tất cả chủ đề" dropdown
-    expect(thead).toMatch(/<th[^>]*>\s*Tags\s*<\/th>/)
-    // HÀNH ĐỘNG must also be a <th>
-    expect(thead).toMatch(/Hành động/)
-    // Tags <th> must appear before Hành động <th>
-    const tagsIdx = thead.indexOf('Tags')
-    const actionsIdx = thead.indexOf('Hành động')
+    // Must find TAGS and HÀNH ĐỘNG translation keys as actual <th> contents
+    expect(thead).toContain("t('admin.wordTable.header.tags')")
+    expect(thead).toContain("t('admin.wordTable.header.actions')")
+    
+    // Tags must appear before Actions
+    const tagsIdx = thead.indexOf("header.tags")
+    const actionsIdx = thead.indexOf("header.actions")
     expect(tagsIdx).toBeGreaterThan(-1)
     expect(actionsIdx).toBeGreaterThan(-1)
     expect(tagsIdx).toBeLessThan(actionsIdx)

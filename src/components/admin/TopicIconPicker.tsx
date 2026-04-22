@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { COLOR_PALETTE } from '../../lib/topic-suggestions'
 
 interface TopicIconPickerProps {
@@ -23,12 +24,13 @@ export function TopicIconPicker({
   setIconSearch,
   filteredIcons
 }: TopicIconPickerProps) {
+  const { t } = useTranslation()
   return (
     <div className="grid grid-cols-2 gap-5">
       {/* Icon Representation */}
       <div>
         <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-          Icon Representation
+          {t('admin.topicForm.iconLabel')}
         </label>
         <div className="flex items-center gap-3">
           <div
@@ -49,7 +51,7 @@ export function TopicIconPicker({
                     type="text"
                     value={iconSearch}
                     onChange={(e) => setIconSearch(e.target.value)}
-                    placeholder="Tìm icon..."
+                    placeholder={t('admin.topicForm.iconSearchPlaceholder')}
                     className="w-full pl-8 pr-3 py-2 text-sm rounded-lg border border-stone-100 bg-stone-50 outline-none focus:border-orange-300"
                     autoFocus
                   />
@@ -57,7 +59,7 @@ export function TopicIconPicker({
               </div>
               <div className="p-2 max-h-36 overflow-y-auto">
                 {filteredIcons.length === 0 ? (
-                  <p className="text-xs text-stone-400 text-center py-3">Không tìm thấy icon</p>
+                  <p className="text-xs text-stone-400 text-center py-3">{t('admin.topicForm.iconNotFound')}</p>
                 ) : (
                   <div className="grid grid-cols-8 gap-1">
                     {filteredIcons.map((iconName) => (
@@ -83,7 +85,7 @@ export function TopicIconPicker({
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-500 text-sm font-medium hover:bg-stone-50 hover:border-stone-300 transition-all cursor-pointer shadow-sm"
             >
               <span className="material-symbols-outlined text-base text-stone-400">grid_view</span>
-              Change Icon
+              {t('admin.topicForm.changeIcon')}
             </button>
           )}
         </div>
@@ -92,11 +94,11 @@ export function TopicIconPicker({
       {/* Color Palette */}
       <div>
         <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-          Brand Accent
+          {t('admin.topicForm.colorLabel')}
         </label>
         <div className="rounded-xl border border-stone-200 bg-white shadow-sm p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">Color Palette</span>
+            <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">{t('admin.topicForm.colorPalette')}</span>
             <span className="text-xs font-mono font-medium" style={{ color }}>{color}</span>
           </div>
           <div className="grid grid-cols-5 gap-2 mb-2">
@@ -133,7 +135,7 @@ export function TopicIconPicker({
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
                 className="w-6 h-6 rounded-full cursor-pointer border-0 p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch-wrapper]:rounded-full"
-                title="Custom color"
+                title={t('admin.topicForm.customColor')}
               />
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
 import { useAuth } from '../contexts/AuthContext'
@@ -16,6 +17,7 @@ import { DESIGN_TOKENS } from '../lib/tokens'
 
 export default function StudyPage() {
   const { profile } = useAuth()
+  const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const topic = searchParams.get('topic') || undefined
   const topicId = searchParams.get('topicId') || undefined
@@ -98,7 +100,7 @@ export default function StudyPage() {
   }, [startSession, roadmapId, topicId])
 
   // --- Guard Clauses for Loading/Prep/Completion ---
-  
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -133,12 +135,12 @@ export default function StudyPage() {
   return (
     <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12">
       <div className="max-w-md w-full space-y-8">
-        
+
         {/* Session Progress */}
         <div className="flex flex-col gap-2 mb-8">
           <div className="flex justify-between items-end">
-            <span className="font-label text-xs uppercase tracking-widest text-secondary font-bold">Daily Mastery</span>
-            <span className="font-label text-xs text-outline">{remaining} / {total} Words</span>
+            <span className="font-label text-xs uppercase tracking-widest text-secondary font-bold">{t('study.dailyMastery')}</span>
+            <span className="font-label text-xs text-outline">{t('study.wordsCount', { remaining, total })}</span>
           </div>
           <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
             <div
@@ -165,7 +167,7 @@ export default function StudyPage() {
               className={`perspective-1000 w-full aspect-3/4 ${!isFlipped ? 'cursor-pointer' : ''}`}
             >
               <div className={`preserve-3d transition-all duration-700 w-full h-full relative ${showCardBack ? 'rotate-y-180' : ''}`}>
-                
+
                 {/* Front */}
                 <div className="backface-hidden w-full h-full absolute inset-0">
                   <FlashcardFront card={currentCard} />
@@ -173,8 +175,8 @@ export default function StudyPage() {
 
                 {/* Back */}
                 <div className="backface-hidden w-full h-full absolute inset-0 rotate-y-180">
-                  <FlashcardBack 
-                    card={currentCard} 
+                  <FlashcardBack
+                    card={currentCard}
                     isSaved={isSaved(currentCard.id)}
                     onToggleNotebook={handleToggleNotebook}
                   />
@@ -195,14 +197,14 @@ export default function StudyPage() {
                 onClick={flip}
                 className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
               >
-                <span className="tracking-wide">Show Answer</span>
+                <span className="tracking-wide">{t('study.showAnswer')}</span>
                 <span className="material-symbols-outlined">visibility</span>
               </button>
               <button
                 onClick={markLearned}
                 className={`w-full bg-secondary text-on-secondary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.MD} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
               >
-                <span className="tracking-wide">Mark as Learned</span>
+                <span className="tracking-wide">{t('study.markLearned')}</span>
                 <span className="material-symbols-outlined">check_circle</span>
               </button>
             </>
@@ -210,7 +212,7 @@ export default function StudyPage() {
             <div className="flex flex-col items-center">
               {suggestedRating !== null && (
                 <p className="text-center text-primary text-xs mb-3 font-bold tracking-widest uppercase">
-                  Hệ thống gợi ý
+                  {t('study.suggestedRating')}
                 </p>
               )}
               <SRSButtons
@@ -224,7 +226,7 @@ export default function StudyPage() {
               onClick={handleNextToChallenge}
               className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
             >
-              <span className="tracking-wide">Next</span>
+              <span className="tracking-wide">{t('common.next')}</span>
               <span className="material-symbols-outlined">arrow_forward</span>
             </button>
           ) : null}

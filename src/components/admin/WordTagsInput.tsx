@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getAllTags } from '../../lib/queries/tag-queries'
 
 interface WordTagsInputProps {
@@ -8,6 +9,7 @@ interface WordTagsInputProps {
 }
 
 export function WordTagsInput({ selectedTags, onAddTag, onRemoveTag }: WordTagsInputProps) {
+  const { t } = useTranslation()
   const [allTags, setAllTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
   const [tagDropdownOpen, setTagDropdownOpen] = useState(false)
@@ -57,7 +59,7 @@ export function WordTagsInput({ selectedTags, onAddTag, onRemoveTag }: WordTagsI
   return (
     <div>
       <label className="block text-sm font-bold text-secondary mb-2">
-        Tags <span className="font-normal text-stone-400">(chọn trong danh sách hoặc gõ enter để tạo mới)</span>
+        {t('admin.wordForm.tagsLabel')} <span className="font-normal text-stone-400">{t('admin.wordForm.tagsHint')}</span>
       </label>
       
       {selectedTags.length > 0 && (
@@ -93,7 +95,7 @@ export function WordTagsInput({ selectedTags, onAddTag, onRemoveTag }: WordTagsI
               }}
               onFocus={() => setTagDropdownOpen(true)}
               onKeyDown={handleKeyDown}
-              placeholder="gõ để tìm hoặc tạo tag..."
+              placeholder={t('admin.wordForm.tagsPlaceholder')}
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
             />
             {tagDropdownOpen && filteredSuggestions.length > 0 && (
@@ -116,7 +118,7 @@ export function WordTagsInput({ selectedTags, onAddTag, onRemoveTag }: WordTagsI
             onClick={() => { if (tagInput.trim()) handleAddTag(tagInput.trim()) }}
             className="px-4 py-3 rounded-xl bg-stone-100 text-stone-500 font-bold hover:bg-stone-200 transition-all shrink-0"
           >
-            + Thêm
+            + {t('common.add')}
           </button>
         </div>
       </div>

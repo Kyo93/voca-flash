@@ -27,3 +27,12 @@ export const MASTERY_CONFIG = {
 } as const;
 
 export const FETCH_PAGE_SIZE = 1000;
+
+export const TIME_CONSTANTS = {
+  ONE_DAY_MS: 86_400_000,
+  TIMEOUT_SHORT_MS: 3000,
+} as const;
+
+export const SRS_CONFIG = {
+  RETENTION_DEFAULT: 0.9,
+} as const;

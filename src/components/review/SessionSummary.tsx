@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
@@ -14,6 +15,7 @@ interface SessionSummaryProps {
 }
 
 export default function SessionSummary({ stats, onRestart }: SessionSummaryProps) {
+  const { t } = useTranslation()
   const [displayXP, setDisplayXP] = useState(0)
   const total = stats.correct + stats.wrong
   const accuracy = total > 0 ? Math.round((stats.correct / total) * 100) : 0
@@ -40,12 +42,12 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
   }, [stats.points])
 
   return (
-    <div className="fixed inset-0 bg-[#060608] flex items-center justify-center p-6 overflow-hidden">
+    <div className="fixed inset-0 bg-arena-bg flex items-center justify-center p-6 overflow-hidden">
       {/* Background Stage - Vibrant Blobs (Same as ArenaShell for continuity) */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#D35400]/20 rounded-full blur-[120px] animate-blob filter" />
-        <div className="absolute top-[20%] right-[-5%] w-[40%] h-[40%] bg-[#0891B2]/20 rounded-full blur-[120px] animate-blob [animation-delay:2s] filter" />
-        <div className="absolute bottom-[-10%] left-[10%] w-[45%] h-[45%] bg-[#1E293B]/40 rounded-full blur-[100px] animate-blob [animation-delay:4s] filter" />
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-arena-blob-1/20 rounded-full blur-[120px] animate-blob filter" />
+        <div className="absolute top-[20%] right-[-5%] w-[40%] h-[40%] bg-arena-blob-2/20 rounded-full blur-[120px] animate-blob [animation-delay:2s] filter" />
+        <div className="absolute bottom-[-10%] left-[10%] w-[45%] h-[45%] bg-arena-blob-3/40 rounded-full blur-[100px] animate-blob [animation-delay:4s] filter" />
         <div className="absolute bottom-[20%] right-[20%] w-[30%] h-[30%] bg-primary/10 rounded-full blur-[80px] animate-blob [animation-delay:6s] filter" />
       </div>
 
@@ -69,7 +71,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             transition={{ delay: 0.3 }}
             className="text-5xl font-black text-white mb-2 tracking-tight text-shadow-glow"
           >
-            Hoàn thành buổi học!
+            {t('sessionSummary.title')}
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -77,7 +79,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             transition={{ delay: 0.4 }}
             className="text-white/40 font-bold text-lg"
           >
-            Bạn đang có những bước tiến tuyệt vời.
+            {t('sessionSummary.subtitle')}
           </motion.p>
         </div>
 
@@ -90,7 +92,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
           >
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             <span className="block text-primary text-5xl font-black mb-1 relative text-shadow-glow">{displayXP}</span>
-            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">Điểm kinh nghiệm</span>
+            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">{t('sessionSummary.xp')}</span>
           </motion.div>
 
           <motion.div 
@@ -100,7 +102,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             className="glass-arena-item p-8 rounded-3xl text-center border-white/10 group"
           >
             <span className="block text-white text-5xl font-black mb-1 relative text-shadow-glow">{accuracy}%</span>
-            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">Tỷ lệ chính xác</span>
+            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">{t('sessionSummary.accuracy')}</span>
           </motion.div>
         </div>
 
@@ -115,7 +117,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-px flex-1 bg-white/5" />
-                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Cần lưu ý lại</span>
+                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">{t('sessionSummary.mistakes')}</span>
                 <div className="h-px flex-1 bg-white/5" />
               </div>
               
@@ -127,7 +129,7 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
                       <p className="text-white/40 text-sm font-medium">{w.definition}</p>
                     </div>
                     <div className="text-right">
-                       <span className="text-[8px] font-black text-red-500/60 uppercase tracking-widest bg-red-500/5 px-2 py-1 rounded-full border border-red-500/10">Ôn lại sớm</span>
+                       <span className="text-[8px] font-black text-red-500/60 uppercase tracking-widest bg-red-500/5 px-2 py-1 rounded-full border border-red-500/10">{t('sessionSummary.reviewSoon')}</span>
                     </div>
                   </div>
                 ))}
@@ -147,13 +149,13 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             className="w-full py-5 bg-primary text-white font-black rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-2xl primary-glow flex items-center justify-center gap-3 group"
           >
             <span className="material-symbols-outlined group-hover:rotate-180 transition-transform duration-700">refresh</span>
-            Bắt đầu đợt mới
+            {t('sessionSummary.restart')}
           </button>
           <Link 
             to="/dashboard"
             className="w-full py-5 glass-arena-item text-white/60 font-black rounded-2xl border border-white/10 hover:bg-white/10 hover:text-white text-center transition-all tracking-widest"
           >
-            Quay lại Dashboard
+            {t('sessionSummary.dashboard')}
           </Link>
         </motion.div>
       </motion.div>

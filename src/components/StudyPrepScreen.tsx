@@ -1,5 +1,6 @@
 
 import type { Card } from '../lib/srs'
+import { useTranslation, Trans } from 'react-i18next'
 
 interface StudyPrepScreenProps {
   stats: {
@@ -13,12 +14,14 @@ interface StudyPrepScreenProps {
 }
 
 export default function StudyPrepScreen({ stats, loading, onStart, onBack }: StudyPrepScreenProps) {
+  const { t } = useTranslation()
+  
   if (loading || !stats) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
-          <p className="text-on-surface-variant font-bold">Đang phân tích dữ liệu học thuật...</p>
+          <p className="text-on-surface-variant font-bold">{t('studyPrep.loading')}</p>
         </div>
       </div>
     )
@@ -31,10 +34,10 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
         <span className="material-symbols-outlined text-6xl text-stone-300 mb-4">hourglass_empty</span>
-        <h2 className="text-2xl font-bold text-on-surface mb-2">Chủ đề này chưa có từ vựng</h2>
-        <p className="text-on-surface-variant mb-8">Xin vui lòng quay lại sau khi admin thêm từ mới.</p>
+        <h2 className="text-2xl font-bold text-on-surface mb-2">{t('studyPrep.emptyTitle')}</h2>
+        <p className="text-on-surface-variant mb-8">{t('studyPrep.emptyDesc')}</p>
         <button onClick={onBack} className="px-6 py-3 bg-surface-container-high text-on-surface-variant font-bold rounded-xl hover:bg-surface-variant transition-colors">
-          Quay lại
+          {t('common.back')}
         </button>
       </div>
     )
@@ -54,9 +57,9 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
             <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
           </div>
           
-          <h2 className="text-3xl font-black text-on-surface tracking-tight mb-2">Chuẩn bị học</h2>
+          <h2 className="text-3xl font-black text-on-surface tracking-tight mb-2">{t('studyPrep.title')}</h2>
           <p className="text-on-surface-variant text-sm mb-8">
-            Hệ thống đã phân tích <strong className="text-primary">{total}</strong> từ vựng trong chủ đề này.
+            <Trans i18nKey="studyPrep.desc" values={{ total }} />
           </p>
 
           <div className="space-y-3 mb-10">
@@ -64,7 +67,7 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
             <div className="flex items-center justify-between p-4 bg-surface-container rounded-xl">
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-stone-400">new_releases</span>
-                <span className="font-bold text-on-surface">Từ mới hoàn toàn</span>
+                <span className="font-bold text-on-surface">{t('studyPrep.newWords')}</span>
               </div>
               <span className="text-xl font-black text-stone-500">{unlearned.length}</span>
             </div>
@@ -73,7 +76,7 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
             <div className="flex items-center justify-between p-4 bg-primary-fixed/30 rounded-xl border border-primary/10">
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-primary">model_training</span>
-                <span className="font-bold text-primary">Đang trong tiến trình học</span>
+                <span className="font-bold text-primary">{t('studyPrep.learning')}</span>
               </div>
               <span className="text-xl font-black text-primary">{learning.length}</span>
             </div>
@@ -83,8 +86,8 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-green-600">verified</span>
                 <div>
-                  <span className="font-bold text-green-700 block">Từ đã thuộc</span>
-                  <span className="text-[10px] text-green-600/70 font-medium uppercase tracking-widest leading-none">Từ bài khác hoặc đã học xong</span>
+                  <span className="font-bold text-green-700 block">{t('studyPrep.mastered')}</span>
+                  <span className="text-[10px] text-green-600/70 font-medium uppercase tracking-widest leading-none">{t('studyPrep.masteredDesc')}</span>
                 </div>
               </div>
               <span className="text-xl font-black text-green-700">{mastered.length}</span>
@@ -95,20 +98,20 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
             {hasMastered ? (
               <>
                 <p className="text-sm font-bold text-center text-on-surface-variant mb-4 italic">
-                  Bạn có muốn ôn lại {mastered.length} từ đã thuộc không?
+                  {t('studyPrep.masteredPrompt', { count: mastered.length })}
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <button 
                     onClick={() => onStart(false)}
                     className="py-4 px-4 bg-white border-2 border-primary/20 text-primary font-bold rounded-xl hover:bg-primary/5 active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
                   >
-                    Không, Bỏ qua
+                    {t('studyPrep.skipMastered')}
                   </button>
                   <button 
                     onClick={() => onStart(true)}
                     className="py-4 px-4 primary-gradient text-white font-bold rounded-xl hover:shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
                   >
-                    Có, Ôn tất cả
+                    {t('studyPrep.includeMastered')}
                   </button>
                 </div>
               </>
@@ -117,7 +120,7 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
                 onClick={() => onStart(false)}
                 className="w-full py-4 primary-gradient text-white font-bold rounded-xl hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
               >
-                Bắt đầu ngay
+                {t('studyPrep.startNow')}
                 <span className="material-symbols-outlined text-lg">play_arrow</span>
               </button>
             )}
@@ -126,7 +129,7 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
               onClick={onBack}
               className="w-full py-3 text-on-surface-variant font-bold text-sm hover:text-on-surface transition-colors mt-2"
             >
-              Quay lại
+              {t('common.back')}
             </button>
           </div>
         </div>

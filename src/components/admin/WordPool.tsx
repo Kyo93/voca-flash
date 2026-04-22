@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { TAG_META } from '../../lib/tag-constants'
 import DifficultyPill from './DifficultyPill'
 import type { Topic } from '../../lib/types'
@@ -56,11 +57,12 @@ export default function WordPool({
   onActiveTagFilterChange,
   roadmapName,
 }: WordPoolProps) {
+  const { t } = useTranslation()
   const [bulkTopicId, setBulkTopicId] = useState('')
 
   const activeTopicName = activeTopicId
     ? (topics.find(t => t.id === activeTopicId)?.name ?? '...')
-    : 'Chưa phân loại'
+    : t('admin.wordPool.uncategorized')
 
   // All unique tags across current words
   const allTags = useMemo(() => {
@@ -108,7 +110,7 @@ export default function WordPool({
             {activeTopicName}
           </h2>
           <p className="text-xs text-stone-400 mt-0.5">
-            {visibleWords.length} từ vựng
+            {t('admin.wordPool.wordCount', { count: visibleWords.length })}
           </p>
         </div>
         <button
@@ -116,7 +118,7 @@ export default function WordPool({
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest text-sm font-medium transition-all"
         >
           <span className="material-symbols-outlined text-sm">upload</span>
-          Nhập từ
+          {t('admin.wordPool.import')}
         </button>
       </div>
 
@@ -127,7 +129,7 @@ export default function WordPool({
           type="text"
           value={search}
           onChange={(e) => onSearch(e.target.value)}
-          placeholder="Tìm kiếm từ..."
+          placeholder={t('admin.wordPool.searchPlaceholder')}
           className="w-full pl-10 pr-4 py-2.5 rounded-full bg-surface-container-low border-none text-secondary text-sm outline-none focus:ring-2 focus:ring-secondary transition-all"
         />
       </div>
@@ -142,7 +144,7 @@ export default function WordPool({
               : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
           }`}
         >
-          Tất cả
+          {t('admin.wordPool.all')}
         </button>
         {allTags.map(tag => {
           const meta = TAG_META[tag]
@@ -171,14 +173,14 @@ export default function WordPool({
       {selectedWordIds.size > 0 && (
         <div className="flex items-center gap-2 mb-3 p-2 bg-orange-50 rounded-xl border border-orange-100">
           <span className="text-xs font-bold text-primary shrink-0">
-            {selectedWordIds.size} từ được chọn
+            {t('admin.wordPool.selectedCount', { count: selectedWordIds.size })}
           </span>
           <select
             value={bulkTopicId}
             onChange={(e) => setBulkTopicId(e.target.value)}
             className="flex-1 px-2 py-1 rounded-lg border border-stone-200 bg-white text-xs outline-none cursor-pointer"
           >
-            <option value="">— Gán vào topic —</option>
+            <option value="">{t('admin.wordPool.assignToTopic')}</option>
             {topics.map(t => (
               <option key={t.id} value={t.id}>{t.name}</option>
             ))}
@@ -188,7 +190,7 @@ export default function WordPool({
               onClick={() => { onBulkAssign(bulkTopicId); setBulkTopicId('') }}
               className="px-2 py-1 rounded-lg bg-primary text-white text-xs font-bold shrink-0"
             >
-              Gán
+              {t('admin.wordPool.assign')}
             </button>
           )}
           {activeTopicId && (
@@ -196,7 +198,7 @@ export default function WordPool({
               onClick={onBulkUnassign}
               className="px-2 py-1 rounded-lg bg-primary text-white text-xs font-bold shrink-0"
             >
-              Bỏ khỏi topic
+              {t('admin.wordPool.unassign')}
             </button>
           )}
         </div>
@@ -215,15 +217,15 @@ export default function WordPool({
                     ref={el => { if (el) el.indeterminate = !allSelected && someSelected }}
                     onChange={onToggleAll}
                     className="w-4 h-4 rounded accent-primary cursor-pointer"
-                    title="Chọn tất cả"
+                    title={t('admin.wordPool.all')}
                   />
                 </th>
-                <th className="p-4">Word</th>
-                <th className="p-4">Phonetic</th>
-                <th className="p-4">Meaning (VN)</th>
-                <th className="p-4">Difficulty</th>
-                <th className="p-4">Tags</th>
-                <th className="p-4 text-right">Actions</th>
+                <th className="p-4">{t('admin.wordPool.tableHeader.word')}</th>
+                <th className="p-4">{t('admin.wordPool.tableHeader.phonetic')}</th>
+                <th className="p-4">{t('admin.wordPool.tableHeader.meaning')}</th>
+                <th className="p-4">{t('admin.wordPool.tableHeader.difficulty')}</th>
+                <th className="p-4">{t('admin.wordPool.tableHeader.tags')}</th>
+                <th className="p-4 text-right">{t('admin.wordPool.tableHeader.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100 text-sm">
@@ -232,7 +234,7 @@ export default function WordPool({
                   <td colSpan={7} className="p-12 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl text-stone-300 animate-spin">progress_activity</span>
-                      <p className="text-stone-400">Đang tải...</p>
+                      <p className="text-stone-400">{t('common.loading')}</p>
                     </div>
                   </td>
                 </tr>
@@ -240,7 +242,7 @@ export default function WordPool({
                 <tr>
                   <td colSpan={7} className="p-12 text-center">
                     <p className="text-stone-400">
-                      {search || activeTagFilter ? 'Không tìm thấy từ nào' : 'Chưa có từ vựng nào.'}
+                      {search || activeTagFilter ? t('admin.wordPool.noResults') : t('admin.wordPool.empty')}
                     </p>
                   </td>
                 </tr>

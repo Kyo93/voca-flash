@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { Locale } from 'date-fns/locale'
 import { MasteryWord } from '../../lib/types'
@@ -21,80 +22,82 @@ interface CardRowProps {
  * CardRow - A single row in the MasteryPage vocabulary table.
  * Standardizes SRS level badges, strength bars, and item selection.
  */
-const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({ 
-  word, 
-  isSelected, 
-  onSelect, 
-  isSelectedFocus, 
-  onSelectFocus, 
-  isNotebookSaved, 
+const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
+  word,
+  isSelected,
+  onSelect,
+  isSelectedFocus,
+  onSelectFocus,
+  isNotebookSaved,
   onToggleNotebook,
   onEditNote,
   personalNote,
-  locale 
+  locale
 }, ref) => {
+  const { t } = useTranslation()
   const nextReviewDate = word.next_review_at ? new Date(word.next_review_at) : null
   const isDue = nextReviewDate && nextReviewDate <= new Date()
-  
+
   const stability = Number(word.fsrs_stability ?? 0)
   const level = getSrsLevelConfig(stability)
   const strengthPercent = Math.min(100, (stability / 21) * 100)
 
   return (
-    <tr 
+    <tr
       ref={ref}
-      className={`group hover:bg-surface-container-low transition-all cursor-pointer ${isSelectedFocus ? 'bg-primary/10' : ''}`}
+      className={`group hover:bg-[#F2F4F0] transition-all cursor-pointer border-none ${isSelectedFocus ? 'bg-[#F2F4F0]' : ''}`}
       onClick={onSelectFocus}
     >
-      <td className="py-4 px-8">
-        <input 
-          type="checkbox" 
+      <td className="py-6 px-8">
+        <input
+          type="checkbox"
           checked={isSelected}
           onChange={onSelect}
-          className="w-5 h-5 rounded-lg border-surface-container-highest text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
+          className="w-5 h-5 rounded-lg border-outline-variant text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
         />
       </td>
-      <td className="py-4 px-2">
+      <td className="py-6 px-2">
         <div className="flex items-center gap-4">
-          <span className="text-lg font-bold text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight">
-            {word.word}
-          </span>
-          <span className="text-xs text-on-surface-variant font-normal truncate max-w-[200px] italic">
-            {word.definition}
-          </span>
-          
+          <div className="flex flex-col">
+            <span className="text-base font-bold text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight leading-none mb-1">
+              {word.word}
+            </span>
+            <span className="text-xs text-on-surface-variant/60 font-medium truncate max-w-[200px] italic leading-none">
+              {word.definition}
+            </span>
+          </div>
+
           {/* Centralized Level Badge */}
-          <span className={`px-2.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest ${level.bg} ${level.text} ${level.glow}`}>
+          <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${level.bg} ${level.text} ${level.glow} leading-none`}>
             {level.label}
           </span>
         </div>
       </td>
-      <td className="py-4 px-8 hidden lg:table-cell">
+      <td className="py-6 px-8 hidden lg:table-cell">
         {word.is_orphaned ? (
-          <span className="inline-flex px-3 py-1 bg-red-50 text-red-500 text-[10px] font-semibold uppercase tracking-widest rounded-md">
-            Mồ côi
+          <span className="inline-flex px-3 py-1 bg-error-container/20 text-error text-[10px] font-black uppercase tracking-widest rounded-full">
+            {t('mastery.filters.orphaned')}
           </span>
         ) : (
-          <span className="inline-flex px-3 py-1 bg-surface-container text-on-surface-variant/60 text-[10px] font-semibold uppercase tracking-widest rounded-md">
-            {word.topic_names?.split(',')[0]}
+          <span className="inline-flex px-3 py-1 bg-surface-container-high text-on-surface-variant/60 text-[10px] font-black uppercase tracking-widest rounded-full">
+            {word.topic_names?.split(',')[0] || 'General'}
           </span>
         )}
       </td>
-      <td className="py-4 px-8">
+      <td className="py-6 px-8">
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={onToggleNotebook}
-            className={`material-symbols-outlined text-xl transition-all hover:scale-110 active:scale-95 ${
-              isNotebookSaved ? 'text-primary fill-icon' : 'text-on-surface-variant/20 hover:text-primary/40'
-            }`}
+            className={`material-symbols-outlined text-xl transition-all hover:scale-110 active:scale-95 ${isNotebookSaved ? 'text-primary fill-icon' : 'text-on-surface-variant/20 hover:text-primary/40'
+              }`}
           >
             {isNotebookSaved ? 'favorite' : 'favorite_border'}
           </button>
-          
+
           {personalNote && (
-            <button 
+            <button
               onClick={onEditNote}
-              className="material-symbols-outlined text-sm text-secondary/60 hover:text-secondary transition-colors"
+              className="material-symbols-outlined text-lg text-secondary/60 hover:text-secondary transition-colors"
               title={personalNote}
             >
               sticky_note_2
@@ -102,23 +105,35 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
           )}
         </div>
       </td>
-      <td className="py-4 px-8">
+      <td className="py-6 px-8">
         <div className="flex items-center gap-3">
-          <div className="w-20 h-2 bg-surface-container-low rounded-full overflow-hidden">
-            <div 
-              className={`h-full ${level.color} transition-all duration-1000 ${level.glow ? 'animate-pulse' : ''}`} 
+          <div className="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
+            <div
+              className={`h-full ${level.color} transition-all duration-1000 ${level.glow ? 'animate-pulse' : ''}`}
               style={{ width: `${strengthPercent}%` }}
             />
           </div>
-          <p className="text-[10px] font-normal text-on-surface-variant/40 uppercase leading-none">
+          <p className="text-[10px] font-black text-on-surface-variant/40 uppercase leading-none tracking-tighter">
             {stability.toFixed(1)}d
           </p>
         </div>
       </td>
-      <td className="py-4 px-8 text-right">
-        <span className={`text-[13px] font-medium ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
-          {nextReviewDate ? format(nextReviewDate, 'dd/MM/yy', { locale }) : '--'}
-        </span>
+      <td className="py-6 px-8 text-right">
+        <div className="flex items-center justify-end gap-4">
+          <span className={`text-xs font-bold tracking-tight ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
+            {nextReviewDate ? format(nextReviewDate, 'dd/MM/yy', { locale }) : '--'}
+          </span>
+          
+          {/* Quick Actions (revealed on hover) */}
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button className="p-1.5 hover:bg-white rounded-lg text-on-surface-variant/40 hover:text-primary transition-all">
+              <span className="material-symbols-outlined text-lg">edit_note</span>
+            </button>
+            <button className="p-1.5 hover:bg-white rounded-lg text-on-surface-variant/40 hover:text-secondary transition-all">
+              <span className="material-symbols-outlined text-lg">archive</span>
+            </button>
+          </div>
+        </div>
       </td>
     </tr>
   )

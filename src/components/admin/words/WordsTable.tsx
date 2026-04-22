@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Word } from '../../../lib/types'
 import { formatDetailedDate } from '../../../lib/utils'
 
-const POS_LABELS: Record<string, string> = {
-  noun: 'DT', verb: 'ĐT', adj: 'TT', adv: 'TrT', phrase: 'CT', other: 'Khác',
-}
+
 
 function DifficultyDots({ value }: { value: number }) {
   return (
@@ -34,13 +33,14 @@ export default function WordsTable({
   paginated, selectedIds, allSelected, someSelected,
   toggleAll, toggleOne, setEditWordData, setDeleteTarget
 }: WordsTableProps) {
+  const { t } = useTranslation()
 
   if (paginated.length === 0) {
     return (
       <div className="text-center py-20 bg-stone-50 rounded-3xl border border-stone-100">
         <span className="material-symbols-outlined text-6xl text-stone-300 mb-4 font-variation-fill">inbox</span>
-        <h3 className="text-xl font-bold text-stone-500">Chưa có từ vựng nào</h3>
-        <p className="text-stone-400 mt-2">Hãy thêm từ vựng mới hoặc thay đổi bộ lọc</p>
+        <h3 className="text-xl font-bold text-stone-500">{t('admin.wordTable.empty')}</h3>
+        <p className="text-stone-400 mt-2">{t('admin.wordTable.emptyHint')}</p>
       </div>
     )
   }
@@ -58,17 +58,17 @@ export default function WordsTable({
                   ref={el => { if (el) el.indeterminate = !allSelected && someSelected }}
                   onChange={toggleAll}
                   className="w-5 h-5 rounded-lg accent-primary cursor-pointer transition-all"
-                  title="Chọn tất cả trên trang"
+                  title={t('admin.wordTable.selectAll')}
                 />
               </th>
-              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] sticky-col left-12 bg-stone-50/50">Từ vựng</th>
-              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Loại</th>
-              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Độ khó</th>
-              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Nghĩa</th>
-              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Ví dụ & Dịch</th>
-              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Tags</th>
-              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Thời gian</th>
-              <th className="px-6 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] sticky right-0 bg-stone-50/50 backdrop-blur-md">Hành động</th>
+               <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] sticky-col left-12 bg-stone-50/50">{t('admin.wordTable.header.word')}</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.wordTable.header.type')}</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.wordTable.header.difficulty')}</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.wordTable.header.meaning')}</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.wordTable.header.example')}</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.wordTable.header.tags')}</th>
+              <th className="px-6 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.wordTable.header.time')}</th>
+              <th className="px-6 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] sticky right-0 bg-stone-50/50 backdrop-blur-md">{t('admin.wordTable.header.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -96,7 +96,7 @@ export default function WordsTable({
                 </td>
                 <td className="px-6 py-4">
                   <span className="px-2.5 py-1 rounded-lg bg-stone-100 text-[10px] font-black text-stone-500 uppercase tracking-wider">
-                    {POS_LABELS[w.pos ?? 'other'] ?? '—'}
+                    {t(`admin.wordTable.posAbbr.${w.pos ?? 'other'}`) ?? '—'}
                   </span>
                 </td>
                 <td className="px-6 py-4">
@@ -125,7 +125,7 @@ export default function WordsTable({
                   <div className="flex flex-col">
                     <span className="text-[10px] text-stone-400 font-mono">{formatDetailedDate(w.created_at)}</span>
                     {w.updated_at && w.updated_at !== w.created_at && (
-                      <span className="text-[9px] text-primary/60 font-mono italic">Đã sửa</span>
+                      <span className="text-[9px] text-primary/60 font-mono italic">{t('admin.wordTable.edited')}</span>
                     )}
                   </div>
                 </td>
@@ -134,14 +134,14 @@ export default function WordsTable({
                     <button
                       onClick={() => setEditWordData(w)}
                       className="w-9 h-9 rounded-xl flex items-center justify-center bg-stone-100 text-stone-500 hover:bg-primary hover:text-white transition-all shadow-sm cursor-pointer"
-                      title="Sửa"
+                      title={t('common.edit')}
                     >
                       <span className="material-symbols-outlined text-lg">edit</span>
                     </button>
                     <button
                       onClick={() => setDeleteTarget(w)}
                       className="w-9 h-9 rounded-xl flex items-center justify-center bg-stone-100 text-stone-500 hover:bg-red-500 hover:text-white transition-all shadow-sm cursor-pointer"
-                      title="Xóa"
+                      title={t('common.delete')}
                     >
                       <span className="material-symbols-outlined text-lg">delete</span>
                     </button>

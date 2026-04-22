@@ -1,19 +1,114 @@
 {
+  "common": {
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "close": "Đóng",
+    "loading": "Đang tải...",
+    "dateLocale": "vi-VN",
+    "later": "Để sau",
+    "days": "ngày",
+    "excellent": "Xuất sắc",
+    "admin": "Quản trị",
+    "difficulty": {
+      "v-easy": "Rất dễ",
+      "easy": "Dễ",
+      "medium": "Trung bình",
+      "hard": "Khó",
+      "v-hard": "Rất khó"
+    },
+    "pos": {
+      "noun": "Danh từ",
+      "verb": "Động từ",
+      "adj": "Tính từ",
+      "adv": "Trạng từ",
+      "phrase": "Cụm từ",
+      "other": "Khác"
+    },
+    "confirm": "Xác nhận",
+    "add": "Thêm",
+    "back": "Quay lại",
+    "search": "Tìm kiếm",
+    "ok": "Đồng ý",
+    "yes": "Có",
+    "no": "Không",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "next": "Tiếp tục",
+    "previous": "Quay lại",
+    "notifications": "Thông báo",
+    "info": "Thông tin",
+    "image": "Hình ảnh",
+    "status": "Trạng thái",
+    "refresh": "Làm mới",
+    "lastEdited": "Sửa lần cuối",
+    "lastEditedBy": "Sửa lần cuối bởi {{name}}"
+  },
   "app": {
     "name": "VocabMaster",
     "tagline": "Học từ vựng hiệu quả"
   },
   "nav": {
-    "dashboard": "Dashboard",
+    "dashboard": "Tổng Quan",
     "library": "Thư viện",
     "progress": "Tiến độ",
     "settings": "Cài đặt",
     "quickStudy": "Học nhanh",
-    "startQuiz": "Học nhanh",
+    "startQuiz": "Bài tập",
     "search": "Tìm kiếm...",
     "searchPlaceholder": "Tìm bài học, từ vựng...",
     "methodology": "Phương pháp học",
     "mastery": "Kho từ vựng"
+  },
+  "library": {
+    "title": "Chọn hành trình của bạn",
+    "tagline": "Lộ trình học tập chuyên biệt",
+    "description": "Chọn một lộ trình phù hợp với mục tiêu của bạn. Hệ thống học tập của chúng tôi sẽ thích ứng với tốc độ và sở thích của bạn.",
+    "filters": {
+      "All": "Tất cả",
+      "Kids": "Trẻ em",
+      "Casual": "Giao tiếp",
+      "Professional": "Công việc",
+      "Academic": "Học thuật"
+    },
+    "keywords": {
+      "kids": "kids,trẻ em",
+      "professional": "business,công việc,chuyên nghiệp",
+      "academic": "ielts,toeic,academic,học thuật",
+      "casual": "daily,giao tiếp,thường ngày"
+    },
+    "card": {
+      "defaultDesc": "Chương trình học bài bản được thiết kế để tối ưu lộ trình học tập của bạn.",
+      "completed": "Hoàn thành",
+      "resume": "Học tiếp",
+      "start": "Bắt đầu",
+      "badges": {
+        "kids": "6-12 tuổi",
+        "professional": "Chuyên nghiệp",
+        "advanced": "Nâng cao",
+        "lifestyle": "Đời sống"
+      }
+    },
+    "assessment": {
+      "title": "Bạn không biết bắt đầu từ đâu?",
+      "subtitle": "Hệ thống AI của chúng tôi sẽ gợi ý lộ trình hoàn hảo dựa trên trình độ và mục tiêu hiện tại của bạn.",
+      "cta": "Thử đánh giá trình độ"
+    }
+  },
+  "auth": {
+    "signUpTitle": "Tạo tài khoản mới",
+    "signInTitle": "Chào mừng trở lại",
+    "signUpSubtitle": "Đăng ký để bắt đầu học từ vựng",
+    "signInSubtitle": "Đăng nhập để tiếp tục học",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "processing": "Đang xử lý...",
+    "signUp": "Tạo tài khoản",
+    "signIn": "Đăng nhập",
+    "hasAccount": "Đã có tài khoản? Đăng nhập",
+    "noAccount": "Chưa có tài khoản? Đăng ký ngay",
+    "signUpSuccess": "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản."
   },
   "home": {
     "welcome": "Chào mừng trở lại!",
@@ -42,7 +137,30 @@
       "subtitle": "Có {{count}} từ cần ôn tập ngay bây giờ",
       "cta": "Bắt đầu Ôn tập",
       "actionRequired": "HÀNH ĐỘNG NGAY"
-    }
+    },
+    "readyToday": "Sẵn sàng bứt phá hôm nay chưa",
+    "continueDesc": "Tiếp tục học từ các bài đã chọn.",
+    "tracking": "ĐANG THEO DÕI",
+    "suggestion": "GỢI Ý",
+    "unfinished": "Bài học dở",
+    "newModule": "Bài học mới",
+    "studyNext": "Học tiếp",
+    "explore": "Khám phá",
+    "maintenanceTitle": "Bảo trì Kiến thức",
+    "maintenanceDesc": "Ôn tập tập trung không phân biệt chủ đề để ghi nhớ vĩnh viễn.",
+    "wordsDue": "{{count}} từ cần ôn tập",
+    "reviewNow": "Ôn tập ngay",
+    "learnedToday": "Đã học {{count}} từ mới"
+  },
+  "sidebar": {
+    "collapse": "Thu nhỏ menu",
+    "expand": "Mở rộng menu",
+    "collapseRight": "Thu nhỏ",
+    "expandRight": "Mở rộng",
+    "signout": "Đăng xuất",
+    "student": "Học viên",
+    "streakDay": "{{count}} 🔥 ngày",
+    "tagline": "The Tactile Scholar"
   },
   "flashcard": {
     "showAnswer": "Hiển thị đáp án",
@@ -53,7 +171,12 @@
     "vietnamese": "Tiếng Việt",
     "contextUsage": "Cách sử dụng",
     "deck": "Bộ thẻ",
-    "level": "Cấp độ"
+    "level": "Cấp độ",
+    "meaning": "Nghĩa của từ",
+    "saveToNotebook": "Lưu vào sổ tay",
+    "removeFromNotebook": "Xóa khỏi sổ tay",
+    "noTopic": "Không có chủ đề",
+    "srsReady": "SRS READY"
   },
   "srs": {
     "hard": "Khó",
@@ -80,7 +203,30 @@
     "subtitle": "Chọn một lộ trình phù hợp với mục tiêu học tập của bạn.",
     "notSure": "Không chắc bắt đầu từ đâu?",
     "takeTest": "Làm bài đánh giá",
-    "curatedPaths": "Lộ trình đề xuất"
+    "curatedPaths": "Lộ trình đề xuất",
+    "loading": "Đang tải lộ trình...",
+    "notFound": "Không tìm thấy lộ trình"
+  },
+  "roadmapDetail": {
+    "back": "Quay lại Thư viện",
+    "social": "Tham gia cùng 2.4k+ học viên đang rèn luyện",
+    "masteryProgress": "Tiến độ Mastery",
+    "topLearner": "Bạn thuộc top 15% người học tuần này. Hãy tiếp tục khám phá!",
+    "totalWords": "Tổng số từ",
+    "masteredGems": "Viên ngọc đã thuộc",
+    "footer": {
+      "quote": "\"Học tập là một kho báu sẽ theo chủ nhân của nó đi khắp mọi nơi.\"",
+      "copyright": "© 2024 VocaFlash. Nuôi dưỡng Người học Xúc giác.",
+      "philosophy": "Triết lý",
+      "research": "Nhật ký Nghiên cứu",
+      "privacy": "Chính sách Bảo mật"
+    },
+    "milestone": {
+      "title": "Cột mốc phía trước",
+      "name": "Bậc thầy từ vựng",
+      "desc": "Đạt 600 Viên ngọc đã thuộc để mở khóa Huy hiệu Viện hàn lâm danh giá.",
+      "view": "Xem thành tựu"
+    }
   },
   "topics": {
     "title": "Chủ đề",
@@ -96,9 +242,35 @@
     "words": "từ",
     "mastered": "đã thuộc",
     "overallCompletion": "Tiến độ tổng thể",
+    "wordsCount": "{{count}} từ vựng",
     "continue": "Tiếp tục học",
     "startModule": "Bắt đầu",
+    "learnMore": "Học thêm",
     "locked": "Đã khóa"
+  },
+  "topic": {
+    "status": {
+      "learning": "ĐANG HỌC",
+      "completed": "Hoàn thành",
+      "mastered": "Đã nhuần nhuyễn"
+    },
+    "action": {
+      "resume": "Học tiếp",
+      "start": "Bắt đầu",
+      "startDetailed": "Bắt đầu học"
+    },
+    "stats": {
+      "words": "Từ",
+      "mastered": "đã thuộc",
+      "progress": "Tiến độ"
+    }
+  },
+  "studyComplete": {
+    "title": "Hoàn thành!",
+    "reviewedCount": "Bạn đã ôn tập {{count}} từ vựng",
+    "comeBackLater": "Hãy quay lại sau để tiếp tục hành trình!",
+    "learnMore": "Học thêm",
+    "dashboard": "Quay lại Dashboard"
   },
   "progress": {
     "title": "Tiến độ",
@@ -107,7 +279,44 @@
     "masteredWords": "Từ đã thuộc",
     "totalWords": "Tổng số từ",
     "dayStreak": "Ngày liên tiếp",
-    "completed": "hoàn thành"
+    "completed": "hoàn thành",
+    "welcome": "Chào mừng trở lại, {{name}}. Hãy tiếp tục hành trình của bạn.",
+    "activityFrequency": "Tần suất học tập",
+    "less": "Ít",
+    "more": "Nhiều",
+    "intensity": "Cường độ: {{level}}",
+    "streakNote": "* Ghi nhận dựa trên chuỗi {{count}} ngày liên tục.",
+    "maintain": "Duy trì",
+    "peak": "Đỉnh cao",
+    "activityHeatmap": "Biểu đồ hoạt động",
+    "quote": "“Sự kiên trì là chìa khóa của sự thông thái.” — VocaFlash Mentor",
+    "wordCount": "{{mastered}} / {{total}} từ",
+    "nDays": "({{count}} ngày)",
+    "explore": "Khám phá",
+    "seeAllRoadmaps": "Xem tất cả lộ trình",
+    "masteryTip": "Mẹo Mastery",
+    "masteryTipDesc": "Ôn tập ngay khi từ vựng vừa đến hạn giúp tăng tỷ lệ ghi nhớ dài hạn lên gấp 3 lần.",
+    "sageFallback": "Nhà thông thái",
+    "fsrsBins": {
+      "status": "Trạng thái",
+      "count": "{{count}} từ",
+      "states": {
+        "new": "Mới",
+        "learning": "Đang học",
+        "review": "Ôn tập",
+        "relearning": "Học lại",
+        "fresh": "Mới mẻ",
+        "freshDesc": "Độ bền < 5 ngày",
+        "stable": "Ổn định",
+        "stableDesc": "Độ bền 5-30 ngày",
+        "rooted": "Bền vững",
+        "rootedDesc": "Độ bền > 30 ngày"
+      }
+    },
+    "workloadForecast": {
+      "today": "H.Nay",
+      "dayN": "Ngày {{n}}"
+    }
   },
   "rightSidebar": {
     "updates": "Cập nhật",
@@ -118,7 +327,9 @@
     "reviewReadyDesc": "Có {{count}} từ cần ôn tập ngay.",
     "studyReminder": "Lời nhắc",
     "learnWord": "Học một từ",
+    "learnWordDesc": "Nhắc học từ mới mỗi ngày.",
     "dynamicReview": "Ôn tập sinh động",
+    "dynamicReviewDesc": "Ôn tập từ đã học theo lịch.",
     "scheduleTitle": "Hẹn học tập",
     "scheduleDesc": "Tự tạo ra một thói quen học tập và bạn sẽ thấy. Tập học 5 phút 1 ngày?",
     "setReminder": "Đặt nhắc"
@@ -138,26 +349,114 @@
     "forAllAges": "Thiết kế cho mọi lứa tuổi",
     "forAllAgesDesc": "Lộ trình cá nhân hóa cho người đi làm và trẻ em.",
     "ready": "Sẵn sàng chinh phục?",
-    "ctaText": "Bắt đầu hành trình ngay hôm nay!"
+    "ctaText": "Bắt đầu hành trình ngay hôm nay!",
+    "articles": "Bài học",
+    "quizzes": "Trắc nghiệm",
+    "community": "Cộng đồng",
+    "withSrs": "với Spaced Repetition",
+    "parentMode": "Chế độ phụ huynh",
+    "parentModeDesc": "Hệ thống báo cáo trực quan giúp theo dõi tiến độ học tập của con dễ dàng.",
+    "studyNow": "Học ngay",
+    "pricing": "Bảng giá",
+    "aboutUs": "Về chúng tôi",
+    "modernTechnique": "Kỹ thuật học hiện đại"
+  },
+  "arena": {
+    "preparing": "Đang chuẩn bị đấu trường...",
+    "preparingStudy": "Đang chuẩn bị phòng học tập...",
+    "recordTitle": "Kỷ lục tuyệt vời!",
+    "recordSubtitle": "Bạn đã thuộc hết từ vựng rồi. Hiện không còn từ nào cần ôn tập hôm nay. Hãy quay lại sau khi hệ thống nhắc nhở nhé!",
+    "backToDashboard": "Quay lại Dashboard",
+    "freeStudyLabel": "Học tập tự do",
+    "exit": "Thoát",
+    "hint": "Hiện gợi ý",
+    "selectAnswer": "Chọn đáp án",
+    "continue": "Tiếp tục",
+    "skipQuiz": "Bỏ qua quiz → tự đánh giá",
+    "holdToReveal": "Giữ để hiện nghĩa",
+    "pressEnterToConfirm": "Nhấn ENTER để xác nhận",
+    "hideHint": "Ẩn gợi ý chữ",
+    "showHint": "Hiện gợi ý chữ",
+    "noExample": "Không có câu ví dụ",
+    "meaningHint": "Gợi ý nghĩa",
+    "typeMissing": "Gõ từ còn thiếu...",
+    "debugSimulation": "Mô phỏng thử thách",
+    "debugConfirm": "Xác nhận đã nhớ (Debug)"
+  },
+  "studyPrep": {
+    "loading": "Đang phân tích dữ liệu học thuật...",
+    "emptyTitle": "Chủ đề này chưa có từ vựng",
+    "emptyDesc": "Xin vui lòng quay lại sau khi admin thêm từ mới.",
+    "title": "Chuẩn bị học",
+    "desc": "Hệ thống đã phân tích <strong className=\"text-primary\">{{total}}</strong> từ vựng trong chủ đề này.",
+    "newWords": "Từ mới hoàn toàn",
+    "learning": "Đang trong tiến trình học",
+    "mastered": "Từ đã thuộc",
+    "masteredDesc": "Từ bài khác hoặc đã học xong",
+    "masteredPrompt": "Bạn có muốn ôn lại {{count}} từ đã thuộc không?",
+    "skipMastered": "Không, Bỏ qua",
+    "includeMastered": "Có, Ôn tất cả",
+    "startNow": "Bắt đầu ngay"
+  },
+  "sessionSummary": {
+    "title": "Hoàn thành buổi học!",
+    "subtitle": "Bạn đang có những bước tiến tuyệt vời.",
+    "xp": "Điểm kinh nghiệm",
+    "accuracy": "Tỷ lệ chính xác",
+    "mistakes": "Cần lưu ý lại",
+    "reviewSoon": "Ôn lại sớm",
+    "restart": "Bắt đầu đợt mới",
+    "dashboard": "Quay lại Dashboard"
+  },
+  "confirmExit": {
+    "title": "Thoát đấu trường?",
+    "subtitle": "Tiến độ của bạn sẽ luôn được bảo lưu. Bạn có muốn tạm dừng và quay lại sau không?",
+    "exit": "Thoát ngay",
+    "stay": "Ở lại luyện tập"
   },
   "settings": {
-    "title": "Cài đặt & Hồ sơ",
-    "profile": "Hồ sơ cá nhân",
+    "title": "Cài đặt cá nhân",
+    "subtitle": "Tùy chỉnh trải nghiệm học tập theo phong cách của bạn.",
+    "profileTitle": "Hồ sơ & Tài khoản",
+    "profileDesc": "Chỉnh sửa thông tin cá nhân hiển thị công khai trên ứng dụng.",
     "displayName": "Tên hiển thị",
+    "displayNamePlaceholder": "VD: Ocean Nguyen",
     "email": "Email tài khoản",
-    "learning": "Học tập & Ôn luyện",
-    "dailyTarget": "Mục tiêu hàng ngày (Từ mới)",
-    "srsIntensity": "Cường độ SRS (1.0 = Chuẩn)",
+    "linkError": "Lỗi Link",
+    "avatarUrl": "Link ảnh đại diện (URL)",
+    "badLinkWarning": "Link này có vẻ là link chia sẻ, không phải link trực tiếp. Vui lòng chuột phải vào ảnh chọn \"Copy Image Address\" để hiển thị đúng nhất.",
+    "imgurTip": "Mẹo: Bạn có thể tải ảnh lên Imgur để lấy link trực tiếp.",
+    "learning": "Cấu hình học thuật",
+    "learningDesc": "Cấu hình mục tiêu hằng ngày và độ nhạy của thuật toán ghi nhớ FSRS.",
+    "dailyTarget": "Mục tiêu hằng ngày (Từ mới)",
+    "relaxed": "Nhẹ nhàng",
+    "determined": "Quyết tâm",
+    "retentionLabel": "FSRS Retention (Mức độ ghi nhớ)",
+    "retention80": "80% - Relaxed (Ít ôn tập hơn)",
+    "retention90": "90% - Standard (Tiêu chuẩn tối ưu)",
+    "retention95": "95% - Intense (Ghi nhớ cực tốt)",
+    "retentionDesc": "Mức càng cao, bạn sẽ phải ôn tập thường xuyên hơn để đạt được độ ghi nhớ mong muốn. 90% là con số lý tưởng nhất.",
+    "srsIntensity": "Cường độ SRS (1.0 = Bình thường)",
     "audio": "Âm thanh & Giao diện",
+    "audioDesc": "Tùy chỉnh giọng đọc Tiếng Anh và ngôn ngữ hiển thị của ứng dụng.",
     "voice": "Giọng đọc (Text-to-Speech)",
+    "loadingVoices": "Đang tải giọng đọc...",
+    "systemDefault": "(Mặc định của hệ thống)",
     "speed": "Tốc độ đọc mặc định",
+    "slow": "Chậm",
+    "fast": "Nhanh",
     "autoPlay": "Tự động phát phát âm",
+    "autoPlayDesc": "Tự phát âm thanh khi lật thẻ.",
     "language": "Ngôn ngữ hệ thống",
-    "dangerZone": "Cảnh báo nguy hiểm",
+    "languageDesc": "Thay đổi ngôn ngữ hiển thị.",
+    "dangerZone": "Vùng nguy hiểm",
+    "dangerZoneDesc": "Các hành động dưới đây có thể gây mất dữ liệu vĩnh viễn. Hãy cẩn trọng.",
     "resetProgress": "Xóa tiến độ chủ đề",
-    "selectTopic": "Chọn chủ đề cần xóa",
-    "resetConfirm": "Bạn có thực sự muốn xóa toàn bộ tiến độ của chủ đề này?",
-    "resetDesc": "Hành động này không thể hoàn tác. Mọi điểm số và dữ liệu ôn tập của chủ đề sẽ bị xóa sạch.",
+    "resetProgressDesc": "Xóa vĩnh viễn tất cả lịch sử ôn tập (SRS) của một chủ đề cụ thể.",
+    "selectTopic": "Chọn chủ đề để xóa",
+    "resetConfirm": "Bạn có chắc chắn muốn xóa toàn bộ tiến độ của chủ đề này?",
+    "resetDesc": "Hành động này không thể hoàn tác. Toàn bộ dữ liệu SRS sẽ bị xóa sạch.",
+    "cannotUndo": "Hành động này không thể hoàn tác!",
     "logout": "Đăng xuất",
     "save": "Lưu cài đặt",
     "saving": "Đang lưu...",
@@ -172,6 +471,13 @@
     "cancel": "Hủy bỏ",
     "selectTopicRequired": "Vui lòng chọn một chủ đề."
   },
+  "challenges": {
+    "cloze": "Điền từ",
+    "listen": "Nghe lại",
+    "recognition": "Chọn nghĩa",
+    "translation": "Dịch câu",
+    "ordering": "Sắp xếp"
+  },
   "methodology": {
     "title": "Khoa học & Phương pháp",
     "heroTitle": "Khoa học đằng sau sự ghi nhớ vĩnh viễn",
@@ -179,13 +485,19 @@
     "curveTitle": "Linh hồn hệ thống: Đường cong lãng quên",
     "curveDesc": "Não bộ con người được lập trình để quên. VocaFlash được lập trình để ngăn chặn điều đó.",
     "traditional": "Học truyền thống",
+    "traditionalDesc": "Kiến thức rơi rụng nhanh theo thời gian.",
+    "day": "Ngày {{count}}",
+    "dayPlus": "Ngày {{count}}+",
     "vocaFlash": "Học với VocaFlash",
     "recallCaption": "Chúng tôi nhắc bạn đúng lúc bạn sắp quên.",
-    "srsTitle": "Thuật toán FSRS: Đỉnh cao của khoa học ghi nhớ",
-    "easeFactor": "Stability (Độ ổn định)",
-    "easeFactorDesc": "Mỗi từ vựng được theo dõi độ bền vững trong trí nhớ. Stability là số ngày bạn có khả năng nhớ từ đó với xác suất 90%.",
-    "intervals": "Retrievability (Khả năng gợi nhớ)",
-    "intervalsDesc": "Hệ thống tính toán thời điểm vàng để ôn tập khi khả năng gợi nhớ bắt đầu giảm xuống mức mục tiêu (ví dụ 90%).",
+    "fsrsTitle": "Thuật toán FSRS",
+    "fsrsSubtitle": "Free Spaced Repetition Scheduler - Thế hệ thuật toán SRS mạnh mẽ nhất hiện nay.",
+    "stability": "Stability (Độ ổn định)",
+    "stabilityDesc": "Đại diện cho số ngày bạn có khả năng ghi nhớ từ này với tỷ lệ 90%. Độ ổn định càng cao, trí nhớ càng bền vững.",
+    "difficulty": "Difficulty (Độ khó)",
+    "difficultyDesc": "Mỗi từ vựng có độ phức tạp riêng. FSRS tự điều chỉnh dựa trên phản hồi của bạn để tìm ra lộ trình học tối ưu.",
+    "retrievability": "Retrievability (Khả năng gợi nhớ)",
+    "retrievabilityDesc": "Xác suất bạn có thể nhớ lại thông tin ngay lúc này. Hệ thống sẽ lên lịch ôn tập khi chỉ số này giảm xuống mức mục tiêu.",
     "repetitions": "Đánh giá 4 mức độ (Rating)",
     "repetitionsDesc": "Bạn chọn 1 trong 4 mức độ phản hồi để thuật toán tự động tối ưu hóa lộ trình học riêng cho bạn.",
     "ratingEasy": "Chọn 'Dễ'",
@@ -212,13 +524,146 @@
     "faqQ2": "Hệ thống Cấp độ (Rank) được tính như thế nào?",
     "faqA2": "Hiện tại cấp độ phản ánh sự chăm chỉ của bạn dựa trên Mục tiêu hằng ngày. Khi bạn hoàn thành số từ mới đặt ra trong ngày, bạn sẽ 'thăng hạng' hoàn thành mục tiêu. Trong tương lai, hệ thống sẽ mở rộng dựa trên tổng số từ bạn đã làm chủ (Mastered).",
     "faqQ3": "Tại sao Sức mạnh trí nhớ (Stability) thấp nhưng ngày ôn tập tiếp theo lại ở rất xa?",
-    "faqA3": "Đây là cơ chế thông minh của FSRS 5 để xử lý ôn tập sớm (Early Review):\n1. Hình phạt ôn tập sớm: Nếu học xong ôn tập ngay, bộ não chưa thực sự bị thử thách nên chỉ số Sức mạnh (Stability) sẽ không tăng mạnh để phản ánh đúng thực tế trí nhớ vẫn còn mới.\n2. Ưu tiên hiệu quả: Vì bạn chọn 'Dễ', hệ thống chủ động dời lịch đi xa để tránh làm phiền bạn liên tục với từ bạn đã biết rõ.\n3. Lời khuyên: Hãy đợi đến khi từ vựng đến hạn (Due) mới ôn tập để tối ưu hóa tốc độ tăng trưởng Stability."
+    "faqA3": "Đây là cơ chế thông minh của FSRS 5 để xử lý ôn tập sớm (Early Review):\n1. Hình phạt ôn tập sớm: Nếu học xong ôn tập ngay, bộ não chưa thực sự bị thử thách nên chỉ số Sức mạnh (Stability) sẽ không tăng mạnh để phản ánh đúng thực tế trí nhớ vẫn còn mới.\n2. Ưu tiên hiệu quả: Vì bạn chọn 'Dễ', hệ thống chủ động dời lịch đi xa để tránh làm phiền bạn liên tục với từ bạn đã biết rõ.\n3. Lời khuyên: Hãy đợi đến khi từ vựng đến hạn (Due) mới ôn tập để tối ưu hóa tốc độ tăng trưởng Stability.",
+    "readyToConquer": "Bạn đã sẵn sàng chinh phục tiếng Anh?",
+    "learnNow": "Học ngay bây giờ"
   },
   "meta": {
     "title": "VocabMaster — Học từ vựng hiệu quả",
     "description": "Học từ vựng tiếng Anh bằng Flashcard và phương pháp lặp lại ngắt quãng (SRS)."
   },
   "admin": {
+    "words": {
+      "searchPlaceholder": "Tìm kiếm từ...",
+      "allTopics": "Tất cả chủ đề",
+      "newest": "Mới nhất",
+      "az": "A-Z",
+      "difficulty": "Độ khó"
+    },
+    "roadmaps": {
+      "title": "Lộ trình",
+      "count": "{{count}} lộ trình học tập",
+      "addRoadmap": "Thêm lộ trình",
+      "status": {
+        "active": "Hoạt động",
+        "paused": "Tạm dừng"
+      },
+      "card": {
+        "topics": "{{count}} chủ đề",
+        "noDesc": "Chưa có mô tả cho lộ trình này.",
+        "createdAt": "Ngày tạo",
+        "setup": "Thiết lập lộ trình"
+      },
+      "delete": {
+        "title": "Xóa lộ trình?",
+        "cannotDelete": "Không thể xóa lộ trình",
+        "hasTopics": "Lộ trình \"{{name}}\" còn {{count}} chủ đề. Xóa tất cả chủ đề trước khi xóa lộ trình.",
+        "confirm": "Xóa lộ trình \"{{name}}\"? Hành động này không thể hoàn tác.",
+        "understood": "Đã hiểu"
+      },
+      "loading": "Đang tải...",
+      "empty": "Chưa có lộ trình nào."
+    },
+    "roadmapSetup": {
+      "notFound": "Không tìm thấy roadmap",
+      "back": "Quay lại",
+      "manage": "Quản lý chủ đề & từ vựng",
+      "deleteTopic": {
+        "title": "Xóa chủ đề?",
+        "confirm": "Xóa \"{{name}}\"? Từ vựng trong chủ đề này sẽ không bị xóa."
+      }
+    },
+    "users": {
+      "title": "Người dùng",
+      "count": "{{count}} người dùng đã đăng ký",
+      "table": {
+        "header": {
+          "user": "Người dùng",
+          "email": "Email",
+          "streak": "Streak",
+          "joined": "Tham gia",
+          "actions": "Hành động"
+        },
+        "student": "Học viên",
+        "title": "Danh sách học viên",
+        "description": "Quản lý thông tin và theo dõi tiến độ học tập của người dùng."
+      },
+      "panel": {
+        "srsDetails": "Chi tiết thuật toán SRS",
+        "distribution": "Phân phối thẻ (SRS Distribution)",
+        "systemInfo": "Thông tin hệ thống",
+        "lastOnline": "Lần cuối online",
+        "justNow": "Vừa xong",
+        "viewAll": "Xem tất cả từ đang học",
+        "levels": {
+          "again": "Lặp lại",
+          "hard": "Khó",
+          "good": "Tốt",
+          "easy": "Dễ"
+        }
+      }
+    },
+    "wordTable": {
+      "empty": "Chưa có từ vựng nào",
+      "emptyHint": "Hãy thêm từ vựng mới hoặc thay đổi bộ lọc",
+      "selectAll": "Chọn tất cả trên trang",
+      "edited": "Đã sửa",
+      "header": {
+        "word": "Từ vựng",
+        "type": "Loại",
+        "difficulty": "Độ khó",
+        "meaning": "Nghĩa",
+        "example": "Ví dụ & Dịch",
+        "tags": "Tags",
+        "time": "Thời gian",
+        "actions": "Hành động"
+      },
+      "posAbbr": {
+        "noun": "DT",
+        "verb": "ĐT",
+        "adj": "TT",
+        "adv": "TrT",
+        "phrase": "CT",
+        "other": "Khác"
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Tổng quan hệ thống VocaFlash",
+      "stats": {
+        "words": "Từ vựng",
+        "topics": "Chủ đề",
+        "users": "Người dùng",
+        "mastered": "Đã master"
+      },
+      "recent": {
+        "title": "Từ vựng mới thêm gần đây",
+        "loading": "Đang tải...",
+        "empty": "Chưa có từ vựng nào. Thêm từ đầu tiên!",
+        "manage": "Quản lý từ vựng"
+      }
+    },
+    "sidebar": {
+      "manage": "Quản lý",
+      "words": "Từ vựng",
+      "roadmaps": "Lộ trình",
+      "users": "Người dùng",
+      "backToApp": "Quay lại app",
+      "expand": "Mở rộng menu",
+      "collapse": "Thu nhỏ menu",
+      "collapseAction": "Thu nhỏ",
+      "adminRole": "Quyền Admin"
+    },
+    "topics": {
+      "title": "Chủ đề",
+      "add": "Thêm",
+      "uncategorized": "Chưa phân loại",
+      "wordCount": "{{count}} từ",
+      "emptyTitle": "Chưa có chủ đề nào.",
+      "emptyDesc": "Bấm \"Thêm\" để tạo.",
+      "edit": "Sửa",
+      "delete": "Xóa"
+    },
     "import": {
       "title": "Nhập từ vựng",
       "step1": "Chọn nguồn",
@@ -238,9 +683,9 @@
       "validWords": "từ hợp lệ",
       "errors": "lỗi",
       "importing": "Đang nhập...",
-      "importSuccess": "Đã nhập {{count}} từ thành công!",
+      "importSuccess": "Đã nhập thành công {{count}} từ!",
       "importPartial": "{{success}}/{{total}} từ đã nhập. {{errors}} từ thất bại.",
-      "importFailed": "Nhập thất bại. Vui lòng thử lại.",
+      "importFailed": "Nhập từ vựng thất bại.",
       "continue": "Tiếp tục",
       "cancel": "Hủy",
       "close": "Đóng",
@@ -264,7 +709,143 @@
       "hideErrors": "Ẩn lỗi",
       "resetAndTryAgain": "Thử lại",
       "invalidUrl": "URL không hợp lệ",
-      "fileRequired": "Vui lòng chọn file hoặc dán URL"
+      "fileRequired": "Vui lòng chọn file hoặc dán URL",
+      "postParseError": "Lỗi xử lý dữ liệu sau khi parse",
+      "importingInto": "Đang nhập vào: {{name}}",
+      "needRoadmap": "Cần chọn Roadmap trước",
+      "needRoadmapDesc": "Để nhập từ vựng, bạn cần mở từ một Roadmap cụ thể.",
+      "goToRoadmaps": "Đi tới Roadmaps",
+      "duplicates": "{{count}} trùng lặp",
+      "newWords": "{{count}} từ mới",
+      "errorsCount": "{{count}} lỗi",
+      "tableHeader": {
+        "word": "Từ vựng",
+        "type": "Loại",
+        "diff": "Độ khó",
+        "topics": "Chủ đề",
+        "definition": "Định nghĩa",
+        "exampleEn": "Ví dụ (EN)",
+        "exampleVi": "Ví dụ (VI)",
+        "wrongChoices": "Sai 1/2/3",
+        "status": "Trạng thái"
+      },
+      "status": {
+        "error": "lỗi",
+        "duplicate": "trùng",
+        "ok": "OK"
+      },
+      "action": {
+        "skip": "Bỏ qua",
+        "update": "Cập nhật"
+      },
+      "criticalError": "⚠️ Import lỗi nghiêm trọng: đã gửi {{submitted}} từ nhưng chỉ insert thành công {{inserted}} từ.",
+      "templateCsv": "word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Xin chào,Hello world!,Xin chào thế giới!,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Quả táo,An apple a day,Ăn táo mỗi ngày,,Food,pear,orange,fruit"
+    },
+    "wordForm": {
+      "titleAdd": "Thêm từ mới",
+      "titleEdit": "Chỉnh sửa từ",
+      "subtitleAdd": "Tạo thẻ từ vựng mới với đầy đủ thông tin hỗ trợ FSRS.",
+      "subtitleEdit": "Cập nhật thông tin thẻ để tối ưu hóa quá trình ôn tập.",
+      "wordLabel": "Từ vựng *",
+      "wordPlaceholder": "hello",
+      "phoneticLabel": "Phiên âm",
+      "phoneticPlaceholder": "/həˈloʊ/",
+      "posLabel": "Loại từ",
+      "difficultyLabel": "Độ khó",
+      "definitionLabel": "Định nghĩa *",
+      "definitionPlaceholder": "Lời chào khi gặp mặt...",
+      "exampleEn": "Ví dụ (Tiếng Anh)",
+      "exampleEnPlaceholder": "Hello, how are you?",
+      "exampleVi": "Ví dụ (Tiếng Việt)",
+      "exampleViPlaceholder": "Xin chào, bạn khỏe không?",
+      "synonyms": "Từ đồng nghĩa",
+      "antonyms": "Từ trái nghĩa",
+      "commaSeparated": "(cách nhau bởi dấu phẩy)",
+      "synonymsPlaceholder": "greet, salute, hello",
+      "antonymsPlaceholder": "goodbye, farewell",
+      "wordFamily": "Gia đình từ",
+      "variants": "(các biến thể của từ)",
+      "wordFamilyPlaceholder": "run, runs, running, ran, runner",
+      "imageUrl": "Link ảnh minh họa",
+      "imageUrlPlaceholder": "https://images.unsplash.com/photo-xxx...",
+      "focalPoint": "Trọng tâm ảnh",
+      "focalTop": "Trên",
+      "focalCenter": "Giữa",
+      "focalBottom": "Dưới",
+      "previewTitle": "Xem trước thẻ",
+      "wrongChoices": "Lựa chọn sai (Distractors)",
+      "wrong1Placeholder": "Sai 1",
+      "wrong2Placeholder": "Sai 2",
+      "wrong3Placeholder": "Sai 3",
+      "wrongChoicesDesc": "Các đáp án gây nhiễu cho bài tập trắc nghiệm."
+    },
+    "roadmapForm": {
+      "titleEdit": "Sửa lộ trình",
+      "titleAdd": "Thêm lộ trình mới",
+      "nameLabel": "Tên lộ trình",
+      "namePlaceholder": "VD: IELTS Master 2024",
+      "descLabel": "Mô tả",
+      "descPlaceholder": "Mô tả mục tiêu của lộ trình...",
+      "iconLabel": "Biểu tượng",
+      "colorLabel": "Màu sắc chủ đạo",
+      "errorName": "Tên lộ trình không được trống"
+    },
+    "topicForm": {
+      "titleEdit": "Sửa chủ đề",
+      "titleAdd": "Thêm chủ đề mới",
+      "nameLabel": "Tên chủ đề",
+      "namePlaceholder": "VD: Animals & Nature",
+      "descLabel": "Mô tả",
+      "descPlaceholder": "Mô tả ngắn gọn về chủ đề...",
+      "iconLabel": "Biểu tượng",
+      "iconSearchPlaceholder": "Tìm icon...",
+      "iconNotFound": "Không tìm thấy icon",
+      "changeIcon": "Thay đổi icon",
+      "colorLabel": "Màu sắc chủ đạo",
+      "slugLabel": "Slug",
+      "slugHint": "Auto-prefix {{slug}} để tránh trùng slug toàn app",
+      "colorPalette": "Bảng màu",
+      "customColor": "Màu tùy chỉnh",
+      "errorName": "Tên chủ đề không được trống"
+    },
+    "wordPool": {
+      "uncategorized": "Chưa phân loại",
+      "wordCount": "{{count}} từ vựng",
+      "import": "Nhập từ",
+      "searchPlaceholder": "Tìm kiếm từ...",
+      "all": "Tất cả",
+      "selectedCount": "{{count}} từ được chọn",
+      "assignToTopic": "— Gán vào topic —",
+      "assign": "Gán",
+      "unassign": "Bỏ khỏi topic",
+      "noResults": "Không tìm thấy từ nào",
+      "empty": "Chưa có từ vựng nào.",
+      "tableHeader": {
+        "word": "Từ",
+        "phonetic": "Phát âm",
+        "meaning": "Nghĩa (VN)",
+        "difficulty": "Độ khó",
+        "tags": "Tags",
+        "actions": "Thao tác"
+      }
+    },
+    "bulkAction": {
+      "selected": "đã chọn",
+      "confirmDelete": "Chắc chắn xóa?",
+      "deleting": "Đang xóa...",
+      "deleteNow": "Xóa ngay",
+      "chooseTopic": "Chọn chủ đề...",
+      "saving": "Đang lưu...",
+      "changeTopic": "Đổi chủ đề",
+      "delete": "Xóa"
+    }
+  },
+  "review": {
+    "construction": {
+      "title": "Sắp xếp các ký tự",
+      "building": "Đang xây dựng...",
+      "undo": "Quay lại",
+      "reset": "Reset"
     }
   },
   "notebook": {
@@ -294,7 +875,30 @@
       "due": "Đến hạn",
       "weak": "Từ còn yếu",
       "orphaned": "Từ mồ côi",
-      "mastered": "Đã thuộc"
+      "mastered": "Đã thuộc",
+      "allTopics": "Tất cả chủ đề",
+      "allPos": "Tất cả từ loại",
+      "allStability": "Tất cả trạng thái",
+      "sortBy": "Sắp xếp",
+      "lexicalArchive": "Lexical Archive",
+      "flashReview": "Flash Review",
+      "pos": {
+        "noun": "Danh từ",
+        "verb": "Động từ",
+        "adjective": "Tính từ",
+        "adverb": "Trạng từ"
+      },
+      "stability": {
+        "fresh": "Hạt mầm (Fresh)",
+        "learning": "Đang học (Learning)",
+        "mastered": "Thành thạo (Mastered)",
+        "rooted": "Bền vững (Rooted)"
+      },
+      "sort": {
+        "date": "Ngày thêm",
+        "stability": "Độ bền trí nhớ",
+        "alphabetical": "Bảng chữ cái"
+      }
     },
     "table": {
       "word": "Từ vựng",
@@ -330,5 +934,12 @@
       "scholarSchedule": "Lịch trình Scholar",
       "nextReview": "Cần ôn lại vào"
     }
+  },
+  "study": {
+    "dailyMastery": "Làm chủ hàng ngày",
+    "wordsCount": "{{remaining}} / {{total}} từ",
+    "suggestedRating": "Hệ thống gợi ý",
+    "showAnswer": "Hiện đáp án",
+    "markLearned": "Đánh dấu đã học"
   }
 }

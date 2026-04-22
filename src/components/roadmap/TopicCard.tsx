@@ -11,9 +11,38 @@ interface TopicCardProps {
 }
 
 /**
- * TopicCard - A modular card component for Roadmap topics.
- * Supports Three Variants: Featured, UpNext, and Standard.
+ * Hex to RGBA helper for dynamic pastel backgrounds
  */
+function hexToRgba(hex: string, alpha: number) {
+  try {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  } catch (e) {
+    return `rgba(0, 0, 0, ${alpha})`;
+  }
+}
+
+/**
+ * Darken color helper for accessible text on light backgrounds
+ */
+function darkenColor(hex: string, percent: number) {
+  try {
+    let r = parseInt(hex.slice(1, 3), 16);
+    let g = parseInt(hex.slice(3, 5), 16);
+    let b = parseInt(hex.slice(5, 7), 16);
+
+    r = Math.floor(r * (1 - percent));
+    g = Math.floor(g * (1 - percent));
+    b = Math.floor(b * (1 - percent));
+
+    return `rgb(${r}, ${g}, ${b})`;
+  } catch (e) {
+    return 'inherit';
+  }
+}
+
 export default function TopicCard({
   topic,
   roadmapId,
@@ -24,17 +53,34 @@ export default function TopicCard({
 }: TopicCardProps) {
   const isCompleted = stats.total > 0 && stats.learned >= stats.total
   const isStarted = stats.percent > 0
-  
-  // Asymmetric Aesthetic Style
-  const getPastelStyles = (hexColor: string | null) => {
-    const color = hexColor || '#D35400'
-    return {
-      bg: `${color}12`,
-      border: `${color}25`,
-      accent: color
+
+  // --- Dynamic Theme Engine (Stitch Spec) ---
+  const getTopicTheme = (topic: Topic) => {
+    // 1. Priority: Use color from topic setup (database)
+    if (topic.color && topic.color.startsWith('#')) {
+      const baseColor = topic.color;
+      return {
+        bg: hexToRgba(baseColor, 0.12), // 12% alpha for rich pastel
+        text: darkenColor(baseColor, 0.4), // 40% darker for readable editorial text
+        accent: baseColor,
+        border: hexToRgba(baseColor, 0.1),
+        isDynamic: true
+      };
     }
-  }
-  const styles = getPastelStyles(topic.color)
+
+    // 2. Fallback: Name-based mapping if color is missing
+    const n = topic.name.toLowerCase();
+    if (n.includes('marketing')) return { bg: '#E3F2FD', text: '#0D47A1', accent: '#2196F3', border: '#BBDEFB' };
+    if (n.includes('sustainability')) return { bg: '#E8F5E9', text: '#1B5E20', accent: '#4CAF50', border: '#C8E6C9' };
+    if (n.includes('tech')) return { bg: '#F3E5F5', text: '#4A148C', accent: '#9C27B0', border: '#E1BEE7' };
+    if (n.includes('human resources')) return { bg: '#FFF3E0', text: '#E65100', accent: '#FF9800', border: '#FFE0B2' };
+    if (n.includes('legal')) return { bg: '#ECEFF1', text: '#263238', accent: '#607D8B', border: '#CFD8DC' };
+    if (n.includes('data')) return { bg: '#F0F4C3', text: '#33691E', accent: '#827717', border: '#DCE775' };
+    
+    return { bg: '#F5F5F5', text: '#424242', accent: '#757575', border: '#EEEEEE' };
+  };
+
+  const theme = getTopicTheme(topic);
 
   const commonProps = {
     to: `/study?topic=${topic.slug}&topicId=${topic.id}&roadmapId=${roadmapId}`,
@@ -44,43 +90,27 @@ export default function TopicCard({
   // --- Variant 1: Featured (Large) ---
   if (isFeatured && !searchQuery) {
     return (
-      <Link {...commonProps} className={`${commonProps.className} topic-card col-span-12 md:col-span-7 group relative bg-surface p-8 sun-drenched-shadow-lg hover:scale-[1.01] cursor-pointer overflow-hidden border border-surface-container-highest/20 rounded-2xl`}>
-        <div className="flex justify-between items-start">
-          <div className="space-y-6 flex-1">
-            <div className="flex items-center gap-4">
-              <div className={`w-16 h-16 rounded-2xl ${isCompleted ? 'bg-secondary/10 text-secondary' : 'bg-primary-fixed text-primary'} flex items-center justify-center shadow-inner`}>
-                <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  {isCompleted ? 'check_circle' : (topic.icon || 'star')}
-                </span>
-              </div>
-              <div>
-                {isStarted && !isCompleted && (
-                  <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest mb-1 inline-block">ĐANG HỌC</span>
-                )}
-                <h3 className="text-2xl font-black text-secondary tracking-tight">{topic.name}</h3>
-                <p className="text-on-surface-variant mt-1 text-sm font-bold opacity-70">
-                  {stats.total} Words • {stats.percent}% mastered
-                </p>
-              </div>
-            </div>
+      <Link {...commonProps} className={`${commonProps.className} topic-card md:col-span-2 relative group overflow-hidden rounded-[48px] bg-surface-container-highest min-h-[400px] flex items-end shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)]`}>
+        <img 
+          alt={topic.name} 
+          src={topic.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80'} 
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-[#1E1B17]/90 via-[#1E1B17]/40 to-transparent"></div>
+        <div className="relative p-10 w-full space-y-5">
+          <div className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-primary-fixed">Active Chapter</span>
+            <h2 className="text-4xl font-bold text-white">Topic: {topic.name}</h2>
             {topic.description && (
-              <p className="text-on-surface-variant max-w-sm leading-relaxed line-clamp-2 mt-4 text-[15px] font-medium italic">
+              <p className="text-white/70 max-w-md text-lg leading-relaxed line-clamp-2">
                 {topic.description}
               </p>
             )}
-            <div className={`inline-flex ${isCompleted ? 'bg-secondary' : 'primary-gradient'} text-on-primary px-8 py-3.5 rounded-2xl font-black text-sm items-center gap-2 group-hover:shadow-xl transition-all active:scale-95 mt-6 uppercase tracking-widest`}>
-              <span>{isCompleted ? 'Hoàn thành' : isStarted ? 'Học tiếp (Resume)' : 'Bắt đầu học'}</span>
-              {!isCompleted && <span className="material-symbols-outlined font-variation-fill">bolt</span>}
-            </div>
           </div>
-          <div className="w-56 h-56 relative hidden xl:block select-none pointer-events-none shrink-0 ml-4 group">
-            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-75 group-hover:scale-100 transition-transform duration-700"></div>
-            <img 
-              alt={topic.name} 
-              src={topic.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80'} 
-              className="w-full h-full object-cover rounded-4xl shadow-2xl relative z-10 transform -rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-700" 
-            />
-          </div>
+          <button className="bg-linear-to-r from-primary to-primary-container text-white px-10 py-5 rounded-full font-bold text-lg shadow-xl hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-3 w-fit">
+            {isStarted ? 'Resume Learning' : 'Start Learning'}
+            <span className="material-symbols-outlined">play_circle</span>
+          </button>
         </div>
       </Link>
     )
@@ -89,97 +119,64 @@ export default function TopicCard({
   // --- Variant 2: Up Next (Kinetic/Flashy) ---
   if (isUpNext && !searchQuery) {
     return (
-      <Link {...commonProps} className={`${commonProps.className} topic-card col-span-12 md:col-span-5 relative group overflow-hidden rounded-2xl h-full`}>
-        <div className="absolute inset-0 border-gradient-wow z-0"></div>
-        <div className="absolute inset-[2px] glass-wow-card rounded-xl z-10 p-8 flex flex-col justify-between transition-all group-hover:bg-surface/60">
-          <div className="flex justify-between items-start mb-12">
-            <div className="flex items-center justify-center">
-              <div className="relative">
-                <div className="absolute -inset-4 primary-gradient rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-all duration-500 scale-50 group-hover:scale-100"></div>
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl animate-float relative z-10 primary-gradient text-on-primary transition-all duration-500 group-hover:rotate-10">
-                  <div className="absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:opacity-0 group-hover:scale-0">
-                    <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                      {topic.icon || 'palette'}
-                    </span>
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-50 group-hover:scale-110">
-                    <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-               <span className="bg-secondary/10 text-secondary text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-[0.2em] shadow-sm">UP NEXT</span>
-               <span className="text-[10px] font-black text-on-surface-variant/40">TARGET: 100%</span>
-            </div>
+      <Link {...commonProps} className={`${commonProps.className} topic-card bg-surface-container-low rounded-[32px] p-6 flex flex-col justify-between border-b-4 border-secondary/20 shadow-lg shadow-secondary/5`}>
+        <div className="space-y-6">
+          <div className="flex justify-between items-start">
+            <span className="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Up Next</span>
+            <span className="material-symbols-outlined text-secondary">trending_up</span>
           </div>
           <div>
-            <h3 className="text-2xl font-black text-secondary tracking-tight mb-2">{topic.name}</h3>
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-on-surface-variant text-xs font-bold uppercase tracking-widest opacity-60">
-                {stats.total} Words Progress
+            <h3 className="text-2xl font-bold mb-2">Topic: {topic.name}</h3>
+            {topic.description && (
+              <p className="text-sm text-on-surface-variant leading-relaxed line-clamp-2">
+                {topic.description}
               </p>
-              <span className="text-sm font-black text-secondary">{stats.percent}%</span>
-            </div>
-            <div className="h-4 w-full bg-surface-container-low rounded-full overflow-hidden border border-outline-variant/10 shadow-inner p-[2px]">
-              <div 
-                className="h-full rounded-full transition-all duration-1000 liquid-progress primary-gradient" 
-                style={{ width: `${stats.percent}%` }}
-              ></div>
-            </div>
+            )}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <div className="flex justify-between text-xs font-bold text-outline">
+            <span>Preparation</span>
+            <span>{stats.percent}%</span>
+          </div>
+          <div className="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-secondary rounded-full transition-all duration-1000"
+              style={{ width: `${stats.percent}%` }}
+            ></div>
           </div>
         </div>
       </Link>
     )
   }
 
-  // --- Variant 3: Standard (Pastel) ---
+  // --- Variant 3: Standard (Pastel/Stitch Style) ---
   return (
-    <Link 
-      {...commonProps} 
-      className={`${commonProps.className} topic-card col-span-12 md:col-span-4 rounded-2xl p-6 hover:scale-[1.03] hover:shadow-xl group relative overflow-hidden border border-transparent shadow-sm`}
-      style={{ backgroundColor: styles.bg }}
+    <Link
+      {...commonProps}
+      className={`${commonProps.className} topic-card rounded-[32px] p-6 flex flex-col justify-between group hover:shadow-md transition-all border`}
+      style={{ backgroundColor: theme.bg, borderColor: theme.border }}
     >
-      <div className="flex items-center gap-5 mb-8">
-        <div className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg transition-transform group-hover:rotate-12 bg-surface">
-          <span className="material-symbols-outlined text-2xl text-secondary">
-            {isCompleted ? 'verified' : (topic.icon || 'school')}
+      <div className="flex justify-between items-start">
+        <div className="w-10 h-10 rounded-lg bg-white/60 backdrop-blur-sm flex items-center justify-center">
+          <span className="material-symbols-outlined" style={{ color: theme.accent }}>
+            {topic.icon || 'auto_stories'}
           </span>
         </div>
-        <div className="flex-1">
-          <h4 className="font-black text-secondary text-[16px] tracking-tight leading-none mb-1.5">{topic.name}</h4>
-          <div className="flex items-center gap-2">
-            <span 
-              className="w-1.5 h-1.5 rounded-full" 
-              style={{ backgroundColor: styles.accent }}
-            ></span>
-            <p className="text-[10px] text-on-surface-variant font-black uppercase tracking-widest">
-              {stats.total} Từ • {stats.percent}%
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {topic.description && (
-        <p className="text-xs text-on-surface-variant/80 mb-6 leading-relaxed line-clamp-2 font-medium">
-          {topic.description}
-        </p>
-      )}
-
-      <div className="flex items-center justify-between mt-auto">
         {isCompleted ? (
-          <div className="flex items-center gap-2 text-secondary transition-colors">
-            <span className="material-symbols-outlined text-[18px] font-variation-fill">check_circle</span>
-            <span className="text-[10px] font-black uppercase tracking-widest">Mastered</span>
-          </div>
+          <span className="material-symbols-outlined text-green-600 bg-green-50 rounded-full p-1 text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
         ) : (
-          <div className="flex items-center gap-2 text-on-surface-variant group-hover:text-secondary transition-colors">
-            <span className="material-symbols-outlined text-[18px] font-variation-fill">bolt</span>
-            <span className="text-[10px] font-black uppercase tracking-widest">
-              {isStarted ? 'Tiếp tục' : 'Bắt đầu'}
-            </span>
-          </div>
+          <span 
+            className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded opacity-60"
+            style={{ backgroundColor: theme.bg, color: theme.text }}
+          >
+            Locked
+          </span>
         )}
+      </div>
+      <div className="mt-6">
+        <h4 className="text-xl font-bold mb-1" style={{ color: theme.text }}>{topic.name}</h4>
+        <p className="text-xs opacity-70" style={{ color: theme.text }}>{topic.description || 'Topic detailed explore'}</p>
       </div>
     </Link>
   )

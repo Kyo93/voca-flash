@@ -45,8 +45,10 @@ describe('markLearned — must flip card THEN rate', () => {
 describe('StudyPage "Mark as Learned" — must call markLearned, not rate directly', () => {
   it('button onClick must use markLearned from useFlashcard, not rate(3)', () => {
     const source = readFile('pages/StudyPage.tsx')
-    // Search backward from "Mark as Learned" to find the onClick attribute
-    const malIdx = source.indexOf('Mark as Learned')
+    // Search for the translation key or the original text
+    const malIdx = source.indexOf('study.markLearned') !== -1 
+      ? source.indexOf('study.markLearned')
+      : source.indexOf('Mark as Learned')
     expect(malIdx).toBeGreaterThan(-1)
     // Look at the 400 chars BEFORE "Mark as Learned" to find onClick
     const snippet = source.substring(Math.max(0, malIdx - 400), malIdx + 200)

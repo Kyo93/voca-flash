@@ -8,14 +8,14 @@ import DangerZoneSection from '../components/settings/DangerZoneSection'
 
 export default function SettingsPage() {
   const { t } = useTranslation()
-  const { 
-    user, 
-    formData, 
-    saving, 
-    saveMessage, 
+  const {
+    user,
+    formData,
+    saving,
+    saveMessage,
     error,
-    handleChange, 
-    handleSave 
+    handleChange,
+    handleSave
   } = useSettingsForm()
 
   return (
@@ -26,12 +26,12 @@ export default function SettingsPage() {
           <div>
             <h1 className="text-4xl font-black text-secondary tracking-tight mb-2">{t('settings.title')}</h1>
             <p className="text-stone-500 font-medium">
-              Tùy chỉnh trải nghiệm học tập theo phong cách của bạn.
+              {t('settings.subtitle')}
             </p>
           </div>
-          
+
           {/* Desktop Save Button */}
-          <button 
+          <button
             onClick={handleSave}
             disabled={saving}
             className="hidden md:flex items-center gap-2 px-8 py-4 primary-gradient text-white font-bold text-sm rounded-2xl shadow-[0_10px_30px_rgba(255,145,0,0.3)] hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
@@ -51,7 +51,7 @@ export default function SettingsPage() {
               <span className="font-bold">{saveMessage}</span>
             </div>
           )}
-          
+
           {error && (
             <div className="p-4 bg-red-50 text-red-700 rounded-2xl border border-red-200/50 flex items-center gap-3 animate-fade-in shadow-sm">
               <span className="material-symbols-outlined font-variation-fill">error</span>
@@ -62,22 +62,22 @@ export default function SettingsPage() {
 
         {/* Sections */}
         <div className="grid grid-cols-1 gap-10 pb-32">
-          <ProfileSection 
-            userEmail={user?.email} 
-            formData={formData} 
-            onChange={handleChange} 
+          <ProfileSection
+            userEmail={user?.email}
+            formData={formData}
+            onChange={handleChange}
           />
-          
-          <LearningSection 
-            formData={formData} 
-            onChange={handleChange} 
+
+          <LearningSection
+            formData={formData}
+            onChange={handleChange}
           />
-          
-          <AudioSection 
-            formData={formData} 
-            onChange={handleChange} 
+
+          <AudioSection
+            formData={formData}
+            onChange={handleChange}
           />
-          
+
           <DangerZoneSection />
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function SettingsPage() {
       {/* Floating Save Button (Mobile & Secondary accessibility) */}
       <div className="fixed bottom-10 left-0 right-0 px-6 z-50 md:hidden pointer-events-none">
         <div className="max-w-[800px] mx-auto flex justify-end">
-          <button 
+          <button
             onClick={handleSave}
             disabled={saving}
             className="pointer-events-auto flex items-center justify-center w-16 h-16 primary-gradient text-white rounded-full shadow-[0_15px_40px_rgba(255,145,0,0.4)] hover:scale-110 active:scale-95 transition-all disabled:opacity-50"

@@ -1,4 +1,54 @@
 {
+  "common": {
+    "later": "Later",
+    "days": "days",
+    "excellent": "Excellent",
+    "admin": "Admin",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "loading": "Loading...",
+    "dateLocale": "en-US",
+    "difficulty": {
+      "v-easy": "Very Easy",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "v-hard": "Very Hard"
+    },
+    "pos": {
+      "noun": "Noun",
+      "verb": "Verb",
+      "adj": "Adjective",
+      "adv": "Adverb",
+      "phrase": "Phrase",
+      "other": "Other"
+    },
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "edit": "Edit",
+    "add": "Add",
+    "back": "Back",
+    "loading": "Loading...",
+    "search": "Search",
+    "ok": "OK",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "error": "Error",
+    "success": "Success",
+    "next": "Next",
+    "previous": "Previous",
+    "notifications": "Notifications",
+    "info": "Information",
+    "image": "Image",
+    "status": "Status",
+    "refresh": "Refresh",
+    "lastEdited": "Last edited",
+    "lastEditedBy": "Last edited by {{name}}"
+  },
   "app": {
     "name": "VocabMaster",
     "tagline": "Smart vocabulary learning"
@@ -12,7 +62,56 @@
     "startQuiz": "Start Daily Quiz",
     "search": "Search...",
     "searchPlaceholder": "Search paths, words, or lessons...",
-    "mastery": "Mastery Vault"
+    "mastery": "Vocabulary Vault"
+  },
+  "library": {
+    "title": "Choose Your Journey",
+    "tagline": "Curated Pathways",
+    "description": "Select a roadmap tailored to your goals. Our tactile learning system adapts to your pace and interests.",
+    "filters": {
+      "All": "All",
+      "Kids": "Kids",
+      "Casual": "Casual",
+      "Professional": "Professional",
+      "Academic": "Academic"
+    },
+    "keywords": {
+      "kids": "kids,trẻ em",
+      "professional": "business,công việc,chuyên nghiệp",
+      "academic": "ielts,toeic,academic,học thuật",
+      "casual": "daily,giao tiếp,thường ngày"
+    },
+    "card": {
+      "defaultDesc": "Curated pathways designed to optimize your learning journey.",
+      "completed": "Completed",
+      "resume": "Resume",
+      "start": "Start Journey",
+      "badges": {
+        "kids": "Ages 6-12",
+        "professional": "Professional",
+        "advanced": "Advanced",
+        "lifestyle": "Lifestyle"
+      }
+    },
+    "assessment": {
+      "title": "Not sure where to start?",
+      "subtitle": "Our AI assessment recommends the perfect path based on your current level and goals.",
+      "cta": "Take Assessment"
+    }
+  },
+  "auth": {
+    "signUpTitle": "Create a new account",
+    "signInTitle": "Welcome back",
+    "signUpSubtitle": "Sign up to start learning vocabulary",
+    "signInSubtitle": "Sign in to continue learning",
+    "email": "Email",
+    "password": "Password",
+    "processing": "Processing...",
+    "signUp": "Create Account",
+    "signIn": "Sign In",
+    "hasAccount": "Already have an account? Sign In",
+    "noAccount": "Don't have an account? Sign Up Now",
+    "signUpSuccess": "Sign up successful! Please check your email to confirm your account."
   },
   "home": {
     "welcome": "Welcome back!",
@@ -23,7 +122,30 @@
     "mastered": "Mastered",
     "continueLearning": "Continue Learning",
     "viewLibrary": "View Library",
-    "resume": "Resume"
+    "resume": "Resume",
+    "readyToday": "Ready to excel today",
+    "continueDesc": "Continue learning from selected topics.",
+    "tracking": "TRACKING",
+    "suggestion": "SUGGESTION",
+    "unfinished": "In Progress",
+    "newModule": "New Module",
+    "studyNext": "Study Next",
+    "explore": "Explore",
+    "maintenanceTitle": "Knowledge Maintenance",
+    "maintenanceDesc": "Focus on global review to anchor memories forever.",
+    "wordsDue": "{{count}} words due",
+    "reviewNow": "Review Now",
+    "learnedToday": "Learned {{count}} new words"
+  },
+  "sidebar": {
+    "collapse": "Collapse Sidebar",
+    "expand": "Expand Sidebar",
+    "collapseRight": "Collapse",
+    "expandRight": "Expand",
+    "signout": "Sign Out",
+    "student": "Student",
+    "streakDay": "{{count}} day streak",
+    "tagline": "The Tactile Scholar"
   },
   "flashcard": {
     "showAnswer": "Show Answer",
@@ -34,7 +156,12 @@
     "vietnamese": "Vietnamese",
     "contextUsage": "Contextual Usage",
     "deck": "Deck",
-    "level": "Level"
+    "level": "Level",
+    "meaning": "Meaning",
+    "saveToNotebook": "Save to Notebook",
+    "removeFromNotebook": "Remove from Notebook",
+    "noTopic": "No topic",
+    "srsReady": "SRS READY"
   },
   "srs": {
     "hard": "Hard",
@@ -61,7 +188,30 @@
     "subtitle": "Select a roadmap tailored to your goals. Our tactile learning system adapts to your pace and interests.",
     "notSure": "Not sure where to start?",
     "takeTest": "Take Assessment",
-    "curatedPaths": "Curated Pathways"
+    "curatedPaths": "Curated Pathways",
+    "loading": "Loading roadmap...",
+    "notFound": "Roadmap not found"
+  },
+  "roadmapDetail": {
+    "back": "Back to Library",
+    "social": "Join 2.4k+ scholars cultivating expertise",
+    "masteryProgress": "Mastery Progress",
+    "topLearner": "You're in the top 15% of learners this week. Keep exploring!",
+    "totalWords": "Total Words",
+    "masteredGems": "Mastered Gems",
+    "footer": {
+      "quote": "\"Learning is a treasure that will follow its owner everywhere.\"",
+      "copyright": "© 2024 VocaFlash. Cultivating the Tactile Scholar.",
+      "philosophy": "The Philosophy",
+      "research": "Research Journal",
+      "privacy": "Privacy Folio"
+    },
+    "milestone": {
+      "title": "Milestone Ahead",
+      "name": "Vocabulary Master",
+      "desc": "Reach 600 Mastered Gems to unlock the prestigious Academy Badge.",
+      "view": "View Achievements"
+    }
   },
   "topics": {
     "title": "Topics",
@@ -77,9 +227,35 @@
     "words": "words",
     "mastered": "mastered",
     "overallCompletion": "Overall Completion",
+    "wordsCount": "{{count}} vocabulary words",
     "continue": "Continue Learning",
     "startModule": "Start Module",
+    "learnMore": "Learn More",
     "locked": "Locked"
+  },
+  "topic": {
+    "status": {
+      "learning": "LEARNING",
+      "completed": "Completed",
+      "mastered": "Mastered"
+    },
+    "action": {
+      "resume": "Resume",
+      "start": "Start",
+      "startDetailed": "Start Learning"
+    },
+    "stats": {
+      "words": "Words",
+      "mastered": "mastered",
+      "progress": "Progress"
+    }
+  },
+  "studyComplete": {
+    "title": "Complete!",
+    "reviewedCount": "You have reviewed {{count}} words",
+    "comeBackLater": "Come back later to continue your journey!",
+    "learnMore": "Learn More",
+    "dashboard": "Back to Dashboard"
   },
   "progress": {
     "title": "Progress",
@@ -88,7 +264,44 @@
     "topStreak": "You're in the top 5% of learners this month. Keep going!",
     "masteredWords": "Mastered Words",
     "totalWords": "Total Words",
-    "completed": "complete"
+    "completed": "complete",
+    "welcome": "Welcome back, {{name}}. Continue your journey.",
+    "activityFrequency": "Learning Frequency",
+    "less": "Less",
+    "more": "More",
+    "intensity": "Intensity: {{level}}",
+    "streakNote": "* Based on a {{count}}-day streak.",
+    "maintain": "Steady",
+    "peak": "Peak",
+    "activityHeatmap": "Activity Heatmap",
+    "quote": "“Persistence is the key to wisdom.” — VocaFlash Mentor",
+    "wordCount": "{{mastered}} / {{total}} words",
+    "nDays": "({{count}} days)",
+    "explore": "Explore",
+    "seeAllRoadmaps": "See all roadmaps",
+    "masteryTip": "Mastery Tip",
+    "masteryTipDesc": "Reviewing words right when they are due increases retention by 3x.",
+    "sageFallback": "Sage",
+    "fsrsBins": {
+      "status": "Status",
+      "count": "{{count}} words",
+      "states": {
+        "new": "New",
+        "learning": "Learning",
+        "review": "Review",
+        "relearning": "Relearning",
+        "fresh": "Fresh",
+        "freshDesc": "Stability < 5 days",
+        "stable": "Stable",
+        "stableDesc": "Stability 5-30 days",
+        "rooted": "Rooted",
+        "rootedDesc": "Stability > 30 days"
+      }
+    },
+    "workloadForecast": {
+      "today": "Today",
+      "dayN": "Day {{n}}"
+    }
   },
   "rightSidebar": {
     "updates": "Updates",
@@ -98,9 +311,11 @@
     "reviewReady": "Review ready",
     "reviewReadyDesc": "{{count}} words are waiting to be reviewed.",
     "studyReminder": "Reminders",
-    "learnWord": "Learn a word",
-    "dynamicReview": "Dynamic review",
-    "scheduleTitle": "Schedule a study reminder",
+    "learnWord": "Learn a Word",
+    "learnWordDesc": "Remind to learn new words daily.",
+    "dynamicReview": "Dynamic Review",
+    "dynamicReviewDesc": "Review learned words as scheduled.",
+    "scheduleTitle": "Set a Schedule",
     "scheduleDesc": "Set a daily reminder to maintain your streak and build a lasting habit.",
     "setReminder": "Set Reminder"
   },
@@ -119,26 +334,114 @@
     "forAllAges": "Designed for all ages",
     "forAllAgesDesc": "Personalized roadmap for professionals and children.",
     "ready": "Ready to conquer?",
-    "ctaText": "Start your journey with VocabMaster today!"
+    "ctaText": "Start your journey with VocabMaster today!",
+    "articles": "Lessons",
+    "quizzes": "Quizzes",
+    "community": "Community",
+    "withSrs": "with Spaced Repetition",
+    "parentMode": "Parent Mode",
+    "parentModeDesc": "Intuitive reporting system makes tracking your child's progress easy.",
+    "studyNow": "Study Now",
+    "pricing": "Pricing",
+    "aboutUs": "About Us",
+    "modernTechnique": "Modern Learning Technique"
+  },
+  "arena": {
+    "preparing": "Preparing Arena...",
+    "preparingStudy": "Preparing Study Room...",
+    "recordTitle": "Amazing Record!",
+    "recordSubtitle": "You've mastered all vocabulary. No more words to review today. Come back when the system reminds you!",
+    "backToDashboard": "Back to Dashboard",
+    "freeStudyLabel": "Free Study",
+    "exit": "Exit",
+    "hint": "Show Hint",
+    "selectAnswer": "Select Answer",
+    "continue": "Continue",
+    "skipQuiz": "Skip quiz → Self-assess",
+    "holdToReveal": "Hold to reveal meaning",
+    "pressEnterToConfirm": "Press ENTER to confirm",
+    "hideHint": "Hide letter hint",
+    "showHint": "Show letter hint",
+    "noExample": "No example sentence",
+    "meaningHint": "Meaning hint",
+    "typeMissing": "Type the missing word...",
+    "debugSimulation": "Challenge simulation",
+    "debugConfirm": "Confirm remembered (Debug)"
+  },
+  "studyPrep": {
+    "loading": "Analyzing academic data...",
+    "emptyTitle": "No vocabulary in this topic",
+    "emptyDesc": "Please come back later after the admin adds new words.",
+    "title": "Study Preparation",
+    "desc": "The system analyzed <strong className=\"text-primary\">{{total}}</strong> vocabulary words in this topic.",
+    "newWords": "New words",
+    "learning": "In progress",
+    "mastered": "Mastered",
+    "masteredDesc": "From other topics or completed",
+    "masteredPrompt": "Do you want to review the {{count}} mastered words?",
+    "skipMastered": "No, skip them",
+    "includeMastered": "Yes, review all",
+    "startNow": "Start Now"
+  },
+  "sessionSummary": {
+    "title": "Session Complete!",
+    "subtitle": "You're making amazing progress.",
+    "xp": "Experience Points",
+    "accuracy": "Accuracy Rate",
+    "mistakes": "Need attention",
+    "reviewSoon": "Review soon",
+    "restart": "Start New Session",
+    "dashboard": "Back to Dashboard"
+  },
+  "confirmExit": {
+    "title": "Exit Arena?",
+    "subtitle": "Your progress is always saved. Do you want to pause and come back later?",
+    "exit": "Exit Now",
+    "stay": "Stay & Practice"
   },
   "settings": {
-    "title": "Settings & Profile",
-    "profile": "Profile Info",
+    "title": "Personal Settings",
+    "subtitle": "Customize your learning experience to fit your style.",
+    "profileTitle": "Profile & Account",
+    "profileDesc": "Edit your personal information displayed publicly on the app.",
     "displayName": "Display Name",
+    "displayNamePlaceholder": "e.g. Ocean Nguyen",
     "email": "Account Email",
+    "linkError": "Link Error",
+    "avatarUrl": "Avatar Image URL",
+    "badLinkWarning": "This link seems to be a share link, not a direct image link. Please right-click the image and select \"Copy Image Address\" for best results.",
+    "imgurTip": "Tip: You can upload images to Imgur to get a direct link.",
     "learning": "Learning Preferences",
+    "learningDesc": "Configure daily goals and FSRS algorithm sensitivity.",
     "dailyTarget": "Daily Target (New Words)",
+    "relaxed": "Relaxed",
+    "determined": "Determined",
+    "retentionLabel": "FSRS Retention (Memory stability)",
+    "retention80": "80% - Relaxed (Less reviews)",
+    "retention90": "90% - Standard (Optimal)",
+    "retention95": "95% - Intense (High retention)",
+    "retentionDesc": "Higher values mean more frequent reviews to reach desired retention. 90% is ideal.",
     "srsIntensity": "SRS Intensity (1.0 = Normal)",
     "audio": "Audio & Interface",
+    "audioDesc": "Customize English voice and application display language.",
     "voice": "Voice (TTS)",
+    "loadingVoices": "Loading voices...",
+    "systemDefault": "(System default)",
     "speed": "Speech Rate",
+    "slow": "Slow",
+    "fast": "Fast",
     "autoPlay": "Auto-play Audio",
+    "autoPlayDesc": "Automatically play audio when flipping cards.",
     "language": "Interface Language",
+    "languageDesc": "Change the application display language.",
     "dangerZone": "Danger Zone",
+    "dangerZoneDesc": "The actions below can cause permanent data loss. Please be careful.",
     "resetProgress": "Reset Topic Progress",
+    "resetProgressDesc": "Permanently delete all review history (SRS) for a specific topic.",
     "selectTopic": "Select Topic to Reset",
     "resetConfirm": "Are you sure you want to reset all progress for this topic?",
     "resetDesc": "This action cannot be undone. All SRS data will be wiped.",
+    "cannotUndo": "This action cannot be undone!",
     "logout": "Log Out",
     "save": "Save Changes",
     "saving": "Saving...",
@@ -153,6 +456,13 @@
     "cancel": "Cancel",
     "selectTopicRequired": "Please select a topic."
   },
+  "challenges": {
+    "cloze": "Cloze",
+    "listen": "Listen again",
+    "recognition": "Select meaning",
+    "translation": "Translation",
+    "ordering": "Ordering"
+  },
   "methodology": {
     "title": "Science & Methodology",
     "heroTitle": "The Science Behind Permanent Memory",
@@ -160,13 +470,19 @@
     "curveTitle": "The Heart: Forgetting Curve",
     "curveDesc": "Human brains are wired to forget. VocaFlash is designed to prevent that.",
     "traditional": "Traditional Learning",
+    "traditionalDesc": "Knowledge drops quickly over time.",
+    "day": "Day {{count}}",
+    "dayPlus": "Day {{count}}+",
     "vocaFlash": "Learning with VocaFlash",
     "recallCaption": "We remind you just as you're about to forget.",
-    "srsTitle": "SM-2 Algorithm: The Memory Engine",
-    "easeFactor": "Ease Factor (Smart Index)",
-    "easeFactorDesc": "Each word starts with 2.5. This factor determines the interval growth based on how well you remember.",
-    "intervals": "Interval Policy: 1 - 6 - X",
-    "intervalsDesc": "1st: Correct -> 1 day. 2nd: Correct -> 6 days. 3rd+: (Old interval x Ease Factor).",
+    "fsrsTitle": "FSRS Algorithm",
+    "fsrsSubtitle": "Free Spaced Repetition Scheduler - The most powerful SRS algorithm generation today.",
+    "stability": "Stability",
+    "stabilityDesc": "Represents the number of days you are likely to remember this word with a 90% probability. Higher stability means more durable memory.",
+    "difficulty": "Difficulty",
+    "difficultyDesc": "Every word has its own complexity. FSRS automatically adjusts based on your feedback to find the optimal learning path.",
+    "retrievability": "Retrievability",
+    "retrievabilityDesc": "The probability that you can recall the information right now. The system schedules reviews when this drops to a target level.",
     "repetitions": "Power of Feedback (Rating)",
     "repetitionsDesc": "Choosing 'Easy', 'Hard', or 'Again' directly impacts the Ease Factor and schedule.",
     "ratingEasy": "Easy",
@@ -191,13 +507,146 @@
     "faqQ2": "How is the Rank calculated?",
     "faqA2": "Currently, rank reflects your diligence based on your **Daily Goal**. When you complete your target new words, you 'rank up' for the day. Future levels will be based on Total Mastered words.",
     "faqQ3": "Why is my memory stability low but the next review date is far away?",
-    "faqA3": "This is a smart mechanism in FSRS 5 to handle Early Reviews:\n1. Early Review Penalty: If you review immediately after learning, your brain hasn't been truly challenged, so Stability won't increase significantly to accurately reflect that the memory is still fresh.\n2. Efficiency Priority: Since you chose 'Easy', the system proactively pushes the next review out to avoid bothering you with words you already know well.\n3. Advice: Wait until a word is 'Due' before reviewing to maximize your Stability growth rate."
+    "faqA3": "This is a smart mechanism in FSRS 5 to handle Early Reviews:\n1. Early Review Penalty: If you review immediately after learning, your brain hasn't been truly challenged, so Stability won't increase significantly to accurately reflect that the memory is still fresh.\n2. Efficiency Priority: Since you chose 'Easy', the system proactively pushes the next review out to avoid bothering you with words you already know well.\n3. Advice: Wait until a word is 'Due' before reviewing to maximize your Stability growth rate.",
+    "readyToConquer": "Are you ready to conquer English?",
+    "learnNow": "Learn Now"
   },
   "meta": {
     "title": "VocabMaster — Learn Vocabulary Effectively",
     "description": "Learn English vocabulary with Flashcards and Spaced Repetition System (SRS)."
   },
   "admin": {
+    "words": {
+      "searchPlaceholder": "Search words...",
+      "allTopics": "All Topics",
+      "newest": "Newest",
+      "az": "A-Z",
+      "difficulty": "Difficulty"
+    },
+    "roadmaps": {
+      "title": "Roadmaps",
+      "count": "{{count}} learning roadmaps",
+      "addRoadmap": "Add Roadmap",
+      "status": {
+        "active": "Active",
+        "paused": "Paused"
+      },
+      "card": {
+        "topics": "{{count}} topics",
+        "noDesc": "No description for this roadmap.",
+        "createdAt": "Created at",
+        "setup": "Setup roadmap"
+      },
+      "delete": {
+        "title": "Delete roadmap?",
+        "cannotDelete": "Cannot delete roadmap",
+        "hasTopics": "Roadmap \"{{name}}\" has {{count}} topics. Delete all topics before deleting the roadmap.",
+        "confirm": "Delete roadmap \"{{name}}\"? This action cannot be undone.",
+        "understood": "Understood"
+      },
+      "loading": "Loading...",
+      "empty": "No roadmaps yet."
+    },
+    "roadmapSetup": {
+      "notFound": "Roadmap not found",
+      "back": "Back",
+      "manage": "Manage topics & words",
+      "deleteTopic": {
+        "title": "Delete topic?",
+        "confirm": "Delete \"{{name}}\"? Vocabulary in this topic will not be deleted."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "count": "{{count}} registered users",
+      "table": {
+        "header": {
+          "user": "User",
+          "email": "Email",
+          "streak": "Streak",
+          "joined": "Joined",
+          "actions": "Actions"
+        },
+        "student": "Student",
+        "title": "Student List",
+        "description": "Manage information and track user learning progress."
+      },
+      "panel": {
+        "srsDetails": "SRS Algorithm Details",
+        "distribution": "Card Distribution (SRS)",
+        "systemInfo": "System Information",
+        "lastOnline": "Last online",
+        "justNow": "Just now",
+        "viewAll": "View all active words",
+        "levels": {
+          "again": "Again",
+          "hard": "Hard",
+          "good": "Good",
+          "easy": "Easy"
+        }
+      }
+    },
+    "wordTable": {
+      "empty": "No words yet",
+      "emptyHint": "Add new words or change your filters",
+      "selectAll": "Select all on page",
+      "edited": "Edited",
+      "header": {
+        "word": "Vocabulary",
+        "type": "Type",
+        "difficulty": "Difficulty",
+        "meaning": "Meaning",
+        "example": "Example & Trans",
+        "tags": "Tags",
+        "time": "Time",
+        "actions": "Actions"
+      },
+      "posAbbr": {
+        "noun": "N",
+        "verb": "V",
+        "adj": "Adj",
+        "adv": "Adv",
+        "phrase": "Ph",
+        "other": "Misc"
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "VocaFlash System Overview",
+      "stats": {
+        "words": "Words",
+        "topics": "Topics",
+        "users": "Users",
+        "mastered": "Mastered"
+      },
+      "recent": {
+        "title": "Recently added words",
+        "loading": "Loading...",
+        "empty": "No words yet. Add the first one!",
+        "manage": "Manage words"
+      }
+    },
+    "sidebar": {
+      "manage": "Management",
+      "words": "Vocabulary",
+      "roadmaps": "Roadmaps",
+      "users": "Users",
+      "backToApp": "Back to App",
+      "expand": "Expand Sidebar",
+      "collapse": "Collapse Sidebar",
+      "collapseAction": "Collapse",
+      "adminRole": "Admin Access"
+    },
+    "topics": {
+      "title": "Topics",
+      "add": "Add",
+      "uncategorized": "Uncategorized",
+      "wordCount": "{{count}} words",
+      "emptyTitle": "No topics yet.",
+      "emptyDesc": "Click \"Add\" to create one.",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
     "import": {
       "title": "Import Vocabulary",
       "step1": "Select Source",
@@ -219,7 +668,7 @@
       "importing": "Importing...",
       "importSuccess": "Successfully imported {{count}} words!",
       "importPartial": "{{success}}/{{total}} words imported. {{errors}} failed.",
-      "importFailed": "Import failed. Please try again.",
+      "importFailed": "Import failed.",
       "continue": "Continue",
       "cancel": "Cancel",
       "close": "Close",
@@ -238,7 +687,143 @@
       "hideErrors": "Hide errors",
       "resetAndTryAgain": "Try again",
       "invalidUrl": "Invalid URL",
-      "fileRequired": "Please select a file or paste a URL"
+      "fileRequired": "Please select a file or paste a URL",
+      "postParseError": "Error processing data after parse",
+      "importingInto": "Importing into: {{name}}",
+      "needRoadmap": "Select a Roadmap first",
+      "needRoadmapDesc": "To import vocabulary, you need to open from a specific Roadmap.",
+      "goToRoadmaps": "Go to Roadmaps",
+      "duplicates": "{{count}} duplicates",
+      "newWords": "{{count}} new words",
+      "errorsCount": "{{count}} errors",
+      "tableHeader": {
+        "word": "Word",
+        "type": "Type",
+        "diff": "Diff",
+        "topics": "Topics",
+        "definition": "Definition",
+        "exampleEn": "Example (EN)",
+        "exampleVi": "Example (VI)",
+        "wrongChoices": "Sai 1/2/3",
+        "status": "Status"
+      },
+      "status": {
+        "error": "error",
+        "duplicate": "duplicate",
+        "ok": "OK"
+      },
+      "action": {
+        "skip": "Skip",
+        "update": "Update"
+      },
+      "criticalError": "⚠️ Critical Import Error: submitted {{submitted}} words but only successfully inserted {{inserted}} words.",
+      "templateCsv": "word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Hello,Hello world!,,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Apple,An apple a day,,,Food,pear,orange,fruit"
+    },
+    "wordForm": {
+      "titleAdd": "Add New Word",
+      "titleEdit": "Edit Word",
+      "subtitleAdd": "Create a new vocabulary card with full FSRS support.",
+      "subtitleEdit": "Update card details for optimized study sessions.",
+      "wordLabel": "Word *",
+      "wordPlaceholder": "hello",
+      "phoneticLabel": "Phonetic",
+      "phoneticPlaceholder": "/həˈloʊ/",
+      "posLabel": "Part of Speech",
+      "difficultyLabel": "Difficulty",
+      "definitionLabel": "Definition *",
+      "definitionPlaceholder": "A greeting used when meeting...",
+      "exampleEn": "Example (English)",
+      "exampleEnPlaceholder": "Hello, how are you?",
+      "exampleVi": "Example (Vietnamese)",
+      "exampleViPlaceholder": "Xin chào, bạn khỏe không?",
+      "synonyms": "Synonyms",
+      "antonyms": "Antonyms",
+      "commaSeparated": "(comma separated)",
+      "synonymsPlaceholder": "greet, salute, hello",
+      "antonymsPlaceholder": "goodbye, farewell",
+      "wordFamily": "Word Family",
+      "variants": "(word variants)",
+      "wordFamilyPlaceholder": "run, runs, running, ran, runner",
+      "imageUrl": "Illustration URL",
+      "imageUrlPlaceholder": "https://images.unsplash.com/photo-xxx...",
+      "focalPoint": "Image Focal Point",
+      "focalTop": "Top",
+      "focalCenter": "Center",
+      "focalBottom": "Bottom",
+      "previewTitle": "Card Preview",
+      "wrongChoices": "Wrong Choices (Distractors)",
+      "wrong1Placeholder": "Wrong 1",
+      "wrong2Placeholder": "Wrong 2",
+      "wrong3Placeholder": "Wrong 3",
+      "wrongChoicesDesc": "Distractor answers for multiple choice exercises."
+    },
+    "roadmapForm": {
+      "titleEdit": "Edit Roadmap",
+      "titleAdd": "Add New Roadmap",
+      "nameLabel": "Roadmap Name",
+      "namePlaceholder": "e.g. IELTS Master 2024",
+      "descLabel": "Description",
+      "descPlaceholder": "Describe the roadmap goals...",
+      "iconLabel": "Icon",
+      "colorLabel": "Primary Color",
+      "errorName": "Roadmap name is required"
+    },
+    "topicForm": {
+      "titleEdit": "Edit Topic",
+      "titleAdd": "Add New Topic",
+      "nameLabel": "Topic Name",
+      "namePlaceholder": "e.g. Animals & Nature",
+      "descLabel": "Description",
+      "descPlaceholder": "Short description of the topic...",
+      "iconLabel": "Icon Representation",
+      "iconSearchPlaceholder": "Search icon...",
+      "iconNotFound": "Icon not found",
+      "changeIcon": "Change Icon",
+      "colorLabel": "Brand Accent",
+      "colorPalette": "Color Palette",
+      "customColor": "Custom color",
+      "slugLabel": "Slug",
+      "slugHint": "Auto-prefix {{slug}} to avoid duplicate slugs app-wide",
+      "errorName": "Topic name is required"
+    },
+    "wordPool": {
+      "uncategorized": "Uncategorized",
+      "wordCount": "{{count}} words",
+      "import": "Import Words",
+      "searchPlaceholder": "Search words...",
+      "all": "All",
+      "selectedCount": "{{count}} words selected",
+      "assignToTopic": "— Assign to topic —",
+      "assign": "Assign",
+      "unassign": "Remove from topic",
+      "noResults": "No words found",
+      "empty": "No words yet.",
+      "tableHeader": {
+        "word": "Word",
+        "phonetic": "Phonetic",
+        "meaning": "Meaning (VN)",
+        "difficulty": "Difficulty",
+        "tags": "Tags",
+        "actions": "Actions"
+      }
+    },
+    "bulkAction": {
+      "selected": "selected",
+      "confirmDelete": "Are you sure?",
+      "deleting": "Deleting...",
+      "deleteNow": "Delete now",
+      "chooseTopic": "Choose topic...",
+      "saving": "Saving...",
+      "changeTopic": "Change topic",
+      "delete": "Delete"
+    }
+  },
+  "review": {
+    "construction": {
+      "title": "Construct the word",
+      "building": "Building...",
+      "undo": "Undo",
+      "reset": "Reset"
     }
   },
   "notebook": {
@@ -268,7 +853,30 @@
       "due": "Due Now",
       "weak": "Weak Words",
       "orphaned": "Orphaned",
-      "mastered": "Mastered"
+      "mastered": "Mastered",
+      "allTopics": "All Topics",
+      "allPos": "All Parts of Speech",
+      "allStability": "All Stability Levels",
+      "sortBy": "Sort By",
+      "lexicalArchive": "Lexical Archive",
+      "flashReview": "Flash Review",
+      "pos": {
+        "noun": "Noun",
+        "verb": "Verb",
+        "adjective": "Adjective",
+        "adverb": "Adverb"
+      },
+      "stability": {
+        "fresh": "Fresh",
+        "learning": "Learning",
+        "mastered": "Mastered",
+        "rooted": "Rooted"
+      },
+      "sort": {
+        "date": "Date Added",
+        "stability": "Memory Strength",
+        "alphabetical": "Alphabetical"
+      }
     },
     "table": {
       "word": "Vocabulary",
@@ -304,5 +912,12 @@
       "scholarSchedule": "Scholar Schedule",
       "nextReview": "Next Review Due"
     }
+  },
+  "study": {
+    "dailyMastery": "Daily Mastery",
+    "wordsCount": "{{remaining}} / {{total}} Words",
+    "suggestedRating": "Suggested Rating",
+    "showAnswer": "Show Answer",
+    "markLearned": "Mark as Learned"
   }
 }

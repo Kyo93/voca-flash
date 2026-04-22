@@ -1,8 +1,9 @@
-import { useState, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function LoginPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { signIn, signUp } = useAuth()
   const [isSignUp, setIsSignUp] = useState(false)
@@ -26,7 +27,7 @@ export default function LoginPage() {
       setSubmitting(false)
     } else {
       if (isSignUp) {
-        setSuccess('Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.')
+        setSuccess(t('auth.signUpSuccess'))
         setSubmitting(false)
       } else {
         // Chờ 500ms để AuthContext kịp cập nhật session/user ngầm 
@@ -68,19 +69,19 @@ export default function LoginPage() {
                 V
               </div>
               <h1 className="text-2xl font-black text-secondary">
-                {isSignUp ? 'Tạo tài khoản mới' : 'Chào mừng trở lại'}
+                {isSignUp ? t('auth.signUpTitle') : t('auth.signInTitle')}
               </h1>
               <p className="text-sm text-on-surface-variant mt-2">
                 {isSignUp
-                  ? 'Đăng ký để bắt đầu học từ vựng'
-                  : 'Đăng nhập để tiếp tục học'}
+                  ? t('auth.signUpSubtitle')
+                  : t('auth.signInSubtitle')}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-bold text-secondary mb-2" htmlFor="email">
-                  Email
+                  {t('auth.email')}
                 </label>
                 <input
                   id="email"
@@ -95,7 +96,7 @@ export default function LoginPage() {
 
               <div>
                 <label className="block text-sm font-bold text-secondary mb-2" htmlFor="password">
-                  Mật khẩu
+                  {t('auth.password')}
                 </label>
                 <input
                   id="password"
@@ -127,10 +128,10 @@ export default function LoginPage() {
                 className="w-full py-3.5 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {submitting
-                  ? 'Đang xử lý...'
+                  ? t('auth.processing')
                   : isSignUp
-                  ? 'Tạo tài khoản'
-                  : 'Đăng nhập'}
+                    ? t('auth.signUp')
+                    : t('auth.signIn')}
               </button>
             </form>
 
@@ -144,8 +145,8 @@ export default function LoginPage() {
                 className="text-sm font-medium text-primary hover:text-primary-fixed-dim transition-colors"
               >
                 {isSignUp
-                  ? 'Đã có tài khoản? Đăng nhập'
-                  : 'Chưa có tài khoản? Đăng ký ngay'}
+                  ? t('auth.hasAccount')
+                  : t('auth.noAccount')}
               </button>
             </div>
           </div>

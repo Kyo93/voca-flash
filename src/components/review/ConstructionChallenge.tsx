@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Word } from '../../lib/types'
 import { shuffleArray } from '../../lib/utils'
 
@@ -15,6 +16,7 @@ interface Block {
 }
 
 export default function ConstructionChallenge({ word, onSubmit }: ConstructionChallengeProps) {
+  const { t } = useTranslation()
   const [blocks, setBlocks] = useState<Block[]>([])
   const [built, setBuilt] = useState<Block[]>([])
   const [isWrong, setIsWrong] = useState(false)
@@ -82,7 +84,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
         className="text-center mb-16 w-full"
       >
         <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] block mb-8 text-shadow-glow">
-          Sắp xếp các ký tự
+          {t('review.construction.title')}
         </span>
         <div className="glass-arena-container p-12 mb-8 relative overflow-hidden group">
           <h2 className="text-4xl font-black text-white text-shadow-glow tracking-tight leading-relaxed px-4">
@@ -118,7 +120,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
          {built.length === 0 && (
             <div className="flex flex-col items-center justify-center opacity-10">
               <span className="material-symbols-outlined text-4xl mb-2">construction</span>
-              <span className="text-xs font-black uppercase tracking-[0.4em]">Đang xây dựng...</span>
+              <span className="text-xs font-black uppercase tracking-[0.4em]">{t('review.construction.building')}</span>
             </div>
          )}
       </div>
@@ -151,14 +153,14 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
            disabled={built.length === 0 || isWrong}
            className="px-10 h-14 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
-           <span className="material-symbols-outlined text-lg">undo</span> Quay lại
+           <span className="material-symbols-outlined text-lg">undo</span> {t('review.construction.undo')}
          </button>
          <button 
            onClick={reset}
            disabled={built.length === 0 || isWrong}
            className="px-10 h-14 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
-           <span className="material-symbols-outlined text-lg">refresh</span> Reset
+           <span className="material-symbols-outlined text-lg">refresh</span> {t('review.construction.reset')}
          </button>
       </div>
     </div>

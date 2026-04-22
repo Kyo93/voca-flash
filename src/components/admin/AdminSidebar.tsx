@@ -1,19 +1,21 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../contexts/AuthContext'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../../contexts/SidebarContext'
 
-const navItems = [
-  { path: '/admin', label: 'Dashboard', icon: 'dashboard', exact: true },
-  { path: '/admin/words', label: 'Từ vựng', icon: 'spellcheck' },
-  { path: '/admin/roadmaps', label: 'Lộ trình', icon: 'route' },
-  { path: '/admin/users', label: 'Người dùng', icon: 'group' },
-]
-
 export default function AdminSidebar() {
+  const { t } = useTranslation()
   const location = useLocation()
   const { profile, signOut } = useAuth()
   const { collapsed, toggleSidebar } = useSidebar()
   const w = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
+
+  const navItems = [
+    { path: '/admin', label: 'Dashboard', icon: 'dashboard', exact: true },
+    { path: '/admin/words', label: t('admin.sidebar.words'), icon: 'spellcheck' },
+    { path: '/admin/roadmaps', label: t('admin.sidebar.roadmaps'), icon: 'route' },
+    { path: '/admin/users', label: t('admin.sidebar.users'), icon: 'group' },
+  ]
 
   function isActive(item: typeof navItems[0]) {
     if (item.exact) return location.pathname === item.path
@@ -40,7 +42,7 @@ export default function AdminSidebar() {
 
       {/* Admin Navigation */}
       <nav className="flex flex-col gap-1">
-        {!collapsed && <p className="px-4 py-2 text-[10px] font-black text-stone-400 tracking-widest uppercase">Quản lý</p>}
+        {!collapsed && <p className="px-4 py-2 text-[10px] font-black text-stone-400 tracking-widest uppercase">{t('admin.sidebar.manage')}</p>}
         {navItems.map((item) => (
           <Link
             key={item.path}
@@ -64,11 +66,11 @@ export default function AdminSidebar() {
       {/* Back to student app */}
       <Link
         to="/dashboard"
-        title={collapsed ? 'Quay lại app' : undefined}
+        title={collapsed ? t('admin.sidebar.backToApp') : undefined}
         className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm text-stone-500 hover:text-stone-700 hover:bg-stone-100 ${collapsed ? 'justify-center px-0' : ''}`}
       >
         <span className="material-symbols-outlined shrink-0">arrow_back</span>
-        {!collapsed && <span className="whitespace-nowrap overflow-hidden">Quay lại app</span>}
+        {!collapsed && <span className="whitespace-nowrap overflow-hidden">{t('admin.sidebar.backToApp')}</span>}
       </Link>
 
       {/* Bottom: User */}
@@ -77,18 +79,18 @@ export default function AdminSidebar() {
         <button
           onClick={toggleSidebar}
           className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-stone-400 hover:text-primary hover:bg-stone-100 transition-all cursor-pointer ${collapsed ? 'justify-center px-0' : ''}`}
-          title={collapsed ? 'Mở rộng menu' : 'Thu nhỏ menu'}
+          title={collapsed ? t('admin.sidebar.expand') : t('admin.sidebar.collapse')}
         >
           <span className="material-symbols-outlined text-lg transition-transform duration-300 shrink-0" style={{ transform: collapsed ? 'rotate(180deg)' : 'none' }}>
             menu_open
           </span>
-          {!collapsed && <span className="text-xs font-bold whitespace-nowrap">Thu nhỏ</span>}
+          {!collapsed && <span className="text-xs font-bold whitespace-nowrap">{t('admin.sidebar.collapseAction')}</span>}
         </button>
 
         {/* Admin Badge */}
         {!collapsed && (
           <div className="px-4 py-2 bg-orange-50 border border-orange-100 rounded-xl">
-            <p className="text-[10px] font-black text-orange-600 uppercase tracking-wider">Quyền Admin</p>
+            <p className="text-[10px] font-black text-orange-600 uppercase tracking-wider">{t('admin.sidebar.adminRole')}</p>
             <p className="text-xs font-medium text-orange-500 truncate">
               {profile?.email ?? '...'}
             </p>

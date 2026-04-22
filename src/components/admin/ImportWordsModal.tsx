@@ -34,7 +34,7 @@ type ImportState = 'idle' | 'parsing' | 'preview' | 'importing' | 'done' | 'erro
 export default function ImportWordsModal({ open, onClose, onImportComplete, topics, roadmapId, roadmapName, roadmapSlug }: Props) {
   const { t } = useTranslation()
   const filteredTopics = topics.filter(t => t.roadmap_id === roadmapId)
-  
+
   const [state, setState] = useState<ImportState>('idle')
   const [sheetsUrl, setSheetsUrl] = useState('')
   const [urlError, setUrlError] = useState('')
@@ -60,7 +60,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
       setRows(importRows)
       setState('preview')
     } catch (err) {
-      setErrorMessage('Lỗi xử lý dữ liệu sau khi parse')
+      setErrorMessage(t('admin.import.postParseError'))
       setState('error')
     }
   }, [filteredTopics, roadmapId, roadmapSlug])
@@ -144,7 +144,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
           <div>
             <h2 className="text-xl font-black text-secondary">{t('admin.import.title')}</h2>
             <p className="text-sm text-on-surface-variant mt-1">{stepLabel}</p>
-            {roadmapId && <p className="text-xs font-bold text-primary mt-1">📍 Đang nhập vào: {roadmapName}</p>}
+            {roadmapId && <p className="text-xs font-bold text-primary mt-1">📍 {t('admin.import.importingInto', { name: roadmapName })}</p>}
           </div>
           <button onClick={handleClose} className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-stone-500">close</span>
@@ -156,10 +156,10 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
             <div className="flex flex-col items-center gap-4 py-16 text-center">
               <span className="material-symbols-outlined text-6xl text-stone-300">folder_off</span>
               <div>
-                <p className="text-lg font-black text-secondary">Cần chọn Roadmap trước</p>
-                <p className="text-sm text-on-surface-variant mt-1">Để nhập từ vựng, bạn cần mở từ một Roadmap cụ thể.</p>
+                <p className="text-lg font-black text-secondary">{t('admin.import.needRoadmap')}</p>
+                <p className="text-sm text-on-surface-variant mt-1">{t('admin.import.needRoadmapDesc')}</p>
               </div>
-              <a href="/admin/roadmaps" className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">Đi tới Roadmaps</a>
+              <a href="/admin/roadmaps" className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">{t('admin.import.goToRoadmaps')}</a>
             </div>
           )}
 

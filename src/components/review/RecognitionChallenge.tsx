@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
 
@@ -11,6 +12,7 @@ interface RecognitionChallengeProps {
 const CHOICE_LABELS = ['A', 'B', 'C', 'D']
 
 export default function RecognitionChallenge({ word, choices, onSubmit }: RecognitionChallengeProps) {
+  const { t } = useTranslation()
   const [selected, setSelected] = useState<string | null>(null)
   const [isDone, setIsDone] = useState(false)
   const [feedback, setFeedback] = useState<'none' | 'correct' | 'wrong'>('none')
@@ -52,7 +54,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
       <div className="w-full bg-surface-container-low rounded-2xl p-6 mb-8 flex flex-col gap-3 text-center">
         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-          Chọn nghĩa
+          {t('challenges.recognition')}
         </span>
         <h2 className="text-4xl font-black font-headline text-primary tracking-tight">{word.word}</h2>
         {word.phonetic && (
@@ -71,8 +73,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
               disabled={isDone}
               whileHover={!isDone ? { scale: 1.01 } : {}}
               whileTap={!isDone ? { scale: 0.98 } : {}}
-              className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all ${
-                state === 'correct'
+              className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all ${state === 'correct'
                   ? 'bg-primary/10 border-primary shadow-md'
                   : state === 'wrong'
                     ? 'bg-error/8 border-error'
@@ -81,22 +82,20 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
                       : state === 'dimmed'
                         ? 'opacity-40 border-outline-variant/15'
                         : 'bg-surface-container-low border-outline-variant/20 hover:border-primary/30 hover:bg-surface-container'
-              }`}
+                }`}
             >
               {/* Letter badge */}
-              <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-black text-sm transition-colors ${
-                state === 'correct'
+              <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-black text-sm transition-colors ${state === 'correct'
                   ? 'bg-primary text-white'
                   : state === 'wrong'
                     ? 'bg-error text-white'
                     : 'bg-surface-container-high text-secondary'
-              }`}>
+                }`}>
                 {CHOICE_LABELS[i]}
               </span>
 
-              <span className={`font-bold font-headline leading-tight flex-1 ${
-                state === 'correct' ? 'text-primary' : state === 'wrong' ? 'text-error' : 'text-on-surface'
-              }`}>
+              <span className={`font-bold font-headline leading-tight flex-1 ${state === 'correct' ? 'text-primary' : state === 'wrong' ? 'text-error' : 'text-on-surface'
+                }`}>
                 {choice}
               </span>
 

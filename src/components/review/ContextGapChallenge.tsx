@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Word } from '../../lib/types'
 
 interface ContextGapChallengeProps {
@@ -8,6 +9,7 @@ interface ContextGapChallengeProps {
 }
 
 export default function ContextGapChallenge({ word, onSubmit }: ContextGapChallengeProps) {
+  const { t } = useTranslation()
   const [input, setInput] = useState('')
   const [isWrong, setIsWrong] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -50,7 +52,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
       <div className="w-full bg-surface-container-low rounded-2xl p-6 mb-8 flex flex-col gap-2 text-center">
         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
-          Điền từ
+          {t('challenges.cloze')}
         </span>
       </div>
 
@@ -59,7 +61,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
         <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/40 rounded-full" />
         <div className="text-2xl font-bold font-headline text-on-surface leading-relaxed text-center">
           {gappedSentence ?? (
-            <span className="text-outline italic">Không có câu ví dụ</span>
+            <span className="text-outline italic">{t('arena.noExample')}</span>
           )}
         </div>
       </div>
@@ -73,12 +75,11 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            placeholder="Gõ từ còn thiếu..."
-            className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center text-2xl font-black font-headline text-primary outline-none transition-all placeholder:text-primary/20 ${
-              isWrong
+            placeholder={t('arena.typeMissing')}
+            className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center text-2xl font-black font-headline text-primary outline-none transition-all placeholder:text-primary/20 ${isWrong
                 ? 'border-error bg-error/5 animate-[shake_0.4s_cubic-bezier(.36,.07,.19,.97)_both]'
                 : 'border-outline-variant/20 focus:border-primary shadow-sm'
-            }`}
+              }`}
             autoComplete="off"
             spellCheck={false}
           />
@@ -91,7 +92,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
                 className="absolute -bottom-10 left-0 right-0 text-center"
               >
                 <span className="text-[9px] font-bold uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
-                  Nhấn ENTER để xác nhận
+                  {t('arena.pressEnterToConfirm')}
                 </span>
               </motion.div>
             )}
@@ -102,7 +103,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
       {/* Meaning hint */}
       <div className="mt-8 w-full flex items-center gap-3 text-center">
         <div className="h-px flex-1 bg-outline-variant/20" />
-        <span className="text-[9px] font-bold uppercase tracking-widest text-outline shrink-0">Gợi ý nghĩa</span>
+        <span className="text-[9px] font-bold uppercase tracking-widest text-outline shrink-0">{t('arena.meaningHint')}</span>
         <div className="h-px flex-1 bg-outline-variant/20" />
       </div>
       <p className="mt-3 text-center text-on-surface-variant font-body text-lg italic leading-relaxed">

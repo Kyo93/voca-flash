@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { Word } from '../../lib/types'
 import { speak, stop } from '../../lib/tts'
 
@@ -9,6 +10,7 @@ interface GhostRecallChallengeProps {
 }
 
 export default memo(function GhostRecallChallengeInner({ word, onSubmit }: GhostRecallChallengeProps) {
+  const { t } = useTranslation()
   const [input, setInput] = useState('')
   const [isWrong, setIsWrong] = useState(false)
   const [showHint, setShowHint] = useState(false)
@@ -47,7 +49,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/8 border border-primary/15">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Nghe lại
+            {t('challenges.listen')}
           </span>
           <button
             onClick={() => speak(word.word)}
@@ -67,13 +69,13 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
             onTouchStart={() => setShowHint(true)}
             onTouchEnd={() => setShowHint(false)}
           >
-            <div className={`text-4xl font-black font-headline text-center transition-all duration-500 ${!showHint ? 'blur-[12px] opacity-30' : 'blur-0 opacity-100'}`}>
+            <div className={`text-4xl font-black font-headline text-center transition-all duration-500 ${!showHint ? 'blur-md opacity-30' : 'blur-0 opacity-100'}`}>
               {word.definition}
             </div>
             {!showHint && (
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none gap-2">
                 <span className="material-symbols-outlined text-primary/30 text-3xl">visibility_off</span>
-                <span className="text-[9px] font-bold uppercase tracking-widest text-outline">Giữ để hiện nghĩa</span>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-outline">{t('arena.holdToReveal')}</span>
               </div>
             )}
           </div>
@@ -90,11 +92,10 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSubmit()}
             placeholder={getHintWord()}
-            className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center text-3xl font-black font-headline text-primary outline-none transition-all placeholder:font-mono placeholder:text-primary/20 ${
-              isWrong
+            className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center text-3xl font-black font-headline text-primary outline-none transition-all placeholder:font-mono placeholder:text-primary/20 ${isWrong
                 ? 'border-error bg-error/5 animate-[shake_0.4s_cubic-bezier(.36,.07,.19,.97)_both]'
                 : 'border-outline-variant/20 focus:border-primary shadow-sm'
-            }`}
+              }`}
             autoComplete="off"
             spellCheck={false}
           />
@@ -107,7 +108,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
                 className="absolute -bottom-10 left-0 right-0 text-center"
               >
                 <span className="text-[9px] font-bold uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
-                  Nhấn ENTER để xác nhận
+                  {t('arena.pressEnterToConfirm')}
                 </span>
               </motion.div>
             )}
@@ -120,7 +121,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
         onClick={() => setShowHint(h => !h)}
         className="mt-6 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors"
       >
-        {showHint ? '▲ Ẩn gợi ý chữ' : '▼ Hiện gợi ý chữ'}
+        {showHint ? `▲ ${t('arena.hideHint')}` : `▼ ${t('arena.showHint')}`}
       </button>
     </div>
   )

@@ -47,7 +47,7 @@ VocaFlash là một nền tảng học từ vựng tiếng Anh cao cấp, đư�
 
 ## 📖 Tài liệu hướng dẫn
 -   [Kiến trúc hệ thống (ARCHITECTURE.md)](ARCHITECTURE.md)
--   [Hệ thống thiết kế (DESIGN_SYSTEM.md)](DESIGN_SYSTEM.md)
+-   [Hệ thống thiết kế (DESIGN.md)](DESIGN.md)
 -   [Quy tắc phát triển (AGENTS.md)](AGENTS.md)
 
 ---

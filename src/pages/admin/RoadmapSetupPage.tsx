@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, Link } from 'react-router-dom'
 import { useAdminTopics } from '../../hooks/admin/useAdminTopics'
 import {
@@ -26,6 +27,7 @@ import WordPool, { EnrichedWord } from '../../components/admin/WordPool'
 
 // ─── Main Page ───────────────────────────────────────────────
 export default function RoadmapSetupPage() {
+  const { t } = useTranslation()
   const { roadmapId } = useParams<{ roadmapId: string }>()
   const { fetch: fetchTopics } = useAdminTopics()
 
@@ -179,7 +181,7 @@ export default function RoadmapSetupPage() {
   if (!roadmapId) {
     return (
       <div className="p-8 text-center text-stone-400">
-        Không tìm thấy roadmap
+        {t('admin.roadmapSetup.notFound')}
       </div>
     )
   }
@@ -193,14 +195,14 @@ export default function RoadmapSetupPage() {
           className="flex items-center gap-1 text-stone-500 hover:text-primary transition-colors text-sm font-bold"
         >
           <span className="material-symbols-outlined text-lg">arrow_back</span>
-          Quay lại
+          {t('admin.roadmapSetup.back')}
         </Link>
         <div className="h-6 w-px bg-stone-200" />
         <div>
           <h1 className="text-2xl font-black text-secondary">
             {roadmap?.name ?? '...'}
           </h1>
-          <p className="text-sm text-on-surface-variant">Quản lý chủ đề & từ vựng</p>
+          <p className="text-sm text-on-surface-variant">{t('admin.roadmapSetup.manage')}</p>
         </div>
       </div>
 
@@ -274,9 +276,9 @@ export default function RoadmapSetupPage() {
       {/* Delete topic confirm */}
       <ConfirmDialog
         open={!!deleteTopicTarget}
-        title="Xóa chủ đề?"
-        message={`Xóa "${deleteTopicTarget?.name}"? Từ vựng trong chủ đề này sẽ không bị xóa.`}
-        confirmLabel="Xóa"
+        title={t('admin.roadmapSetup.deleteTopic.title')}
+        message={t('admin.roadmapSetup.deleteTopic.confirm', { name: deleteTopicTarget?.name })}
+        confirmLabel={t('common.delete')}
         danger
         onConfirm={handleDeleteTopic}
         onCancel={() => setDeleteTopicTarget(null)}
@@ -285,9 +287,9 @@ export default function RoadmapSetupPage() {
       {/* Delete word confirm */}
       <ConfirmDialog
         open={!!deleteWordTarget}
-        title="Xóa từ vựng?"
-        message="Xóa từ này? Hành động không thể hoàn tác."
-        confirmLabel="Xóa"
+        title={t('admin.words.delete.title')}
+        message={t('admin.words.delete.message', { word: words.find(w => w.id === deleteWordTarget)?.word || '' })}
+        confirmLabel={t('common.delete')}
         danger
         onConfirm={handleDeleteWord}
         onCancel={() => setDeleteWordTarget(null)}

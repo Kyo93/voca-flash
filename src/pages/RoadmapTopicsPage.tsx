@@ -1,11 +1,12 @@
 import { useEffect, useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, Link, useOutletContext } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { 
-  fetchRoadmaps, 
-  fetchTopicsByRoadmap, 
-  fetchRoadmapStats, 
-  fetchTopicCompletionMap 
+import {
+  fetchRoadmaps,
+  fetchTopicsByRoadmap,
+  fetchRoadmapStats,
+  fetchTopicCompletionMap
 } from '../lib/storage/roadmap'
 import { fetchResumePointers } from '../lib/supabase-storage'
 
@@ -17,7 +18,8 @@ export default function RoadmapTopicsPage() {
   const { roadmapSlug } = useParams<{ roadmapSlug: string }>()
   const { user } = useAuth()
   const { searchQuery } = useOutletContext<{ searchQuery: string }>()
-  
+  const { t } = useTranslation()
+
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
   const [topics, setTopics] = useState<Topic[]>([])
   const [stats, setStats] = useState({ total: 0, mastered: 0 })
@@ -31,40 +33,40 @@ export default function RoadmapTopicsPage() {
     async function loadData() {
       if (!roadmapSlug) return
       setLoading(true)
-      
+
       try {
         // 1. Fetch Roadmap and its topics
         const [allRoadmaps, roadmapTopics] = await Promise.all([
           fetchRoadmaps(),
           fetchTopicsByRoadmap(roadmapSlug)
         ])
-        
+
         const currentRoadmap = allRoadmaps.find(r => r.slug === roadmapSlug)
         if (!currentRoadmap) {
           setLoading(false)
           return
         }
-        
+
         setRoadmap(currentRoadmap)
-        
+
         // 2. Fetch stats and progress
         const [roadmapStats, topicProgMapRaw, learningStates] = await Promise.all([
           fetchRoadmapStats(currentRoadmap.id, user?.id),
           user?.id ? fetchTopicCompletionMap(user.id, roadmapTopics.map(t => t.id)) : Promise.resolve({} as Record<string, { total: number, learned: number, percent: number }>),
           user?.id ? fetchResumePointers(user.id) : Promise.resolve(new Map())
         ])
-        
+
         const topicProgMap = topicProgMapRaw as Record<string, { total: number, learned: number, percent: number }>
         setStats(roadmapStats)
         setTopicProgress(topicProgMap)
-        
+
         // 3. Determine Featured and Up Next topics
         const lastTopicId = learningStates.get(currentRoadmap.id)?.last_topic_id
-        
+
         // featured is always the one you just studied, or the first one
         let fId = lastTopicId || roadmapTopics[0]?.id
         setFeaturedId(fId)
-        
+
         // upNext is the first one in curriculum order that is:
         // - not the featured one
         // - not 100% perfected (learned < total)
@@ -79,15 +81,15 @@ export default function RoadmapTopicsPage() {
         // 4. Sort topics (featured first, upNext second)
         const featuredIndex = roadmapTopics.findIndex(t => t.id === fId)
         let finalTopics = [...roadmapTopics]
-        
+
         if (featuredIndex > -1) {
           const featuredTopic = roadmapTopics[featuredIndex]
           const others = roadmapTopics.filter((_, i) => i !== featuredIndex)
-          
+
           // Find nextTopic in others
           const nextId = nextTopic?.id
           const nextIndexInOthers = others.findIndex(t => t.id === nextId)
-          
+
           if (nextIndexInOthers > -1) {
             const nextT = others[nextIndexInOthers]
             const remaining = others.filter((_, i) => i !== nextIndexInOthers)
@@ -96,24 +98,24 @@ export default function RoadmapTopicsPage() {
             finalTopics = [featuredTopic, ...others]
           }
         }
-        
+
         setTopics(finalTopics)
-        
+
       } catch (err) {
         console.error('Error loading roadmap topics:', err)
       } finally {
         setLoading(false)
       }
     }
-    
+
     loadData()
   }, [roadmapSlug, user?.id])
 
   const filteredTopics = useMemo(() => {
     if (!searchQuery) return topics
     const q = searchQuery.toLowerCase()
-    return topics.filter(t => 
-      t.name.toLowerCase().includes(q) || 
+    return topics.filter(t =>
+      t.name.toLowerCase().includes(q) ||
       (t.description?.toLowerCase().includes(q) ?? false)
     )
   }, [topics, searchQuery])
@@ -130,7 +132,7 @@ export default function RoadmapTopicsPage() {
       <div className="flex-1 flex items-center justify-center p-20">
         <div className="flex flex-col items-center gap-4">
           <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
-          <p className="text-on-surface-variant font-bold">Đang tải lộ trình...</p>
+          <p className="text-on-surface-variant font-bold">{t('roadmap.loading')}</p>
         </div>
       </div>
     )
@@ -139,9 +141,9 @@ export default function RoadmapTopicsPage() {
   if (!roadmap) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-surface p-6">
-        <h2 className="text-2xl font-black text-secondary mb-4">Không tìm thấy lộ trình</h2>
-        <Link to="/library" className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg">
-          Quay lại Thư viện
+        <h2 className="text-3xl font-black text-secondary mb-6 tracking-tight">{t('roadmap.notFound')}</h2>
+        <Link to="/library" className="px-8 py-4 primary-gradient text-white font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm">
+          {t('roadmapDetail.back')}
         </Link>
       </div>
     )
@@ -150,58 +152,80 @@ export default function RoadmapTopicsPage() {
   const overallPercent = stats.total > 0 ? Math.round((stats.mastered / stats.total) * 100) : 0
 
   return (
-    <div className="p-10 max-w-7xl mx-auto">
-      {/* Breadcrumb / Back button */}
-      <Link to="/library" className="flex items-center gap-2 text-on-surface-variant hover:text-primary mb-6 group transition-colors">
-        <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
-        <span className="text-sm font-bold uppercase tracking-widest">Back to Roadmaps</span>
-      </Link>
-
-      {/* Hero Header Section */}
-      <div className="mb-12 relative w-full">
-        <div className="flex flex-col md:flex-row md:items-end gap-6 mb-8">
-          <div className="w-24 h-24 rounded-xl primary-gradient flex items-center justify-center sun-drenched-shadow shrink-0">
+    <div className="max-w-[1440px] mx-auto px-12 py-10 space-y-16">
+      {/* Header Section */}
+      <header className="space-y-8">
+        <Link to="/library" className="inline-flex items-center gap-2 text-on-surface-variant font-semibold hover:text-primary transition-colors group">
+          <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          {t('common.back')}
+        </Link>
+        <div className="flex flex-col md:flex-row md:items-end gap-10">
+          <div className="w-28 h-28 shrink-0 bg-linear-to-br from-primary to-primary-container rounded-[24px] flex items-center justify-center shadow-[0_20px_40px_-10px_rgba(148,74,0,0.3)]">
             <span className="material-symbols-outlined text-white text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
               {roadmap.slug.includes('kids') ? 'child_care' : roadmap.slug.includes('business') ? 'business_center' : 'history_edu'}
             </span>
           </div>
-          <div>
-            <span className="label-md uppercase tracking-widest text-secondary font-bold text-xs block mb-1">Roadmap Overview</span>
-            <h2 className="text-4xl font-extrabold text-on-surface text-editorial-asymmetry mt-1 leading-tight w-full max-w-3xl">
+          <div className="space-y-4">
+            <h1 className="text-6xl font-bold editorial-asymmetry leading-none text-on-surface">
               {roadmap.name}
-            </h2>
+            </h1>
+            <div className="flex items-center gap-4 bg-surface-container-low w-fit px-5 py-2.5 rounded-full">
+              <div className="flex -space-x-3">
+                {[1, 2, 3].map(i => (
+                  <img 
+                    key={i}
+                    src={`https://i.pravatar.cc/100?u=${i + 40}`} 
+                    className="w-8 h-8 rounded-full border-2 border-surface-container-low" 
+                    alt="Scholar" 
+                  />
+                ))}
+                <div className="w-8 h-8 rounded-full border-2 border-surface-container-low bg-secondary-fixed flex items-center justify-center text-[10px] font-bold text-on-secondary-fixed">+2k</div>
+              </div>
+              <span className="text-sm font-semibold text-on-surface-variant italic">{t('roadmapDetail.social')}</span>
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Progress Board */}
-        <div className="bg-surface-container-low rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
-          <div className="absolute -right-12 -top-12 w-48 h-48 bg-secondary-container opacity-20 rounded-full blur-3xl z-0"></div>
-          <div className="w-full flex-1 relative z-10">
-            <div className="flex justify-between items-end mb-4">
-              <span className="text-lg font-medium text-on-surface-variant">Overall Completion</span>
-              <span className="text-3xl font-black text-secondary">{overallPercent}%</span>
-            </div>
-            <div className="h-3 w-full bg-surface-container-highest rounded-full overflow-hidden">
+      {/* Mastery Progress Board */}
+      <section className="bg-surface-container-lowest rounded-[40px] p-10 shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)] border border-outline-variant/15">
+        <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-12">
+          <div className="md:col-span-3">
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-outline mb-2 block">{t('roadmapDetail.masteryProgress')}</span>
+            <div className="text-7xl font-black tracking-tighter text-primary leading-none">{overallPercent}%</div>
+          </div>
+          <div className="md:col-span-6 space-y-6">
+            <div className="relative h-4 w-full bg-surface-container-high rounded-full overflow-hidden">
               <div 
-                className="h-full bg-secondary rounded-full transition-all duration-1000" 
+                className="absolute top-0 left-0 h-full bg-[#829460] rounded-full liquid-shine transition-all duration-1000"
                 style={{ width: `${overallPercent}%` }}
               ></div>
             </div>
+            <p className="text-sm text-on-surface-variant font-medium leading-relaxed">
+              {t('roadmapDetail.topLearner')}
+            </p>
           </div>
-          <div className="flex gap-8 border-t border-outline-variant/20 md:border-t-0 md:border-l pl-0 md:pl-12 pt-6 md:pt-0 w-full md:w-auto relative z-10">
-            <div className="text-center">
-              <p className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-tighter mb-1">Total Words</p>
-              <p className="text-2xl font-black text-on-surface">{stats.total}</p>
+          <div className="md:col-span-3 grid grid-cols-1 gap-4 border-l border-surface-container-high pl-8">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-primary-container text-lg">book</span>
+              <div>
+                <div className="text-xl font-bold">{stats.total}</div>
+                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.totalWords')}</div>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-tighter mb-1">Mastered</p>
-              <p className="text-2xl font-black text-on-surface">{stats.mastered}</p>
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+              <div>
+                <div className="text-xl font-bold">{stats.mastered}</div>
+                <div className="text-[10px] uppercase tracking-wider text-outline font-bold">{t('roadmapDetail.masteredGems')}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-12 gap-8">
+      {/* Topics Grid */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-20">
         {filteredTopics.map((topic) => (
           <TopicCard
             key={topic.id}
@@ -213,38 +237,35 @@ export default function RoadmapTopicsPage() {
             searchQuery={searchQuery}
           />
         ))}
-      </div>
+      </section>
 
-
-      {/* Asymmetric Editorial Quote/Tip Section */}
-      <div className="mt-20 flex flex-col md:flex-row items-center gap-12 border-t border-outline-variant/10 pt-12 mb-10">
-        <div className="w-full md:w-1/3 relative">
-          <div className="absolute -top-4 -left-4 w-12 h-12 bg-tertiary rounded-full opacity-10 blur-xl"></div>
-          <p className="text-sm font-label uppercase tracking-[0.2em] text-tertiary mb-2">Scholar's Tip</p>
-          <p className="text-xl font-headline italic text-on-surface leading-relaxed">
-            "Visualizing words as objects in your mind creates stronger neural pathways for long-term retention."
-          </p>
-        </div>
-        <div className="flex-1 w-full bg-tertiary-container/10 p-8 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6 border border-tertiary/10">
-          <div className="flex gap-4 items-center">
-            <span className="material-symbols-outlined text-tertiary text-4xl">emoji_events</span>
-            <div>
-              <h5 className="font-bold text-on-surface">Milestone Ahead!</h5>
-              <p className="text-sm text-on-surface-variant mt-1">Complete more topics to unlock new achievements.</p>
+      {/* Scholar's Footer */}
+      <footer className="bg-surface-container rounded-t-[60px] mt-20 -mx-12">
+        <div className="flex flex-col md:flex-row justify-between items-end w-full px-16 py-20 max-w-[1440px] mx-auto gap-12">
+          <div className="max-w-md space-y-6">
+            <div className="text-xl font-bold text-on-surface">VocaFlash</div>
+            <p className="font-headline italic text-lg leading-[1.6] text-on-surface-variant">
+              {t('roadmapDetail.footer.quote')}
+            </p>
+            <p className="text-sm font-semibold text-outline">{t('roadmapDetail.footer.copyright')}</p>
+          </div>
+          <div className="w-full md:w-auto flex flex-col sm:flex-row gap-12 items-end">
+            <div className="flex flex-col gap-4 text-right">
+              <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="#">{t('roadmapDetail.footer.philosophy')}</a>
+              <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="#">{t('roadmapDetail.footer.research')}</a>
+              <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="#">{t('roadmapDetail.footer.privacy')}</a>
+            </div>
+            <div className="bg-secondary-container/40 p-10 rounded-[32px] space-y-6 w-full sm:w-[320px]">
+              <div>
+                <span className="text-[10px] uppercase tracking-widest font-black text-on-secondary-container">{t('roadmapDetail.milestone.title')}</span>
+                <h4 className="text-2xl font-bold mt-1 text-on-secondary-container">{t('roadmapDetail.milestone.name')}</h4>
+              </div>
+              <p className="text-sm text-on-secondary-container/80 leading-relaxed">{t('roadmapDetail.milestone.desc')}</p>
+              <button className="w-full bg-secondary text-on-secondary py-4 rounded-full font-bold hover:shadow-lg hover:shadow-secondary/20 transition-all">{t('roadmapDetail.milestone.view')}</button>
             </div>
           </div>
-          <button className="bg-tertiary text-white px-6 py-2.5 rounded-lg text-sm font-bold hover:brightness-110 active:scale-95 transition-all w-full md:w-auto shadow-sm border-none">
-            View Achievements
-          </button>
         </div>
-      </div>
-
-      {/* Floating Action Element (Contextual) */}
-      <div className="fixed bottom-8 right-8 z-30">
-        <button className="w-14 h-14 md:w-16 md:h-16 primary-gradient rounded-full sun-drenched-shadow flex items-center justify-center text-white hover:scale-110 active:scale-90 transition-transform shadow-lg border-none cursor-pointer">
-          <span className="material-symbols-outlined text-2xl md:text-3xl">question_mark</span>
-        </button>
-      </div>
+      </footer>
     </div>
   )
 }

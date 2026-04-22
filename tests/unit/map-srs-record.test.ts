@@ -5,7 +5,7 @@
  * để session.ts khỏi duplicate mapping logic.
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import type { SrsRecord } from '../../src/lib/types'
 
 function makeSrsRecord(overrides: Partial<SrsRecord> = {}): SrsRecord {
@@ -66,6 +66,10 @@ describe('mapSrsRecordToCardProgress — RED', () => {
   })
 
   it('handles null next_review_at and last_reviewed', async () => {
+    vi.useFakeTimers()
+    const now = new Date('2026-04-20T12:00:00Z')
+    vi.setSystemTime(now)
+    
     const mod = await import('../../src/lib/srs')
     const record = makeSrsRecord({
       next_review_at: null,
@@ -74,8 +78,10 @@ describe('mapSrsRecordToCardProgress — RED', () => {
 
     const result = mod.mapSrsRecordToCardProgress(record)
 
-    expect(result.due).toBe(Date.now()) // fallback to now
+    expect(result.due).toBe(now.getTime()) // fallback to now
     expect(result.lastReview).toBe(0)   // fallback to 0
+    
+    vi.useRealTimers()
   })
 
   it('applies defaults for missing FSRS fields', async () => {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getAllUsers } from '../../lib/queries/user-queries'
 import type { UserProfile } from '../../lib/types'
 import { formatDetailedDate } from '../../lib/utils'
@@ -7,6 +8,7 @@ import AdminCard from '../../components/admin/AdminCard'
 import { supabase } from '../../lib/supabase'
 
 function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => void }) {
+  const { t } = useTranslation()
   const [stats, setStats] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -24,10 +26,10 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
       }, {})
       
       setStats([
-        { label: 'Lặp lại', level: 0, count: counts[0] || 0, color: 'bg-red-500', icon: 'history' },
-        { label: 'Khó', level: 1, count: counts[1] || 0, color: 'bg-orange-500', icon: 'psychology' },
-        { label: 'Tốt', level: 2, count: counts[2] || 0, color: 'bg-green-500', icon: 'task_alt' },
-        { label: 'Dễ', level: 3, count: counts[3] || 0, color: 'bg-blue-500', icon: 'auto_awesome' },
+        { label: t('admin.users.panel.levels.again'), level: 0, count: counts[0] || 0, color: 'bg-red-500', icon: 'history' },
+        { label: t('admin.users.panel.levels.hard'), level: 1, count: counts[1] || 0, color: 'bg-orange-500', icon: 'psychology' },
+        { label: t('admin.users.panel.levels.good'), level: 2, count: counts[2] || 0, color: 'bg-green-500', icon: 'task_alt' },
+        { label: t('admin.users.panel.levels.easy'), level: 3, count: counts[3] || 0, color: 'bg-blue-500', icon: 'auto_awesome' },
       ])
       setLoading(false)
     }
@@ -57,7 +59,7 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
             </div>
             <div>
               <h2 className="text-xl font-black text-secondary leading-tight">{user.display_name || user.email}</h2>
-              <p className="text-xs text-stone-400 font-medium">Chi tiết thuật toán SRS</p>
+              <p className="text-xs text-stone-400 font-medium">{t('admin.users.panel.srsDetails')}</p>
             </div>
           </div>
           <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-stone-100 transition-colors">
@@ -67,7 +69,7 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
 
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
           <section>
-            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">Phân phối thẻ (SRS Distribution)</h3>
+            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">{t('admin.users.panel.distribution')}</h3>
             {loading ? (
               <div className="flex items-center justify-center py-10">
                 <span className="material-symbols-outlined text-3xl text-stone-300 animate-spin">progress_activity</span>
@@ -90,15 +92,15 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
           </section>
 
           <section className="bg-linear-to-br from-primary/5 to-transparent rounded-3xl p-6 border border-primary/5">
-            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-4">Thông tin hệ thống</h3>
+            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-4">{t('admin.users.panel.systemInfo')}</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
                 <span className="text-sm text-stone-500 font-medium">User ID</span>
                 <span className="text-xs font-mono text-stone-400 truncate max-w-[150px]">{user.id}</span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
-                <span className="text-sm text-stone-500 font-medium">Lần cuối online</span>
-                <span className="text-xs font-mono text-stone-400">Vừa xong</span>
+                <span className="text-sm text-stone-500 font-medium">{t('admin.users.panel.lastOnline')}</span>
+                <span className="text-xs font-mono text-stone-400">{t('admin.users.panel.justNow')}</span>
               </div>
             </div>
           </section>
@@ -106,7 +108,7 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
 
         <div className="p-8 bg-stone-50/50 border-t border-stone-100 border-dashed">
           <button className="w-full py-4 bg-secondary text-white rounded-2xl font-black text-sm hover:bg-primary transition-all shadow-xl shadow-secondary/10">
-            Xem tất cả từ đang học
+            {t('admin.users.panel.viewAll')}
           </button>
         </div>
       </motion.div>
@@ -115,6 +117,7 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
 }
 
 export default function AdminUsersPage() {
+  const { t } = useTranslation()
   const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -137,9 +140,9 @@ export default function AdminUsersPage() {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-black text-secondary">Người dùng</h1>
+        <h1 className="text-3xl font-black text-secondary">{t('admin.users.title')}</h1>
         <p className="text-sm text-on-surface-variant mt-1">
-          {loading ? '...' : `${users.length} người dùng đã đăng ký`}
+          {loading ? '...' : t('admin.users.count', { count: users.length })}
         </p>
       </div>
 
@@ -149,16 +152,16 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      <AdminCard title="Danh sách học viên" description="Quản lý thông tin và theo dõi tiến độ học tập của người dùng.">
+      <AdminCard title={t('admin.users.table.title')} description={t('admin.users.table.description')}>
         <div className="overflow-x-auto min-h-[300px]">
           <table className="w-full border-separate border-spacing-0">
             <thead>
               <tr className="bg-stone-50/50 border-b border-stone-100">
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Người dùng</th>
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Email</th>
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Streak</th>
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Tham gia</th>
-                <th className="px-8 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">Hành động</th>
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.user')}</th>
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.email')}</th>
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.streak')}</th>
+                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.joined')}</th>
+                <th className="px-8 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -182,7 +185,7 @@ export default function AdminUsersPage() {
                       </div>
                       <div>
                         <p className="font-black text-secondary leading-tight">{u.display_name || u.email}</p>
-                        <p className="text-[10px] text-stone-400 font-mono tracking-wider mt-0.5 uppercase">Học viên</p>
+                        <p className="text-[10px] text-stone-400 font-mono tracking-wider mt-0.5 uppercase">{t('admin.users.table.student')}</p>
                       </div>
                     </div>
                   </td>

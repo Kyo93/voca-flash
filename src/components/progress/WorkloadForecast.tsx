@@ -15,7 +15,7 @@ export default function WorkloadForecast({ forecast }: WorkloadForecastProps) {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-lg">event_repeat</span>
-          <h3 className="text-sm font-black text-secondary tracking-tight uppercase">{t('home.forecast')} (7 ngày)</h3>
+          <h3 className="text-sm font-black text-secondary tracking-tight uppercase">{t('home.forecast')} {t('progress.nDays', { count: 7 })}</h3>
         </div>
       </div>
       
@@ -27,7 +27,7 @@ export default function WorkloadForecast({ forecast }: WorkloadForecastProps) {
             <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
               <div className="relative w-full flex flex-col items-center">
                 <div className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-secondary text-white text-[10px] font-bold px-2 py-1 rounded-lg z-10">
-                  {count} từ
+                  {t('progress.fsrsBins.count', { count })}
                 </div>
                 <div
                   className={`w-full rounded-t-lg transition-all duration-700 ${
@@ -43,7 +43,7 @@ export default function WorkloadForecast({ forecast }: WorkloadForecastProps) {
               </div>
               <div className="text-center">
                 <p className={`text-[9px] font-black uppercase tracking-tighter ${isToday ? 'text-primary' : 'text-stone-300'}`}>
-                  {isToday ? 'H.Nay' : `Ngày ${i + 1}`}
+                  {isToday ? t('progress.workloadForecast.today') : t('progress.workloadForecast.dayN', { n: i + 1 })}
                 </p>
               </div>
             </div>

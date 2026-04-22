@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useAdminRoadmaps } from '../../hooks/admin/useAdminRoadmaps'
 import { supabase } from '../../lib/supabase'
@@ -9,6 +10,7 @@ import type { Roadmap } from '../../lib/types'
 import { motion } from 'framer-motion'
 
 function StatusBadge({ active }: { active: boolean }) {
+  const { t } = useTranslation()
   return (
     <span
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
@@ -20,12 +22,13 @@ function StatusBadge({ active }: { active: boolean }) {
       <span
         className={`w-2 h-2 rounded-full ${active ? 'bg-green-500' : 'bg-stone-400'}`}
       />
-      {active ? 'Hoạt động' : 'Tạm dừng'}
+      {active ? t('admin.roadmaps.status.active') : t('admin.roadmaps.status.paused')}
     </span>
   )
 }
 
 export default function AdminRoadmapsPage() {
+  const { t } = useTranslation()
   const { roadmaps, loading, error, fetch, addRoadmap, editRoadmap, removeRoadmap } =
     useAdminRoadmaps()
 
@@ -82,9 +85,9 @@ export default function AdminRoadmapsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-black text-secondary">Lộ trình</h1>
+          <h1 className="text-3xl font-black text-secondary">{t('admin.roadmaps.title')}</h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            {loading ? '...' : `${roadmaps.length} lộ trình học tập`}
+            {loading ? '...' : t('admin.roadmaps.count', { count: roadmaps.length })}
           </p>
         </div>
         <button
@@ -92,7 +95,7 @@ export default function AdminRoadmapsPage() {
           className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
         >
           <span className="material-symbols-outlined text-sm">add</span>
-          Thêm lộ trình
+          {t('admin.roadmaps.addRoadmap')}
         </button>
       </div>
 
@@ -105,12 +108,12 @@ export default function AdminRoadmapsPage() {
       {loading && roadmaps.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20">
           <span className="material-symbols-outlined text-5xl text-stone-300 animate-spin">progress_activity</span>
-          <p className="text-stone-400">Đang tải...</p>
+          <p className="text-stone-400">{t('admin.roadmaps.loading')}</p>
         </div>
       ) : roadmaps.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20">
           <span className="material-symbols-outlined text-5xl text-stone-300">route</span>
-          <p className="text-stone-400">Chưa có lộ trình nào.</p>
+          <p className="text-stone-400">{t('admin.roadmaps.empty')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -146,41 +149,41 @@ export default function AdminRoadmapsPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{r.slug}</span>
                       <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/10">
-                        {r.topic_count || 0} chủ đề
+                        {t('admin.roadmaps.card.topics', { count: r.topic_count || 0 })}
                       </span>
                     </div>
                     <h3 className="text-xl font-black text-secondary group-hover:text-primary transition-colors">{r.name}</h3>
                   </div>
                   <p className="text-sm text-stone-500 line-clamp-2 min-h-10 mb-6">
-                    {r.description || 'Chưa có mô tả cho lộ trình này.'}
+                    {r.description || t('admin.roadmaps.card.noDesc')}
                   </p>
                 </div>
 
                 {/* Footer / Actions */}
                 <div className="pt-4 px-2 border-t border-stone-50 flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-stone-300 uppercase font-bold">Ngày tạo</span>
-                    <span className="text-xs text-stone-400 font-mono">{r.created_at ? new Date(r.created_at).toLocaleDateString('vi-VN') : '—'}</span>
+                    <span className="text-[10px] text-stone-300 uppercase font-bold">{t('admin.roadmaps.card.createdAt')}</span>
+                    <span className="text-xs text-stone-400 font-mono">{r.created_at ? new Date(r.created_at).toLocaleDateString(t('common.dateLocale')) : '—'}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Link
                       to={`/admin/roadmaps/${r.id}/setup`}
                       className="w-10 h-10 rounded-2xl flex items-center justify-center bg-orange-50 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-sm"
-                      title="Thiết lập lộ trình"
+                      title={t('admin.roadmaps.card.setup')}
                     >
                       <span className="material-symbols-outlined text-xl">settings</span>
                     </Link>
                     <button
                       onClick={() => { setEditData(r); setShowModal(true) }}
                       className="w-10 h-10 rounded-2xl flex items-center justify-center bg-stone-50 text-stone-400 hover:bg-white hover:text-primary hover:shadow-md transition-all duration-300 cursor-pointer"
-                      title="Chỉnh sửa"
+                      title={t('common.edit')}
                     >
                       <span className="material-symbols-outlined text-xl">edit</span>
                     </button>
                     <button
                       onClick={() => checkAndDelete(r)}
                       className="w-10 h-10 rounded-2xl flex items-center justify-center bg-stone-50 text-stone-400 hover:bg-red-50 hover:text-red-500 hover:shadow-md transition-all duration-300 cursor-pointer"
-                      title="Xóa"
+                      title={t('common.delete')}
                     >
                       <span className="material-symbols-outlined text-xl">delete</span>
                     </button>
@@ -201,13 +204,13 @@ export default function AdminRoadmapsPage() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title={deleteTopicCount > 0 ? 'Không thể xóa lộ trình' : 'Xóa lộ trình?'}
+        title={deleteTopicCount > 0 ? t('admin.roadmaps.delete.cannotDelete') : t('admin.roadmaps.delete.title')}
         message={
           deleteTopicCount > 0
-            ? `Lộ trình "${deleteTarget?.name}" còn ${deleteTopicCount} chủ đề. Xóa tất cả chủ đề trước khi xóa lộ trình.`
-            : `Xóa lộ trình "${deleteTarget?.name}"? Hành động này không thể hoàn tác.`
+            ? t('admin.roadmaps.delete.hasTopics', { name: deleteTarget?.name, count: deleteTopicCount })
+            : t('admin.roadmaps.delete.confirm', { name: deleteTarget?.name })
         }
-        confirmLabel={deleteTopicCount > 0 ? 'Đã hiểu' : 'Xóa'}
+        confirmLabel={deleteTopicCount > 0 ? t('admin.roadmaps.delete.understood') : t('common.delete')}
         danger={deleteTopicCount === 0}
         onConfirm={deleteTopicCount === 0 ? handleDelete : () => setDeleteTarget(null)}
         onCancel={() => setDeleteTarget(null)}

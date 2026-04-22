@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
+import { useStreak } from '../hooks/useStreak'
 import type { StreakData } from '../lib/streak'
 
 interface HeaderProps {
@@ -24,24 +23,12 @@ function StreakBadge({ streak }: { streak: StreakData }) {
 export default function Header({ title, searchQuery, onSearchChange, searchPlaceholder }: HeaderProps) {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const [streak, setStreak] = useState<StreakData>(loadStreak())
-
-  useEffect(() => {
-    async function load() {
-      if (user) {
-        const data = await fetchStreakFromSupabase(user.id)
-        setStreak(data)
-      } else {
-        setStreak(loadStreak())
-      }
-    }
-    load()
-  }, [user])
+  const streak = useStreak()
 
   return (
     <header className="h-20 px-10 flex items-center justify-between bg-surface/95 backdrop-blur-md sticky top-0 z-40 border-b border-stone-100 shadow-sm shrink-0">
       <h2 className="text-xl font-black text-on-surface shrink-0">{title}</h2>
-      
+
       <div className="flex items-center gap-6">
         {/* Search */}
         <div className="relative w-72">
@@ -57,23 +44,23 @@ export default function Header({ title, searchQuery, onSearchChange, searchPlace
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <Link 
-            to="/methodology" 
+          <Link
+            to="/methodology"
             title={t('nav.methodology')}
             className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all"
           >
             <span className="material-symbols-outlined text-xl">psychology</span>
           </Link>
 
-          <button 
+          <button
             className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all"
-            title="Thông báo"
+            title={t('common.notifications')}
           >
             <span className="material-symbols-outlined text-xl">notifications</span>
           </button>
-          
+
           <StreakBadge streak={streak} />
-          
+
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
             <span className="text-sm font-black text-primary leading-none">
               {(user?.email ?? 'A')[0].toUpperCase()}

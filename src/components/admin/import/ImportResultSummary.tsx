@@ -25,7 +25,7 @@ export function ImportResultSummary({ result }: ImportResultSummaryProps) {
           <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
             <span className="material-symbols-outlined text-red-500 text-lg">warning</span>
             <p className="text-sm font-bold text-red-600">
-              ⚠️ Import lỗi nghiêm trọng: đã gửi {result.submitted} từ nhưng chỉ insert thành công {result.inserted} từ.
+              {t('admin.import.criticalError', { submitted: result.submitted, inserted: result.inserted })}
             </p>
           </div>
         )}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAdminWords } from '../../hooks/admin/useAdminWords'
 import { getAllTopics } from '../../lib/queries/topic-queries'
 import { useRoadmapContext } from '../../contexts/RoadmapContext'
@@ -13,6 +14,7 @@ import WordsTable from '../../components/admin/words/WordsTable'
 const PAGE_SIZE = 20
 
 export default function AdminWordsPage() {
+  const { t } = useTranslation()
   const { words, loading, error, fetch, addWord, editWord, removeWord, bulkDelete, bulkAssignTopic, loadChoices } = useAdminWords()
   const { selectedRoadmap } = useRoadmapContext()
   const [topics, setTopics] = useState<Topic[]>([])
@@ -151,9 +153,9 @@ export default function AdminWordsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-black text-secondary">Từ vựng</h1>
+          <h1 className="text-3xl font-black text-secondary">{t('admin.words.title')}</h1>
           <p className="text-sm text-on-surface-variant mt-1">
-            {loading ? '...' : `${words.length} từ vựng`}
+            {loading ? '...' : t('admin.words.count', { count: words.length })}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -162,7 +164,7 @@ export default function AdminWordsPage() {
             className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined text-sm">add</span>
-            Thêm từ
+            {t('admin.words.addWord')}
           </button>
         </div>
       </div>
@@ -202,7 +204,7 @@ export default function AdminWordsPage() {
       {loading && words.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20 bg-white border border-stone-100 rounded-3xl mt-6">
           <span className="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
-          <p className="text-sm font-bold text-stone-400">Đang tải từ vựng...</p>
+          <p className="text-sm font-bold text-stone-400">{t('admin.words.loading')}</p>
         </div>
       ) : (
         <WordsTable 
@@ -226,7 +228,7 @@ export default function AdminWordsPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white border border-stone-100 rounded-2xl shadow-sm">
           <p className="text-sm font-bold text-stone-400">
-            Trang {page} / {totalPages}
+            {t('admin.words.pagination.page', { current: page, total: totalPages })}
           </p>
           <div className="flex gap-2">
             <button
@@ -234,14 +236,14 @@ export default function AdminWordsPage() {
               disabled={page === 1}
               className="px-4 py-2 rounded-xl border border-stone-200 bg-white text-sm font-bold text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
             >
-              Trang trước
+              {t('admin.words.pagination.prev')}
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               className="px-4 py-2 rounded-xl border border-stone-200 bg-white text-sm font-bold text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
             >
-              Trang sau
+              {t('admin.words.pagination.next')}
             </button>
           </div>
         </div>
@@ -258,9 +260,9 @@ export default function AdminWordsPage() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Xóa từ vựng?"
-        message={`Bạn có chắc muốn xóa từ "${deleteTarget?.word}"? Hành động này không thể hoàn tác.`}
-        confirmLabel="Xóa"
+        title={t('admin.words.delete.title')}
+        message={t('admin.words.delete.message', { word: deleteTarget?.word })}
+        confirmLabel={t('admin.words.delete.confirm')}
         danger
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}

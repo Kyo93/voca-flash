@@ -1,4 +1,5 @@
 import { type FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Topic, Roadmap } from '../../lib/types'
 import { slugify, formatDetailedDate } from '../../lib/utils'
 import { useTopicForm } from '../../hooks/admin/useTopicForm'
@@ -35,6 +36,7 @@ export default function TopicFormModal({
   onSave,
   onClose
 }: Props) {
+  const { t } = useTranslation()
   const {
     name, setName,
     slug, setSlug,
@@ -55,7 +57,7 @@ export default function TopicFormModal({
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!name.trim()) {
-      setError('Tên chủ đề không được trống')
+      setError(t('admin.topicForm.errorName'))
       return
     }
     setError(null)
@@ -86,10 +88,10 @@ export default function TopicFormModal({
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-2xl font-black text-stone-800 leading-tight">
-                {topic ? 'Sửa chủ đề' : 'Thêm chủ đề mới'}
+                {topic ? t('admin.topicForm.titleEdit') : t('admin.topicForm.titleAdd')}
               </h2>
               <p className="text-sm text-stone-400 mt-0.5">
-                {topic ? 'Cập nhật thông tin và bản sắc trực quan của chủ đề này' : 'Tạo một chủ đề học tập mới'}
+                {topic ? t('admin.topicForm.subtitleEdit') : t('admin.topicForm.subtitleAdd')}
               </p>
             </div>
             <button
@@ -109,7 +111,7 @@ export default function TopicFormModal({
             {/* Topic Name */}
             <div>
               <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-                Tên chủ đề
+                {t('admin.topicForm.nameLabel')}
               </label>
               <div className="relative">
                 <input
@@ -124,7 +126,7 @@ export default function TopicFormModal({
                   type="button"
                   onClick={handleAutoGenerate}
                   disabled={!name.trim()}
-                  title="Tự động gợi ý"
+                  title={t('common.refresh')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-orange-100 text-orange-500 flex items-center justify-center hover:bg-orange-200 transition-all disabled:opacity-30 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-base">auto_awesome</span>
@@ -135,7 +137,7 @@ export default function TopicFormModal({
             {/* Slug */}
             <div>
               <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-                Slug
+                {t('admin.topicForm.slugLabel')}
               </label>
               <div className="flex items-center gap-0 rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden focus-within:border-orange-300 focus-within:ring-2 focus-within:ring-orange-100 transition-all">
                 <span className="pl-4 pr-1 py-3 text-stone-400 font-mono text-sm bg-stone-50 border-r border-stone-100 select-none shrink-0">/</span>
@@ -154,14 +156,14 @@ export default function TopicFormModal({
                     setSlugManuallyEdited(false)
                   }}
                   className="px-3 h-full text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors cursor-pointer flex items-center justify-center border-l border-stone-100"
-                  title="Tạo lại slug"
+                  title={t('common.refresh')}
                 >
                   <span className="material-symbols-outlined text-base">refresh</span>
                 </button>
               </div>
               {roadmapSlug && (
                 <p className="text-[11px] text-stone-400 mt-1.5 font-medium">
-                  Auto-prefix <span className="font-mono text-orange-400">{roadmapSlug}-</span> để tránh trùng slug toàn app
+                  {t('admin.topicForm.slugHint', { slug: `${roadmapSlug}-` })}
                 </p>
               )}
             </div>
@@ -170,12 +172,12 @@ export default function TopicFormModal({
           {/* ── Description ──────────────────── */}
           <div>
             <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-              Mô tả
+              {t('admin.topicForm.descLabel')}
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Core principles of quantum..."
+              placeholder={t('admin.topicForm.descPlaceholder')}
               rows={3}
               className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-700 text-sm font-medium shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all resize-none leading-relaxed"
             />
@@ -185,14 +187,14 @@ export default function TopicFormModal({
           <div className="space-y-5">
             <div>
               <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-                Lộ trình
+                {t('roadmap.title')}
               </label>
               <select
                 value={roadmapId}
                 onChange={(e) => setRoadmapId(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-700 text-sm font-medium shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all cursor-pointer appearance-none"
               >
-                <option value="">— Không gán —</option>
+                <option value="">— {t('admin.topics.uncategorized')} —</option>
                 {roadmaps.map((r) => (
                   <option key={r.id} value={r.id}>{r.name}</option>
                 ))}
@@ -215,7 +217,7 @@ export default function TopicFormModal({
           {/* ── Image URL ───────── */}
           <div>
             <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-              Ảnh đại diện
+              {t('common.image')}
             </label>
             <input
               type="text"
@@ -258,7 +260,10 @@ export default function TopicFormModal({
             {lastEditedAt && (
               <div className="flex items-center gap-2">
                 <span className="text-[11px] text-stone-400">
-                  {lastEditedBy ? `Last edited by ${lastEditedBy}` : 'Last edited'}
+                  {lastEditedBy 
+                    ? t('common.lastEditedBy', { name: lastEditedBy }) 
+                    : t('common.lastEdited')
+                  }
                 </span>
                 <span className="text-[11px] font-mono text-stone-400">
                   ↑{formatDetailedDate(lastEditedAt)}
@@ -273,7 +278,7 @@ export default function TopicFormModal({
                 onClick={onClose}
                 className="px-5 py-2.5 rounded-xl border border-stone-200 text-stone-500 text-sm font-semibold hover:bg-stone-50 transition-all"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
@@ -281,7 +286,7 @@ export default function TopicFormModal({
                 className="px-6 py-2.5 rounded-xl text-white text-sm font-bold shadow-sm transition-all disabled:opacity-50"
                 style={{ backgroundColor: color }}
               >
-                {topic ? 'Save Changes' : 'Create Topic'}
+                {topic ? t('common.save') : t('common.add')}
               </button>
             </div>
           </div>

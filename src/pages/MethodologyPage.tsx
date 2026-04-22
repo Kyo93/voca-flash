@@ -17,14 +17,14 @@ const MethodologyPage: React.FC = () => {
             {t('methodology.heroSubtitle')}
           </p>
         </div>
-        
+
         {/* Floating Decor - Massive Brain Icon (Balanced Size) */}
         <div className="absolute top-0 bottom-0 right-0 w-2/3 hidden lg:block pointer-events-none overflow-hidden select-none">
           <div className="relative h-full w-full flex items-center justify-end">
-            <span 
+            <span
               className="material-symbols-outlined text-primary opacity-[0.06]"
-              style={{ 
-                fontSize: 'min(480px, 60vh)', 
+              style={{
+                fontSize: 'min(480px, 60vh)',
                 lineHeight: '1',
                 display: 'block',
                 marginRight: '5%'
@@ -50,13 +50,13 @@ const MethodologyPage: React.FC = () => {
           <div className="glass-panel p-8 rounded-2xl bg-surface-container-low/50 space-y-6">
             <h3 className="label-md text-slate-400">{t('methodology.traditional')}</h3>
             <div className="h-48 flex items-end gap-2 px-4 border-b border-outline/20 bg-surface/50 rounded-lg">
-              <div className="flex-1 bg-on-surface/10 h-full rounded-t-sm" title="Ngày 0: 100%" />
-              <div className="flex-1 bg-on-surface/10 h-[50%] rounded-t-sm" title="Ngày 1: 50%" />
-              <div className="flex-1 bg-on-surface/10 h-[20%] rounded-t-sm" title="Ngày 2: 20%" />
-              <div className="flex-1 bg-on-surface/10 h-[10%] rounded-t-sm" title="Ngày 3: 10%" />
-              <div className="flex-1 bg-on-surface/10 h-[5%] rounded-t-sm" title="Ngày 4+: 5%" />
+              <div className="flex-1 bg-on-surface/10 h-full rounded-t-sm" title={t('methodology.day', { count: 0 }) + ': 100%'} />
+              <div className="flex-1 bg-on-surface/10 h-[50%] rounded-t-sm" title={t('methodology.day', { count: 1 }) + ': 50%'} />
+              <div className="flex-1 bg-on-surface/10 h-[20%] rounded-t-sm" title={t('methodology.day', { count: 2 }) + ': 20%'} />
+              <div className="flex-1 bg-on-surface/10 h-[10%] rounded-t-sm" title={t('methodology.day', { count: 3 }) + ': 10%'} />
+              <div className="flex-1 bg-on-surface/10 h-[5%] rounded-t-sm" title={t('methodology.dayPlus', { count: 4 }) + ': 5%'} />
             </div>
-            <p className="text-sm italic text-on-surface-variant">Kiến thức rơi rụng nhanh theo thời gian.</p>
+            <p className="text-sm italic text-on-surface-variant">{t('methodology.traditionalDesc')}</p>
           </div>
 
           {/* VocaFlash Curve */}
@@ -87,8 +87,8 @@ const MethodologyPage: React.FC = () => {
       {/* FSRS Mechanism */}
       <section className="space-y-12">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">Thuật toán FSRS</h2>
-          <p className="text-on-surface-variant mb-6">Free Spaced Repetition Scheduler - Thế hệ thuật toán SRS mạnh mẽ nhất hiện nay.</p>
+          <h2 className="text-3xl font-bold mb-4">{t('methodology.fsrsTitle')}</h2>
+          <p className="text-on-surface-variant mb-6">{t('methodology.fsrsSubtitle')}</p>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </div>
 
@@ -98,27 +98,27 @@ const MethodologyPage: React.FC = () => {
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">analytics</span>
             </div>
-            <h3 className="font-bold text-xl">Stability (Độ ổn định)</h3>
+            <h3 className="font-bold text-xl">{t('methodology.stability')}</h3>
             <p className="text-on-surface-variant leading-relaxed text-sm">
-              Đại diện cho số ngày bạn có khả năng ghi nhớ từ này với tỷ lệ 90%. Độ ổn định càng cao, trí nhớ càng bền vững.
+              {t('methodology.stabilityDesc')}
             </p>
           </div>
           <div className="p-8 rounded-2xl bg-surface-container border border-outline/10 space-y-4">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">psychology_alt</span>
             </div>
-            <h3 className="font-bold text-xl">Difficulty (Độ khó)</h3>
+            <h3 className="font-bold text-xl">{t('methodology.difficulty')}</h3>
             <p className="text-on-surface-variant leading-relaxed text-sm">
-              Mỗi từ vựng có độ phức tạp riêng. FSRS tự điều chỉnh dựa trên phản hồi của bạn để tìm ra lộ trình học tối ưu.
+              {t('methodology.difficultyDesc')}
             </p>
           </div>
           <div className="p-8 rounded-2xl bg-surface-container border border-outline/10 space-y-4">
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">reorder</span>
             </div>
-            <h3 className="font-bold text-xl">Retrievability (Khả năng gợi nhớ)</h3>
+            <h3 className="font-bold text-xl">{t('methodology.retrievability')}</h3>
             <p className="text-on-surface-variant leading-relaxed text-sm">
-              Xác suất bạn có thể nhớ lại thông tin ngay lúc này. Hệ thống sẽ lên lịch ôn tập khi chỉ số này giảm xuống mức mục tiêu.
+              {t('methodology.retrievabilityDesc')}
             </p>
           </div>
         </div>
@@ -130,7 +130,7 @@ const MethodologyPage: React.FC = () => {
             {t('methodology.repetitions')}
           </h3>
           <p className="text-on-surface-variant italic mb-8">{t('methodology.repetitionsDesc')}</p>
-          
+
           <div className="grid md:grid-cols-4 gap-6">
             <div className="p-6 rounded-xl border border-red-500/20 bg-red-500/5 space-y-3">
               <h4 className="font-bold text-red-600 flex items-center gap-2">
@@ -167,7 +167,7 @@ const MethodologyPage: React.FC = () => {
       {/* Pedagogical Pillars */}
       <section className="p-12 rounded-2xl bg-surface-container-low border border-outline/5 relative overflow-hidden">
         <h2 className="text-3xl font-bold mb-12">{t('methodology.title')}</h2>
-        
+
         <div className="grid md:grid-cols-2 gap-12">
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-primary flex items-center gap-2">
@@ -268,12 +268,12 @@ const MethodologyPage: React.FC = () => {
 
       {/* Final CTA */}
       <section className="text-center py-12">
-        <h2 className="text-2xl font-bold mb-6">Bạn đã sẵn sàng chinh phục tiếng Anh?</h2>
-        <Link 
+        <h2 className="text-2xl font-bold mb-6">{t('methodology.readyToConquer')}</h2>
+        <Link
           to="/dashboard"
           className="inline-flex items-center gap-2 px-12 py-4 rounded-full bg-primary text-white font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
         >
-          Học ngay bây giờ
+          {t('methodology.learnNow')}
           <span className="material-symbols-outlined ml-2">trending_flat</span>
         </Link>
       </section>

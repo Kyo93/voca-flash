@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { STUDY_SESSION_DEFAULTS } from '../../lib/constants'
 import StudyChallengeShell from '../StudyChallengeShell'
 import type { Word } from '../../lib/types'
@@ -20,6 +21,7 @@ export default function ChallengingScreen({
   onSubmit,
   onSkip
 }: ChallengingScreenProps) {
+  const { t } = useTranslation()
   const isWarning = timerSeconds <= STUDY_SESSION_DEFAULTS.WARNING_THRESHOLD_S
   const borderColor = isWarning ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'
   const borderGlow = `0 0 8px ${borderColor}`
@@ -54,7 +56,11 @@ export default function ChallengingScreen({
               : 'text-tertiary bg-tertiary/8 border-tertiary/20'
         }`}>
           <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-          {currentChallengeType === 'cloze' ? 'Điền từ' : currentChallengeType === 'listen' ? 'Nghe lại' : 'Chọn nghĩa'}
+          {currentChallengeType === 'cloze' 
+            ? t('challenges.cloze') 
+            : currentChallengeType === 'listen' 
+              ? t('challenges.listen') 
+              : t('challenges.recognition')}
         </span>
       </div>
 
@@ -70,7 +76,7 @@ export default function ChallengingScreen({
           onClick={onSkip}
           className="mt-6 text-center text-outline text-xs hover:text-primary transition-colors tracking-widest font-bold uppercase w-full"
         >
-          Bỏ qua quiz → tự đánh giá
+          {t('arena.skipQuiz')}
         </button>
       </div>
     </div>

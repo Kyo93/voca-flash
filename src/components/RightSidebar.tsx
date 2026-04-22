@@ -1,53 +1,45 @@
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useEffect, useState, useRef } from 'react'
-import { useAuth } from '../contexts/AuthContext'
 import { fetchStreakFromSupabase, loadStreak } from '../lib/streak'
-import type { StreakData } from '../lib/streak'
+import { useAuth } from '../contexts/AuthContext'
 import { useSidebar, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 
 export default function RightSidebar() {
   const { t } = useTranslation()
-  const { user } = useAuth()
+  const { profile } = useAuth()
   const { rightCollapsed, toggleRightSidebar } = useSidebar()
-  const [streak, setStreak] = useState<StreakData>(loadStreak())
-  // C4: Cache streak to prevent re-fetch on unrelated re-renders
-  const streakCache = useRef<{ userId: string | undefined; data: StreakData } | null>(null)
+  
+  const [streak, setStreak] = useState(() => loadStreak())
+  const streakCache = useRef<{ userId: string | undefined; data: any } | null>(null)
 
   useEffect(() => {
-    const userId = user?.id
-    // C4: Return cached data if same user — no re-fetch needed
-    const cached = streakCache.current
-    if (cached && cached.userId === userId) {
-      setStreak(cached.data)
+    const userId = profile?.id
+    if (streakCache.current && streakCache.current.userId === userId) {
+      setStreak(streakCache.current.data)
       return
     }
+
     async function load() {
-      if (userId) {
-        const data = await fetchStreakFromSupabase(userId)
-        streakCache.current = { userId, data }
-        setStreak(data)
-      } else {
-        const localData = loadStreak()
-        streakCache.current = { userId: undefined, data: localData }
-        setStreak(localData)
-      }
+      const data = userId ? await fetchStreakFromSupabase(userId) : loadStreak()
+      streakCache.current = { userId, data }
+      setStreak(data)
     }
     load()
-  }, [user?.id])
+  }, [profile?.id])
 
   const w = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
 
   return (
-    <aside 
+    <aside
       className="sticky top-0 h-screen bg-white border-l border-stone-100 flex flex-col transition-all duration-300 ease-in-out z-40"
       style={{ width: w }}
     >
       {/* Toggle Button at the top */}
       <div className="flex justify-start p-4">
-        <button 
+        <button
           onClick={toggleRightSidebar}
           className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all cursor-pointer"
-          title={rightCollapsed ? "Mở rộng" : "Thu nhỏ"}
+          title={rightCollapsed ? t('sidebar.expandRight') : t('sidebar.collapseRight')}
         >
           <span className="material-symbols-outlined transition-transform duration-300" style={{ transform: rightCollapsed ? 'rotate(180deg)' : 'none' }}>
             chevron_left
@@ -70,7 +62,7 @@ export default function RightSidebar() {
               </div>
             )}
           </div>
-          
+
           {!rightCollapsed && (
             <>
               <p className="text-xl font-black text-on-surface">{streak.currentStreak} {t('progress.dayStreak')}</p>
@@ -89,11 +81,11 @@ export default function RightSidebar() {
               </div>
             </>
           )}
-          
+
           {rightCollapsed && (
-             <div className="bg-secondary text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center mx-auto mt-2">
-                {streak.currentStreak}
-             </div>
+            <div className="bg-secondary text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center mx-auto mt-2">
+              {streak.currentStreak}
+            </div>
           )}
         </div>
 
@@ -108,7 +100,7 @@ export default function RightSidebar() {
               {!rightCollapsed && (
                 <div>
                   <p className="text-xs font-black text-on-surface">{t('rightSidebar.learnWord')}</p>
-                  <p className="text-[10px] text-stone-400 font-medium mt-0.5 whitespace-nowrap">Nhắc học từ mới mỗi ngày.</p>
+                  <p className="text-[10px] text-stone-400 font-medium mt-0.5 whitespace-nowrap">{t('rightSidebar.learnWordDesc')}</p>
                 </div>
               )}
             </div>
@@ -119,7 +111,7 @@ export default function RightSidebar() {
               {!rightCollapsed && (
                 <div>
                   <p className="text-xs font-black text-on-surface">{t('rightSidebar.dynamicReview')}</p>
-                  <p className="text-[10px] text-stone-400 font-medium mt-0.5 whitespace-nowrap">Ôn tập từ đã học theo lịch.</p>
+                  <p className="text-[10px] text-stone-400 font-medium mt-0.5 whitespace-nowrap">{t('rightSidebar.dynamicReviewDesc')}</p>
                 </div>
               )}
             </div>
@@ -137,9 +129,9 @@ export default function RightSidebar() {
           </div>
         ) : (
           <div className="flex justify-center">
-             <button title={t('rightSidebar.setReminder')} className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 hover:text-primary transition-all">
-                <span className="material-symbols-outlined">event</span>
-             </button>
+            <button title={t('rightSidebar.setReminder')} className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 hover:text-primary transition-all">
+              <span className="material-symbols-outlined">event</span>
+            </button>
           </div>
         )}
       </div>

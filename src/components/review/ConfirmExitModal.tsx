@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 interface ConfirmExitModalProps {
   isOpen: boolean
@@ -7,6 +8,7 @@ interface ConfirmExitModalProps {
 }
 
 export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: ConfirmExitModalProps) {
+  const { t } = useTranslation()
   return (
     <AnimatePresence>
       {isOpen && (
@@ -21,9 +23,9 @@ export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: Confirm
               <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>logout</span>
             </div>
             
-            <h2 className="text-3xl font-black text-white mb-6 text-shadow-glow tracking-tight">Thoát đấu trường?</h2>
+            <h2 className="text-3xl font-black text-white mb-6 text-shadow-glow tracking-tight">{t('confirmExit.title')}</h2>
             <p className="text-white/40 mb-12 text-base font-medium leading-[1.6]">
-              Tiến độ của bạn sẽ luôn được bảo lưu. Bạn có muốn tạm dừng và quay lại sau không?
+              {t('confirmExit.subtitle')}
             </p>
     
             <div className="flex flex-col gap-4">
@@ -31,13 +33,13 @@ export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: Confirm
                 onClick={onConfirm}
                 className="w-full py-5 bg-white text-black font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
               >
-                Thoát ngay
+                {t('confirmExit.exit')}
               </button>
               <button
                 onClick={onClose}
                 className="w-full py-5 glass-arena-item text-white font-black rounded-2xl hover:bg-white/10 active:scale-95 transition-all border-white/10"
               >
-                Ở lại luyện tập
+                {t('confirmExit.stay')}
               </button>
             </div>
           </motion.div>

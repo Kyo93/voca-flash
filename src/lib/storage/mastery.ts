@@ -15,20 +15,22 @@ interface FetchVocabularyOptions {
   offset?: number
   search?: string
   filter?: 'all' | 'due' | 'weak' | 'orphaned' | 'mastered'
+  letter?: string
 }
 
 export async function getUserVocabulary(
   userId: string,
   options: FetchVocabularyOptions = {}
 ): Promise<{ data: MasteryWord[]; total: number }> {
-  const { limit = 50, offset = 0, search = '', filter = 'all' } = options
+  const { limit = 50, offset = 0, search = '', filter = 'all', letter = '' } = options
 
   const { data, error } = await supabase.rpc('get_user_vocabulary_v2', {
     p_user_id: userId,
     p_limit: limit,
     p_offset: offset,
     p_search: search,
-    p_filter: filter
+    p_filter: filter,
+    p_letter: letter
   })
 
   if (error) {

@@ -19,15 +19,15 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
     setAvatarError(false)
   }, [formData.avatar_url])
 
-  const isBadPattern = formData.avatar_url.includes('photos.app.goo.gl') || 
-                       formData.avatar_url.includes('drive.google.com') ||
-                       (formData.avatar_url.includes('imgur.com') && !/\.(jpg|jpeg|png|webp|gif)$/.test(formData.avatar_url.split('?')[0]))
+  const isBadPattern = formData.avatar_url.includes('photos.app.goo.gl') ||
+    formData.avatar_url.includes('drive.google.com') ||
+    (formData.avatar_url.includes('imgur.com') && !/\.(jpg|jpeg|png|webp|gif)$/.test(formData.avatar_url.split('?')[0]))
 
   return (
     <SettingsSection
       icon="person"
       title={t('settings.profile')}
-      description="Chỉnh sửa thông tin cá nhân hiển thị công khai trên ứng dụng."
+      description={t('settings.profileDesc')}
       colorClass="text-blue-600"
       bgClass="bg-blue-50"
     >
@@ -36,10 +36,10 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
         <div className="relative group shrink-0">
           <div className="w-28 h-28 rounded-4xl bg-stone-50 border-4 border-white shadow-md overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105">
             {formData.avatar_url && !avatarError ? (
-              <img 
-                src={formData.avatar_url} 
-                alt="Avatar" 
-                className="w-full h-full object-cover" 
+              <img
+                src={formData.avatar_url}
+                alt="Avatar"
+                className="w-full h-full object-cover"
                 onError={() => setAvatarError(true)}
               />
             ) : (
@@ -47,7 +47,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
                 <span className="material-symbols-outlined text-5xl">
                   {avatarError ? 'broken_image' : 'face'}
                 </span>
-                {avatarError && <span className="text-[9px] font-black uppercase text-rose-400 mt-1">Lỗi Link</span>}
+                {avatarError && <span className="text-[9px] font-black uppercase text-rose-400 mt-1">{t('settings.linkError')}</span>}
               </div>
             )}
           </div>
@@ -55,7 +55,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
             <span className="material-symbols-outlined text-xl">camera_alt</span>
           </div>
         </div>
-        
+
         {/* Inputs Section */}
         <div className="flex-1 space-y-6 w-full">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -63,15 +63,15 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
               <label className="text-sm font-bold text-stone-600 ml-1">
                 {t('settings.displayName')}
               </label>
-              <input 
-                type="text" 
-                value={formData.display_name} 
+              <input
+                type="text"
+                value={formData.display_name}
                 onChange={(e) => onChange({ display_name: e.target.value })}
-                placeholder="VD: Ocean Nguyen"
+                placeholder={t('settings.displayNamePlaceholder')}
                 className="w-full px-5 py-4 bg-stone-50/50 border border-stone-200 rounded-2xl text-secondary font-medium focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all"
               />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-bold text-stone-600 ml-1">
                 {t('settings.email')}
@@ -84,12 +84,12 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-stone-600 ml-1">
-              Link ảnh đại diện (URL)
+              {t('settings.avatarUrl')}
             </label>
             <div className="relative group">
-              <input 
-                type="text" 
-                value={formData.avatar_url} 
+              <input
+                type="text"
+                value={formData.avatar_url}
                 onChange={(e) => {
                   const val = e.target.value
                   const driveRegex = /https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/
@@ -111,13 +111,13 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
             <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-start gap-3 animate-pulse-subtle">
               <span className="material-symbols-outlined text-amber-500 text-lg">warning</span>
               <p className="text-xs text-amber-800 font-medium leading-relaxed">
-                Link này có vẻ là <strong>link chia sẻ</strong>, không phải link trực tiếp. Vui lòng chuột phải vào ảnh chọn <span className="bg-amber-100 px-1 rounded text-amber-900 mx-1">"Copy Image Address"</span> để hiện thị đúng nhất.
+                {t('settings.badLinkWarning')}
               </p>
             </div>
           )}
 
           <p className="text-[11px] text-stone-400 font-medium italic ml-1">
-            Mẹo: Bạn có thể tải ảnh lên <a href="https://imgur.com/upload" target="_blank" rel="noreferrer" className="text-primary hover:underline font-bold">Imgur</a> để lấy link trực tiếp.
+            {t('settings.imgurTip')}
           </p>
         </div>
       </div>

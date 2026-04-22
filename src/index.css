@@ -3,31 +3,31 @@
 @theme {
   /* === VocabMaster Design System — The Tactile Scholar === */
 
-  /* Primary: Deep Earth Orange (#944A00) */
-  --color-primary: #944A00;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #e67e22;
-  --color-on-primary-container: #502600;
+  /* Primary: Terracotta (#E67E22) */
+  --color-primary: #E67E22;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #FFDCC3;
+  --color-on-primary-container: #301400;
 
-  /* Secondary: Moss Green (#546435) */
+  /* Secondary: Sage Green (#546435) */
   --color-secondary: #546435;
-  --color-on-secondary: #ffffff;
-  --color-secondary-container: #d4e7ac;
-  --color-on-secondary-container: #586839;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-container: #D7E9B0;
+  --color-on-secondary-container: #121F00;
 
-  /* Surface: Sun-drenched Cream (#FFF8F0) */
-  --color-surface: #fff8f0;
-  --color-on-surface: #1d1b16;
+  /* Surface: Sun-drenched Cream (#FFF8F5) */
+  --color-surface: #FFF8F5;
+  --color-on-surface: #221A15;
   --color-on-surface-variant: #564337;
-  --color-background: #fff8f0;
+  --color-background: #FFF8F5;
 
-  --color-outline: #897365;
-  --color-outline-variant: #dcc1b1;
+  --color-outline: #85746B;
+  --color-outline-variant: #D7C3B7;
 
-  --color-tertiary: #755a33;
+  --color-tertiary: #00658f;
   --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #b49469;
-  --color-on-tertiary-container: #432d0b;
+  --color-tertiary-container: #00a3e4;
+  --color-on-tertiary-container: #00354d;
 
   /* Error: Alert Red (#BA1A1A) */
   --color-error: #ba1a1a;
@@ -36,13 +36,13 @@
   --color-on-error-container: #93000a;
   
   --color-surface-dim: #dfd9d1;
-  --color-surface-bright: #fff8f0;
+  --color-surface-bright: #fff8f1;
   
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f9f3ea;
-  --color-surface-container: #f3ede4;
-  --color-surface-container-high: #ede7df;
-  --color-surface-container-highest: #e8e2d9;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #FFF1E9;
+  --color-surface-container: #F9EBE2;
+  --color-surface-container-high: #F3E5DC;
+  --color-surface-container-highest: #EEE0D7;
 
   /* Border Radius: Updated to match mockup tokens */
   --radius-xs: 4px;
@@ -59,6 +59,15 @@
   --font-headline: "Be Vietnam Pro", system-ui, sans-serif;
   --font-body: "Be Vietnam Pro", system-ui, sans-serif;
   --font-label: "Be Vietnam Pro", system-ui, sans-serif;
+
+  /* Arena Specific (Review Mode) */
+  --color-arena-bg: #060608;
+  --color-arena-blob-1: #D35400;
+  --color-arena-blob-2: #0891B2;
+  --color-arena-blob-3: #1E293B;
+
+  --color-oceanic-deep: #00236f;
+  --color-oceanic-bright: #1e3a8a;
 }
 
 /* === Variable Master Foundations === */
@@ -76,6 +85,9 @@
   /* Core Alert Colors for Inline Styles */
   --color-error: #ba1a1a;
   --color-secondary-stable: #546435;
+
+  /* Tactile Paper Texture */
+  --bg-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
 .dark {
@@ -105,6 +117,7 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--bg-app);
+  background-image: var(--bg-texture);
   color: var(--text-main);
   min-height: 100dvh;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -123,32 +136,31 @@ body {
 
 /* === Design Utilities === */
 
-.text-editorial-asymmetry {
+@utility editorial-asymmetry {
   letter-spacing: -0.02em;
 }
 
-.label-md {
+@utility label-md {
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-weight: 600;
   font-size: 0.75rem;
 }
 
-/* Glass panel from Stitch */
-.glass-panel {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+/* Glass panel from Stitch — No border, tonal focus */
+@utility glass-panel {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
 }
 
 /* Hero gradient - Terracotta Flare */
 .hero-gradient {
-  background: linear-gradient(135deg, #FF9E4A 0%, #E67E22 50%, #B35F14 100%);
+  background: linear-gradient(135deg, #FFB366 0%, #E67E22 60%, #D35400 100%);
 }
 
 .primary-gradient {
-  background: linear-gradient(135deg, #E67E22 0%, #b4621a 100%);
+  background: linear-gradient(135deg, #E67E22 0%, #d35400 100%);
 }
 
 /* Oceanic pulse gradient (from Stitch design) */
@@ -165,6 +177,7 @@ body {
   background: linear-gradient(135deg, #829460 0%, #546435 100%);
 }
 
+/* Sun-drenched shadow — warm, natural light (Updated to mockup) */
 /* Sun-drenched shadow — warm, natural light (Updated to mockup) */
 .sun-drenched-shadow {
   box-shadow: 0 10px 48px -4px rgba(29, 27, 22, 0.08);
@@ -346,6 +359,64 @@ body {
   background-color: var(--color-surface-container-highest);
   box-shadow: inset 0 0 0 2px var(--color-secondary);
 }
+
+/* === Tactile Scholar Range Input Styles === */
+input[type="range"] {
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  background: var(--color-surface-container-highest);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-outline-variant);
+  transition: all 0.2s ease;
+}
+
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  background: var(--color-surface-container-highest);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-outline-variant);
+}
+
+input[type="range"]:hover::-webkit-slider-runnable-track {
+  background: var(--color-surface-container-high);
+  border-color: var(--color-outline);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: currentColor;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -6px; /* Centers thumb on 10px track */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: 2px solid #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: currentColor;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
 /* === Aesthetic Roadmap Utilities === */
 .glass-wow-card {
   background: rgba(255, 255, 255, 0.4);
@@ -389,21 +460,37 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* === Admin Premium Utilities === */
+/* === Admin Premium Utilities — No-Line Compliant === */
 .admin-glass {
-  @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-2xl;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
-
+ 
 .table-container {
-  @apply rounded-2xl border border-stone-200/50 overflow-hidden bg-white/50;
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 48px -4px rgba(29, 27, 22, 0.08);
 }
-
+ 
 .sticky-col {
-  @apply sticky left-0 z-10 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.02)];
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: white;
 }
-
+ 
 .admin-toolbar {
-  @apply flex items-center gap-4 p-4 mb-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white/20 shadow-sm;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  box-shadow: 0 10px 48px -4px rgba(29, 27, 22, 0.08);
 }
 
 .roadmap-card-gradient {

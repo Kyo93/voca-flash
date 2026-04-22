@@ -8,7 +8,7 @@ import SettingsSection from './SettingsSection'
 export default function DangerZoneSection() {
   const { t } = useTranslation()
   const { signOut } = useAuth()
-  
+
   const [topics, setTopics] = useState<Topic[]>([])
   const [selectedTopicId, setSelectedTopicId] = useState('')
   const [showConfirmReset, setShowConfirmReset] = useState(false)
@@ -64,7 +64,7 @@ export default function DangerZoneSection() {
     <SettingsSection
       icon="warning"
       title={t('settings.dangerZone')}
-      description="Các hành động dưới đây có thể gây mất dữ liệu vĩnh viễn. Hãy cẩn trọng."
+      description={t('settings.dangerZoneDesc')}
       colorClass="text-rose-600"
       bgClass="bg-rose-50"
     >
@@ -73,12 +73,12 @@ export default function DangerZoneSection() {
         <div className="bg-stone-50/50 p-6 rounded-3xl border border-stone-200/60 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-md">
             <h3 className="font-black text-secondary mb-1">{t('settings.resetProgress')}</h3>
-            <p className="text-[11px] text-stone-400 font-medium leading-relaxed">Xóa vĩnh viễn tất cả lịch sử ôn tập (SRS) của một chủ đề cụ thể.</p>
+            <p className="text-[11px] text-stone-400 font-medium leading-relaxed">{t('settings.resetProgressDesc')}</p>
           </div>
-          
+
           <div className="flex flex-col md:flex-row gap-3">
             <div className="relative group">
-              <select 
+              <select
                 value={selectedTopicId}
                 onChange={(e) => setSelectedTopicId(e.target.value)}
                 className="px-5 py-3 bg-white border border-stone-200 rounded-2xl text-secondary font-medium outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-400/5 transition-all text-sm w-full md:w-48 appearance-none cursor-pointer"
@@ -92,7 +92,7 @@ export default function DangerZoneSection() {
                 expand_more
               </span>
             </div>
-            
+
             <button
               disabled={!selectedTopicId || loading}
               onClick={() => setShowConfirmReset(true)}
@@ -109,7 +109,7 @@ export default function DangerZoneSection() {
             <h3 className="font-black text-rose-700 mb-1">{t('settings.resetGlobal')}</h3>
             <p className="text-[11px] text-rose-600/70 font-medium leading-relaxed">{t('settings.resetGlobalDesc')}</p>
           </div>
-          
+
           <button
             disabled={loading}
             onClick={() => setShowConfirmGlobal(true)}
@@ -121,9 +121,8 @@ export default function DangerZoneSection() {
 
         {/* Success/Error Message */}
         {message && (
-          <div className={`p-4 rounded-2xl border flex items-center gap-3 animate-fade-in ${
-            message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
-          }`}>
+          <div className={`p-4 rounded-2xl border flex items-center gap-3 animate-fade-in ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
+            }`}>
             <span className="material-symbols-outlined font-variation-fill">
               {message.type === 'success' ? 'check_circle' : 'error'}
             </span>
@@ -133,13 +132,13 @@ export default function DangerZoneSection() {
 
         {/* Logout */}
         <div className="pt-4 border-t border-stone-100 flex justify-start">
-           <button
-              onClick={() => signOut()}
-              className="flex items-center gap-2 px-8 py-4 bg-stone-100 text-stone-500 hover:text-stone-700 hover:bg-stone-200 font-black text-sm rounded-2xl transition-all hover:scale-105 active:scale-95"
-           >
-             <span className="material-symbols-outlined">logout</span>
-             {t('settings.logout')}
-           </button>
+          <button
+            onClick={() => signOut()}
+            className="flex items-center gap-2 px-8 py-4 bg-stone-100 text-stone-500 hover:text-stone-700 hover:bg-stone-200 font-black text-sm rounded-2xl transition-all hover:scale-105 active:scale-95"
+          >
+            <span className="material-symbols-outlined">logout</span>
+            {t('settings.logout')}
+          </button>
         </div>
       </div>
 
@@ -150,24 +149,24 @@ export default function DangerZoneSection() {
             <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-rose-500 shadow-inner">
               <span className="material-symbols-outlined text-4xl font-variation-fill">delete_forever</span>
             </div>
-            
+
             <h3 className="text-2xl font-black text-center text-secondary mb-3">
               {t('settings.resetGlobalConfirm')}
             </h3>
-            
+
             <p className="text-center text-stone-400 font-medium mb-10 leading-relaxed">
-              {t('settings.resetConfirm')} <br/>
+              {t('settings.resetConfirm')} <br />
               <span className="text-rose-500 font-black mt-2 block">{t('settings.resetDesc')}</span>
             </p>
-            
+
             <div className="grid grid-cols-2 gap-4">
-              <button 
+              <button
                 onClick={() => setShowConfirmReset(false)}
                 className="px-6 py-4 font-black text-stone-500 bg-stone-100 rounded-2xl hover:bg-stone-200 transition-all active:scale-95"
               >
                 {t('settings.cancel')}
               </button>
-              <button 
+              <button
                 onClick={handleResetTopic}
                 disabled={loading}
                 className="px-6 py-4 font-black text-white bg-rose-500 rounded-2xl hover:bg-rose-600 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-rose-200"
@@ -187,18 +186,18 @@ export default function DangerZoneSection() {
             <div className="w-24 h-24 bg-rose-600 rounded-[32px] flex items-center justify-center mx-auto mb-10 text-white shadow-xl rotate-3">
               <span className="material-symbols-outlined text-5xl font-variation-fill">bomb</span>
             </div>
-            
+
             <h3 className="text-3xl font-black text-center text-rose-700 mb-4">
               {t('settings.resetGlobalConfirm')}
             </h3>
-            
+
             <p className="text-center text-stone-500 font-bold mb-10 leading-relaxed px-4">
-              {t('settings.resetGlobalDesc')} <br/>
-              <span className="text-rose-600 bg-rose-50 px-3 py-1 rounded-lg mt-4 inline-block transform -rotate-1">Hành động này không thể hoàn tác!</span>
+              {t('settings.resetGlobalDesc')} <br />
+              <span className="text-rose-600 bg-rose-50 px-3 py-1 rounded-lg mt-4 inline-block transform -rotate-1">{t('settings.cannotUndo')}</span>
             </p>
-            
+
             <div className="flex flex-col gap-4">
-              <button 
+              <button
                 onClick={handleResetGlobal}
                 disabled={loading}
                 className="w-full py-5 font-black text-white bg-rose-600 rounded-3xl hover:bg-rose-700 transition-all flex items-center justify-center gap-3 active:scale-[0.98] shadow-xl shadow-rose-200"
@@ -206,7 +205,7 @@ export default function DangerZoneSection() {
                 {loading && <span className="material-symbols-outlined animate-spin font-variation-fill">progress_activity</span>}
                 {loading ? t('settings.deleting') : t('settings.confirmDelete')}
               </button>
-              <button 
+              <button
                 onClick={() => setShowConfirmGlobal(false)}
                 className="w-full py-5 font-black text-stone-400 bg-stone-100 rounded-3xl hover:bg-stone-200 transition-all active:scale-[0.98]"
               >

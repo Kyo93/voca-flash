@@ -42,7 +42,7 @@ export default function Home() {
               className="card hover:border-primary transition-colors cursor-pointer"
             >
               <h3 className="font-semibold text-lg">{t(`topics.${topic}`)}</h3>
-              <p className="text-sm text-muted-foreground mt-2">0 từ vựng</p>
+              <p className="text-sm text-muted-foreground mt-2">{t('topics.wordsCount', { count: 0 })}</p>
             </a>
           ))}
         </div>

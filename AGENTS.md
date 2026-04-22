@@ -40,7 +40,7 @@ src/
 ### 2. Thiết kế & CSS
 - Sử dụng Tailwind CSS v4 Theme variables (ví dụ: `bg-primary`, `rounded-4xl`).
 - Tuyệt đối không dùng mã màu Hex trực tiếp trong code UI.
-- Luôn ưu tiên **Mobile-first** (chiều rộng chuẩn 375px).
+- Luôn ưu tiên **Desktop-first** (chiều rộng chuẩn 1440px).
 
 ### 3. Cấu trúc Component
 - Chỉ sử dụng Functional Components và Hooks.
@@ -65,3 +65,4 @@ src/
 ---
 
 *AI Agent Ghi chú: Luôn đọc CONTINUITY.md tại .cm/ trước mỗi phiên làm việc để nắm bắt ngữ cảnh hiện thời.*
+r

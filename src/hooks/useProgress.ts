@@ -41,25 +41,25 @@ export function useProgress() {
 
     return [
       { 
-        label: 'status.fresh', 
+        label: 'progress.fsrsBins.states.fresh', 
         value: fresh, 
-        desc: 'Độ bền < 5 ngày',
+        desc: 'progress.fsrsBins.states.freshDesc',
         color: 'text-emerald-500', 
         bg: 'bg-emerald-50',
         pct: (fresh / total) * 100
       },
       { 
-        label: 'status.stable', 
+        label: 'progress.fsrsBins.states.stable', 
         value: stable, 
-        desc: 'Độ bền 5-30 ngày',
+        desc: 'progress.fsrsBins.states.stableDesc',
         color: 'text-blue-500', 
         bg: 'bg-blue-50',
         pct: (stable / total) * 100
       },
       { 
-        label: 'status.rooted', 
+        label: 'progress.fsrsBins.states.rooted', 
         value: rooted, 
-        desc: 'Độ bền > 30 ngày',
+        desc: 'progress.fsrsBins.states.rootedDesc',
         color: 'text-purple-600', 
         bg: 'bg-purple-50',
         pct: (rooted / total) * 100
@@ -78,6 +78,6 @@ export function useProgress() {
     stabilityBins,
     forecastData,
     loading,
-    displayName: profile?.display_name ?? profile?.email?.split('@')[0] ?? 'Nhà thông thái'
+    displayName: profile?.display_name ?? profile?.email?.split('@')[0] ?? 'progress.sageFallback'
   }
 }

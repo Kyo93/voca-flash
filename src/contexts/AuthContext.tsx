@@ -16,6 +16,8 @@ import type { UserProfile } from '../lib/types'
 import { setTtsConfig } from '../lib/tts'
 
 import { fetchInitialAppData, type InitialAppData } from '../lib/supabase-storage'
+import i18n from '../i18n'
+import { LNG_STORAGE_KEY } from '../lib/i18n-utils'
 
 interface AuthContextValue {
   user: User | null
@@ -172,6 +174,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     applyTheme(profile.theme_mode || 'light')
   }, [profile?.theme_mode])
+  
+  // Sync UI Language whenever profile changes
+  useEffect(() => {
+    if (!profile?.app_language) return
+    
+    if (profile.app_language !== i18n.language) {
+      i18n.changeLanguage(profile.app_language)
+      localStorage.setItem(LNG_STORAGE_KEY, profile.app_language)
+    }
+  }, [profile?.app_language])
 
   async function refreshActiveRoadmap(targetRoadmapId?: string, forcedUserId?: string) {
     const currentUserId = forcedUserId || user?.id
