@@ -36,6 +36,9 @@
 - **Cập nhật UI Mint Green (April 22)**:
     - Thêm token màu `mint` vào `index.css`.
     - Thay đổi màu nền `WordDetailPanel` sang xanh Mint theo yêu cầu.
+- **Sửa lỗi Memory Health (April 22)**:
+    - Loại bỏ giá trị fix cứng 90%, tính toán `retention_rate` thực tế từ review logs.
+    - Cập nhật RPC `get_initial_app_data_v2` và storage layer frontend.
 
 ## Working Context
 - **Code Splitting Approach**: Lazy loading routes that are not critical for initial paint (Admin, Study, Progress).
