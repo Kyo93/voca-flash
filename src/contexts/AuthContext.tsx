@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -200,12 +201,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [profile?.app_language])
 
-  async function refreshActiveRoadmap(targetRoadmapId?: string, forcedUserId?: string) {
+  const refreshActiveRoadmap = useCallback(async (targetRoadmapId?: string, forcedUserId?: string) => {
     const currentUserId = forcedUserId || user?.id
     if (!currentUserId) return
-    
+
     let roadmapId = targetRoadmapId
-    
+
     // 1. Nếu không truyền ID, tìm roadmap học gần nhất từ DB
     if (!roadmapId) {
       const { data } = await supabase.from('user_resume_pointers')
@@ -214,7 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .order('last_accessed_at', { ascending: false })
         .limit(1)
         .maybeSingle()
-      
+
       roadmapId = data?.roadmap_id
     }
 
@@ -224,27 +225,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('slug')
         .eq('id', roadmapId)
         .single()
-      
+
       setActiveRoadmapSlug(roadmap?.slug ?? null)
     } else {
       setActiveRoadmapSlug(null)
     }
-  }
+  }, [user?.id])
 
-  async function refreshProfile() {
+  const refreshProfile = useCallback(async () => {
     if (!user) return
     const { data } = await supabase.from('user_profiles')
       .select('*')
       .eq('id', user.id)
       .single()
     if (data) setProfile(data)
-  }
+  }, [user])
 
-  async function refreshInitialData() {
+  const refreshInitialData = useCallback(async () => {
     if (!user) return
     const data = await fetchInitialAppData(user.id)
     applyAppData(data)
-  }
+  }, [user])
 
   async function handleSignIn(email: string, password: string) {
     const { error } = await authSignIn(email, password)
@@ -281,7 +282,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     isAdmin,
     activeRoadmapSlug,
-    initialData
+    initialData,
+    refreshActiveRoadmap,
+    refreshProfile,
+    refreshInitialData,
   ])
 
   return (

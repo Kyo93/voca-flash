@@ -86,10 +86,9 @@ export function useFlashcard() {
           combined = [...unlearned]
           break
         case 'all':
-        case true:
           combined = [...unlearned, ...learning, ...mastered]
           break
-        default: // 'combined' or false
+        default: // 'combined'
           combined = [...unlearned, ...learning]
       }
       
@@ -183,7 +182,7 @@ export function useFlashcard() {
     } catch (err) {
       console.error('[useFlashcard] sync error:', err)
     }
-  }, [refreshInitialData])
+  }, [])
 
   const markLearned = useCallback(() => {
     // Flip the card first so user sees the answer, then defer rating

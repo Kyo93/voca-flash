@@ -56,7 +56,7 @@ export default function StudyPage() {
     await updateNote(currentCard.id, note)
   }, [currentCard, updateNote])
 
-  const initializedTopicRef = useRef<string | undefined>(null)
+  const initializedTopicRef = useRef<string | undefined>(undefined)
 
   useEffect(() => {
     if (initializedTopicRef.current !== topic) {
