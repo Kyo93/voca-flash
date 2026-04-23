@@ -1,10 +1,20 @@
 import { type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import type { Word } from '../../lib/types'
 import { useWordForm } from '../../hooks/admin/useWordForm'
 import { WordTagsInput } from './WordTagsInput'
 
-const POS_OPTIONS = (t: any) => [
+/** Tailwind class chung cho mọi input/textarea/select trong form. */
+const FORM_FIELD_CLASS =
+  'w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all'
+
+const WRONG_CHOICE_CLASS =
+  'px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all'
+
+const FALLBACK_PREVIEW_IMAGE = 'https://placehold.co/600x450?text=Invalid+URL'
+
+const getPosOptions = (t: TFunction) => [
   { value: 'noun', label: t('common.pos.noun') },
   { value: 'verb', label: t('common.pos.verb') },
   { value: 'adj', label: t('common.pos.adj') },
@@ -13,12 +23,12 @@ const POS_OPTIONS = (t: any) => [
   { value: 'other', label: t('common.pos.other') },
 ]
 
-const DIFFICULTY_LABELS = (t: any) => [
+const getDifficultyLabels = (t: TFunction) => [
   t('common.difficulty.v-easy'),
   t('common.difficulty.easy'),
   t('common.difficulty.medium'),
   t('common.difficulty.hard'),
-  t('common.difficulty.v-hard')
+  t('common.difficulty.v-hard'),
 ]
 
 interface Props {
@@ -33,8 +43,8 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
   const { t } = useTranslation()
   const { state, actions } = useWordForm(word, initialWrongChoices, open)
   
-  const posOptions = POS_OPTIONS(t)
-  const difficultyLabels = DIFFICULTY_LABELS(t)
+  const posOptions = getPosOptions(t)
+  const difficultyLabels = getDifficultyLabels(t)
 
   if (!open) return null
 
@@ -90,7 +100,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 onChange={(e) => actions.setWordText(e.target.value)}
                 placeholder={t('admin.wordForm.wordPlaceholder')}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               />
             </div>
             <div>
@@ -100,7 +110,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 value={state.phonetic}
                 onChange={(e) => actions.setPhonetic(e.target.value)}
                 placeholder={t('admin.wordForm.phoneticPlaceholder')}
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               />
             </div>
           </div>
@@ -112,7 +122,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               <select
                 value={state.pos ?? 'noun'}
                 onChange={(e) => actions.setPos(e.target.value as Word['pos'])}
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               >
                 {posOptions.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
@@ -146,7 +156,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               placeholder={t('admin.wordForm.definitionPlaceholder')}
               rows={2}
               required
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
+              className={`${FORM_FIELD_CLASS} resize-none`}
             />
           </div>
 
@@ -159,7 +169,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 value={state.example}
                 onChange={(e) => actions.setExample(e.target.value)}
                 placeholder={t('admin.wordForm.exampleEnPlaceholder')}
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               />
             </div>
             <div>
@@ -169,7 +179,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 value={state.exampleVi}
                 onChange={(e) => actions.setExampleVi(e.target.value)}
                 placeholder={t('admin.wordForm.exampleViPlaceholder')}
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               />
             </div>
           </div>
@@ -185,7 +195,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 value={state.synonyms}
                 onChange={(e) => actions.setSynonyms(e.target.value)}
                 placeholder={t('admin.wordForm.synonymsPlaceholder')}
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               />
             </div>
             <div>
@@ -197,7 +207,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 value={state.antonyms}
                 onChange={(e) => actions.setAntonyms(e.target.value)}
                 placeholder={t('admin.wordForm.antonymsPlaceholder')}
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               />
             </div>
             <div>
@@ -209,7 +219,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                 value={state.wordFamily}
                 onChange={(e) => actions.setWordFamily(e.target.value)}
                 placeholder={t('admin.wordForm.wordFamilyPlaceholder')}
-                className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
+                className={FORM_FIELD_CLASS}
               />
             </div>
           </div>
@@ -229,7 +239,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               value={state.imageUrl}
               onChange={(e) => actions.setImageUrl(e.target.value)}
               placeholder={t('admin.wordForm.imageUrlPlaceholder')}
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
+              className={`w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all`}
             />
             {state.imageUrl && (
               <div className="mt-3 space-y-3">
@@ -258,7 +268,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                       alt="Preview"
                       className="w-full h-full object-cover transition-all duration-300"
                       style={{ objectPosition: state.imagePosition }}
-                      onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/600x450?text=Invalid+URL'; }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_PREVIEW_IMAGE; }}
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent pointer-events-none" />
                     <div className="absolute bottom-2 left-3 text-white text-sm font-bold drop-shadow-lg">
@@ -276,9 +286,21 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               {t('admin.wordForm.wrongChoices')}
             </label>
             <div className="grid grid-cols-3 gap-3">
-              <input type="text" value={state.wrong1} onChange={(e) => actions.setWrong1(e.target.value)} placeholder={t('admin.wordForm.wrong1Placeholder')} className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
-              <input type="text" value={state.wrong2} onChange={(e) => actions.setWrong2(e.target.value)} placeholder={t('admin.wordForm.wrong2Placeholder')} className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
-              <input type="text" value={state.wrong3} onChange={(e) => actions.setWrong3(e.target.value)} placeholder={t('admin.wordForm.wrong3Placeholder')} className="px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all" />
+              {([
+                [state.wrong1, actions.setWrong1, 'admin.wordForm.wrong1Placeholder'],
+                [state.wrong2, actions.setWrong2, 'admin.wordForm.wrong2Placeholder'],
+                [state.wrong3, actions.setWrong3, 'admin.wordForm.wrong3Placeholder'],
+              ] as const).map(([value, setValue, placeholderKey], idx) => (
+                <input
+                  key={placeholderKey}
+                  type="text"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder={t(placeholderKey)}
+                  className={WRONG_CHOICE_CLASS}
+                  data-testid={`wrong-choice-${idx + 1}`}
+                />
+              ))}
             </div>
             <p className="text-xs text-stone-400 mt-1">{t('admin.wordForm.wrongChoicesDesc')}</p>
           </div>

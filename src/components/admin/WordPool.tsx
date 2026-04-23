@@ -5,6 +5,11 @@ import { TAG_META } from '../../lib/tag-constants'
 import DifficultyPill from './DifficultyPill'
 import type { Topic } from '../../lib/types'
 
+/** Màu fallback cho tag chưa có meta (orange brand). */
+const FALLBACK_TAG_COLOR = '#E67E22'
+/** Màu fallback trung tính cho filter chip không xác định (Tailwind stone-400). */
+const FALLBACK_NEUTRAL_COLOR = '#9CA3AF'
+
 export interface EnrichedWord {
   id: string
   word: string
@@ -75,10 +80,10 @@ export default function WordPool({
   const visibleWords = useMemo(() => {
     let result = words
     if (search.trim()) {
-      const q = search.toLowerCase()
+      const searchLower = search.toLowerCase()
       result = result.filter(w =>
-        w.word.toLowerCase().includes(q) ||
-        w.definition.toLowerCase().includes(q)
+        w.word.toLowerCase().includes(searchLower) ||
+        w.definition.toLowerCase().includes(searchLower)
       )
     }
     if (activeTagFilter) {
@@ -156,11 +161,11 @@ export default function WordPool({
               className="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shrink-0"
               style={{
                 backgroundColor: isActive
-                  ? (meta?.color ?? '#E67E22')
-                  : ((meta?.color ?? '#9CA3AF') + '20'),
+                  ? (meta?.color ?? FALLBACK_TAG_COLOR)
+                  : ((meta?.color ?? FALLBACK_NEUTRAL_COLOR) + '20'),
                 color: isActive
                   ? 'white'
-                  : (meta?.color ?? '#9CA3AF'),
+                  : (meta?.color ?? FALLBACK_NEUTRAL_COLOR),
               }}
             >
               {meta?.label ?? tag}
@@ -225,13 +230,12 @@ export default function WordPool({
                 <th className="p-4">{t('admin.wordPool.tableHeader.meaning')}</th>
                 <th className="p-4">{t('admin.wordPool.tableHeader.difficulty')}</th>
                 <th className="p-4">{t('admin.wordPool.tableHeader.tags')}</th>
-                <th className="p-4 text-right">{t('admin.wordPool.tableHeader.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100 text-sm">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="p-12 text-center">
+                  <td colSpan={6} className="p-12 text-center">
                     <div className="flex flex-col items-center gap-2">
                       <span className="material-symbols-outlined text-4xl text-stone-300 animate-spin">progress_activity</span>
                       <p className="text-stone-400">{t('common.loading')}</p>
@@ -240,7 +244,7 @@ export default function WordPool({
                 </tr>
               ) : visibleWords.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-12 text-center">
+                  <td colSpan={6} className="p-12 text-center">
                     <p className="text-stone-400">
                       {search || activeTagFilter ? t('admin.wordPool.noResults') : t('admin.wordPool.empty')}
                     </p>
@@ -250,7 +254,7 @@ export default function WordPool({
                 const isSelected = selectedWordIds.has(word.id)
                 const primaryTag = word.tags[0]
                 const tagMeta = primaryTag ? TAG_META[primaryTag] : null
-                const tagColor = tagMeta?.color ?? '#E67E22'
+                const tagColor = tagMeta?.color ?? FALLBACK_TAG_COLOR
 
                 return (
                   <tr
@@ -282,9 +286,6 @@ export default function WordPool({
                           {tagMeta?.label ?? primaryTag}
                         </span>
                       )}
-                    </td>
-                    <td className="p-4 text-right">
-                      {/* Placeholder for individual word actions if needed */}
                     </td>
                   </tr>
                 )

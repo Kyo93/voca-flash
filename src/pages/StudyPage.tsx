@@ -5,7 +5,6 @@ import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
 import { useAuth } from '../contexts/AuthContext'
 import StudyPrepScreen from '../components/StudyPrepScreen'
-import SRSButtons from '../components/SRSButtons'
 import { useNotebook } from '../hooks/useNotebook'
 import NoteDrawer from '../components/NoteDrawer'
 import FlashcardFront from '../components/study/FlashcardFront'
@@ -14,6 +13,7 @@ import StudyComplete from '../components/study/StudyComplete'
 import ChallengingScreen from '../components/study/ChallengingScreen'
 import { useStudySessionMode } from '../hooks/useStudySessionMode'
 import { DESIGN_TOKENS } from '../lib/tokens'
+import StudyActions from '../components/study/StudyActions'
 
 export default function StudyPage() {
   const { profile } = useAuth()
@@ -38,6 +38,7 @@ export default function StudyPage() {
     flip,
     rate,
     markLearned,
+    resign,
   } = useFlashcard()
 
   const { isSaved, toggle, getNote, updateNote } = useNotebook()
@@ -95,8 +96,8 @@ export default function StudyPage() {
     onRate: rate
   })
 
-  const onStartCallback = useCallback((includeMastered: boolean) => {
-    startSession(roadmapId, topicId || '', includeMastered)
+  const onStartCallback = useCallback((mode: 'new' | 'combined' | 'all') => {
+    startSession(roadmapId, topicId || '', mode)
   }, [startSession, roadmapId, topicId])
 
   // --- Guard Clauses for Loading/Prep/Completion ---
@@ -133,11 +134,27 @@ export default function StudyPage() {
   const showCardBack = isFlipped && phase !== 'CHALLENGING' && phase !== 'READY_FOR_QUIZ'
 
   return (
-    <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12">
+    <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12 relative">
       <div className="max-w-md w-full space-y-8">
+        {/* Header with Exit */}
+        <div className="flex justify-between items-center mb-4">
+          <button
+            onClick={resign}
+            className="flex items-center gap-2 text-outline hover:text-primary transition-colors text-sm font-bold"
+          >
+            <span className="material-symbols-outlined text-lg">close</span>
+            {t('study.resign')}
+          </button>
+          
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full border border-outline-variant/30">
+            <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
+            <span className="text-[10px] font-bold text-secondary uppercase tracking-tighter">Live Session</span>
+          </div>
+        </div>
 
-        {/* Session Progress */}
-        <div className="flex flex-col gap-2 mb-8">
+        <div className="pt-8">
+          {/* Session Progress */}
+          <div className="flex flex-col gap-2 mb-8">
           <div className="flex justify-between items-end">
             <span className="font-label text-xs uppercase tracking-widest text-secondary font-bold">{t('study.dailyMastery')}</span>
             <span className="font-label text-xs text-outline">{t('study.wordsCount', { remaining, total })}</span>
@@ -147,6 +164,7 @@ export default function StudyPage() {
               className={`h-full bg-secondary-fixed-dim kinetic-pulse transition-all duration-500`}
               style={{ width: `${((total - remaining) / total) * 100}%` }}
             />
+          </div>
           </div>
         </div>
 
@@ -189,48 +207,17 @@ export default function StudyPage() {
           </div>
         )}
 
-        {/* Actions Area */}
-        <div className="flex flex-col gap-4 mt-8">
-          {!isFlipped ? (
-            <>
-              <button
-                onClick={flip}
-                className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
-              >
-                <span className="tracking-wide">{t('study.showAnswer')}</span>
-                <span className="material-symbols-outlined">visibility</span>
-              </button>
-              <button
-                onClick={markLearned}
-                className={`w-full bg-secondary text-on-secondary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.MD} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
-              >
-                <span className="tracking-wide">{t('study.markLearned')}</span>
-                <span className="material-symbols-outlined">check_circle</span>
-              </button>
-            </>
-          ) : phase === 'RATING' ? (
-            <div className="flex flex-col items-center">
-              {suggestedRating !== null && (
-                <p className="text-center text-primary text-xs mb-3 font-bold tracking-widest uppercase">
-                  {t('study.suggestedRating')}
-                </p>
-              )}
-              <SRSButtons
-                onRate={handleRate}
-                suggestedRating={suggestedRating}
-                intervalPreviews={intervalPreviews}
-              />
-            </div>
-          ) : showCardBack ? (
-            <button
-              onClick={handleNextToChallenge}
-              className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
-            >
-              <span className="tracking-wide">{t('common.next')}</span>
-              <span className="material-symbols-outlined">arrow_forward</span>
-            </button>
-          ) : null}
-        </div>
+        <StudyActions
+          isFlipped={isFlipped}
+          phase={phase}
+          showCardBack={showCardBack}
+          suggestedRating={suggestedRating}
+          intervalPreviews={intervalPreviews}
+          onFlip={flip}
+          onMarkLearned={markLearned}
+          onRate={handleRate}
+          onNextToChallenge={handleNextToChallenge}
+        />
       </div>
 
       {/* Notebook Note Drawer */}

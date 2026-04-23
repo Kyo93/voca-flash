@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Topic, BatchInsertResult } from '../../lib/types'
+import type { Topic, BatchInsertResult, NormalizedWord } from '../../lib/types'
 import { parseFile, parseSheetsUrl, parseErrorToMessage } from '../../lib/import-parser'
 import { batchInsertWords } from '../../lib/queries/word-queries'
 import ImportPreviewTable, { ImportRow, DuplicateAction } from './ImportPreviewTable'
@@ -53,7 +53,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
     onClose()
   }, [onClose])
 
-  const handleParse = useCallback(async (parsed: { rows: any[]; unmatchedTopics: string[] }) => {
+  const handleParse = useCallback(async (parsed: { rows: NormalizedWord[]; unmatchedTopics: string[] }) => {
     try {
       const topicMap = getTopicNameMap(filteredTopics)
       const { importRows } = await processImportData(parsed, roadmapId, roadmapSlug, topicMap)

@@ -9,7 +9,7 @@ import {
   computeIntervalPreviews, 
   createInitialProgress 
 } from '../lib/srs'
-import { STUDY_SESSION_DEFAULTS } from '../lib/constants'
+import { STUDY_SESSION_DEFAULTS, CHALLENGE_TYPES } from '../lib/constants'
 import { generateChoices } from '../lib/challenge-logic'
 import { Word } from '../lib/types'
 
@@ -85,8 +85,7 @@ export function useStudySessionMode({
   useEffect(() => {
     if (phase !== 'READY_FOR_QUIZ' || !currentCard) return
 
-    const types: StudyChallengeType[] = ['cloze', 'listen', 'recognition']
-    const picked = types[Math.floor(Math.random() * types.length)]
+    const picked = CHALLENGE_TYPES[Math.floor(Math.random() * CHALLENGE_TYPES.length)]
     setCurrentChallengeType(picked)
     
     setPrecomputedChoices(generateChoices(cardToWord(currentCard)))
@@ -154,14 +153,14 @@ export function useStudySessionMode({
   }, [currentCard?.id, currentProgress, srsIntensity])
 
   const handleRateInternal = useCallback((rating: SrsRating) => {
-    if (timerTickRef.current) { clearInterval(timerTickRef.current); timerTickRef.current = null }
+    clearTimers()
     setPhase('FLIPPED')
     setSuggestedRating(null)
     setIntervalPreviews([])
     setTimerSeconds(STUDY_SESSION_DEFAULTS.TIMER_SECONDS)
     // Delay slightly to allow state to settle before next card loads
     setTimeout(() => onRate(rating), 0)
-  }, [onRate])
+  }, [onRate, clearTimers])
 
   const handleNextToChallenge = useCallback(() => {
     setPhase('READY_FOR_QUIZ')

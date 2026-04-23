@@ -1,32 +1,41 @@
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAnalytics } from '../hooks/useAnalytics'
-import { getWordsToday, getUserLevel, getRetentionDisplay } from '../lib/progress-utils'
 import RoadmapForecast from '../components/progress/RoadmapForecast'
 import WeakWordsList from '../components/progress/WeakWordsList'
 import BadgeGallery from '../components/progress/BadgeGallery'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import MasterySunburst from '../components/progress/MasterySunburst'
+import { PROGRESS_THRESHOLDS } from '../lib/constants'
+import { getUserLevel, getRetentionDisplay, getGreetingKey } from '../lib/progress-utils'
 
 export default function ProgressPage() {
   const { t } = useTranslation()
   const { data, isLoading, error } = useAnalytics()
+  const { initialData } = useAuth()
+  const reviewCount = initialData?.global_review_count ?? 0
+  // Source-of-truth for "new words today": health.new_today (count of NEW SRS
+  // records created since 4am Asia/Ho_Chi_Minh). Must match Dashboard's
+  // DailyMissionCard — do NOT derive from review_activity (which counts review
+  // actions in UTC, leading to mismatch between the two pages).
+  const wordsToday = initialData?.health?.new_today ?? 0
+
+  const { totalWords, retentionInfo, userLevel, greetingKey } = useMemo(() => {
+    const masteryDistribution = data?.mastery_distribution || {}
+    const total = (masteryDistribution.new || 0) + (masteryDistribution.learning || 0) + (masteryDistribution.review || 0) + (masteryDistribution.relearning || 0)
+    const info = getRetentionDisplay(data?.retention_rate ?? 0, data?.review_activity)
+    const level = getUserLevel(total, data?.retention_rate ?? 0)
+    
+    const currentHour = new Date().getHours()
+    const gKey = getGreetingKey(currentHour)
+    
+    return { totalWords: total, retentionInfo: info, userLevel: level, greetingKey: gKey }
+  }, [data])
 
   if (isLoading) return <div className="p-12 animate-pulse text-stone-400 font-medium">{t('progress.loading')}</div>
   if (error) return <div className="p-12 text-red-500">{t('progress.error')}</div>
   if (!data) return null
-
-  const dist = data.mastery_distribution || {}
-  const totalWords = (dist.new || 0) + (dist.learning || 0) + (dist.review || 0) + (dist.relearning || 0)
-
-  const retentionInfo = getRetentionDisplay(data.retention_rate, data.review_activity)
-  const wordsToday = getWordsToday(data.review_activity)
-  const userLevel = getUserLevel(totalWords, data.retention_rate)
-
-  const greetingKey = (() => {
-    const h = new Date().getHours()
-    if (h < 12) return 'progress.greeting_morning'
-    if (h < 18) return 'progress.greeting_afternoon'
-    return 'progress.greeting_evening'
-  })()
 
   return (
     <div className="min-h-screen bg-surface">
@@ -38,9 +47,20 @@ export default function ProgressPage() {
             <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-on-surface mb-2">
               {t(greetingKey)}
             </h1>
-            <p className="text-lg text-on-surface-variant">
-              {t('progress.subtitle_scholar')}
-            </p>
+            <div className="flex flex-wrap items-center gap-4 mt-2">
+              <p className="text-lg text-on-surface-variant">
+                {t('progress.subtitle_scholar')}
+              </p>
+              {typeof reviewCount === 'number' && (
+                <Link 
+                  to="/review"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-warm-accent text-white text-sm font-bold rounded-full hover:opacity-90 transition-opacity shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+                  {t('progress.words_due', { count: reviewCount })}
+                </Link>
+              )}
+            </div>
           </div>
           <div className="text-right shrink-0">
             <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1">
@@ -92,7 +112,7 @@ export default function ProgressPage() {
               <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-white">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
               </div>
-              {data.streak_days >= 7 && (
+              {data.streak_days >= PROGRESS_THRESHOLDS.STREAK_RECORD && (
                 <span className="text-primary font-medium bg-primary-container/20 px-3 py-1 rounded-full text-xs">
                   {t('progress.new_record')}
                 </span>
@@ -111,7 +131,7 @@ export default function ProgressPage() {
               <span className="text-warm-accent font-medium bg-warm-accent-container/20 px-3 py-1 rounded-full text-xs">
                 {!retentionInfo.hasData
                   ? t('progress.no_data')
-                  : retentionInfo.percent >= 80
+                  : retentionInfo.percent >= PROGRESS_THRESHOLDS.STABLE_RETENTION
                     ? t('progress.stable')
                     : t('progress.needs_work')}
               </span>

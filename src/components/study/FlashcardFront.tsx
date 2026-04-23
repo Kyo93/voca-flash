@@ -1,4 +1,7 @@
+import { memo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card } from '../../lib/srs'
+import { UI_DEFAULTS } from '../../lib/constants'
 import AudioButton from '../common/AudioButton'
 
 interface FlashcardFrontProps {
@@ -9,8 +12,9 @@ interface FlashcardFrontProps {
  * FlashcardFront - The front face of the learning card.
  * Displays the word, phonetic, images, and audio controls.
  */
-export default function FlashcardFront({ card }: FlashcardFrontProps) {
-  const imageUrl = card.image_url || `https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80`
+const FlashcardFront = memo(({ card }: FlashcardFrontProps) => {
+  const { t } = useTranslation()
+  const imageUrl = card.image_url || UI_DEFAULTS.FLASHCARD_FALLBACK_IMAGE
   const imagePosition = card.image_position || 'center'
 
   return (
@@ -31,9 +35,9 @@ export default function FlashcardFront({ card }: FlashcardFrontProps) {
           <div className="space-y-1">
             <h1 className="text-4xl font-headline font-extrabold text-primary tracking-tight">{card.front}</h1>
             {(() => {
-              const p = card.phonetic || card.front;
-              const display = p.startsWith('/') ? p : `/${p}/`;
-              return <p className="text-secondary font-medium tracking-wide text-lg">{display}</p>;
+              const basePhonetic = card.phonetic || card.front;
+              const formattedPhonetic = basePhonetic.startsWith('/') ? basePhonetic : `/${basePhonetic}/`;
+              return <p className="text-secondary font-medium tracking-wide text-lg">{formattedPhonetic}</p>;
             })()}
           </div>
           <div className="flex gap-2">
@@ -49,7 +53,7 @@ export default function FlashcardFront({ card }: FlashcardFrontProps) {
         {card.example && (
           <div className="space-y-3">
             <span className="font-label text-[10px] uppercase tracking-widest text-outline font-bold block">
-              Contextual usage
+              {t('flashcard.contextUsage')}
             </span>
             <blockquote className="text-on-surface-variant leading-relaxed text-lg italic border-l-2 border-surface-container-highest pl-4 py-1 text-left">
               &ldquo;{card.example}&rdquo;
@@ -59,4 +63,6 @@ export default function FlashcardFront({ card }: FlashcardFrontProps) {
       </div>
     </div>
   )
-}
+})
+
+export default FlashcardFront

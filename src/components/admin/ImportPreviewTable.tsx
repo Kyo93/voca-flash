@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { Topic, NormalizedWord } from '../../lib/types'
 import DifficultyDots from './DifficultyDots'
+import { topicColorStyle } from '../../lib/utils'
 
 export interface ImportRow extends NormalizedWord {
   rowIndex: number
@@ -125,10 +126,7 @@ export default function ImportPreviewTable({
                         <span
                           key={tid}
                           className="text-xs font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap"
-                          style={{
-                            backgroundColor: (topic.color ?? '#f97316') + '20',
-                            color: topic.color ?? '#f97316',
-                          }}
+                          style={topicColorStyle(topic.color)}
                         >
                           {topic.name}
                         </span>

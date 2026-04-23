@@ -19,5 +19,16 @@ dist/
 local-data/
 *.local.json
 
+# Playwright
+playwright-report/
+test-results/
+playwright/.auth/
+
+# Scratch & Temporary
+scratch_*.ts
+scratch_*.js
+.agents/
+.cm/
+
 # Supabase temporary files
 supabase/.temp/

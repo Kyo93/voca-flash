@@ -1,7 +1,4 @@
-/**
- * Fisher-Yates Shuffle Algorithm
- * Trộn mảng một cách ngẫu nhiên và đồng nhất.
- */
+/** Fisher-Yates uniform shuffle */
 export function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -13,18 +10,10 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 // ── String utilities ─────────────────────────────────────────
 
-/**
- * Strips Unicode diacritical marks (accents) from text.
- * Used by both slugify and tag-engine for case-insensitive matching.
- */
 export function stripDiacritics(text: string): string {
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-/**
- * Converts a string to a URL-safe slug.
- * Handles Unicode characters, special characters, and whitespace.
- */
 export function slugify(name: string): string {
   return stripDiacritics(name.toLowerCase())
     .replace(/[^a-z0-9\s-]/g, '')
@@ -37,11 +26,22 @@ export function slugify(name: string): string {
 
 import { TIME_CONSTANTS } from './constants'
 
-/**
- * Format a ISO timestamp to localized relative time or absolute date.
- * Caller should provide the t() function from useTranslation.
- */
-export function formatRelativeTime(dateStr: string, t?: (key: string, options?: any) => string): string {
+export function getTodayBoundary(): Date {
+  const boundary = new Date()
+  boundary.setHours(TIME_CONSTANTS.DAY_BOUNDARY_HOUR, 0, 0, 0)
+  if (new Date().getHours() < TIME_CONSTANTS.DAY_BOUNDARY_HOUR) {
+    boundary.setDate(boundary.getDate() - 1)
+  }
+  return boundary
+}
+
+export function getEndOfStudyDay(): Date {
+  const boundary = getTodayBoundary()
+  boundary.setDate(boundary.getDate() + 1)
+  return boundary
+}
+
+export function formatRelativeTime(dateStr: string, t?: (key: string, options?: Record<string, unknown>) => string): string {
   try {
     const date = new Date(dateStr)
     const now = new Date()
@@ -65,10 +65,7 @@ export function formatRelativeTime(dateStr: string, t?: (key: string, options?: 
   }
 }
 
-/**
- * Format a ISO timestamp to a compact detailed date string.
- * e.g. "25Mar26-13:30" (DDMMMYY-HH:mm in UTC/local)
- */
+/** e.g. "25Mar26-13:30" */
 export function formatDetailedDate(dateStr: string): string {
   try {
     const d = new Date(dateStr)
@@ -86,13 +83,6 @@ export function formatDetailedDate(dateStr: string): string {
 
 // ── Slug Utilities ─────────────────────────────────────────
 
-/**
- * Generate a slug that is unique within existingSlugs.
- * If roadmapSlug is provided, prefix the slug with "roadmapSlug-" to avoid
- * cross-roadmap collisions (e.g., two roadmaps creating "Animals" topic).
- * If base slug is not taken → return it.
- * Otherwise append -1, -2, ... until unique.
- */
 export function generateUniqueSlug(
   base: string,
   existingSlugs: Set<string>,
@@ -107,23 +97,17 @@ export function generateUniqueSlug(
 
 // ── Color Utilities ──────────────────────────────────────────
 
-/**
- * Hex to RGBA helper for dynamic backgrounds
- */
 export function hexToRgba(hex: string, alpha: number): string {
   try {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  } catch (e) {
+  } catch {
     return `rgba(0, 0, 0, ${alpha})`;
   }
 }
 
-/**
- * Darken color helper for accessible text
- */
 export function darkenColor(hex: string, percent: number): string {
   try {
     let r = parseInt(hex.slice(1, 3), 16);
@@ -135,7 +119,22 @@ export function darkenColor(hex: string, percent: number): string {
     b = Math.floor(b * (1 - percent));
 
     return `rgb(${r}, ${g}, ${b})`;
-  } catch (e) {
+  } catch {
     return 'inherit';
   }
+}
+
+/** Default brand orange dùng làm fallback khi topic chưa cấu hình màu. */
+export const DEFAULT_TOPIC_COLOR = '#f97316';
+
+/**
+ * Trả về `style` cho topic chip/badge: nền pastel (~12% alpha) + chữ theo màu topic.
+ * Tự fallback về `DEFAULT_TOPIC_COLOR` nếu không có màu.
+ */
+export function topicColorStyle(color?: string | null): { backgroundColor: string; color: string } {
+  const resolved = color ?? DEFAULT_TOPIC_COLOR;
+  return {
+    backgroundColor: `${resolved}20`,
+    color: resolved,
+  };
 }

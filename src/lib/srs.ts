@@ -1,7 +1,13 @@
 import { fsrs, createEmptyCard, State, type Card as FSRSCard } from 'ts-fsrs'
 import i18n from '../i18n'
 import type { SrsRecord } from './types'
-import { SRS_STABILITY_LEVELS, STUDY_SESSION_DEFAULTS, TIME_CONSTANTS, SRS_CONFIG } from './constants'
+import { 
+  SRS_STABILITY_LEVELS, 
+  STUDY_SESSION_DEFAULTS, 
+  TIME_CONSTANTS, 
+  SRS_CONFIG,
+  SRS_SM2_MIGRATION_CONSTANTS
+} from './constants'
 
 export { State } from 'ts-fsrs'
 
@@ -20,7 +26,6 @@ export interface Card {
 
 /** 
  * FSRS Card Progress — Unified Interface 
- * This replaces the legacy SM-2 CardProgress.
  */
 export interface CardProgress {
   cardId: string
@@ -34,13 +39,73 @@ export interface CardProgress {
   lastReview: number     // Last review timestamp (ms)
 }
 
+/**
+ * Maps SM-2 Rating (1-3) or FSRS Rating (1-4)
+ */
+export type SrsRating = 1 | 2 | 3 | 4
+
+/**
+ * Types for Study Challenges
+ */
+export type StudyChallengeType = 'cloze' | 'listen' | 'recognition'
+
+export interface IntervalPreview {
+  rating: SrsRating
+  label: string
+  color: string
+}
+
+/**
+ * UI styles cho từng cấp độ stability của thẻ.
+ * Tách thành lookup table để tránh lặp 16 chuỗi Tailwind hardcoded trong getSrsLevelConfig.
+ */
+const SRS_LEVEL_STYLES = {
+  ROOTED: {
+    text: 'text-[#F5D76E]',
+    bg: 'bg-[#F5D76E]/10',
+    color: 'bg-[#F5D76E]',
+    glow: 'shadow-[0_0_12px_rgba(245,215,110,0.3)]',
+  },
+  MASTERED: {
+    text: 'text-[#4ade80]',
+    bg: 'bg-[#4ade80]/10',
+    color: 'bg-[#4ade80]',
+    glow: '',
+  },
+  STABLE: {
+    text: 'text-[#60a5fa]',
+    bg: 'bg-[#60a5fa]/10',
+    color: 'bg-[#60a5fa]',
+    glow: '',
+  },
+  FRESH: {
+    text: 'text-[#94a3b8]',
+    bg: 'bg-[#94a3b8]/10',
+    color: 'bg-[#94a3b8]',
+    glow: '',
+  },
+} as const
+
+/**
+ * Returns UI configuration for a given SRS stability level.
+ */
+export function getSrsLevelConfig(stability: number) {
+  if (stability >= SRS_STABILITY_LEVELS.ROOTED) {
+    return { label: i18n.t('home.status.rooted'), ...SRS_LEVEL_STYLES.ROOTED }
+  }
+  if (stability >= SRS_STABILITY_LEVELS.MASTERED) {
+    return { label: i18n.t('flashcard.mastered'), ...SRS_LEVEL_STYLES.MASTERED }
+  }
+  if (stability >= SRS_STABILITY_LEVELS.LEARNING) {
+    return { label: i18n.t('home.status.stable'), ...SRS_LEVEL_STYLES.STABLE }
+  }
+  return { label: i18n.t('home.status.fresh'), ...SRS_LEVEL_STYLES.FRESH }
+}
+
 const DEFAULT_RETENTION = SRS_CONFIG.RETENTION_DEFAULT
-const FSRS_DEFAULT_DIFFICULTY = 5.0
 
 /** 
  * Internal FSRS Scheduler instance (Singleton) 
- * request_retention default is 0.9 (90% retention)
- * enable_short_term=false ensures we don't have sub-day intervals
  */
 const scheduler = fsrs({
   enable_short_term: false,
@@ -48,25 +113,25 @@ const scheduler = fsrs({
 })
 
 /**
- * Maps SM-2 Rating (1-3) or FSRS Rating (1-4)
- * SM-2 Quality: 0=Again, 1=Hard, 2=Good, 3=Easy
- * FSRS Rating: 1=Again, 2=Hard, 3=Good, 4=Easy
+ * Helper: Format scheduled days into human readable interval.
  */
-export type SrsRating = 1 | 2 | 3 | 4
+function formatInterval(days: number): string {
+  if (days < 1) {
+    const mins = Math.round(days * 24 * 60)
+    return i18n.t('srs.interval.minute', { count: mins || 10 })
+  }
+  if (days >= 30) {
+    const months = Math.round(days / 30)
+    return i18n.t('srs.interval.month', { count: months })
+  }
+  return i18n.t('srs.interval.day', { count: Math.round(days) })
+}
 
 /**
- * Calculates the next review date using FSRS algorithm.
+ * Maps app-specific CardProgress to ts-fsrs Library Card type.
  */
-export function calculateFSRSReview(
-  progress: CardProgress,
-  rating: SrsRating,
-  retention: number = DEFAULT_RETENTION
-): CardProgress {
-  // 1. Create/Configure scheduler with user retention preference
-  const srsScheduler = retention === DEFAULT_RETENTION ? scheduler : fsrs({ enable_short_term: false, request_retention: retention })
-
-  // 2. Map Progress to FSRS Card
-  const currentCard: FSRSCard = {
+function mapCardProgressToFSRSCard(progress: CardProgress): FSRSCard {
+  return {
     due: new Date(progress.due),
     stability: progress.stability,
     difficulty: progress.difficulty,
@@ -78,8 +143,35 @@ export function calculateFSRSReview(
     last_review: progress.lastReview ? new Date(progress.lastReview) : undefined,
     learning_steps: 0
   }
+}
 
-  // 3. Repeat (Calculate all 4 options, then pick the rated one)
+/**
+ * Maps DB SrsRecord to app CardProgress.
+ */
+export function mapSrsRecordToCardProgress(record: SrsRecord): CardProgress {
+  return {
+    cardId: record.word_id,
+    stability: record.fsrs_stability ?? 0,
+    difficulty: record.fsrs_difficulty ?? 5.0,
+    state: record.fsrs_state ?? State.New,
+    reps: record.fsrs_reps ?? 0,
+    lapses: record.fsrs_lapses ?? 0,
+    scheduledDays: record.fsrs_scheduled_days ?? 0,
+    due: record.next_review_at ? new Date(record.next_review_at).getTime() : Date.now(),
+    lastReview: record.last_reviewed ? new Date(record.last_reviewed).getTime() : 0
+  }
+}
+
+/**
+ * Calculates the next review date using FSRS algorithm.
+ */
+export function calculateFSRSReview(
+  progress: CardProgress,
+  rating: SrsRating,
+  retention: number = DEFAULT_RETENTION
+): CardProgress {
+  const srsScheduler = retention === DEFAULT_RETENTION ? scheduler : fsrs({ enable_short_term: false, request_retention: retention })
+  const currentCard = mapCardProgressToFSRSCard(progress)
   const results = srsScheduler.repeat(currentCard, new Date())
   const selected = results[rating]
   const newCard = selected.card
@@ -99,7 +191,6 @@ export function calculateFSRSReview(
 
 /**
  * Unified check for "Mastered" status.
- * FSRS Criteria: Stability is at least 21 days AND not in Relearning state.
  */
 export function isMastered(progress: CardProgress): boolean {
   return progress.stability >= SRS_STABILITY_LEVELS.MASTERED && progress.state !== State.Relearning
@@ -127,19 +218,8 @@ export function createInitialProgress(cardId: string): CardProgress {
  * Resets a card (used when user fails in Free Study).
  */
 export function resetFSRSCard(progress: CardProgress): CardProgress {
-  const currentCard: FSRSCard = {
-    due: new Date(progress.due),
-    stability: progress.stability,
-    difficulty: progress.difficulty,
-    elapsed_days: 0,
-    scheduled_days: progress.scheduledDays,
-    reps: progress.reps,
-    lapses: progress.lapses,
-    state: progress.state,
-    last_review: progress.lastReview ? new Date(progress.lastReview) : undefined,
-    learning_steps: 0
-  }
-
+  const currentCard = mapCardProgressToFSRSCard(progress)
+  currentCard.elapsed_days = 0
   const { card: reset } = scheduler.forget(currentCard, new Date())
 
   return {
@@ -157,12 +237,16 @@ export function resetFSRSCard(progress: CardProgress): CardProgress {
 
 /**
  * Conversion helper: SM-2 to FSRS (used by migration tests).
- * Logic matches the SQL migration script.
  */
 export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: number, lapse_count?: number }): Partial<CardProgress> {
+  const { 
+    MIN_STABILITY, MIN_DIFFICULTY, MAX_DIFFICULTY, 
+    EASE_MAPPING_BASE, EASE_MAPPING_FACTOR 
+  } = SRS_SM2_MIGRATION_CONSTANTS
+
   return {
-    stability: Math.max(0.1, sm2.interval),
-    difficulty: Math.max(1, Math.min(10, 5 + (3.0 - sm2.ease) * 2)), // Rough mapping to 1-10
+    stability: Math.max(MIN_STABILITY, sm2.interval),
+    difficulty: Math.max(MIN_DIFFICULTY, Math.min(MAX_DIFFICULTY, 5 + (EASE_MAPPING_BASE - sm2.ease) * EASE_MAPPING_FACTOR)), 
     state: sm2.repetitions === 0 ? State.Relearning : (sm2.repetitions < 2 ? State.Learning : State.Review),
     reps: sm2.repetitions,
     lapses: sm2.lapse_count ?? 0,
@@ -171,76 +255,36 @@ export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: nu
 }
 
 /**
- * Mapping helper: SM-2 Intensity to FSRS Retention.
- * SM-2 Intensity 0.6 (High) -> 1.4 (Low)
- * FSRS Retention 0.70 -> 0.97
+ * Maps user intensity preference to target retention rate.
  */
 export function mapIntensityToRetention(intensity: number): number {
-  const mapping = SRS_CONFIG.INTENSITY_THRESHOLDS.find(m => intensity <= m.threshold)
-  return mapping?.retention ?? 0.8 // Fallback to 0.8
-}
-
-// ── Study Post-Flip Challenge ───────────────────────────────
-export type StudyChallengeType = 'cloze' | 'listen' | 'recognition'
-
-export interface IntervalPreview {
-  rating: SrsRating
-  label: string
-}
-
-function formatInterval(scheduledDays: number): string {
-  if (scheduledDays < 1) {
-    const minutes = Math.round(scheduledDays * TIME_CONSTANTS.ONE_DAY_HOURS * TIME_CONSTANTS.ONE_HOUR_MINS)
-    return i18n.t('srs.interval.minute', { count: minutes <= 1 ? 1 : minutes })
-  }
-  if (scheduledDays < 30) { // 30 is still slightly magic but acceptable for "a month" logic
-    return i18n.t('srs.interval.day', { count: Math.round(scheduledDays) })
-  }
-  return i18n.t('srs.interval.month', { count: Math.round(scheduledDays / 30) })
+  const matching = SRS_CONFIG.INTENSITY_THRESHOLDS.find(entry => intensity <= entry.threshold)
+  return matching ? matching.retention : 0.80
 }
 
 /**
- * Map challenge result → FSRS rating (sau khi flip card trong Study session).
- * Thresholds: <3s=Easy, <8s=Good, ≥8s=Hard, sai=Again
+ * Maps quiz results to SrsRating (1-4).
  */
-export function mapTestResultToRating(
-  isCorrect: boolean,
-  responseTimeMs: number,
-): SrsRating {
-  if (!isCorrect) return 1
-  if (responseTimeMs < STUDY_SESSION_DEFAULTS.RATING_THRESHOLD_EASY_MS) return 4
-  if (responseTimeMs < STUDY_SESSION_DEFAULTS.RATING_THRESHOLD_GOOD_MS) return 3
-  return 2
+export function mapTestResultToRating(isCorrect: boolean, responseTimeMs: number): SrsRating {
+  if (!isCorrect) return 1 // Again
+  if (responseTimeMs >= STUDY_SESSION_DEFAULTS.RATING_THRESHOLD_GOOD_MS) return 2 // Hard
+  if (responseTimeMs >= STUDY_SESSION_DEFAULTS.RATING_THRESHOLD_EASY_MS) return 3 // Good
+  return 4 // Easy
 }
 
-export function computeIntervalPreviews(
-  currentProgress: CardProgress,
-  intensity: number,
-): IntervalPreview[] {
+/**
+ * Computes interval previews for the rating screen.
+ */
+export function computeIntervalPreviews(progress: CardProgress, intensity: number): IntervalPreview[] {
   const retention = mapIntensityToRetention(intensity)
-  return ([1, 2, 3, 4] as SrsRating[]).map(rating => {
-    const result = calculateFSRSReview(currentProgress, rating, retention)
-    return { rating, label: formatInterval(result.scheduledDays) }
-  })
+  const srsScheduler = fsrs({ enable_short_term: false, request_retention: retention })
+  const currentCard = mapCardProgressToFSRSCard(progress)
+  const results = srsScheduler.repeat(currentCard, new Date())
+  
+  return [
+    { rating: 1, label: formatInterval(results[1].card.scheduled_days), color: 'text-error' },
+    { rating: 2, label: formatInterval(results[2].card.scheduled_days), color: 'text-warning' },
+    { rating: 3, label: formatInterval(results[3].card.scheduled_days), color: 'text-success' },
+    { rating: 4, label: formatInterval(results[4].card.scheduled_days), color: 'text-primary' },
+  ]
 }
-
-// ── SrsRecord → CardProgress mapping ─────────────────────────
-// Single source of truth for mapping DB records to in-memory CardProgress.
-// Used by fetchSrsStates, fetchReviewWords in storage/session.ts.
-export function mapSrsRecordToCardProgress(record: SrsRecord): CardProgress {
-  return {
-    cardId: record.word_id,
-    stability: record.fsrs_stability ?? 0,
-    difficulty: record.fsrs_difficulty && record.fsrs_difficulty > 0 ? record.fsrs_difficulty : FSRS_DEFAULT_DIFFICULTY,
-    state: record.fsrs_state ?? 0,
-    reps: record.fsrs_reps ?? 0,
-    lapses: record.fsrs_lapses ?? 0,
-    scheduledDays: record.fsrs_scheduled_days ?? 0,
-    due: record.next_review_at ? new Date(record.next_review_at).getTime() : Date.now(),
-    lastReview: record.last_reviewed ? new Date(record.last_reviewed).getTime() : 0,
-  }
-}
-
-// ── SRS Level Metadata ───────────────────────────────────────
-export type { SrsLevelConfig } from './srs-levels'
-export { getSrsLevelConfig } from './srs-levels'

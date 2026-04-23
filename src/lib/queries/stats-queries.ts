@@ -39,13 +39,16 @@ export async function getRecentWords(limit = 5) {
       .in('word_id', wordIds)
 
     const topicNameMap = new Map<string, string>()
-    for (const j of (junctions ?? [])) {
-      topicNameMap.set(j.word_id, (j as any).topics?.name ?? '')
+    // PostgREST returns the joined relation as an array even for single rows
+    type JunctionRow = { word_id: string; topics: Array<{ name: string }> | null }
+    for (const j of (junctions ?? []) as JunctionRow[]) {
+      topicNameMap.set(j.word_id, j.topics?.[0]?.name ?? '')
     }
 
-    for (const w of words) {
+    type WordWithTopic = typeof words[number] & { topics?: { name: string } }
+    for (const w of words as WordWithTopic[]) {
       if (!w.topics) {
-        (w as any).topics = { name: topicNameMap.get(w.id) ?? '' }
+        w.topics = { name: topicNameMap.get(w.id) ?? '' }
       }
     }
   }

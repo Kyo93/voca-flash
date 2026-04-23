@@ -5,7 +5,7 @@ import { Word } from '../../lib/types'
 
 interface ContextGapChallengeProps {
   word: Word
-  onSubmit: (isCorrect: boolean) => void
+  onSubmit: (isCorrect: boolean, isSkipped?: boolean) => void
 }
 
 export default function ContextGapChallenge({ word, onSubmit }: ContextGapChallengeProps) {
@@ -106,9 +106,10 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
         <span className="text-[9px] font-bold uppercase tracking-widest text-outline shrink-0">{t('arena.meaningHint')}</span>
         <div className="h-px flex-1 bg-outline-variant/20" />
       </div>
-      <p className="mt-3 text-center text-on-surface-variant font-body text-lg italic leading-relaxed">
+      <p className="mt-3 text-center text-on-surface-variant font-body text-lg italic leading-relaxed mb-12">
         &ldquo;{word.definition}&rdquo;
       </p>
+
     </div>
   )
 }

@@ -47,6 +47,17 @@ export default function TopicCard({
           <div className="space-y-2">
             <span className="text-xs uppercase tracking-[0.2em] font-bold text-primary-fixed">{t('roadmap.card.activeChapter')}</span>
             <h2 className="text-4xl font-bold text-white">{t('roadmap.card.topicPrefix')}: {topic.name}</h2>
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-[10px] font-bold text-white/90 border border-white/10">
+                {t('topics.wordsCount', { count: stats.total })}
+              </span>
+              {isCompleted && (
+                <span className="px-3 py-1 rounded-full bg-green-500/20 backdrop-blur-sm text-[10px] font-bold text-green-400 border border-green-500/20 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[12px]">check_circle</span>
+                  {t('library.card.completed')}
+                </span>
+              )}
+            </div>
             {topic.description && (
               <p className="text-white/70 max-w-md text-lg leading-relaxed line-clamp-2">
                 {topic.description}
@@ -81,6 +92,9 @@ export default function TopicCard({
           </div>
           <div className="space-y-2">
             <h3 className="text-3xl font-bold text-white">{t('roadmap.card.topicPrefix')}: {topic.name}</h3>
+            <span className="inline-block px-2 py-0.5 rounded bg-white/10 backdrop-blur-sm text-[9px] font-bold text-white/80 border border-white/10 uppercase tracking-wider">
+              {t('topics.wordsCount', { count: stats.total })}
+            </span>
             {topic.description && (
               <p className="text-white/70 leading-relaxed line-clamp-2 text-sm">
                 {topic.description}
@@ -131,7 +145,12 @@ export default function TopicCard({
       </div>
       <div className="mt-6">
         <h4 className="text-xl font-bold mb-1" style={{ color: theme.text }}>{topic.name}</h4>
-        <p className="text-xs opacity-70" style={{ color: theme.text }}>{topic.description || t('roadmap.card.defaultTopicDesc')}</p>
+        <div className="flex flex-col gap-1.5">
+          <p className="text-xs opacity-70 line-clamp-1" style={{ color: theme.text }}>{topic.description || t('roadmap.card.defaultTopicDesc')}</p>
+          <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest" style={{ color: theme.text }}>
+            {t('topics.wordsCount', { count: stats.total })}
+          </span>
+        </div>
       </div>
     </Link>
   )

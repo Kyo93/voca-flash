@@ -6,7 +6,7 @@ import { Word } from '../../lib/types'
 interface RecognitionChallengeProps {
   word: Word
   choices: string[]
-  onSubmit: (isCorrect: boolean) => void
+  onSubmit: (isCorrect: boolean, isSkipped?: boolean) => void
 }
 
 const CHOICE_LABELS = ['A', 'B', 'C', 'D']
@@ -124,6 +124,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
           )
         })}
       </div>
+
     </div>
   )
 }

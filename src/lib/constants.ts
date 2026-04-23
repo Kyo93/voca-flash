@@ -16,6 +16,8 @@ export const FSRS_STATES = {
   RELEARNING: 3,
 } as const;
 
+export const CHALLENGE_TYPES = ['cloze', 'listen', 'recognition'] as const;
+
 export const SRS_RATINGS = {
   AGAIN: 1,
   HARD: 2,
@@ -44,14 +46,22 @@ export const MASTERY_CONFIG = {
 
 export const FETCH_PAGE_SIZE = 1000;
 export const FETCH_REVIEWS_LIMIT = 20;
+/** Kích thước chunk khi RPC batch_insert_words (tránh vượt timeout/payload). */
+export const IMPORT_CHUNK_SIZE = 50;
 
 export const TIME_CONSTANTS = {
   ONE_MINUTE_MS: 60_000,
   ONE_HOUR_MINS: 60,
   ONE_DAY_HOURS: 24,
   ONE_DAY_MS: 86_400_000,
+  DAYS_PER_MONTH: 30,
   TIMEOUT_SHORT_MS: 3000,
   DAY_BOUNDARY_HOUR: 4,
+} as const;
+
+export const PROGRESS_THRESHOLDS = {
+  STABLE_RETENTION: 80,
+  STREAK_RECORD: 7,
 } as const;
 
 export const SRS_CONFIG = {
@@ -65,6 +75,40 @@ export const SRS_CONFIG = {
     { threshold: Infinity, retention: 0.80 },
   ],
   DEFAULT_DAILY_TARGET: 20
+} as const;
+
+export const REVIEW_SESSION_CONFIG = {
+  POINTS_PER_CORRECT: 10,
+  POINTS_GHOST_RECALL_BONUS: 20,
+} as const;
+
+export const CONSTRUCTION_CHALLENGE_DEFAULTS = {
+  SUCCESS_DELAY_MS: 500,
+  FAILURE_DELAY_MS: 800,
+} as const;
+
+export const PROGRESS_LEVEL_THRESHOLDS = {
+  C2: 2000,
+  C1: 1000,
+  B2: 500,
+  B1: 200,
+  A2: 50,
+  RETENTION_PENALTY_THRESHOLD: 0.6,
+  NO_DATA_THRESHOLD: 0.1,
+} as const;
+
+export const SRS_SM2_MIGRATION_CONSTANTS = {
+  MIN_STABILITY: 0.1,
+  MIN_DIFFICULTY: 1,
+  MAX_DIFFICULTY: 10,
+  DEFAULT_DIFFICULTY: 5,
+  EASE_MAPPING_BASE: 3.0,
+  EASE_MAPPING_FACTOR: 2,
+} as const;
+
+export const UI_DEFAULTS = {
+  FLASHCARD_FALLBACK_IMAGE: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80',
+  TTS_DEFAULT_RATE: 0.85,
 } as const;
 
 export const UI_CONFIG = {

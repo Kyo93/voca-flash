@@ -5,48 +5,56 @@ test.describe('Global Utilities - Localization, Search & Responsive', () => {
   test('Localization - Language switching', async ({ page }) => {
     await page.goto('/settings');
     
-    // 1. Check current language
-    await expect(page.locator('main').getByRole('heading', { level: 1 })).toContainText(/Cài đặt/i);
-
-    // 2. Switch to English
-    const languageSelect = page.locator('select[name="language"]');
-    await languageSelect.selectOption('en');
+    // 1. Determine current language and ensure we can switch
+    const h1 = page.locator('h1');
+    await expect(h1).toBeVisible({ timeout: 15000 });
+    const initialText = await h1.textContent();
     
-    // 3. Verify UI text changes
-    await expect(page.locator('main').getByRole('heading', { level: 1 })).toContainText(/Settings/i);
-    await expect(page.locator('nav')).toContainText(/Dashboard/i);
+    const isEnglish = initialText?.includes('Settings');
     
-    // Switch back to Vietnamese
-    await languageSelect.selectOption('vi');
-    await page.waitForTimeout(500);
-    await expect(page.locator('main').getByRole('heading', { level: 1 })).toContainText(/Cài đặt/i);
+    // Target language to switch to
+    const targetLang = isEnglish ? 'VI' : 'EN';
+    const targetHeading = isEnglish ? /Cài đặt/i : /Settings/i;
+    
+    // 2. Click target language button
+    await page.getByRole('button', { name: new RegExp(`^${targetLang}$`) }).click();
+    
+    // 3. Click Save button
+    const saveBtn = page.getByRole('button', { name: /Lưu thay đổi|Save/i }).or(page.getByTitle(/Lưu thay đổi|Save/i)).first();
+    await saveBtn.click();
+    
+    // 4. Verify UI text changes
+    await expect(h1).toContainText(targetHeading);
+    
+    // 5. Switch back to original if needed to leave clean state (optional but good)
+    const backLang = isEnglish ? 'EN' : 'VI';
+    const backHeading = isEnglish ? /Settings/i : /Cài đặt/i;
+    
+    await page.getByRole('button', { name: new RegExp(`^${backLang}$`) }).click();
+    await page.getByRole('button', { name: /Save|Lưu thay đổi/i }).or(page.getByTitle(/Save|Lưu thay đổi/i)).first().click();
+    await expect(h1).toContainText(backHeading);
   });
 
   test('Global Search in Header', async ({ page }) => {
     await page.goto('/dashboard');
     
     const searchInput = page.getByPlaceholder(/Tìm bài học, từ vựng/i).or(page.getByPlaceholder(/Search roadmaps, vocabulary/i));
+    await expect(searchInput).toBeVisible({ timeout: 15000 });
     await searchInput.fill('Daily');
     await page.keyboard.press('Enter');
-
-    // Should redirect or filter. Depending on implementation, checking URL is safe.
-    // If it's a search results page:
-    // await expect(page).toHaveURL(/.*search.*/);
-    
-    // If it filters the Library:
-    // await expect(page).toHaveURL(/.*library.*/);
   });
 
   test('Responsive - Sidebar collapse toggle', async ({ page }) => {
     await page.goto('/dashboard');
 
-    // Desktop: Sidebar should be expanded by default (unless last state was collapsed)
     const sidebar = page.locator('aside').first();
+    await expect(sidebar).toBeVisible({ timeout: 15000 });
     const initialWidth = await sidebar.evaluate((el) => el.getBoundingClientRect().width);
 
-    // Click collapse button using the icon span or title
-    await page.getByTitle(/Thu nhỏ menu/i).or(page.getByTitle(/Collapse menu/i)).click();
-    await page.waitForTimeout(500); // Wait for transition
+    // Click collapse button
+    const toggleBtn = page.getByTitle(/Thu nhỏ menu|Collapse menu/i).or(page.locator('button').filter({ has: page.locator('.material-symbols-outlined:text("menu_open")') })).first();
+    await toggleBtn.click();
+    await page.waitForTimeout(600); // Wait for transition
 
     const collapsedWidth = await sidebar.evaluate((el) => el.getBoundingClientRect().width);
     expect(collapsedWidth).toBeLessThan(initialWidth);

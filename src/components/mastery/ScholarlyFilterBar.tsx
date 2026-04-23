@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchAllTopics } from '../../lib/storage/roadmap'
 import type { Topic } from '../../lib/types'
+import type { FilterType } from '../../hooks/useMasteryWords'
 
 interface ScholarlyFilterBarProps {
   onFilterChange: (filters: {
@@ -10,8 +11,8 @@ interface ScholarlyFilterBarProps {
     stability: string | null
     sortBy: string
   }) => void
-  activeFilter: string // Legacy filter like 'all', 'due', etc.
-  setActiveFilter: (filter: any) => void
+  activeFilter: FilterType
+  setActiveFilter: (filter: FilterType) => void
 }
 
 export default function ScholarlyFilterBar({

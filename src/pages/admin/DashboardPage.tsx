@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getAdminStats, getRecentWords } from '../../lib/queries/stats-queries'
 import type { Word } from '../../lib/types'
+import { topicColorStyle } from '../../lib/utils'
 
 interface Stats {
   totalWords: number
@@ -128,10 +129,7 @@ export default function AdminDashboardPage() {
                     {w.topics && (
                       <span
                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
-                        style={{
-                          backgroundColor: (w.topics.color ?? '#f97316') + '20',
-                          color: w.topics.color ?? '#f97316',
-                        }}
+                        style={topicColorStyle(w.topics.color)}
                       >
                         {w.topics.name}
                       </span>

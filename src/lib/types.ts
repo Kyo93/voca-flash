@@ -67,6 +67,7 @@ export interface UserProfile {
   display_name: string | null
   avatar_url: string | null
   streak_days: number
+  longest_streak: number
   total_words: number
   // Settings
   daily_target: number
@@ -169,6 +170,8 @@ export interface InitialAppData {
     avg_stability: number
     new_today: number
     due_today: number
+    /** Số từ vừa chuyển sang trạng thái mastered trong ngày (RPC trả về, optional vì fallback path không có). */
+    mastered_today?: number
     stability_distribution: {
       fresh: number
       stable: number
@@ -278,3 +281,5 @@ export interface RawRow {
   wrong3?: string
   [key: string]: string | undefined
 }
+
+export type StudySessionMode = 'new' | 'combined' | 'all' | boolean

@@ -5,9 +5,9 @@ import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
 import { ReviewChallenge, selectQuadrant } from '../lib/challenge-logic'
 import { shuffleArray } from '../lib/utils'
+import { REVIEW_SESSION_CONFIG } from '../lib/constants'
 
 const FREE_STUDY_DEFAULT_SAMPLE_SIZE = 20
-const POINTS_PER_CORRECT = 10
 const DEFAULT_WORD_DIFFICULTY = 3
 
 export function useFreeStudySession(deckId: string = 'all', wordsOverride?: MasteryWord[]) {
@@ -119,7 +119,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     setStats(prev => ({
       correct: prev.correct + (isCorrect ? 1 : 0),
       wrong: prev.wrong + (isCorrect ? 0 : 1),
-      points: prev.points + (isCorrect ? POINTS_PER_CORRECT : 0),
+      points: prev.points + (isCorrect ? REVIEW_SESSION_CONFIG.POINTS_PER_CORRECT : 0),
       mistakes: isCorrect ? prev.mistakes : [...prev.mistakes, current.word]
     }))
 

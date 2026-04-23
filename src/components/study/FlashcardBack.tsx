@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Card } from '../../lib/srs'
 import AudioButton from '../common/AudioButton'
 import { useTranslation } from 'react-i18next'
@@ -12,11 +13,11 @@ interface FlashcardBackProps {
  * FlashcardBack - The back face of the learning card.
  * Displays meaning, examples, and SRS metadata.
  */
-export default function FlashcardBack({
+const FlashcardBack = memo(({
   card,
   isSaved,
   onToggleNotebook
-}: FlashcardBackProps) {
+}: FlashcardBackProps) => {
   const { t } = useTranslation()
   return (
     <div className="relative w-full h-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col items-center text-center p-12 transition-all border border-outline-variant/10">
@@ -101,4 +102,6 @@ export default function FlashcardBack({
       </div>
     </div>
   )
-}
+})
+
+export default FlashcardBack

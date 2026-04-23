@@ -6,8 +6,8 @@
 
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://nhnusgnlhnzwavpltbqj.supabase.co'
-const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5obnVzZ25saG56d2F2cGx0YnFqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg0MDU4MywiZXhwIjoyMDkxNDE2NTgzfQ.xDU4pXcz3VYmB9vic9vTBRCyhnoXLVZ9EGTEdat8UY0'
+const supabaseUrl = process.env.SUPABASE_URL || 'https://nhnusgnlhnzwavpltbqj.supabase.co'
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 // Create client with service role key (bypasses RLS)
 const supabase = createClient(supabaseUrl, serviceKey, {

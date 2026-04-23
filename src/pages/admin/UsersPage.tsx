@@ -6,30 +6,40 @@ import { formatDetailedDate } from '../../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import AdminCard from '../../components/admin/AdminCard'
 import { supabase } from '../../lib/supabase'
+import { FSRS_STATES } from '../../lib/constants'
+
+interface FsrsStateStat {
+  label: string
+  state: number
+  count: number
+  color: string
+  icon: string
+}
 
 function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => void }) {
   const { t } = useTranslation()
-  const [stats, setStats] = useState<any[]>([])
+  const [stats, setStats] = useState<FsrsStateStat[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
       const { data } = await supabase
-        .from('user_words')
-        .select('mastery_level')
+        .from('user_srs_records')
+        .select('fsrs_state')
         .eq('user_id', user.id)
-      
-      const counts = (data || []).reduce((acc: any, cur: any) => {
-        acc[cur.mastery_level] = (acc[cur.mastery_level] || 0) + 1
+
+      const counts = (data ?? []).reduce<Record<number, number>>((acc, record) => {
+        const state = record.fsrs_state ?? FSRS_STATES.NEW
+        acc[state] = (acc[state] ?? 0) + 1
         return acc
       }, {})
-      
+
       setStats([
-        { label: t('admin.users.panel.levels.again'), level: 0, count: counts[0] || 0, color: 'bg-red-500', icon: 'history' },
-        { label: t('admin.users.panel.levels.hard'), level: 1, count: counts[1] || 0, color: 'bg-orange-500', icon: 'psychology' },
-        { label: t('admin.users.panel.levels.good'), level: 2, count: counts[2] || 0, color: 'bg-green-500', icon: 'task_alt' },
-        { label: t('admin.users.panel.levels.easy'), level: 3, count: counts[3] || 0, color: 'bg-blue-500', icon: 'auto_awesome' },
+        { label: t('admin.users.panel.levels.again'), state: FSRS_STATES.NEW, count: counts[FSRS_STATES.NEW] ?? 0, color: 'bg-red-500', icon: 'history' },
+        { label: t('admin.users.panel.levels.hard'), state: FSRS_STATES.LEARNING, count: counts[FSRS_STATES.LEARNING] ?? 0, color: 'bg-orange-500', icon: 'psychology' },
+        { label: t('admin.users.panel.levels.good'), state: FSRS_STATES.REVIEW, count: counts[FSRS_STATES.REVIEW] ?? 0, color: 'bg-green-500', icon: 'task_alt' },
+        { label: t('admin.users.panel.levels.easy'), state: FSRS_STATES.RELEARNING, count: counts[FSRS_STATES.RELEARNING] ?? 0, color: 'bg-blue-500', icon: 'auto_awesome' },
       ])
       setLoading(false)
     }
@@ -76,15 +86,15 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
-                {stats.map((s) => (
-                  <div key={s.label} className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="bg-white rounded-3xl p-6 border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className={`w-8 h-8 rounded-xl ${s.color}/10 flex items-center justify-center`}>
-                        <span className={`material-symbols-outlined text-lg ${s.color.replace('bg-', 'text-')}`}>{s.icon}</span>
+                      <div className={`w-8 h-8 rounded-xl ${stat.color}/10 flex items-center justify-center`}>
+                        <span className={`material-symbols-outlined text-lg ${stat.color.replace('bg-', 'text-')}`}>{stat.icon}</span>
                       </div>
-                      <span className="text-xs font-black text-stone-400 uppercase tracking-widest">{s.label}</span>
+                      <span className="text-xs font-black text-stone-400 uppercase tracking-widest">{stat.label}</span>
                     </div>
-                    <p className="text-3xl font-black text-secondary">{s.count}</p>
+                    <p className="text-3xl font-black text-secondary">{stat.count}</p>
                   </div>
                 ))}
               </div>

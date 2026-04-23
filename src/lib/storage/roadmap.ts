@@ -1,34 +1,54 @@
 import { supabase } from '../supabase'
-import type { Topic, Roadmap, InitialAppData, ProgressPageData, LibraryPageData, DashboardSummary } from '../types'
+import type { Topic, Roadmap, InitialAppData, ProgressPageData, LibraryPageData, DashboardSummary, UserProfile } from '../types'
 import { fetchPaginated } from './base'
+import { getEndOfStudyDay } from '../utils'
+
+const GUEST_USER_ID = '00000000-0000-0000-0000-000000000000'
+/** Forecast 7 ngày mặc định khi chưa có dữ liệu (Mon..Sun rỗng). */
+const FORECAST_DAYS = 7
+const emptyForecast = (): number[] => Array<number>(FORECAST_DAYS).fill(0)
+
+const createEmptyAppData = (profile: UserProfile | null = null): InitialAppData => ({
+  profile,
+  stats: { total_words: 0, mastered: 0, learning: 0 },
+  health: {
+    retention_rate: 0,
+    avg_stability: 0,
+    new_today: 0,
+    due_today: 0,
+    stability_distribution: { fresh: 0, stable: 0, rooted: 0 },
+    forecast: emptyForecast(),
+  },
+  active_roadmap: null,
+  global_review_count: 0,
+})
+
+const createEmptyProgressData = (): ProgressPageData => ({
+  memory_health: { learning: 0, new_today: 0, mastered: 0, mastered_today: 0, due: 0, orphaned: 0, weak: 0 },
+  roadmap_progress: [],
+  overall_stats: { streak_days: 0, total_mastered: 0 }
+})
+
+/**
+ * Fallback path: RPC `get_initial_app_data_v2` chưa deploy hoặc lỗi → đọc profile trực tiếp
+ * từ `user_profiles` để UI vẫn hiển thị được.
+ */
+async function fetchProfileFallback(userId: string): Promise<UserProfile | null> {
+  const { data } = await supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle()
+  return (data as UserProfile | null) ?? null
+}
 
 export async function fetchInitialAppData(userId: string): Promise<InitialAppData> {
   const { data, error } = await supabase.rpc('get_initial_app_data_v2', { p_user_id: userId })
 
   if (error) {
     console.error('[Storage] Error fetching initial app data:', error)
-    // Fallback: load profile directly from user_profiles table
-    // (handles case where RPC not deployed yet on Supabase)
-    const { data: profileData } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()
-
-    return {
-      profile: profileData || null,
-      stats: { total_words: 0, mastered: 0, learning: 0 },
-      health: {
-        retention_rate: 0,
-        avg_stability: 0,
-        new_today: 0,
-        due_today: 0,
-        stability_distribution: { fresh: 0, stable: 0, rooted: 0 },
-        forecast: [0, 0, 0, 0, 0, 0, 0]
-      },
-      active_roadmap: null,
-      global_review_count: 0
-    }
+    const profile = await fetchProfileFallback(userId)
+    return createEmptyAppData(profile)
   }
 
   const result = data || {}
@@ -43,7 +63,7 @@ export async function fetchInitialAppData(userId: string): Promise<InitialAppDat
       new_today: health.new_today ?? 0, 
       due_today: health.due_today ?? 0, 
       mastered_today: health.mastered_today ?? 0, 
-      forecast: health.forecast ?? [0, 0, 0, 0, 0, 0, 0],
+      forecast: health.forecast ?? emptyForecast(),
       stability_distribution: health.stability_distribution || { fresh: 0, stable: 0, rooted: 0 }
     },
     active_roadmap: result.active_roadmap || null,
@@ -56,23 +76,15 @@ export async function fetchProgressPageData(userId: string): Promise<ProgressPag
   
   if (error) {
     console.error('[Storage] Error fetching progress page data:', error)
-    return {
-      memory_health: { learning: 0, new_today: 0, mastered: 0, mastered_today: 0, due: 0, orphaned: 0, weak: 0 },
-      roadmap_progress: [],
-      overall_stats: { streak_days: 0, total_mastered: 0 }
-    }
+    return createEmptyProgressData()
   }
 
-  return (data || {
-    memory_health: { learning: 0, new_today: 0, mastered: 0, mastered_today: 0, due: 0, orphaned: 0, weak: 0 },
-    roadmap_progress: [],
-    overall_stats: { streak_days: 0, total_mastered: 0 }
-  }) as ProgressPageData
+  return (data || createEmptyProgressData()) as ProgressPageData
 }
 
 export async function fetchLibraryPageData(userId: string | undefined): Promise<LibraryPageData[]> {
   const { data, error } = await supabase.rpc('get_library_page_data', { 
-    p_user_id: userId || '00000000-0000-0000-0000-000000000000'
+    p_user_id: userId || GUEST_USER_ID
   })
   if (error) throw error
   return (data || []) as LibraryPageData[]
@@ -159,40 +171,44 @@ export async function fetchTopicCompletionMap(
 }
 
 export async function fetchDashboardSummary(userId: string): Promise<DashboardSummary> {
-  const { count: globalReviewCount } = await supabase
-    .from('user_srs_records')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', userId)
-    .eq('mastered', false)
-    .lte('next_review_at', new Date().toISOString())
+  const [globalCountRes, pointerRes, roadmapRes] = await Promise.all([
+    supabase
+      .from('user_srs_records')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('mastered', false)
+      .lte('next_review_at', getEndOfStudyDay().toISOString()),
+    supabase
+      .from('user_resume_pointers')
+      .select('last_topic_id, roadmap_id')
+      .eq('user_id', userId)
+      .order('last_accessed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('roadmaps')
+      .select('id')
+      .eq('is_active', true)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle(),
+  ])
 
-  const { data: pointer } = await supabase
-    .from('user_resume_pointers')
-    .select('last_topic_id, roadmap_id')
-    .eq('user_id', userId)
-    .order('last_accessed_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
+  const globalReviewCount = globalCountRes.count ?? 0
+  const pointer = pointerRes.data
+  const roadmap = roadmapRes.data
 
-  let resumeTopic: Topic | null = null
-  if (pointer?.last_topic_id) {
-    const { data: topic } = await supabase.from('topics').select('*').eq('id', pointer.last_topic_id).single()
-    if (topic) resumeTopic = topic as Topic
-  }
+  const [resumeTopicRes, fallbackTopicsRes] = await Promise.all([
+    pointer?.last_topic_id
+      ? supabase.from('topics').select('*').eq('id', pointer.last_topic_id).single()
+      : Promise.resolve({ data: null }),
+    roadmap
+      ? supabase.from('topics').select('*').eq('roadmap_id', roadmap.id).order('sort_order').limit(2)
+      : Promise.resolve({ data: null }),
+  ])
 
-  const { data: roadmap } = await supabase
-    .from('roadmaps')
-    .select('id')
-    .eq('is_active', true)
-    .order('created_at', { ascending: true })
-    .limit(1)
-    .maybeSingle()
+  const resumeTopic = (resumeTopicRes.data as Topic | null) ?? null
+  const fallbackTopics = (fallbackTopicsRes.data as Topic[] | null) ?? []
 
-  let fallbackTopics: Topic[] = []
-  if (roadmap) {
-    const { data: topics } = await supabase.from('topics').select('*').eq('roadmap_id', roadmap.id).order('sort_order').limit(2)
-    if (topics) fallbackTopics = topics as Topic[]
-  }
-
-  return { resumeTopic, fallbackTopics, globalReviewCount: globalReviewCount ?? 0 }
+  return { resumeTopic, fallbackTopics, globalReviewCount }
 }

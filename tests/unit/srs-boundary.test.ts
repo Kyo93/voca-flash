@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { getTodayBoundary, getEndOfStudyDay } from '../../src/lib/storage/session'
+import { getTodayBoundary, getEndOfStudyDay } from '../../src/lib/utils'
 
 describe('SRS Boundary Logic', () => {
   describe('getTodayBoundary (Frontend)', () => {

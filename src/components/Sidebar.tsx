@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
-import { fetchStreakFromSupabase } from '../lib/streak'
+import { useStreak } from '../hooks/useStreak'
 
 export default function Sidebar() {
   const { t } = useTranslation()
@@ -12,17 +12,7 @@ export default function Sidebar() {
   const { collapsed, toggleSidebar } = useSidebar()
 
   const [avatarError, setAvatarError] = useState(false)
-  const [streakData, setStreakData] = useState<any>({ currentStreak: 0 })
-
-  useEffect(() => {
-    async function load() {
-      if (profile?.id) {
-        const data = await fetchStreakFromSupabase(profile.id)
-        setStreakData(data)
-      }
-    }
-    load()
-  }, [profile?.id])
+  const streakData = useStreak()
 
   useEffect(() => {
     setAvatarError(false)
@@ -43,12 +33,12 @@ export default function Sidebar() {
 
   const displayName = profile?.display_name ?? profile?.email?.split('@')[0] ?? 'User'
   const avatarChar = displayName[0].toUpperCase()
-  const w = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
+  const sidebarWidth = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
 
   return (
     <aside
       className="fixed left-0 top-0 h-full flex flex-col p-4 gap-2 bg-stone-50 z-50 transition-all duration-300 ease-in-out overflow-hidden"
-      style={{ width: w }}
+      style={{ width: sidebarWidth }}
     >
       {/* Logo */}
       <div className="flex items-center gap-3 mb-8 px-2 relative">
@@ -66,7 +56,8 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex flex-col gap-1">
         {navItems.map((item) => {
-          const isActive = location.pathname.startsWith((item as any).basePath || item.path)
+          const matchPath = ('basePath' in item ? (item as { basePath: string }).basePath : null) ?? item.path
+          const isActive = location.pathname.startsWith(matchPath)
           return (
             <Link
               key={item.path}
@@ -113,7 +104,7 @@ export default function Sidebar() {
 
         {/* Quick Study CTA */}
         <Link
-          to="/study"
+          to="/review"
           title={collapsed ? t('nav.startQuiz') : undefined}
           className={`w-full py-4 primary-gradient text-white font-black text-sm rounded-2xl shadow-lg shadow-primary-container/20 active:scale-95 transition-all flex items-center justify-center gap-2 ${collapsed ? 'px-0' : ''}`}
         >

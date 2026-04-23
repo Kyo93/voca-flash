@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { resetTopicProgress, resetAllProgress, fetchAllTopics } from '../../lib/supabase-storage'
 import { Topic } from '../../lib/types'
 import SettingsSection from './SettingsSection'
+import { TIME_CONSTANTS } from '../../lib/constants'
 
 export default function DangerZoneSection() {
   const { t } = useTranslation()
@@ -41,7 +42,7 @@ export default function DangerZoneSection() {
       setMessage({ type: 'error', text: t('settings.resetError') })
     } finally {
       setLoading(false)
-      setTimeout(() => setMessage(null), 3000)
+      setTimeout(() => setMessage(null), TIME_CONSTANTS.TIMEOUT_SHORT_MS)
     }
   }
 
@@ -56,7 +57,7 @@ export default function DangerZoneSection() {
       setMessage({ type: 'error', text: t('settings.resetError') })
     } finally {
       setLoading(false)
-      setTimeout(() => setMessage(null), 3000)
+      setTimeout(() => setMessage(null), TIME_CONSTANTS.TIMEOUT_SHORT_MS)
     }
   }
 

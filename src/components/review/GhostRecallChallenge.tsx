@@ -6,7 +6,7 @@ import { speak, stop } from '../../lib/tts'
 
 interface GhostRecallChallengeProps {
   word: Word
-  onSubmit: (isCorrect: boolean) => void
+  onSubmit: (isCorrect: boolean, isSkipped?: boolean) => void
 }
 
 export default memo(function GhostRecallChallengeInner({ word, onSubmit }: GhostRecallChallengeProps) {
@@ -119,10 +119,11 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
       {/* Hint Toggle */}
       <button
         onClick={() => setShowHint(h => !h)}
-        className="mt-6 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors"
+        className="mt-6 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors mb-12"
       >
         {showHint ? `▲ ${t('arena.hideHint')}` : `▼ ${t('arena.showHint')}`}
       </button>
+
     </div>
   )
 })

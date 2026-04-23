@@ -37,13 +37,13 @@ export async function getWordsWithTopicsByRoadmap(roadmapId: string) {
 
   const topicIds = (topics ?? []).map(t => t.id)
 
-  let junctions: any[] = []
+  let junctions: { word_id: string; topic_id: string }[] = []
   if (topicIds.length > 0) {
     const { data: j } = await supabase
       .from('topic_words')
       .select('word_id, topic_id')
       .in('topic_id', topicIds)
-    junctions = j ?? []
+    junctions = (j ?? []) as { word_id: string; topic_id: string }[]
   }
 
   const junctionMap = new Map<string, string[]>()
@@ -59,7 +59,7 @@ export async function getWordsWithTopicsByRoadmap(roadmapId: string) {
 
   if (error || !words) return { data: [], error }
 
-  const enriched = (words as any[]).map(w => ({
+  const enriched = words.map(w => ({
     ...w,
     topicIds: junctionMap.get(w.id) ?? [],
   }))

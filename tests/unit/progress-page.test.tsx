@@ -4,9 +4,12 @@ import ProgressPage from '../../src/pages/ProgressPage'
 import { I18nextProvider } from 'react-i18next'
 import i18n from '../../src/i18n'
 import { useAnalytics } from '../../src/hooks/useAnalytics'
+import { useAuth } from '../../src/contexts/AuthContext'
+import { BrowserRouter } from 'react-router-dom'
 
-// Mock the hook
+// Mock the hooks
 vi.mock('../../src/hooks/useAnalytics')
+vi.mock('../../src/contexts/AuthContext')
 
 const mockData = {
   retention_rate: 0.85,
@@ -37,10 +40,15 @@ describe('ProgressPage Mastery Indicator', () => {
       isLoading: false,
       error: null
     })
+    vi.mocked(useAuth).mockReturnValue({
+      initialData: { global_review_count: 0 } as any
+    } as any)
 
     render(
       <I18nextProvider i18n={i18n}>
-        <ProgressPage />
+        <BrowserRouter>
+          <ProgressPage />
+        </BrowserRouter>
       </I18nextProvider>
     )
 
@@ -48,5 +56,28 @@ describe('ProgressPage Mastery Indicator', () => {
     // Based on vi.json, progress.masteredWords is "Từ đã thuộc"
     expect(screen.getByText('42')).toBeDefined()
     expect(screen.getByText(/Nhuần nhuyễn|Đã thuộc/i)).toBeDefined()
+  })
+
+  test('renders words due badge when review count is > 0', () => {
+    vi.mocked(useAnalytics).mockReturnValue({
+      data: mockData as any,
+      isLoading: false,
+      error: null
+    })
+    
+    vi.mocked(useAuth).mockReturnValue({
+      initialData: { global_review_count: 15 } as any
+    } as any)
+
+    render(
+      <I18nextProvider i18n={i18n}>
+        <BrowserRouter>
+          <ProgressPage />
+        </BrowserRouter>
+      </I18nextProvider>
+    )
+
+    // It should render the badge
+    expect(screen.getByText(/15 từ đang chờ ôn tập/i)).toBeDefined()
   })
 })

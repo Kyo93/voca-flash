@@ -105,16 +105,6 @@
       "cta": "Thử đánh giá trình độ"
     }
   },
-  "roadmap": {
-    "card": {
-      "activeChapter": "Chương hiện tại",
-      "upNext": "Tiếp theo",
-      "topicPrefix": "Chủ đề",
-      "preparation": "Chuẩn bị",
-      "locked": "Chưa mở",
-      "defaultTopicDesc": "Khám phá chi tiết chủ đề này"
-    }
-  },
   "auth": {
     "signUpTitle": "Tạo tài khoản mới",
     "signInTitle": "Chào mừng trở lại",
@@ -182,22 +172,25 @@
     "streakDay": "{{count}} 🔥 ngày",
     "tagline": "The Tactile Scholar"
   },
-  "flashcard": {
-    "showAnswer": "Hiển thị đáp án",
-    "markLearned": "Đánh dấu đã học",
-    "audioNormal": "Phát âm",
-    "audioSlow": "Nghe chậm",
-    "englishWord": "Từ Tiếng Anh",
-    "vietnamese": "Tiếng Việt",
-    "contextUsage": "Cách sử dụng",
-    "deck": "Bộ thẻ",
-    "level": "Cấp độ",
-    "meaning": "Nghĩa của từ",
-    "saveToNotebook": "Lưu vào sổ tay",
-    "removeFromNotebook": "Xóa khỏi sổ tay",
-    "noTopic": "Không có chủ đề",
-    "srsReady": "SRS READY"
-  },
+    "flashcard": {
+      "showAnswer": "Hiển thị đáp án",
+      "markLearned": "Đánh dấu đã học",
+      "audioNormal": "Phát âm",
+      "audioSlow": "Nghe chậm",
+      "englishWord": "Từ Tiếng Anh",
+      "vietnamese": "Tiếng Việt",
+      "contextUsage": "Cách dùng thực tế",
+      "tapToFlip": "Chạm để xem nghĩa",
+      "mastered": "Đã thuộc lòng",
+      "interval": "Khoảng cách",
+      "deck": "Bộ thẻ",
+      "level": "Cấp độ",
+      "meaning": "Nghĩa của từ",
+      "saveToNotebook": "Lưu vào sổ tay",
+      "removeFromNotebook": "Xóa khỏi sổ tay",
+      "noTopic": "Không có chủ đề",
+      "srsReady": "SRS READY"
+    },
   "srs": {
     "hard": "Khó",
     "good": "Vừa",
@@ -225,7 +218,15 @@
     "takeTest": "Làm bài đánh giá",
     "curatedPaths": "Lộ trình đề xuất",
     "loading": "Đang tải lộ trình...",
-    "notFound": "Không tìm thấy lộ trình"
+    "notFound": "Không tìm thấy lộ trình",
+    "card": {
+      "activeChapter": "Chương hiện tại",
+      "upNext": "Tiếp theo",
+      "topicPrefix": "Chủ đề",
+      "preparation": "Chuẩn bị",
+      "locked": "Chưa mở",
+      "defaultTopicDesc": "Khám phá chi tiết chủ đề này"
+    }
   },
   "roadmapDetail": {
     "back": "Quay lại Thư viện",
@@ -423,6 +424,7 @@
     "greeting_afternoon": "Chào buổi chiều, Học giả.",
     "greeting_evening": "Chào buổi tối, Học giả.",
     "subtitle_scholar": "Đây là phân tích tiến độ học tập chuyên sâu của bạn hôm nay.",
+    "words_due": "{{count}} từ đang chờ ôn tập",
     "current_level": "Cấp độ hiện tại",
     "vocab_learned": "Từ vựng đã học",
     "today_label": "hôm nay",
@@ -522,7 +524,7 @@
     "hint": "Hiện gợi ý",
     "selectAnswer": "Chọn đáp án",
     "continue": "Tiếp tục",
-    "skipQuiz": "Bỏ qua quiz → tự đánh giá",
+    "skipQuiz": "Hiện đáp án & Tự đánh giá",
     "holdToReveal": "Giữ để hiện nghĩa",
     "pressEnterToConfirm": "Nhấn ENTER để xác nhận",
     "hideHint": "Ẩn gợi ý chữ",
@@ -546,6 +548,8 @@
     "masteredPrompt": "Bạn có muốn ôn lại {{count}} từ đã thuộc không?",
     "skipMastered": "Không, Bỏ qua",
     "includeMastered": "Có, Ôn tất cả",
+    "learnOnlyNew": "Chỉ học từ mới",
+    "learnCombined": "Học cả từ cũ & mới",
     "startNow": "Bắt đầu ngay"
   },
   "sessionSummary": {
@@ -995,7 +999,8 @@
       "title": "Sắp xếp các ký tự",
       "building": "Đang xây dựng...",
       "undo": "Quay lại",
-      "reset": "Reset"
+      "reset": "Reset",
+      "give_up": "Bỏ cuộc"
     }
   },
   "notebook": {
@@ -1090,6 +1095,8 @@
     "wordsCount": "{{remaining}} / {{total}} từ",
     "suggestedRating": "Hệ thống gợi ý",
     "showAnswer": "Hiện đáp án",
-    "markLearned": "Đánh dấu đã học"
+    "markLearned": "Đánh dấu đã học",
+    "exit": "Thoát",
+    "resign": "Thoát"
   }
 }

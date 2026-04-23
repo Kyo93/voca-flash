@@ -57,8 +57,8 @@ export async function recordStreak(userId: string): Promise<number> {
     return 1
   }
 
-  const lastDate = profile.last_study_date as string | null
-  const currentStreak = (profile.streak_days as number) ?? 0
+  const lastDate = profile.last_study_date
+  const currentStreak = profile.streak_days ?? 0
 
   let newStreak: number
   if (lastDate === today) {
@@ -77,7 +77,7 @@ export async function recordStreak(userId: string): Promise<number> {
     newStreak = 1
   }
 
-  const currentLongest = (profile as any).longest_streak ?? 0
+  const currentLongest = profile.longest_streak ?? 0
   const newLongest = Math.max(currentLongest, newStreak)
 
   const { error: updateError } = await supabase

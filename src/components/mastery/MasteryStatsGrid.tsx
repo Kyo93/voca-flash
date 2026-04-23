@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
+import type { MasteryStats } from '../../lib/types'
 
 interface MasteryStatsGridProps {
-  stats: any
+  stats: MasteryStats | null
 }
 
 export default function MasteryStatsGrid({ stats }: MasteryStatsGridProps) {

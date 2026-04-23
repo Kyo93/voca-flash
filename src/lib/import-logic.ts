@@ -1,9 +1,17 @@
 import { Topic, NormalizedWord } from './types'
-import { generateUniqueSlug, slugify } from './utils'
+import { DEFAULT_TOPIC_COLOR, generateUniqueSlug, slugify } from './utils'
 import { createTopic } from './queries/topic-queries'
 import { findDuplicateWords } from './queries/word-queries'
 import { resolveUnmatchedTopics } from './import-parser'
 import { ImportRow } from '../components/admin/ImportPreviewTable'
+
+/** Defaults áp dụng cho topic được tự tạo trong quá trình import. */
+const AUTO_CREATED_TOPIC_DEFAULTS = {
+  color: DEFAULT_TOPIC_COLOR,
+  /** Đẩy xuống cuối danh sách để admin sắp xếp lại sau. */
+  sort_order: 999,
+  icon: 'label',
+} as const
 
 export async function processImportData(
   parsed: { rows: NormalizedWord[]; unmatchedTopics: string[] },
@@ -32,12 +40,10 @@ export async function processImportData(
       const { data, error } = await createTopic({
         name,
         slug: uniqueSlug,
-        color: '#f97316',
-        sort_order: 999,
+        ...AUTO_CREATED_TOPIC_DEFAULTS,
         roadmap_id: roadmapId,
         description: null,
         image_url: null,
-        icon: 'label',
       })
       
       if (!error && data) {
@@ -57,16 +63,16 @@ export async function processImportData(
 
   // 4. Check duplicates
   const wordTexts = resolvedRows
-    .filter((r: NormalizedWord) => r.status !== 'invalid')
-    .map((r: NormalizedWord) => r.word)
+    .filter((row: NormalizedWord) => row.status !== 'invalid')
+    .map((row: NormalizedWord) => row.word)
   const dupes = await findDuplicateWords(wordTexts)
   const dupeSet = new Set(dupes.map(w => w.toLowerCase()))
 
-  const importRows: ImportRow[] = resolvedRows.map((r: NormalizedWord, idx: number) => ({
-    ...r,
+  const importRows: ImportRow[] = resolvedRows.map((row: NormalizedWord, idx: number) => ({
+    ...row,
     rowIndex: idx + 1,
-    status: dupeSet.has(r.word.toLowerCase()) ? 'duplicate' : r.status,
-    duplicateAction: dupeSet.has(r.word.toLowerCase()) ? 'skip' : undefined,
+    status: dupeSet.has(row.word.toLowerCase()) ? 'duplicate' : row.status,
+    duplicateAction: dupeSet.has(row.word.toLowerCase()) ? 'skip' : undefined,
   }))
 
   return { importRows, currentTopicMap }

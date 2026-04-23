@@ -8,7 +8,7 @@
  */
 
 import { supabase } from './supabase'
-import { getTodayBoundary } from './storage/session'
+import { getTodayBoundary } from './utils'
 import { TIME_CONSTANTS } from './constants'
 
 const STREAK_KEY = 'vocamaster-streak'

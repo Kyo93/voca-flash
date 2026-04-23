@@ -5,6 +5,7 @@ import { updateUserSettings } from '../lib/supabase-storage'
 import { setTtsConfig } from '../lib/tts'
 import { defaultSettings } from '../lib/settings-defaults'
 import { LNG_STORAGE_KEY } from '../lib/i18n-utils'
+import { TIME_CONSTANTS } from '../lib/constants'
 
 export interface SettingsFormData {
   daily_target: number
@@ -78,7 +79,7 @@ export function useSettingsForm() {
       await refreshProfile()
       
       setSaveMessage(t('settings.saveSuccess'))
-      setTimeout(() => setSaveMessage(''), 3000)
+      setTimeout(() => setSaveMessage(''), TIME_CONSTANTS.TIMEOUT_SHORT_MS)
     } catch (err) {
       console.error('Failed to save settings', err)
       setError(t('settings.resetError')) // Reusing common error key or specific save error

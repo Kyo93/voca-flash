@@ -1,8 +1,9 @@
 import { supabase } from '../supabase'
-import { FETCH_REVIEWS_LIMIT, TIME_CONSTANTS } from '../constants'
+import { FETCH_REVIEWS_LIMIT } from '../constants'
 import type { Word, SrsRecord, WordChoice, ResumePointer } from '../types'
 import { CardProgress, mapSrsRecordToCardProgress, isMastered, State } from '../srs'
 import { fetchPaginated } from './base'
+import { getEndOfStudyDay } from '../utils'
 
 export async function fetchSrsStates(userId: string): Promise<Map<string, CardProgress>> {
   const query = supabase
@@ -76,11 +77,18 @@ export async function fetchReviewWords(userId: string): Promise<{ word: Word; pr
   if (wordIds.length === 0) return []
 
   const [wordsRes, choicesRes] = await Promise.all([
-    supabase.from('words').select('*, topics(id, name, slug, color)').in('id', wordIds),
+    supabase.from('words').select('*').in('id', wordIds),
     supabase.from('word_choices').select('*').in('word_id', wordIds)
   ])
 
-  if (wordsRes.error) return []
+  if (wordsRes.error) {
+    console.error('[Storage] fetchReviewWords words error:', wordsRes.error)
+    return []
+  }
+  if (choicesRes.error) {
+    console.error('[Storage] fetchReviewWords choices error:', choicesRes.error)
+  }
+  
   const words = wordsRes.data as Word[]
   const choicesData = (choicesRes.data as WordChoice[]) ?? []
 
@@ -100,13 +108,15 @@ export async function fetchReviewWords(userId: string): Promise<{ word: Word; pr
 }
 
 export async function saveResumePointer(userId: string, roadmapId: string, topicId?: string): Promise<void> {
-  const payload: Record<string, any> = {
-    user_id: userId,
-    roadmap_id: roadmapId,
-    last_accessed_at: new Date().toISOString(),
-  }
-  if (topicId) payload.last_topic_id = topicId
-  await supabase.from('user_resume_pointers').upsert(payload, { onConflict: 'user_id,roadmap_id' })
+  await supabase.from('user_resume_pointers').upsert(
+    {
+      user_id: userId,
+      roadmap_id: roadmapId,
+      last_accessed_at: new Date().toISOString(),
+      ...(topicId ? { last_topic_id: topicId } : {}),
+    },
+    { onConflict: 'user_id,roadmap_id' }
+  )
 }
 
 export async function fetchResumePointers(userId: string): Promise<Map<string, ResumePointer>> {
@@ -140,21 +150,6 @@ export async function resetAllProgress(): Promise<void> {
   }
 }
 
-
-export function getTodayBoundary(): Date {
-  const boundary = new Date()
-  boundary.setHours(TIME_CONSTANTS.DAY_BOUNDARY_HOUR, 0, 0, 0)
-  if (new Date().getHours() < TIME_CONSTANTS.DAY_BOUNDARY_HOUR) {
-    boundary.setDate(boundary.getDate() - 1)
-  }
-  return boundary
-}
-
-export function getEndOfStudyDay(): Date {
-  const boundary = getTodayBoundary()
-  boundary.setDate(boundary.getDate() + 1)
-  return boundary
-}
 
 export async function upsertFreeStudyFail(userId: string, wordId: string): Promise<void> {
   // Logic simplified: we mark it as forgotten if it exists

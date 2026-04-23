@@ -21,9 +21,10 @@ export function useAdminRoadmaps() {
       setLoading(false)
       return
     }
-    const formatted = (data as any[] ?? []).map(r => ({
+    type RoadmapWithTopicCount = Roadmap & { topics?: [{ count: number }] }
+    const formatted = ((data ?? []) as RoadmapWithTopicCount[]).map(r => ({
       ...r,
-      topic_count: r.topics?.[0]?.count ?? 0
+      topic_count: r.topics?.[0]?.count ?? 0,
     }))
     setRoadmaps(formatted as Roadmap[])
     setLoading(false)

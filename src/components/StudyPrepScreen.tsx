@@ -9,7 +9,7 @@ interface StudyPrepScreenProps {
     mastered: Card[]
   } | null
   loading: boolean
-  onStart: (includeMastered: boolean) => void
+  onStart: (mode: 'new' | 'combined' | 'all') => void
   onBack: () => void
 }
 
@@ -95,33 +95,40 @@ export default function StudyPrepScreen({ stats, loading, onStart, onBack }: Stu
           </div>
 
           <div className="space-y-3">
-            {hasMastered ? (
-              <>
-                <p className="text-sm font-bold text-center text-on-surface-variant mb-4 italic">
-                  {t('studyPrep.masteredPrompt', { count: mastered.length })}
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => onStart(false)}
-                    className="py-4 px-4 bg-white border-2 border-primary/20 text-primary font-bold rounded-xl hover:bg-primary/5 active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
-                  >
-                    {t('studyPrep.skipMastered')}
-                  </button>
-                  <button 
-                    onClick={() => onStart(true)}
-                    className="py-4 px-4 primary-gradient text-white font-bold rounded-xl hover:shadow-lg active:scale-95 transition-all text-sm flex items-center justify-center gap-2"
-                  >
-                    {t('studyPrep.includeMastered')}
-                  </button>
-                </div>
-              </>
+            {learning.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3">
+                <button 
+                  onClick={() => onStart('new')}
+                  className="w-full py-4 px-4 bg-white border-2 border-primary/20 text-primary font-bold rounded-xl hover:bg-primary/5 active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-lg">fiber_new</span>
+                  {t('studyPrep.learnOnlyNew')}
+                </button>
+                <button 
+                  onClick={() => onStart('combined')}
+                  className="w-full py-4 px-4 primary-gradient text-white font-bold rounded-xl hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-lg">model_training</span>
+                  {t('studyPrep.learnCombined')}
+                </button>
+              </div>
             ) : (
               <button 
-                onClick={() => onStart(false)}
+                onClick={() => onStart('combined')}
                 className="w-full py-4 primary-gradient text-white font-bold rounded-xl hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 {t('studyPrep.startNow')}
                 <span className="material-symbols-outlined text-lg">play_arrow</span>
+              </button>
+            )}
+
+            {hasMastered && (
+              <button 
+                onClick={() => onStart('all')}
+                className="w-full py-3 border border-green-200 text-green-700 bg-green-50/50 font-bold rounded-xl hover:bg-green-100/50 transition-all text-sm flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">verified</span>
+                {t('studyPrep.includeMastered')}
               </button>
             )}
             

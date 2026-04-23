@@ -42,19 +42,17 @@ describe('markLearned — must flip card THEN rate', () => {
   })
 })
 
-describe('StudyPage "Mark as Learned" — must call markLearned, not rate directly', () => {
-  it('button onClick must use markLearned from useFlashcard, not rate(3)', () => {
-    const source = readFile('pages/StudyPage.tsx')
-    // Search for the translation key or the original text
-    const malIdx = source.indexOf('study.markLearned') !== -1 
-      ? source.indexOf('study.markLearned')
-      : source.indexOf('Mark as Learned')
+describe('StudyActions "Mark as Learned" — must call onMarkLearned, not rate directly', () => {
+  it('button onClick must use onMarkLearned prop, not rate(3)', () => {
+    const source = readFile('components/study/StudyActions.tsx')
+    // Search for the translation key
+    const malIdx = source.indexOf('study.markLearned')
     expect(malIdx).toBeGreaterThan(-1)
-    // Look at the 400 chars BEFORE "Mark as Learned" to find onClick
+    // Look at the 400 chars BEFORE "study.markLearned" to find onClick
     const snippet = source.substring(Math.max(0, malIdx - 400), malIdx + 200)
     // Bug: was onClick={() => rate(3)}
     expect(snippet).not.toMatch(/rate\((3|SRS_RATINGS\.GOOD)\)/)
-    // Fix: onClick should reference markLearned
-    expect(snippet).toMatch(/markLearned/)
+    // Fix: onClick should reference onMarkLearned
+    expect(snippet).toMatch(/onMarkLearned/)
   })
 })

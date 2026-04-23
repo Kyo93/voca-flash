@@ -7,7 +7,7 @@ import { ReviewChallenge } from '../../hooks/useReviewSession'
 
 interface ChallengeManagerProps {
   challenge: ReviewChallenge
-  onSubmit: (isCorrect: boolean) => void
+  onSubmit: (isCorrect: boolean, isSkipped?: boolean) => void
 }
 
 export default function ChallengeManager({ challenge, onSubmit }: ChallengeManagerProps) {
@@ -19,7 +19,7 @@ export default function ChallengeManager({ challenge, onSubmit }: ChallengeManag
   )
 }
 
-function renderQuadrant(challenge: ReviewChallenge, onSubmit: (isCorrect: boolean) => void, t: (key: string, opts?: Record<string, string>) => string) {
+function renderQuadrant(challenge: ReviewChallenge, onSubmit: (isCorrect: boolean, isSkipped?: boolean) => void, t: (key: string, opts?: Record<string, string>) => string) {
   switch (challenge.quadrant) {
     case 'recognition':
       return (

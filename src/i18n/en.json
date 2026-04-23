@@ -105,16 +105,6 @@
       "cta": "Take Assessment"
     }
   },
-  "roadmap": {
-    "card": {
-      "activeChapter": "Active Chapter",
-      "upNext": "Up Next",
-      "topicPrefix": "Topic",
-      "preparation": "Preparation",
-      "locked": "Locked",
-      "defaultTopicDesc": "Detailed explore of this topic"
-    }
-  },
   "auth": {
     "signUpTitle": "Create a new account",
     "signInTitle": "Welcome back",
@@ -196,7 +186,10 @@
     "saveToNotebook": "Save to Notebook",
     "removeFromNotebook": "Remove from Notebook",
     "noTopic": "No topic",
-    "srsReady": "SRS READY"
+    "srsReady": "SRS READY",
+    "interval": "Interval",
+    "mastered": "Mastered",
+    "tapToFlip": "Tap to flip"
   },
   "srs": {
     "hard": "Hard",
@@ -225,7 +218,15 @@
     "takeTest": "Take Assessment",
     "curatedPaths": "Curated Pathways",
     "loading": "Loading roadmap...",
-    "notFound": "Roadmap not found"
+    "notFound": "Roadmap not found",
+    "card": {
+      "activeChapter": "Active Chapter",
+      "upNext": "Up Next",
+      "topicPrefix": "Topic",
+      "preparation": "Preparation",
+      "locked": "Locked",
+      "defaultTopicDesc": "Detailed explore of this topic"
+    }
   },
   "roadmapDetail": {
     "back": "Back to Library",
@@ -423,6 +424,7 @@
     "greeting_afternoon": "Good afternoon, Scholar.",
     "greeting_evening": "Good evening, Scholar.",
     "subtitle_scholar": "Here's your in-depth learning progress analysis for today.",
+    "words_due": "{{count}} words due for review",
     "current_level": "Current Level",
     "vocab_learned": "Words Learned",
     "today_label": "today",
@@ -546,6 +548,8 @@
     "masteredPrompt": "Do you want to review the {{count}} mastered words?",
     "skipMastered": "No, skip them",
     "includeMastered": "Yes, review all",
+    "learnOnlyNew": "Learn only new",
+    "learnCombined": "Learn both old & new",
     "startNow": "Start Now"
   },
   "sessionSummary": {
@@ -995,7 +999,8 @@
       "title": "Construct the word",
       "building": "Building...",
       "undo": "Undo",
-      "reset": "Reset"
+      "reset": "Reset",
+      "give_up": "Give up"
     }
   },
   "notebook": {
@@ -1090,6 +1095,8 @@
     "wordsCount": "{{remaining}} / {{total}} Words",
     "suggestedRating": "Suggested Rating",
     "showAnswer": "Show Answer",
-    "markLearned": "Mark as Learned"
+    "markLearned": "Mark as Learned",
+    "exit": "Exit",
+    "resign": "Resign"
   }
 }

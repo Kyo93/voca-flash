@@ -2,6 +2,7 @@ import { supabase } from '../supabase'
 import type { MasteryWord, MasteryStats, Word } from '../types'
 import type { Card } from '../srs'
 import { fetchPaginated } from './base'
+import { MASTERY_CONFIG } from '../constants'
 
 export async function getMasteryStats(userId: string): Promise<MasteryStats> {
   const { data, error } = await supabase.rpc('get_mastery_stats', { p_user_id: userId })
@@ -24,8 +25,7 @@ export async function getUserVocabulary(
   userId: string,
   options: FetchVocabularyOptions = {}
 ): Promise<{ data: MasteryWord[]; total: number }> {
-  const { limit = 50, offset = 0, search = '', filter = 'all', letter = '' } = options
-
+  const { limit = MASTERY_CONFIG.DEFAULT_PAGE_SIZE, offset = 0, search = '', filter = 'all', letter = '' } = options
   const { data, error } = await supabase.rpc('get_user_vocabulary_v2', {
     p_user_id: userId,
     p_limit: limit,
@@ -46,23 +46,13 @@ export async function getUserVocabulary(
     : result.length
 
   const mappedData: MasteryWord[] = result.map((r: MasteryWord) => ({
-    word_id: r.word_id,
-    word: r.word,
-    definition: r.definition,
-    phonetic: r.phonetic,
-    image_url: r.image_url,
-    example: r.example,
-    mastered: r.mastered,
-    next_review_at: r.next_review_at,
-    last_reviewed: r.last_reviewed,
+    ...r,
     fsrs_stability: r.fsrs_stability ?? 0,
     fsrs_difficulty: r.fsrs_difficulty ?? 0,
     fsrs_state: r.fsrs_state ?? 0,
     fsrs_reps: r.fsrs_reps ?? 0,
     fsrs_lapses: r.fsrs_lapses ?? 0,
     is_orphaned: r.is_orphaned ?? false,
-    topic_names: r.topic_names ?? null,
-    personal_note: r.personal_note ?? null
   }))
 
   return { data: mappedData, total }

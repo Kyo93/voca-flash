@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminWords } from '../../hooks/admin/useAdminWords'
+import { useSelection } from '../../hooks/useSelection'
 import { getAllTopics } from '../../lib/queries/topic-queries'
 import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import WordFormModal from '../../components/admin/WordFormModal'
@@ -11,7 +12,7 @@ import WordsToolbar from '../../components/admin/words/WordsToolbar'
 import BulkActionBar from '../../components/admin/words/BulkActionBar'
 import WordsTable from '../../components/admin/words/WordsTable'
 
-const PAGE_SIZE = 20
+const WORDS_PAGE_SIZE = 20
 
 export default function AdminWordsPage() {
   const { t } = useTranslation()
@@ -33,7 +34,15 @@ export default function AdminWordsPage() {
   const [searchDebounce, setSearchDebounce] = useState('')
 
   // Bulk selection
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const {
+    selectedIds,
+    setSelectedIds,
+    toggleOne,
+    toggleAll: toggleAllSelection,
+    clear: clearSelection,
+    allSelected: isAllSelected,
+    someSelected: isSomeSelected,
+  } = useSelection()
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [assignTopicId, setAssignTopicId] = useState('')
   const [bulkLoading, setBulkLoading] = useState(false)
@@ -41,8 +50,8 @@ export default function AdminWordsPage() {
 
   // Debounce search
   useEffect(() => {
-    const t = setTimeout(() => setSearchDebounce(search), 300)
-    return () => clearTimeout(t)
+    const timer = setTimeout(() => setSearchDebounce(search), 300)
+    return () => clearTimeout(timer)
   }, [search])
 
   // Load topics once
@@ -54,7 +63,7 @@ export default function AdminWordsPage() {
   useEffect(() => {
     fetch(topicFilter || undefined, searchDebounce || undefined)
     setPage(1)
-    setSelectedIds(new Set())
+    clearSelection()
   }, [topicFilter, searchDebounce])
 
   // Sorted words
@@ -67,34 +76,14 @@ export default function AdminWordsPage() {
   // Roadmap filter for topics in dropdowns
   const availableTopics = topics.filter(t => !selectedRoadmap || t.roadmap_id === selectedRoadmap.id)
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE))
-  const paginated = sorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const totalPages = Math.max(1, Math.ceil(sorted.length / WORDS_PAGE_SIZE))
+  const paginated = sorted.slice((page - 1) * WORDS_PAGE_SIZE, page * WORDS_PAGE_SIZE)
 
-  // Selection helpers
+  // Selection helpers (derived from useSelection)
   const allPageIds = paginated.map(w => w.id)
-  const allSelected = allPageIds.length > 0 && allPageIds.every(id => selectedIds.has(id))
-  const someSelected = allPageIds.some(id => selectedIds.has(id))
-
-  function toggleAll() {
-    if (allSelected) {
-      setSelectedIds(prev => {
-        const next = new Set(prev)
-        allPageIds.forEach(id => next.delete(id))
-        return next
-      })
-    } else {
-      setSelectedIds(prev => new Set([...prev, ...allPageIds]))
-    }
-  }
-
-  function toggleOne(id: string) {
-    setSelectedIds(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
+  const allSelected = isAllSelected(allPageIds)
+  const someSelected = isSomeSelected(allPageIds)
+  const toggleAll = () => toggleAllSelection(allPageIds)
 
   // Bulk actions
   async function handleBulkDelete() {
@@ -107,7 +96,7 @@ export default function AdminWordsPage() {
       console.error(err)
       return
     }
-    setSelectedIds(new Set())
+    clearSelection()
     setBulkDeleteConfirm(false)
     await fetch()
   }
@@ -122,7 +111,7 @@ export default function AdminWordsPage() {
       console.error(err)
       return
     }
-    setSelectedIds(new Set())
+    clearSelection()
     setShowAssignModal(false)
     setAssignTopicId('')
   }

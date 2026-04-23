@@ -69,8 +69,10 @@ describe('C2 — Sidebar uses Supabase streak for logged-in users', () => {
 
   it('Sidebar.tsx must use Supabase-based streak for logged-in users', () => {
     const source = readFile('components/Sidebar.tsx')
-    // After fix: should use fetchStreakFromSupabase or getStreakDisplayAsync
+    // After fix: should use useStreak hook which handles Supabase internally
+    // or call fetchStreakFromSupabase directly
     const usesAsyncSupabase =
+      /useStreak/.test(source) ||
       /fetchStreakFromSupabase/.test(source) ||
       /getStreakDisplayAsync/.test(source)
     expect(usesAsyncSupabase).toBe(true)
@@ -84,27 +86,25 @@ describe('C2 — Sidebar uses Supabase streak for logged-in users', () => {
 describe('C4 — RightSidebar streak caching', () => {
   it('RightSidebar.tsx must have a caching mechanism for streak fetch', () => {
     const source = readFile('components/RightSidebar.tsx')
+    const hookSource = readFile('hooks/useStreak.ts')
     // After fix: there should be a cache mechanism (useRef, module-level var, or stable dep)
-    // Check for cache patterns
+    // We check both the component and the hook it uses
     const hasCache =
       /useRef|cache\s*[:=]|streakCache|streakDataRef/.test(source) ||
+      /useRef|cache\s*[:=]|streakCache|streakDataRef/.test(hookSource) ||
       /localStorage|loadStreak/.test(source)
-    // More specifically: the component should NOT re-fetch on every user change
-    // if the same user is already loaded. A useRef cache satisfies this.
     expect(hasCache).toBe(true)
   })
 
   it('RightSidebar.tsx must use useEffect with [user.id] not just [user]', () => {
     const source = readFile('components/RightSidebar.tsx')
+    const hookSource = readFile('hooks/useStreak.ts')
     // After fix: dependency should be user?.id or userId (not the whole user object)
-    // This prevents unnecessary re-fetches when user reference changes
-    const usesStableDep = /\[user\?\.id\]|\[userId\]|useRef.*user/.test(source)
-    // Either use a stable dependency or a cache
-    // We check for one of these patterns
-    const hasStablePattern =
-      /useRef.*streak|cache|streakData|streakRef/.test(source) ||
-      usesStableDep
-    expect(hasStablePattern).toBe(true)
+    const usesStableDep = 
+      /\[user\?\.id\]|\[userId\]|useRef.*user/.test(source) ||
+      /\[user\?\.id\]|\[userId\]|useRef.*user/.test(hookSource)
+    
+    expect(usesStableDep).toBe(true)
   })
 })
 

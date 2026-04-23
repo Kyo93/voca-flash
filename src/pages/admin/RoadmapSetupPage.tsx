@@ -15,6 +15,8 @@ import {
   getTopicWordCounts,
 } from '../../lib/queries/topic-queries'
 import { deleteWord } from '../../lib/queries/word-queries'
+import { reorderTopics, updateTopic } from '../../lib/queries/topic-queries'
+import { useSelection } from '../../hooks/useSelection'
 
 import TopicFormModal from '../../components/admin/TopicFormModal'
 import ImportWordsModal from '../../components/admin/ImportWordsModal'
@@ -38,7 +40,13 @@ export default function RoadmapSetupPage() {
   const [loading, setLoading] = useState(true)
 
   // UI State
-  const [selectedWordIds, setSelectedWordIds] = useState<Set<string>>(new Set())
+  const {
+    selectedIds: selectedWordIds,
+    toggleOne: toggleWord,
+    toggleAll: toggleAllSelection,
+    clear: clearSelectedWords,
+    remove: removeFromSelection,
+  } = useSelection()
   const [search, setSearch] = useState('')
   const [activeTopicId, setActiveTopicId] = useState<string | null>(null) // null = Uncategorized
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null)
@@ -85,31 +93,9 @@ export default function RoadmapSetupPage() {
     return words.filter(w => w.topicIds.length === 0).length
   }, [words])
 
-  // Toggle word selection
-  function toggleWord(id: string) {
-    setSelectedWordIds(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
-  // Toggle all
+  // Toggle all visible words
   function toggleAll() {
-    if (filteredWords.every(w => selectedWordIds.has(w.id))) {
-      setSelectedWordIds(prev => {
-        const next = new Set(prev)
-        filteredWords.forEach(w => next.delete(w.id))
-        return next
-      })
-    } else {
-      setSelectedWordIds(prev => {
-        const next = new Set(prev)
-        filteredWords.forEach(w => next.add(w.id))
-        return next
-      })
-    }
+    toggleAllSelection(filteredWords.map((w) => w.id))
   }
 
   // Bulk assign to topic
@@ -119,7 +105,7 @@ export default function RoadmapSetupPage() {
     if (targetTopicId) {
       await assignWordsToTopic(ids, targetTopicId)
     }
-    setSelectedWordIds(new Set())
+    clearSelectedWords()
     await loadData()
     await fetchTopics()
   }
@@ -129,7 +115,7 @@ export default function RoadmapSetupPage() {
     if (!activeTopicId) return
     const ids = [...selectedWordIds]
     await unassignWordsFromTopic(ids, activeTopicId)
-    setSelectedWordIds(new Set())
+    clearSelectedWords()
     await loadData()
     await fetchTopics()
   }
@@ -147,12 +133,9 @@ export default function RoadmapSetupPage() {
   async function handleDeleteWord() {
     if (!deleteWordTarget) return
     await deleteWord(deleteWordTarget)
+    const removedId = deleteWordTarget
     setDeleteWordTarget(null)
-    setSelectedWordIds(prev => {
-      const next = new Set(prev)
-      next.delete(deleteWordTarget)
-      return next
-    })
+    removeFromSelection(removedId)
     await loadData()
   }
 
@@ -160,14 +143,13 @@ export default function RoadmapSetupPage() {
   async function handleReorderTopics(reordered: Topic[]) {
     setTopics(reordered)
     const updates = reordered.map((t, i) => ({ id: t.id, sort_order: i }))
-    await import('../../lib/queries/topic-queries').then(m => m.reorderTopics(updates))
+    await reorderTopics(updates)
   }
   async function handleSaveTopic(data: {
     name: string; slug: string; description: string | null
     image_url: string | null; icon: string; color: string; roadmap_id: string | null
   }) {
     if (editTopic) {
-      const { updateTopic } = await import('../../lib/queries/topic-queries')
       await updateTopic(editTopic.id, data)
     } else {
       await createTopic({ ...data, sort_order: topics.length })
@@ -242,11 +224,6 @@ export default function RoadmapSetupPage() {
             onActiveTagFilterChange={setActiveTagFilter}
             roadmapName={roadmap?.name}
           />
-
-          {/*
-            Bottom 3 cards removed (2026-04-15)
-            Auto-Gen Meanings | Retention Insight | Drag & Drop Assets
-          */}
 
         </div>
       </div>

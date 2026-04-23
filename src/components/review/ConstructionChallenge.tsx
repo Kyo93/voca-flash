@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Word } from '../../lib/types'
 import { shuffleArray } from '../../lib/utils'
+import { CONSTRUCTION_CHALLENGE_DEFAULTS } from '../../lib/constants'
 
 interface ConstructionChallengeProps {
   word: Word
-  onSubmit: (isCorrect: boolean) => void
+  onSubmit: (isCorrect: boolean, isSkipped?: boolean) => void
 }
 
 interface Block {
@@ -40,13 +41,15 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
 
     if (newBuilt.length === word.word.length) {
       if (newBuilt.map(b => b.char).join('').toLowerCase() === word.word.toLowerCase()) {
-         setTimeout(() => onSubmit(true), 500)
+         setTimeout(() => onSubmit(true), CONSTRUCTION_CHALLENGE_DEFAULTS.SUCCESS_DELAY_MS)
       } else {
          setIsWrong(true)
+         // RECORD FAILURE: Call onSubmit(false) after a delay so they see the shake
          setTimeout(() => {
             setIsWrong(false)
             reset()
-         }, 800)
+            onSubmit(false)
+         }, CONSTRUCTION_CHALLENGE_DEFAULTS.FAILURE_DELAY_MS)
       }
     }
   }
@@ -62,6 +65,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
     setBuilt(prev => prev.slice(0, -1))
     setBlocks(prev => prev.map(b => b.id === lastBlock.id ? { ...b, used: false } : b))
   }
+
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -147,20 +151,26 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
         </AnimatePresence>
       </div>
 
-      <div className="flex justify-center gap-6">
+      <div className="flex flex-wrap justify-center gap-4">
          <button 
            onClick={undo}
            disabled={built.length === 0 || isWrong}
-           className="px-10 h-14 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
+           className="px-8 h-12 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
            <span className="material-symbols-outlined text-lg">undo</span> {t('review.construction.undo')}
          </button>
          <button 
            onClick={reset}
            disabled={built.length === 0 || isWrong}
-           className="px-10 h-14 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
+           className="px-8 h-12 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
            <span className="material-symbols-outlined text-lg">refresh</span> {t('review.construction.reset')}
+         </button>
+         <button 
+           onClick={() => onSubmit(false, true)}
+           className="px-8 h-12 glass-arena-item text-primary/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-primary transition-all flex items-center gap-3 border-primary/10 shadow-lg"
+         >
+           <span className="material-symbols-outlined text-lg">flag</span> {t('review.construction.give_up')}
          </button>
       </div>
     </div>

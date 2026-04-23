@@ -1,6 +1,45 @@
 import { supabase } from '../supabase'
 import type { Word, WordChoice, NormalizedWord, BatchInsertResult } from '../types'
 import { autoTag } from '../tag-engine'
+import { IMPORT_CHUNK_SIZE } from '../constants'
+import { DEFAULT_TOPIC_COLOR } from '../utils'
+
+/**
+ * Shape returned by Supabase when joining `topic_words` with `topics(name, color)`.
+ * Note: PostgREST returns the embedded relation as a single object (not array)
+ * because `topic_id` is a FK to `topics.id`.
+ */
+interface TopicWordJoin {
+  word_id: string
+  topics: { name: string; color: string | null } | null
+}
+
+/**
+ * Replace tất cả topic associations của một word.
+ * Pattern: delete-then-insert qua bảng junction `topic_words`.
+ */
+async function replaceWordTopics(wordId: string, topicIds: string[]): Promise<void> {
+  await supabase.from('topic_words').delete().eq('word_id', wordId)
+  if (topicIds.length === 0) return
+  await supabase.from('topic_words').insert(
+    topicIds.map((tid) => ({ topic_id: tid, word_id: wordId })),
+  )
+}
+
+/**
+ * Replace tất cả wrong-choice của một word, giữ thứ tự theo index input.
+ */
+async function replaceWordChoices(wordId: string, choices: string[]): Promise<void> {
+  await supabase.from('word_choices').delete().eq('word_id', wordId)
+  if (choices.length === 0) return
+  await supabase.from('word_choices').insert(
+    choices.map((choice, i) => ({
+      word_id: wordId,
+      choice,
+      sort: i + 1,
+    })),
+  )
+}
 
 /** Words */
 export async function getAllWords(topicFilter?: string, search?: string) {
@@ -28,30 +67,32 @@ export async function getAllWords(topicFilter?: string, search?: string) {
     return { data: words ?? [], error }
   }
 
-  const wordIds = (words as Word[]).map(w => w.id)
+  const typedWords = words as Word[]
+  const wordIds = typedWords.map(w => w.id)
   const { data: junctions } = await supabase
     .from('topic_words')
     .select('word_id, topics(name, color)')
     .in('word_id', wordIds)
 
   const topicNameMap = new Map<string, { name: string; color: string }>()
-  for (const j of (junctions ?? [])) {
-    const t = (j as any).topics
-    if (t) {
-      topicNameMap.set(j.word_id, { name: t.name, color: t.color ?? '#f97316' })
+  for (const junction of (junctions ?? []) as unknown as TopicWordJoin[]) {
+    const topic = junction.topics
+    if (topic) {
+      topicNameMap.set(junction.word_id, {
+        name: topic.name,
+        color: topic.color ?? DEFAULT_TOPIC_COLOR,
+      })
     }
   }
 
-  for (const w of words as Word[]) {
-    const t = topicNameMap.get(w.id)
-    if (t) {
-      (w as any).topics = { name: t.name, color: t.color, slug: '', id: '' }
-    } else {
-      (w as any).topics = null
-    }
+  for (const word of typedWords) {
+    const topic = topicNameMap.get(word.id)
+    word.topics = topic
+      ? { name: topic.name, color: topic.color, slug: '', id: '' }
+      : null
   }
 
-  return { data: words, error: null }
+  return { data: typedWords, error: null }
 }
 
 export async function createWord(
@@ -85,15 +126,11 @@ export async function updateWord(
   topicIds?: string[]
 ) {
   if (topicIds !== undefined) {
-    await supabase.from('topic_words').delete().eq('word_id', id)
-    if (topicIds.length > 0) {
-      await supabase.from('topic_words').insert(
-        topicIds.map(tid => ({ topic_id: tid, word_id: id }))
-      )
-    }
+    await replaceWordTopics(id, topicIds)
   }
 
-  const { topic_id: _dropped, ...cleanWord } = word as any
+  // topic_id is a legacy field; associations are managed via topic_words junction table
+  const { topic_id: _topic_id, ...cleanWord } = word
   return await supabase.from('words').update(cleanWord).eq('id', id).select().single()
 }
 
@@ -172,7 +209,6 @@ export function markDuplicates(rows: NormalizedWord[], duplicateWords: Set<strin
 }
 
 export async function batchInsertWords(rows: NormalizedWord[]): Promise<BatchInsertResult> {
-  const CHUNK_SIZE = 50
   let totalInserted = 0
   const allErrors: { word: string; error: string }[] = []
   const toImport = rows.filter(r => {
@@ -183,8 +219,8 @@ export async function batchInsertWords(rows: NormalizedWord[]): Promise<BatchIns
   const submitted = toImport.length
   if (submitted === 0) return { inserted: 0, errors: [], submitted: 0 }
 
-  for (let i = 0; i < toImport.length; i += CHUNK_SIZE) {
-    const chunk = toImport.slice(i, i + CHUNK_SIZE)
+  for (let i = 0; i < toImport.length; i += IMPORT_CHUNK_SIZE) {
+    const chunk = toImport.slice(i, i + IMPORT_CHUNK_SIZE)
     const payload = chunk.map(row => ({
       word: row.word,
       phonetic: row.phonetic ?? null,
@@ -237,21 +273,7 @@ export async function updateWordFromImport(wordId: string, normalized: Normalize
 
   if (err) return { error: err.message }
 
-  await supabase.from('topic_words').delete().eq('word_id', wordId)
-  if (normalized.topicIds.length > 0) {
-    await supabase.from('topic_words').insert(
-      normalized.topicIds.map(tid => ({ topic_id: tid, word_id: wordId }))
-    )
-  }
-  await supabase.from('word_choices').delete().eq('word_id', wordId)
-  if (normalized.wrongChoices.length > 0) {
-    await supabase.from('word_choices').insert(
-      normalized.wrongChoices.map((choice, i) => ({
-        word_id: wordId,
-        choice,
-        sort: i + 1,
-      }))
-    )
-  }
+  await replaceWordTopics(wordId, normalized.topicIds)
+  await replaceWordChoices(wordId, normalized.wrongChoices)
   return { error: null }
 }

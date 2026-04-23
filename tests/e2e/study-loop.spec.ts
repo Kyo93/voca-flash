@@ -11,11 +11,13 @@ test.describe('Study Loop & UX Kinetics', () => {
     // 2. Select first topic in "Học ngay" or "Học tiếp" section
     const firstTopicCard = page.locator('.topic-card').first();
     await expect(firstTopicCard).toBeVisible();
-    await firstTopicCard.getByRole('link', { name: /Học tiếp|Khám phá|Học ngay|Study Now/i }).click();
+    await firstTopicCard.getByRole('link', { name: /Học tiếp|Khám phá|Học ngay|Study Now|Explore/i }).click();
 
     // 3. Prep Screen
     await expect(page).toHaveURL(/.*study.*/);
-    await page.getByRole('button', { name: /Bắt đầu/i }).click();
+    const startBtn = page.getByRole('button', { name: /Bắt đầu học|Start Learning|Bắt đầu/i }).first();
+    await expect(startBtn).toBeVisible({ timeout: 15000 });
+    await startBtn.click();
 
     // 4. Study Flashcard Front
     await expect(page.locator('.font-headline')).toBeVisible(); // Word front

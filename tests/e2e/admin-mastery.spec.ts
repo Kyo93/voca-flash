@@ -9,7 +9,7 @@ test.describe('Admin Mastery & Data Integrity', () => {
   });
 
   test('Word management and Image preview position', async ({ page }) => {
-    await page.getByRole('link', { name: /Words/i }).click();
+    await page.getByRole('link', { name: /Words|Từ vựng/i }).click();
     await expect(page.locator('h1')).toContainText(/Quản lý từ vựng/i);
 
     // Click first word to edit or click Add Word
@@ -32,7 +32,7 @@ test.describe('Admin Mastery & Data Integrity', () => {
   });
 
   test('Import Word Modal validation', async ({ page }) => {
-    await page.getByRole('link', { name: /Words/i }).click();
+    await page.getByRole('link', { name: /Words|Từ vựng/i }).click();
     await page.getByRole('button', { name: /Nhập từ/i }).click();
 
     // Verify Modal visibility

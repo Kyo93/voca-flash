@@ -24,20 +24,25 @@ const HARD_CODED_DISTRACTORS = [
  * Generates MC choice distractors based on the word definition.
  * If word has custom distractors (wrongChoices), priority is given to them.
  */
-export function generateChoices(word: Word): string[] {
+export function generateChoices(word: Word, distractors?: string[]): string[] {
   const correct = word.definition
   
-  // Use custom wrong choices if available
-  if (word.wrongChoices && word.wrongChoices.length > 0) {
-    const choices = [correct, ...word.wrongChoices.slice(0, 3)]
+  // Pool logic: provided distractors > word.wrongChoices > empty
+  let pool = distractors && distractors.length > 0 ? distractors : (word.wrongChoices || [])
+
+  // If pool is populated, take up to 3 and add the correct one
+  if (pool.length > 0) {
+    // Ensure the correct definition isn't already in the pool to avoid duplicates
+    const filteredPool = pool.filter(p => p !== correct)
+    const choices = [correct, ...filteredPool.slice(0, 3)]
     return shuffleArray(choices)
   }
 
   // Fallback to hardcoded distractors
-  const distractors = HARD_CODED_DISTRACTORS
+  const fallbackDistractors = HARD_CODED_DISTRACTORS
     .filter(d => d !== correct)
     .slice(0, 3)
-  return shuffleArray([correct, ...distractors])
+  return shuffleArray([correct, ...fallbackDistractors])
 }
 
 export type QuadrantType =
@@ -51,6 +56,7 @@ export type QuadrantType =
 export interface ChallengeCard {
   word: {
     example: string | null
+    phonetic?: string | null
   }
   progress: {
     stability: number
@@ -70,37 +76,55 @@ export interface ReviewChallenge {
  * Unified quadrant selector.
  * Supports two call signatures:
  *   (card: ChallengeCard)  — for useReviewSession (backward compat)
- *   (stability, hasExample, hasChoices?) — for useFreeStudySession
+ *   (stability, hasExample, hasChoices?, hasPhonetic?) — for useFreeStudySession
  */
 export function selectQuadrant(
   cardOrStability: ChallengeCard | number,
   hasExample?: boolean,
   hasChoices?: boolean,
+  hasPhonetic?: boolean,
 ): QuadrantType {
   let stability: number
   let example: boolean
   let choicesAvailable: boolean
+  let phonetic: boolean
 
   if (typeof cardOrStability === 'number') {
     stability = cardOrStability
     example = hasExample ?? false
     choicesAvailable = hasChoices ?? false
+    phonetic = hasPhonetic ?? false
   } else {
     stability = cardOrStability.progress?.stability ?? 0
     example = !!cardOrStability.word?.example
     choicesAvailable = (cardOrStability.choices?.length ?? 0) >= 3
+    phonetic = !!cardOrStability.word?.phonetic
   }
 
+  // Phase 1: Early Learning (Stability < 3 days)
+  // Goal: Immediate form/meaning connection
   if (stability < 3) {
     const options: QuadrantType[] = ['construction']
     if (choicesAvailable) options.push('recognition')
     if (example) options.push('context_gap')
+    if (phonetic) options.push('phonetics')
+    
     return options[Math.floor(Math.random() * options.length)]
-  } else if (stability < 14) {
+  } 
+  
+  // Phase 2: Strengthening (Stability < 14 days)
+  // Goal: Recall and phonetics reinforcement
+  else if (stability < 14) {
     const options: QuadrantType[] = ['construction', 'phonetics']
     if (example) options.push('context_gap')
+    if (choicesAvailable) options.push('recognition')
+    
     return options[Math.floor(Math.random() * options.length)]
-  } else {
+  } 
+  
+  // Phase 3: Mastery (Stability >= 14 days)
+  // Goal: Production and abstract recall
+  else {
     if (example && Math.random() > 0.5) return 'usage_master'
     return 'ghost_recall'
   }

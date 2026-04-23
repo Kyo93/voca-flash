@@ -36,9 +36,9 @@ export function useDashboard() {
       if (initialData.profile) {
         setStreak({
           currentStreak: initialData.profile.streak_days,
-          lastStudyDate: initialData.profile.last_study_date || null,
-          longestStreak: initialData.profile.streak_days
-        } as any)
+          lastStudyDate: initialData.profile.last_study_date ?? '',
+          longestStreak: initialData.profile.streak_days,
+        })
       }
       setLoading(false)
     }
