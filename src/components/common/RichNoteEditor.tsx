@@ -1,4 +1,4 @@
-import { useEditor, EditorContent } from '@tiptap/react'
+import { useEditor, EditorContent, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Color } from '@tiptap/extension-color'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -7,6 +7,17 @@ import TextAlign from '@tiptap/extension-text-align'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 import { Markdown } from 'tiptap-markdown'
+import { useTranslation } from 'react-i18next'
+
+interface MarkdownStorage {
+  markdown: {
+    getMarkdown: () => string
+  }
+}
+
+function getMarkdown(editor: Editor): string {
+  return (editor.storage as unknown as MarkdownStorage).markdown.getMarkdown()
+}
 
 interface RichNoteEditorProps {
   content: string
@@ -47,6 +58,7 @@ const MenuButton = ({
 )
 
 export default function RichNoteEditor({ content, onChange, placeholder }: RichNoteEditorProps) {
+  const { t } = useTranslation()
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -69,7 +81,7 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
     ],
     content: content,
     onUpdate: ({ editor }) => {
-      onChange((editor.storage as any).markdown.getMarkdown())
+      onChange(getMarkdown(editor))
     },
     editorProps: {
       attributes: {
@@ -218,7 +230,7 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
       >
         <EditorContent editor={editor} className="h-full" />
         <div className="absolute top-6 right-8 text-[10px] font-black text-on-surface-variant/10 uppercase tracking-[0.2em] pointer-events-none select-none italic">
-          Drafting Mode
+          {t('common.draftingMode')}
         </div>
       </div>
 
@@ -226,10 +238,10 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
       <div className="px-6 py-2 bg-surface-container-low border-t border-outline-variant/5 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
-            {(editor.storage as any).markdown.getMarkdown().length} characters
+            {getMarkdown(editor).length} characters
           </span>
           <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
-            {(editor.storage as any).markdown.getMarkdown().split(/\s+/).filter(Boolean).length} words
+            {getMarkdown(editor).split(/\s+/).filter(Boolean).length} words
           </span>
         </div>
         <div className="flex items-center gap-1">

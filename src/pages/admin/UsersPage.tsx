@@ -108,10 +108,6 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
                 <span className="text-sm text-stone-500 font-medium">User ID</span>
                 <span className="text-xs font-mono text-stone-400 truncate max-w-[150px]">{user.id}</span>
               </div>
-              <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
-                <span className="text-sm text-stone-500 font-medium">{t('admin.users.panel.lastOnline')}</span>
-                <span className="text-xs font-mono text-stone-400">{t('admin.users.panel.justNow')}</span>
-              </div>
             </div>
           </section>
         </div>

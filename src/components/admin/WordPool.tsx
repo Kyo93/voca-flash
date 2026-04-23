@@ -2,11 +2,12 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { TAG_META } from '../../lib/tag-constants'
+import { DESIGN_TOKENS } from '../../lib/tokens'
 import DifficultyPill from './DifficultyPill'
 import type { Topic } from '../../lib/types'
 
-/** Màu fallback cho tag chưa có meta (orange brand). */
-const FALLBACK_TAG_COLOR = '#E67E22'
+/** Màu fallback cho tag chưa có meta (terracotta brand từ DESIGN_TOKENS). */
+const FALLBACK_TAG_COLOR = DESIGN_TOKENS.COLORS.PRIMARY
 /** Màu fallback trung tính cho filter chip không xác định (Tailwind stone-400). */
 const FALLBACK_NEUTRAL_COLOR = '#9CA3AF'
 

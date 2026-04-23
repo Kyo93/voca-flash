@@ -40,10 +40,10 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-// Danh sách email admin được nạp từ env (VITE_ADMIN_EMAILS, phân cách bằng dấu phẩy)
-// Fallback giữ owner gốc để bypass UI hang khi DB RLS lỗi.
+// Danh sách email admin được nạp từ env (VITE_ADMIN_EMAILS, phân cách bằng dấu phẩy).
+// Không hardcode email cụ thể trong source — phải khai báo qua env.
 const ADMIN_EMAILS: readonly string[] = (
-  (import.meta.env.VITE_ADMIN_EMAILS as string | undefined) ?? 'ocean.nguyen993@gmail.com'
+  (import.meta.env.VITE_ADMIN_EMAILS as string | undefined) ?? ''
 )
   .split(',')
   .map((email) => email.trim().toLowerCase())

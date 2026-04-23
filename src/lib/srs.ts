@@ -105,12 +105,28 @@ export function getSrsLevelConfig(stability: number) {
 const DEFAULT_RETENTION = SRS_CONFIG.RETENTION_DEFAULT
 
 /** 
- * Internal FSRS Scheduler instance (Singleton) 
+ * Internal FSRS Scheduler instance (Singleton)
  */
 const scheduler = fsrs({
   enable_short_term: false,
   request_retention: DEFAULT_RETENTION
 })
+
+/**
+ * Cache scheduler instances per retention value so non-default retentions
+ * don't rebuild an FSRS scheduler on every calculateFSRSReview() call
+ * (which can fire many times per review session).
+ */
+const schedulerCache = new Map<number, ReturnType<typeof fsrs>>()
+function getScheduler(retention: number): ReturnType<typeof fsrs> {
+  if (retention === DEFAULT_RETENTION) return scheduler
+  let s = schedulerCache.get(retention)
+  if (!s) {
+    s = fsrs({ enable_short_term: false, request_retention: retention })
+    schedulerCache.set(retention, s)
+  }
+  return s
+}
 
 /**
  * Helper: Format scheduled days into human readable interval.
@@ -170,7 +186,7 @@ export function calculateFSRSReview(
   rating: SrsRating,
   retention: number = DEFAULT_RETENTION
 ): CardProgress {
-  const srsScheduler = retention === DEFAULT_RETENTION ? scheduler : fsrs({ enable_short_term: false, request_retention: retention })
+  const srsScheduler = getScheduler(retention)
   const currentCard = mapCardProgressToFSRSCard(progress)
   const results = srsScheduler.repeat(currentCard, new Date())
   const selected = results[rating]

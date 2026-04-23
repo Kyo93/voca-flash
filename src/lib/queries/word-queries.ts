@@ -5,13 +5,13 @@ import { IMPORT_CHUNK_SIZE } from '../constants'
 import { DEFAULT_TOPIC_COLOR } from '../utils'
 
 /**
- * Shape returned by Supabase when joining `topic_words` with `topics(name, color)`.
+ * Shape returned by Supabase when joining `topic_words` with `topics(id, name, slug, color)`.
  * Note: PostgREST returns the embedded relation as a single object (not array)
  * because `topic_id` is a FK to `topics.id`.
  */
 interface TopicWordJoin {
   word_id: string
-  topics: { name: string; color: string | null } | null
+  topics: { id: string; name: string; slug: string; color: string | null } | null
 }
 
 /**
@@ -71,15 +71,17 @@ export async function getAllWords(topicFilter?: string, search?: string) {
   const wordIds = typedWords.map(w => w.id)
   const { data: junctions } = await supabase
     .from('topic_words')
-    .select('word_id, topics(name, color)')
+    .select('word_id, topics(id, name, slug, color)')
     .in('word_id', wordIds)
 
-  const topicNameMap = new Map<string, { name: string; color: string }>()
+  const topicNameMap = new Map<string, { id: string; name: string; slug: string; color: string }>()
   for (const junction of (junctions ?? []) as unknown as TopicWordJoin[]) {
     const topic = junction.topics
     if (topic) {
       topicNameMap.set(junction.word_id, {
+        id: topic.id,
         name: topic.name,
+        slug: topic.slug,
         color: topic.color ?? DEFAULT_TOPIC_COLOR,
       })
     }
@@ -88,7 +90,7 @@ export async function getAllWords(topicFilter?: string, search?: string) {
   for (const word of typedWords) {
     const topic = topicNameMap.get(word.id)
     word.topics = topic
-      ? { name: topic.name, color: topic.color, slug: '', id: '' }
+      ? { id: topic.id, name: topic.name, slug: topic.slug, color: topic.color }
       : null
   }
 
