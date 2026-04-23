@@ -35,22 +35,31 @@ export function slugify(name: string): string {
 
 // ── Time formatting ──────────────────────────────────────────
 
+import { TIME_CONSTANTS } from './constants'
+
 /**
- * Format a ISO timestamp to Vietnamese relative time or absolute date.
- * Used for displaying created_at / updated_at in admin lists and modals.
+ * Format a ISO timestamp to localized relative time or absolute date.
+ * Caller should provide the t() function from useTranslation.
  */
-export function formatRelativeTime(dateStr: string): string {
+export function formatRelativeTime(dateStr: string, t?: (key: string, options?: any) => string): string {
   try {
     const date = new Date(dateStr)
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
-    const diffMin = Math.floor(diffMs / 60000)
-    if (diffMin < 1) return 'vừa xong'
-    if (diffMin < 60) return `${diffMin} phút trước`
-    const diffH = Math.floor(diffMin / 60)
-    if (diffH < 24) return `${diffH} giờ trước`
-    const diffD = Math.floor(diffH / 24)
-    return `${diffD} ngày trước`
+    const diffMin = Math.floor(diffMs / TIME_CONSTANTS.ONE_MINUTE_MS)
+    
+    if (diffMin < 1) return t ? t('common.time.just_now') : 'vừa xong'
+    if (diffMin < TIME_CONSTANTS.ONE_HOUR_MINS) {
+      return t ? t('common.time.minutes_ago', { count: diffMin }) : `${diffMin} phút trước`
+    }
+    
+    const diffH = Math.floor(diffMin / TIME_CONSTANTS.ONE_HOUR_MINS)
+    if (diffH < TIME_CONSTANTS.ONE_DAY_HOURS) {
+      return t ? t('common.time.hours_ago', { count: diffH }) : `${diffH} giờ trước`
+    }
+    
+    const diffD = Math.floor(diffH / TIME_CONSTANTS.ONE_DAY_HOURS)
+    return t ? t('common.time.days_ago', { count: diffD }) : `${diffD} ngày trước`
   } catch {
     return ''
   }

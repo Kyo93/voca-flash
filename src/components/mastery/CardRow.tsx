@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { format } from 'date-fns'
 import { Locale } from 'date-fns/locale'
 import { MasteryWord } from '../../lib/types'
-import { getSrsLevelConfig } from '../../lib/srs'
+import { SrsLevelBadge } from './SrsLevelBadge'
 
 interface CardRowProps {
   word: MasteryWord
@@ -39,8 +39,6 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
   const isDue = nextReviewDate && nextReviewDate <= new Date()
 
   const stability = Number(word.fsrs_stability ?? 0)
-  const level = getSrsLevelConfig(stability)
-  const strengthPercent = Math.min(100, (stability / 21) * 100)
 
   return (
     <tr
@@ -74,10 +72,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
             </span>
           </div>
 
-          {/* Centralized Level Badge */}
-          <span className={`px-2.5 py-1 rounded-md text-[9px] font-black uppercase tracking-widest ${level.bg} ${level.text} ${level.glow} leading-none`}>
-            {level.label}
-          </span>
+          <SrsLevelBadge stability={stability} />
         </div>
       </td>
       <td className="py-6 px-8 hidden lg:table-cell">
@@ -113,17 +108,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
         </div>
       </td>
       <td className="py-6 px-8">
-        <div className="flex items-center gap-3">
-          <div className="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
-            <div
-              className={`h-full ${level.color} transition-all duration-1000 ${level.glow ? 'animate-pulse' : ''}`}
-              style={{ width: `${strengthPercent}%` }}
-            />
-          </div>
-          <p className="text-[10px] font-black text-on-surface-variant/40 uppercase leading-none tracking-tighter">
-            {stability.toFixed(1)}d
-          </p>
-        </div>
+        <SrsLevelBadge stability={stability} showStrength />
       </td>
       <td className="py-6 px-8 text-right">
         <div className="flex items-center justify-end gap-4">

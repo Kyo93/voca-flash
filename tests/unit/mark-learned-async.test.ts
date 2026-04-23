@@ -68,14 +68,17 @@ describe('markLearned — must defer rate() until flip animation finishes', () =
 
     // Remove all whitespace to detect "flip()rate(3)" pattern (both on same line/tick)
     const flat = body.replace(/\s+/g, '')
-    // If flip() immediately precedes rate(3) with no setTimeout/requestAnimationFrame
+    // If flip() immediately precedes rate() with no setTimeout/requestAnimationFrame
     // between them in the flat string, it's synchronous = wrong
     const flipIdx = flat.indexOf('flip()')
-    const rateIdx = flat.indexOf('rate(3)')
+    // Matches rate(3) or rate(SRS_RATINGS.GOOD)
+    const rateMatch = flat.match(/rate\((3|SRS_RATINGS\.GOOD)\)/)
+    const rateIdx = rateMatch ? rateMatch.index! : -1
+    
     // They must both exist and rate must NOT be immediately after flip (gap > 20 chars)
     expect(flipIdx).toBeGreaterThan(-1)
     expect(rateIdx).toBeGreaterThan(-1)
-    // Check: is rate(3) called synchronously right after flip()?
+    // Check: is rate() called synchronously right after flip()?
     const gap = rateIdx - (flipIdx + 'flip()'.length)
     expect(gap).toBeGreaterThan(20) // >20 chars means setTimeout/raf was inserted
   })

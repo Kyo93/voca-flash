@@ -25,7 +25,7 @@ export default function AppLayout() {
     if (location.pathname.startsWith('/settings')) return t('nav.settings')
     if (location.pathname.startsWith('/admin')) return t('common.admin')
     if (location.pathname.startsWith('/mastery')) return t('nav.mastery')
-    return 'VocabMaster'
+    return 'VocaFlash'
   }
 
 

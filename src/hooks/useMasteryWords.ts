@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getUserVocabulary, getMasteryStats } from '../lib/storage/mastery'
-import { MasteryWord } from '../lib/types'
+import { MasteryWord, MasteryStats } from '../lib/types'
 import { useInfiniteScroll } from './useInfiniteScroll'
 import { MASTERY_CONFIG } from '../lib/constants'
 
@@ -21,7 +21,7 @@ interface UseMasteryWordsProps {
 export function useMasteryWords({ userId }: UseMasteryWordsProps) {
   // Data State
   const [words, setWords] = useState<MasteryWord[]>([])
-  const [stats, setStats] = useState<any>(null)
+  const [stats, setStats] = useState<MasteryStats | null>(null)
   const [totalCount, setTotalCount] = useState(0)
 
   // UI Flow State

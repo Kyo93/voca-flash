@@ -10,8 +10,8 @@ export default function ProgressPage() {
   const { t } = useTranslation()
   const { data, isLoading, error } = useAnalytics()
 
-  if (isLoading) return <div className="p-12 animate-pulse text-stone-400 font-medium">Analyzing scholarly metrics...</div>
-  if (error) return <div className="p-12 text-red-500">Error loading progress data.</div>
+  if (isLoading) return <div className="p-12 animate-pulse text-stone-400 font-medium">{t('progress.loading')}</div>
+  if (error) return <div className="p-12 text-red-500">{t('progress.error')}</div>
   if (!data) return null
 
   const dist = data.mastery_distribution || {}
@@ -36,17 +36,17 @@ export default function ProgressPage() {
         <section className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
             <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-on-surface mb-2">
-              {t(greetingKey, { defaultValue: 'Chào buổi sáng, Học giả.' })}
+              {t(greetingKey)}
             </h1>
             <p className="text-lg text-on-surface-variant">
-              {t('progress.subtitle_scholar', { defaultValue: 'Đây là phân tích tiến độ học tập chuyên sâu của bạn hôm nay.' })}
+              {t('progress.subtitle_scholar')}
             </p>
           </div>
           <div className="text-right shrink-0">
             <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1">
-              {t('progress.current_level', { defaultValue: 'Cấp độ hiện tại' })}
+              {t('progress.current_level')}
             </p>
-            <p className="text-3xl font-bold bg-linear-to-r from-primary to-[#944A00] bg-clip-text text-transparent">
+            <p className="text-3xl font-bold bg-linear-to-r from-primary to-primary-dim bg-clip-text text-transparent">
               {userLevel}
             </p>
           </div>
@@ -62,28 +62,28 @@ export default function ProgressPage() {
               </div>
               {wordsToday > 0 && (
                 <span className="text-secondary font-medium bg-secondary-container/30 px-3 py-1 rounded-full text-xs">
-                  +{wordsToday} {t('progress.today_label', { defaultValue: 'hôm nay' })}
+                  +{wordsToday} {t('progress.today_label')}
                 </span>
               )}
             </div>
             <h3 className="text-4xl font-bold text-on-surface mb-1">{totalWords.toLocaleString()}</h3>
-            <p className="text-on-surface-variant font-medium text-sm">{t('progress.vocab_learned', { defaultValue: 'Từ vựng đã học' })}</p>
+            <p className="text-on-surface-variant font-medium text-sm">{t('progress.vocab_learned')}</p>
           </div>
 
           {/* Mastered Words */}
           <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] hover:bg-surface-container-low transition-colors group">
             <div className="flex justify-between items-start mb-5">
-              <div className="w-11 h-11 rounded-full bg-[#2E7D32] flex items-center justify-center text-white">
+              <div className="w-11 h-11 rounded-full bg-success flex items-center justify-center text-white">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
               </div>
               {data.mastered_count > 0 && (
-                <span className="text-[#2E7D32] font-medium bg-[#E8F5E9] px-3 py-1 rounded-full text-xs">
+                <span className="text-success font-medium bg-success-container px-3 py-1 rounded-full text-xs">
                   {Math.round((data.mastered_count / totalWords) * 100)}%
                 </span>
               )}
             </div>
             <h3 className="text-4xl font-bold text-on-surface mb-1">{data.mastered_count.toLocaleString()}</h3>
-            <p className="text-on-surface-variant font-medium text-sm">{t('progress.masteredWords', { defaultValue: 'Từ đã nhuần nhuyễn' })}</p>
+            <p className="text-on-surface-variant font-medium text-sm">{t('progress.masteredWords')}</p>
           </div>
 
           {/* Streak */}
@@ -94,32 +94,32 @@ export default function ProgressPage() {
               </div>
               {data.streak_days >= 7 && (
                 <span className="text-primary font-medium bg-primary-container/20 px-3 py-1 rounded-full text-xs">
-                  {t('progress.new_record', { defaultValue: 'Kỷ lục mới!' })}
+                  {t('progress.new_record')}
                 </span>
               )}
             </div>
             <h3 className="text-4xl font-bold text-on-surface mb-1">{data.streak_days}</h3>
-            <p className="text-on-surface-variant font-medium text-sm">{t('progress.streak_label', { defaultValue: 'Ngày liên tiếp (Streak)' })}</p>
+            <p className="text-on-surface-variant font-medium text-sm">{t('progress.streak_label')}</p>
           </div>
 
           {/* Retention */}
           <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] hover:bg-surface-container-low transition-colors group">
             <div className="flex justify-between items-start mb-5">
-              <div className="w-11 h-11 rounded-full bg-[#755A33] flex items-center justify-center text-white">
+              <div className="w-11 h-11 rounded-full bg-warm-accent flex items-center justify-center text-white">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
               </div>
-              <span className="text-[#755A33] font-medium bg-[#B49469]/20 px-3 py-1 rounded-full text-xs">
+              <span className="text-warm-accent font-medium bg-warm-accent-container/20 px-3 py-1 rounded-full text-xs">
                 {!retentionInfo.hasData
-                  ? t('progress.no_data', { defaultValue: 'Chưa có dữ liệu' })
+                  ? t('progress.no_data')
                   : retentionInfo.percent >= 80
-                    ? t('progress.stable', { defaultValue: 'Ổn định' })
-                    : t('progress.needs_work', { defaultValue: 'Cần cải thiện' })}
+                    ? t('progress.stable')
+                    : t('progress.needs_work')}
               </span>
             </div>
             <h3 className="text-4xl font-bold text-on-surface mb-1">
               {retentionInfo.hasData ? `${retentionInfo.percent}%` : '—'}
             </h3>
-            <p className="text-on-surface-variant font-medium text-sm">{t('progress.retention_metric', { defaultValue: 'Độ bám trí nhớ (Retention)' })}</p>
+            <p className="text-on-surface-variant font-medium text-sm">{t('progress.retention_metric')}</p>
           </div>
         </section>
 
@@ -139,10 +139,10 @@ export default function ProgressPage() {
             <span className="material-symbols-outlined absolute -top-4 -right-4 text-8xl opacity-10" style={{ fontVariationSettings: "'FILL' 1" }}>format_quote</span>
             <div>
               <h3 className="text-xs font-bold uppercase tracking-widest text-secondary-container mb-5">
-                {t('progress.mentor_advice_title', { defaultValue: 'Lời khuyên từ Mentor' })}
+                {t('progress.mentor_advice_title')}
               </h3>
               <p className="text-lg font-medium leading-relaxed mb-6">
-                "{t('progress.mentor_quote', { defaultValue: 'Việc học ngôn ngữ không phải là cuộc đua nước rút, mà là quá trình bồi đắp từng lớp phù sa kiến thức mỗi ngày.' })}"
+                "{t('progress.mentor_quote')}"
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -150,8 +150,8 @@ export default function ProgressPage() {
                 E
               </div>
               <div>
-                <p className="font-bold text-on-secondary text-sm">GS. Eleanor Vance</p>
-                <p className="text-xs text-secondary-container">{t('progress.mentor_role', { defaultValue: 'Trưởng khoa Ngôn ngữ học' })}</p>
+                <p className="font-bold text-on-secondary text-sm">{t('progress.mentor_name')}</p>
+                <p className="text-xs text-secondary-container">{t('progress.mentor_role')}</p>
               </div>
             </div>
           </div>

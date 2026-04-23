@@ -15,8 +15,8 @@ export default function BadgeGallery({ streak, totalMastered }: BadgeGalleryProp
       id: 'persistent_scholar',
       icon: 'emoji_events',
       unlocked: streak >= 100,
-      label: t('progress.badges_v2.persistent.label', { defaultValue: 'Học giả Kiên trì' }),
-      description: t('progress.badges_v2.persistent.desc', { defaultValue: 'Hoàn thành 100 ngày liên tiếp' }),
+      label: t('progress.badges_v2.persistent.label'),
+      description: t('progress.badges_v2.persistent.desc'),
       gradient: 'from-[#8B6914] to-[#6B4F10]',
       textColor: 'text-white',
     },
@@ -24,8 +24,8 @@ export default function BadgeGallery({ streak, totalMastered }: BadgeGalleryProp
       id: 'vocab_master',
       icon: 'military_tech',
       unlocked: totalMastered >= 4000,
-      label: t('progress.badges_v2.vocab_master.label', { defaultValue: 'Bậc thầy Từ vựng' }),
-      description: t('progress.badges_v2.vocab_master.desc', { defaultValue: 'Vượt mốc 4,000 từ' }),
+      label: t('progress.badges_v2.vocab_master.label'),
+      description: t('progress.badges_v2.vocab_master.desc'),
       gradient: 'from-[#546435] to-[#3C4C20]',
       textColor: 'text-white',
     },
@@ -33,8 +33,8 @@ export default function BadgeGallery({ streak, totalMastered }: BadgeGalleryProp
       id: 'c1_peak',
       icon: 'lock',
       unlocked: false,
-      label: t('progress.badges_v2.c1_peak.label', { defaultValue: 'Đỉnh cao C1' }),
-      description: t('progress.badges_v2.c1_peak.desc', { defaultValue: 'Hoàn thành bài kiểm tra cuối kỳ' }),
+      label: t('progress.badges_v2.c1_peak.label'),
+      description: t('progress.badges_v2.c1_peak.desc'),
       gradient: '',
       textColor: 'text-on-surface-variant',
     },
@@ -44,7 +44,7 @@ export default function BadgeGallery({ streak, totalMastered }: BadgeGalleryProp
     <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)]">
       <div className="flex justify-between items-center mb-5">
         <h3 className="text-lg font-bold text-on-surface">
-          {t('progress.recent_achievements', { defaultValue: 'Thành tựu gần đây' })}
+          {t('progress.recent_achievements')}
         </h3>
         <button className="text-primary hover:text-primary-container transition-colors">
           <span className="material-symbols-outlined">chevron_right</span>

@@ -9,6 +9,7 @@
 
 import { supabase } from './supabase'
 import { getTodayBoundary } from './storage/session'
+import { TIME_CONSTANTS } from './constants'
 
 const STREAK_KEY = 'vocamaster-streak'
 
@@ -66,7 +67,7 @@ function daysDiff(date1: string, date2: string): number {
   const d1 = new Date(date1)
   const d2 = new Date(date2)
   if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return -1
-  return Math.floor(Math.abs((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)))
+  return Math.floor(Math.abs((d2.getTime() - d1.getTime()) / TIME_CONSTANTS.ONE_DAY_MS))
 }
 
 /**

@@ -1,33 +1,20 @@
 import { supabase } from '../supabase'
-import { FETCH_PAGE_SIZE, SRS_STABILITY_LEVELS } from '../constants'
+import { FETCH_REVIEWS_LIMIT, TIME_CONSTANTS } from '../constants'
 import type { Word, SrsRecord, WordChoice, ResumePointer } from '../types'
-import { CardProgress, mapSrsRecordToCardProgress } from '../srs'
+import { CardProgress, mapSrsRecordToCardProgress, isMastered, State } from '../srs'
+import { fetchPaginated } from './base'
 
 export async function fetchSrsStates(userId: string): Promise<Map<string, CardProgress>> {
-  const PAGE_SIZE = FETCH_PAGE_SIZE
+  const query = supabase
+    .from('user_srs_records')
+    .select('*')
+    .eq('user_id', userId)
+
+  const data = await fetchPaginated<SrsRecord>(query)
   const map = new Map<string, CardProgress>()
-  let from = 0
-  let hasMore = true
 
-  while (hasMore) {
-    const { data, error } = await supabase
-      .from('user_srs_records')
-      .select('*')
-      .eq('user_id', userId)
-      .range(from, from + PAGE_SIZE - 1)
-
-    if (error) {
-      console.error('[Storage] fetchSrsStates error:', error)
-      break
-    }
-
-    const progressList = (data as SrsRecord[]) ?? []
-    for (const p of progressList) {
-      map.set(p.word_id, mapSrsRecordToCardProgress(p))
-    }
-
-    hasMore = progressList.length === PAGE_SIZE
-    from += PAGE_SIZE
+  for (const p of data) {
+    map.set(p.word_id, mapSrsRecordToCardProgress(p))
   }
 
   return map
@@ -43,7 +30,7 @@ export async function upsertSrsRecord(
     return
   }
 
-  const isMasteredStatus = update.stability >= SRS_STABILITY_LEVELS.MASTERED && update.state !== 3
+  const isMasteredStatus = isMastered(update)
   const nextReviewAt = new Date(update.due).toISOString()
   const lastReviewed = new Date(update.lastReview || Date.now()).toISOString()
 
@@ -78,7 +65,7 @@ export async function fetchReviewWords(userId: string): Promise<{ word: Word; pr
     .eq('mastered', false)
     .lte('next_review_at', new Date().toISOString())
     .order('lapse_count', { ascending: false })
-    .limit(20)
+    .limit(FETCH_REVIEWS_LIMIT)
 
   if (srsError || !records) {
     console.error('[Storage] fetchReviewWords error:', srsError)
@@ -156,8 +143,8 @@ export async function resetAllProgress(): Promise<void> {
 
 export function getTodayBoundary(): Date {
   const boundary = new Date()
-  boundary.setHours(4, 0, 0, 0)
-  if (new Date().getHours() < 4) {
+  boundary.setHours(TIME_CONSTANTS.DAY_BOUNDARY_HOUR, 0, 0, 0)
+  if (new Date().getHours() < TIME_CONSTANTS.DAY_BOUNDARY_HOUR) {
     boundary.setDate(boundary.getDate() - 1)
   }
   return boundary
@@ -166,7 +153,7 @@ export function getTodayBoundary(): Date {
 export async function upsertFreeStudyFail(userId: string, wordId: string): Promise<void> {
   // Logic simplified: we mark it as forgotten if it exists
   await supabase.from('user_srs_records').update({ 
-    fsrs_state: 1, // Relearning/New
+    fsrs_state: State.Learning, // Start learning if forgotten
     next_review_at: new Date().toISOString() 
   }).eq('user_id', userId).eq('word_id', wordId)
 }

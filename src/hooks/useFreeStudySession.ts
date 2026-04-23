@@ -4,6 +4,11 @@ import { upsertFreeStudyFail, getUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
 import { ReviewChallenge, selectQuadrant } from '../lib/challenge-logic'
+import { shuffleArray } from '../lib/utils'
+
+const FREE_STUDY_DEFAULT_SAMPLE_SIZE = 20
+const POINTS_PER_CORRECT = 10
+const DEFAULT_WORD_DIFFICULTY = 3
 
 export function useFreeStudySession(deckId: string = 'all', wordsOverride?: MasteryWord[]) {
   const { user } = useAuth()
@@ -34,8 +39,8 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
       } else {
         const { data: allWords } = await getUserVocabulary(user.id)
         if (deckId === 'all') {
-          // Default: Take 20 random words for free study if none selected
-          sourceWords = (allWords ?? []).sort(() => Math.random() - 0.5).slice(0, 20)
+          // Default: Take N random words for free study if none selected
+          sourceWords = shuffleArray(allWords ?? []).slice(0, FREE_STUDY_DEFAULT_SAMPLE_SIZE)
         } else if (deckId === 'mastered') {
           sourceWords = (allWords ?? []).filter(w => w.mastered === true)
         } else {
@@ -64,7 +69,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
           definition: w.definition,
           phonetic: w.phonetic,
           pos: 'other', // v2 does not return pos
-          difficulty: 3,
+          difficulty: DEFAULT_WORD_DIFFICULTY,
           image_url: w.image_url,
           image_position: null, // v2 does not return image_position
           example: w.example,
@@ -83,7 +88,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
         }
       })
 
-      setQueue(challenges.sort(() => Math.random() - 0.5))
+      setQueue(shuffleArray(challenges))
       setCurrentIndex(0)
       setIsComplete(challenges.length === 0)
     } catch (err) {
@@ -114,7 +119,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
     setStats(prev => ({
       correct: prev.correct + (isCorrect ? 1 : 0),
       wrong: prev.wrong + (isCorrect ? 0 : 1),
-      points: prev.points + (isCorrect ? 10 : 0),
+      points: prev.points + (isCorrect ? POINTS_PER_CORRECT : 0),
       mistakes: isCorrect ? prev.mistakes : [...prev.mistakes, current.word]
     }))
 

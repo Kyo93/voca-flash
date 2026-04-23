@@ -118,7 +118,7 @@ export default function DashboardPage() {
             <div className="relative h-56 overflow-hidden bg-secondary/10 flex items-center justify-center">
               <span className="material-symbols-outlined text-7xl text-secondary opacity-20 group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
               <div className="absolute inset-0 bg-linear-to-t from-secondary/10 to-transparent" />
-              <span className={`absolute bottom-6 left-6 px-4 py-1.5 bg-secondary text-white text-[9px] font-black rounded-lg uppercase tracking-[0.2em]`}>ACTIVE RECALL</span>
+              <span className={`absolute bottom-6 left-6 px-4 py-1.5 bg-secondary text-white text-[9px] font-black rounded-lg uppercase tracking-[0.2em]`}>{t('home.activeRecall')}</span>
             </div>
             <div className="p-6">
               <h5 className="text-xl font-black text-on-surface mb-2">{t('home.maintenanceTitle')}</h5>

@@ -39,19 +39,19 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
   const qualityLabel = (() => {
     if (total === 0) return '—'
     const masteryRatio = totals.review / total
-    if (masteryRatio > 0.7) return t('progress.knowledge_excellent', { defaultValue: 'Tốt' })
-    if (masteryRatio > 0.4) return t('progress.knowledge_good', { defaultValue: 'Khá' })
-    return t('progress.knowledge_developing', { defaultValue: 'Đang phát triển' })
+    if (masteryRatio > 0.7) return t('progress.knowledge_excellent')
+    if (masteryRatio > 0.4) return t('progress.knowledge_good')
+    return t('progress.knowledge_developing')
   })()
 
   if (total === 0) {
     return (
       <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] flex flex-col items-center justify-center min-h-[260px]">
         <h3 className="text-lg font-bold text-on-surface mb-4 self-start">
-          {t('progress.knowledge_structure', { defaultValue: 'Cấu trúc kiến thức' })}
+          {t('progress.knowledge_structure')}
         </h3>
         <span className="material-symbols-outlined text-3xl text-stone-200 mb-2">school</span>
-        <p className="text-xs text-stone-300 italic">{t('progress.noWeakWords', { defaultValue: 'Start learning to see your progress' })}</p>
+        <p className="text-xs text-stone-300 italic">{t('progress.noWeakWords')}</p>
       </div>
     )
   }
@@ -59,7 +59,7 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
   return (
     <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] flex flex-col items-center justify-center relative">
       <h3 className="text-lg font-bold text-on-surface absolute top-7 left-7">
-        {t('progress.knowledge_structure', { defaultValue: 'Cấu trúc kiến thức' })}
+        {t('progress.knowledge_structure')}
       </h3>
 
       {/* Donut Chart */}
@@ -89,7 +89,7 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
         <div className="text-center z-10">
           <p className="text-3xl font-bold text-on-surface">{qualityLabel}</p>
           <p className="text-xs text-on-surface-variant uppercase tracking-widest mt-1">
-            {t('progress.diversity', { defaultValue: 'Đa dạng' })}
+            {t('progress.diversity')}
           </p>
         </div>
       </div>
@@ -99,13 +99,13 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-primary-container" />
           <span className="text-sm font-medium text-on-surface-variant">
-            {t('progress.academic', { defaultValue: 'Học thuật' })}
+            {t('progress.academic')}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-secondary-container" />
           <span className="text-sm font-medium text-on-surface-variant">
-            {t('progress.practical', { defaultValue: 'Thực tiễn' })}
+            {t('progress.practical')}
           </span>
         </div>
       </div>

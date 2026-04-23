@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* === VocabMaster Design System — The Tactile Scholar === */
+  /* === VocaFlash Design System — The Tactile Scholar === */
 
   /* Primary: Terracotta (#E67E22) */
   --color-primary: #E67E22;
@@ -28,6 +28,14 @@
   --color-on-tertiary: #ffffff;
   --color-tertiary-container: #00a3e4;
   --color-on-tertiary-container: #00354d;
+
+  /* Semantic Highlights & Accents */
+  --color-success: #2E7D32;
+  --color-success-container: #E8F5E9;
+  --color-warm-accent: #755A33;
+  --color-warm-accent-container: #B49469;
+  --color-mastery-accent: #829460;
+  --color-primary-dim: #944A00;
 
   /* Error: Alert Red (#BA1A1A) */
   --color-error: #ba1a1a;

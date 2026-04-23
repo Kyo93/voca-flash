@@ -17,7 +17,7 @@ export default function LandingPage() {
         <nav className="flex items-center justify-between px-6 md:px-12 py-5 max-w-[1440px] mx-auto">
           <div className="text-3xl font-black tracking-tighter text-primary flex items-center gap-2">
             <span className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white text-xl rotate-3">V</span>
-            VocabMaster
+            VocaFlash
           </div>
           <div className="hidden md:flex items-center gap-10">
             <a className="text-primary font-bold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-1 after:bg-primary after:rounded-full" href="#">{t('landing.articles')}</a>
@@ -99,8 +99,8 @@ export default function LandingPage() {
                         <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                       </div>
                       <div className="text-xs">
-                        <div className="font-bold">Mastered!</div>
-                        <div className="opacity-70">"Perspective"</div>
+                        <div className="font-bold">{t('landing.floatingCard.mastered')}</div>
+                        <div className="opacity-70">"{t('landing.floatingCard.word')}"</div>
                       </div>
                     </div>
                   </div>
@@ -161,8 +161,8 @@ export default function LandingPage() {
       <footer className="w-full flex-none bg-white border-t border-orange-50 relative z-20">
         <div className="flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-8 max-w-[1440px] mx-auto gap-6 md:gap-0">
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-10 text-center md:text-left">
-            <span className="font-black text-primary text-xl">VocabMaster</span>
-            <span className="text-sm text-on-surface-variant/70">© 2024 VocabMaster. The Tactile Scholar's Choice.</span>
+            <span className="font-black text-primary text-xl">VocaFlash</span>
+            <span className="text-sm text-on-surface-variant/70">{t('landing.footer.copyright')}</span>
           </div>
           <div className="flex flex-wrap justify-center gap-6 md:gap-10 text-sm font-bold text-secondary">
             <a className="hover:text-primary transition-colors" href="#">{t('landing.articles')}</a>

@@ -100,7 +100,7 @@ describe('mapSrsRecordToCardProgress — RED', () => {
   it('session.ts fetchSrsStates and fetchReviewWords must use the shared function', async () => {
     const fs = await import('fs')
     const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/lib/storage/session.ts',
+      'c:/Users/Ocean/Documents/VibeCode/English/voca-flash/src/lib/storage/session.ts',
       'utf-8'
     )
     // Both functions should call mapSrsRecordToCardProgress

@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { Card, CardProgress, calculateFSRSReview, createInitialProgress, isMastered, SrsRating, mapIntensityToRetention } from '../lib/srs'
 import { fetchWords, fetchSrsStates, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
+import { SRS_RATINGS, TIME_CONSTANTS, SRS_CONFIG } from '../lib/constants'
 
 interface FlashcardState {
   queue: Card[]
@@ -81,7 +82,7 @@ export function useFlashcard() {
         combined = [...combined, ...mastered]
       }
       
-      const limit = profile?.daily_target ?? 20
+      const limit = profile?.daily_target ?? SRS_CONFIG.DEFAULT_DAILY_TARGET
       combined = combined.slice(0, limit)
 
       if (user && roadmapId) {
@@ -108,53 +109,49 @@ export function useFlashcard() {
   const rate = useCallback(async (rating: SrsRating) => {
     let cardToSave: Card | null = null
     let progressToSave: CardProgress | null = null
-    let wrong = rating === 1 ? 1 : 0
-    let duration = 0
+    const wrongCount = rating === SRS_RATINGS.AGAIN ? 1 : 0
+    let durationMs = 0
 
     setState((s) => {
       const card = s.queue[s.currentIndex]
       if (!card) return s
 
       const prevProgress = s.progressMap.get(card.id) || createInitialProgress(card.id)
-      const intensity = profile?.srs_intensity ?? 1.0
+      const intensity = profile?.srs_intensity ?? SRS_CONFIG.INTENSITY_DEFAULT
       const retention = mapIntensityToRetention(intensity)
       
       const newProgress = calculateFSRSReview(prevProgress, rating, retention)
 
-      const newMap = new Map(s.progressMap)
-      newMap.set(card.id, newProgress)
+      const updatedMap = new Map(s.progressMap)
+      updatedMap.set(card.id, newProgress)
 
-      const nextIndex = s.currentIndex + 1
-      const isComplete = nextIndex >= s.queue.length
+      const nextIdx = s.currentIndex + 1
+      const isComplete = nextIdx >= s.queue.length
 
-      // Capture values for the side effect
+      // Side effect capture
       cardToSave = card
       progressToSave = newProgress
-      duration = Date.now() - s.cardStartTime
+      durationMs = Date.now() - s.cardStartTime
 
       return {
         ...s,
-        progressMap: newMap,
-        currentIndex: nextIndex,
+        progressMap: updatedMap,
+        currentIndex: nextIdx,
         isFlipped: false,
         isComplete,
         cardStartTime: Date.now(),
       }
     })
 
-    // Fire-and-forget Supabase sync (non-blocking) OUTSIDE setState
     if (user && cardToSave && progressToSave) {
-      upsertSrsRecord(user.id, cardToSave.id, {
-        ...progressToSave,
-        incrementWrong: wrong,
+      upsertSrsRecord(user.id, (cardToSave as Card).id, {
+        ...(progressToSave as CardProgress),
+        incrementWrong: wrongCount,
         rating,
-        duration
-      }).catch(
-        (err) => console.error('[useFlashcard] upsert progress error:', err)
-      )
-      recordStreak(user.id).catch(
-        (err) => console.error('[useFlashcard] recordStreak error:', err)
-      )
+        duration: durationMs
+      }).catch(err => console.error('[useFlashcard] sync error:', err))
+      
+      recordStreak(user.id).catch(err => console.error('[useFlashcard] streak error:', err))
     }
   }, [user, profile?.srs_intensity])
 
@@ -163,7 +160,7 @@ export function useFlashcard() {
     // until after the flip animation completes (~300ms)
     flip()
     requestAnimationFrame(() => {
-      setTimeout(() => rate(3), 1000)
+      setTimeout(() => rate(SRS_RATINGS.GOOD), TIME_CONSTANTS.TIMEOUT_SHORT_MS)
     })
   }, [rate])
 

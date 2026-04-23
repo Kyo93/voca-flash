@@ -55,7 +55,7 @@ export default function LoginPage() {
         <nav className="flex items-center justify-between px-6 md:px-12 py-5 max-w-[1440px] mx-auto">
           <Link to="/" className="text-3xl font-black tracking-tighter text-primary flex items-center gap-2">
             <span className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white text-xl rotate-3">V</span>
-            VocabMaster
+            VocaFlash
           </Link>
         </nav>
       </header>

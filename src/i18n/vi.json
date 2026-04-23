@@ -1,5 +1,11 @@
 {
   "common": {
+    "time": {
+      "just_now": "vừa xong",
+      "minutes_ago": "{{count}} phút trước",
+      "hours_ago": "{{count}} giờ trước",
+      "days_ago": "{{count}} ngày trước"
+    },
     "dateLocale": "vi-VN",
     "later": "Để sau",
     "days": "ngày",
@@ -49,7 +55,7 @@
     "lastEditedBy": "Sửa lần cuối bởi {{name}}"
   },
   "app": {
-    "name": "VocabMaster",
+    "name": "VocaFlash",
     "tagline": "Học từ vựng hiệu quả"
   },
   "nav": {
@@ -99,6 +105,16 @@
       "cta": "Thử đánh giá trình độ"
     }
   },
+  "roadmap": {
+    "card": {
+      "activeChapter": "Chương hiện tại",
+      "upNext": "Tiếp theo",
+      "topicPrefix": "Chủ đề",
+      "preparation": "Chuẩn bị",
+      "locked": "Chưa mở",
+      "defaultTopicDesc": "Khám phá chi tiết chủ đề này"
+    }
+  },
   "auth": {
     "signUpTitle": "Tạo tài khoản mới",
     "signInTitle": "Chào mừng trở lại",
@@ -141,6 +157,7 @@
       "cta": "Bắt đầu Ôn tập",
       "actionRequired": "HÀNH ĐỘNG NGAY"
     },
+    "activeRecall": "GỢI NHỚ CHỦ ĐỘNG",
     "readyToday": "Sẵn sàng bứt phá hôm nay chưa",
     "continueDesc": "Tiếp tục học từ các bài đã chọn.",
     "tracking": "ĐANG THEO DÕI",
@@ -231,7 +248,12 @@
       "name": "Bậc thầy từ vựng",
       "desc": "Đạt 600 Viên ngọc đã thuộc để mở khóa Huy hiệu Viện hàn lâm danh giá.",
       "view": "Xem thành tựu"
-    }
+    },
+    "learning_label": "HỌC TẬP",
+    "total_label": "TỔNG SỐ",
+    "learned_label": "ĐÃ HỌC",
+    "mastered_label": "ĐÃ THUỘC",
+    "mastery_label": "NHUẦN NHUYỄN"
   },
   "topics": {
     "title": "Chủ đề",
@@ -280,6 +302,7 @@
   "progress": {
     "title": "Tiến độ",
     "subtitle": "Theo dõi hành trình chinh phục kiến thức của bạn qua các chỉ số khoa học.",
+    "mentor_name": "GS. Eleanor Vance",
     "dayStreak": "Ngày liên tiếp",
     "topStreak": "Bạn thuộc top 5% người học siêng năng. Tuyệt vời!",
     "masteredWords": "Từ đã thuộc",
@@ -479,7 +502,14 @@
     "studyNow": "Học ngay",
     "pricing": "Bảng giá",
     "aboutUs": "Về chúng tôi",
-    "modernTechnique": "Kỹ thuật học hiện đại"
+    "modernTechnique": "Kỹ thuật học hiện đại",
+    "footer": {
+      "copyright": "© 2024 VocaFlash. Sự lựa chọn của Học giả Xúc giác."
+    },
+    "floatingCard": {
+      "mastered": "Đã thuộc!",
+      "word": "Perspective"
+    }
   },
   "arena": {
     "preparing": "Đang chuẩn bị đấu trường...",
@@ -649,7 +679,7 @@
     "learnNow": "Học ngay bây giờ"
   },
   "meta": {
-    "title": "VocabMaster — Học từ vựng hiệu quả",
+    "title": "VocaFlash — Học từ vựng hiệu quả",
     "description": "Học từ vựng tiếng Anh bằng Flashcard và phương pháp lặp lại ngắt quãng (SRS)."
   },
   "admin": {

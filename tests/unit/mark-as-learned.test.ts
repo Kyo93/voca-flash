@@ -38,7 +38,7 @@ describe('markLearned — must flip card THEN rate', () => {
     // After fix: markLearned must call flip() in its body
     expect(body).toContain('flip()')
     // And still rate with Good (3)
-    expect(body).toContain('rate(3)')
+    expect(body).toMatch(/rate\((3|SRS_RATINGS\.GOOD)\)/)
   })
 })
 
@@ -53,7 +53,7 @@ describe('StudyPage "Mark as Learned" — must call markLearned, not rate direct
     // Look at the 400 chars BEFORE "Mark as Learned" to find onClick
     const snippet = source.substring(Math.max(0, malIdx - 400), malIdx + 200)
     // Bug: was onClick={() => rate(3)}
-    expect(snippet).not.toMatch(/rate\(3\)/)
+    expect(snippet).not.toMatch(/rate\((3|SRS_RATINGS\.GOOD)\)/)
     // Fix: onClick should reference markLearned
     expect(snippet).toMatch(/markLearned/)
   })

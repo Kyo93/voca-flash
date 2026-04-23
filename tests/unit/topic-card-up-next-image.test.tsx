@@ -18,7 +18,8 @@ describe('TopicCard — Up Next Variant Image', () => {
     name: 'Test Topic',
     slug: 'test-topic',
     description: 'Test Description',
-    order_index: 1,
+    sort_order: 1,
+    icon: 'book',
     color: '#FF0000',
     image_url: 'https://example.com/image.jpg',
     created_at: '',
@@ -66,6 +67,6 @@ describe('TopicCard — Up Next Variant Image', () => {
     expect(img?.getAttribute('src')).toBe('https://example.com/image.jpg');
     
     // Featured variant should have "Active Chapter" text
-    expect(screen.getByText('Active Chapter')).toBeDefined();
+    expect(screen.getByText('roadmap.card.activeChapter')).toBeDefined();
   });
 });

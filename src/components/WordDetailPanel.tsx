@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { MasteryWord } from '../lib/types'
-import { format } from 'date-fns'
 import { vi, enUS } from 'date-fns/locale'
 import AudioButton from './common/AudioButton'
-import { getSrsLevelConfig } from '../lib/srs'
+
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
 import RichNoteEditor from './common/RichNoteEditor'
+import { SrsLevelBadge } from './mastery/SrsLevelBadge'
+import { WordDetailOverview } from './mastery/detail/WordDetailOverview'
+import { WordDetailLinguistic } from './mastery/detail/WordDetailLinguistic'
+import { WordDetailStats } from './mastery/detail/WordDetailStats'
 
 
 interface WordDetailPanelProps {
@@ -124,16 +127,7 @@ export default function WordDetailPanel({
                     {word.topic_names?.split(',')[0] || t('mastery.detail.untagged')}
                   </span>
                   
-                  {/* SRS Level Badge */}
-                  {(() => {
-                    const level = getSrsLevelConfig(word.fsrs_stability)
-                    return (
-                      <span className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest flex items-center gap-1 ${level.bg} ${level.text} ${level.glow}`}>
-                        <span className="material-symbols-outlined text-sm">{level.icon}</span>
-                        {level.label}
-                      </span>
-                    )
-                  })()}
+                  <SrsLevelBadge stability={word.fsrs_stability} size="md" />
 
                   {word.is_orphaned && (
 
@@ -171,54 +165,9 @@ export default function WordDetailPanel({
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto p-8 space-y-12 custom-scrollbar bg-mint-container/30">
-              {activeTab === 'overview' && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="space-y-10"
-                >
-                   {word.image_url && (
-                    <div className="aspect-video w-full rounded-2xl overflow-hidden sun-drenched-shadow relative group">
-                      <div className="absolute inset-0 bg-linear-to-t from-on-surface/20 to-transparent opacity-60" />
-                      <img 
-                        src={word.image_url} 
-                        alt={word.word} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                      />
-                    </div>
-                  )}
+              {activeTab === 'overview' && <WordDetailOverview word={word} />}
 
-                  <section className="space-y-4">
-                    <h3 className="label-md text-on-surface-variant">{t('mastery.detail.definitionAndExample')}</h3>
-                    <div className="p-8 bg-surface rounded-2xl sun-drenched-shadow space-y-6">
-                      <p className="text-2xl font-bold text-on-surface leading-tight">{word.definition}</p>
-                      {word.example && (
-                        <div className="pt-6 border-t border-surface-container">
-                          <p className="text-on-surface-variant italic leading-relaxed text-lg">
-                            "{word.example}"
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </section>
-                </motion.div>
-              )}
-
-              {activeTab === 'linguistic' && (
-                <motion.div 
-                   initial={{ opacity: 0, y: 10 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   className="space-y-8"
-                >
-                  <div className="p-16 text-center space-y-4">
-                    <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center mx-auto mb-6">
-                      <span className="material-symbols-outlined text-on-surface-variant transform scale-150">account_tree</span>
-                    </div>
-                    <p className="text-on-surface font-semibold text-lg">{t('mastery.detail.editingLinguistic')}</p>
-                    <p className="text-sm text-on-surface-variant px-12 font-normal">{t('mastery.detail.editingLinguisticDesc', { word: word.word })}</p>
-                  </div>
-                </motion.div>
-              )}
+              {activeTab === 'linguistic' && <WordDetailLinguistic word={word} />}
 
               {activeTab === 'notes' && (
                 <motion.div 
@@ -297,50 +246,7 @@ export default function WordDetailPanel({
                 </motion.div>
               )}
 
-              {activeTab === 'stats' && (
-                <motion.div 
-                   initial={{ opacity: 0, y: 10 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   className="space-y-10"
-                >
-                   <section className="space-y-4">
-                    <h3 className="label-md text-on-surface-variant">{t('mastery.detail.retentionStatus')}</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.stability')}</p>
-                          <p className="text-3xl font-bold text-on-surface">{word.fsrs_stability.toFixed(1)}d</p>
-                        </div>
-                        <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.difficulty')}</p>
-                          <p className="text-3xl font-bold text-on-surface">{word.fsrs_difficulty.toFixed(1)}</p>
-                        </div>
-                        <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.reps')}</p>
-                          <p className="text-3xl font-bold text-on-surface">{word.fsrs_reps}</p>
-                        </div>
-                        <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
-                          <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.lapses')}</p>
-                          <p className="text-3xl font-bold text-red-500">{word.fsrs_lapses}</p>
-                        </div>
-                    </div>
-                   </section>
-
-                   <section className="space-y-4">
-                    <h3 className="label-md text-on-surface-variant">{t('mastery.detail.scholarSchedule')}</h3>
-                    <div className="p-8 secondary-gradient text-on-secondary rounded-2xl flex justify-between items-center sun-drenched-shadow">
-                       <div>
-                         <p className="label-md text-on-secondary/60 mb-2">{t('mastery.detail.nextReview')}</p>
-                         <p className="text-2xl font-bold">
-                           {word.next_review_at ? format(new Date(word.next_review_at), 'dd MMMM, yyyy', { locale }) : '--'}
-                         </p>
-                       </div>
-                       <div className="text-right">
-                         <span className="material-symbols-outlined text-4xl opacity-40">calendar_month</span>
-                       </div>
-                    </div>
-                   </section>
-                </motion.div>
-              )}
+              {activeTab === 'stats' && <WordDetailStats word={word} locale={locale} />}
             </div>
           </motion.div>
         </>

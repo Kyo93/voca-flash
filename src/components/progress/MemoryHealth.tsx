@@ -35,7 +35,7 @@ export default function MemoryHealth({ retention, accuracy }: Props) {
               {accuracy}%
             </span>
           </div>
-          <div className="h-1.5 bg-[#F9F2EF] rounded-full overflow-hidden">
+          <div className="h-1.5 bg-surface-container rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${accuracy}%` }}
@@ -45,7 +45,7 @@ export default function MemoryHealth({ retention, accuracy }: Props) {
           </div>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D7EAAE] text-secondary text-[10px] font-black uppercase tracking-wider">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container text-secondary text-[10px] font-black uppercase tracking-wider">
           <span className="material-symbols-outlined text-[12px]">verified</span>
           {t('progress.status_excellent')}
         </div>

@@ -1,7 +1,9 @@
 import { fsrs, createEmptyCard, State, type Card as FSRSCard } from 'ts-fsrs'
 import i18n from '../i18n'
 import type { SrsRecord } from './types'
-import { SRS_STABILITY_LEVELS, STUDY_SESSION_DEFAULTS, TIME_CONSTANTS } from './constants'
+import { SRS_STABILITY_LEVELS, STUDY_SESSION_DEFAULTS, TIME_CONSTANTS, SRS_CONFIG } from './constants'
+
+export { State } from 'ts-fsrs'
 
 export interface Card {
   id: string
@@ -32,7 +34,8 @@ export interface CardProgress {
   lastReview: number     // Last review timestamp (ms)
 }
 
-const DEFAULT_RETENTION = 0.9
+const DEFAULT_RETENTION = SRS_CONFIG.RETENTION_DEFAULT
+const FSRS_DEFAULT_DIFFICULTY = 5.0
 
 /** 
  * Internal FSRS Scheduler instance (Singleton) 
@@ -160,7 +163,7 @@ export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: nu
   return {
     stability: Math.max(0.1, sm2.interval),
     difficulty: Math.max(1, Math.min(10, 5 + (3.0 - sm2.ease) * 2)), // Rough mapping to 1-10
-    state: sm2.repetitions === 0 ? 3 : (sm2.repetitions < 2 ? 1 : 2),
+    state: sm2.repetitions === 0 ? State.Relearning : (sm2.repetitions < 2 ? State.Learning : State.Review),
     reps: sm2.repetitions,
     lapses: sm2.lapse_count ?? 0,
     scheduledDays: sm2.interval
@@ -173,11 +176,8 @@ export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: nu
  * FSRS Retention 0.70 -> 0.97
  */
 export function mapIntensityToRetention(intensity: number): number {
-  if (intensity <= 0.6) return 0.95
-  if (intensity <= 0.8) return 0.93
-  if (intensity <= 1.0) return 0.90
-  if (intensity <= 1.2) return 0.85
-  return 0.8 // Relaxed
+  const mapping = SRS_CONFIG.INTENSITY_THRESHOLDS.find(m => intensity <= m.threshold)
+  return mapping?.retention ?? 0.8 // Fallback to 0.8
 }
 
 // ── Study Post-Flip Challenge ───────────────────────────────
@@ -190,10 +190,10 @@ export interface IntervalPreview {
 
 function formatInterval(scheduledDays: number): string {
   if (scheduledDays < 1) {
-    const minutes = Math.round(scheduledDays * 24 * 60)
+    const minutes = Math.round(scheduledDays * TIME_CONSTANTS.ONE_DAY_HOURS * TIME_CONSTANTS.ONE_HOUR_MINS)
     return i18n.t('srs.interval.minute', { count: minutes <= 1 ? 1 : minutes })
   }
-  if (scheduledDays < 30) {
+  if (scheduledDays < 30) { // 30 is still slightly magic but acceptable for "a month" logic
     return i18n.t('srs.interval.day', { count: Math.round(scheduledDays) })
   }
   return i18n.t('srs.interval.month', { count: Math.round(scheduledDays / 30) })
@@ -231,7 +231,7 @@ export function mapSrsRecordToCardProgress(record: SrsRecord): CardProgress {
   return {
     cardId: record.word_id,
     stability: record.fsrs_stability ?? 0,
-    difficulty: record.fsrs_difficulty && record.fsrs_difficulty > 0 ? record.fsrs_difficulty : 5.0,
+    difficulty: record.fsrs_difficulty && record.fsrs_difficulty > 0 ? record.fsrs_difficulty : FSRS_DEFAULT_DIFFICULTY,
     state: record.fsrs_state ?? 0,
     reps: record.fsrs_reps ?? 0,
     lapses: record.fsrs_lapses ?? 0,

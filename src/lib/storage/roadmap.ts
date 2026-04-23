@@ -1,5 +1,6 @@
 import { supabase } from '../supabase'
 import type { Topic, Roadmap, InitialAppData, ProgressPageData, LibraryPageData, DashboardSummary } from '../types'
+import { fetchPaginated } from './base'
 
 export async function fetchInitialAppData(userId: string): Promise<InitialAppData> {
   const { data, error } = await supabase.rpc('get_initial_app_data_v2', { p_user_id: userId })
@@ -107,17 +108,21 @@ export async function fetchRoadmapStats(roadmapId: string, userId?: string) {
   if (!topics?.length) return { total: 0, learned: 0, mastered: 0 }
 
   const topicIds = topics.map(t => t.id)
-  const { data: junctions } = await supabase.from('topic_words').select('word_id').in('topic_id', topicIds)
+  const queryJunctions = supabase.from('topic_words').select('word_id').in('topic_id', topicIds)
+  const junctions = await fetchPaginated<{ word_id: string }>(queryJunctions)
+  
   const wordIds = [...new Set((junctions ?? []).map(j => j.word_id))]
   const total = wordIds.length
 
   if (!userId || total === 0) return { total, learned: 0, mastered: 0 }
 
-  const { data: progress } = await supabase
+  const queryProgress = supabase
     .from('user_srs_records')
     .select('mastered')
     .eq('user_id', userId)
     .in('word_id', wordIds)
+  
+  const progress = await fetchPaginated<{ mastered: boolean }>(queryProgress)
 
   if (!progress) return { total, learned: 0, mastered: 0 }
 

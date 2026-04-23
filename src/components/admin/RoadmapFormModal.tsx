@@ -1,17 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Roadmap } from '../../lib/types'
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
-}
+import { slugify } from '../../lib/utils'
 
 interface Props {
   open: boolean
@@ -106,7 +96,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
 
         <form onSubmit={handleSubmit} className="p-6">
 
-          {/* ── Section 1: Thông tin ─────────────────────── */}
+          {/* Section 1: Info */}
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-base text-orange-400">label</span>
             <span className="text-xs font-black text-stone-400 uppercase tracking-wider">{t('common.info')}</span>
@@ -158,7 +148,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
             />
           </div>
 
-          {/* ── Section 2: Hình ảnh ─────────────────────── */}
+          {/* Section 2: Image */}
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-base text-orange-400">image</span>
             <span className="text-xs font-black text-stone-400 uppercase tracking-wider">{t('common.image')}</span>
@@ -188,7 +178,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
             )}
           </div>
 
-          {/* ── Section 3: Trạng thái ────────────────────── */}
+          {/* Section 3: Status */}
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-base text-orange-400">toggle_on</span>
             <span className="text-xs font-black text-stone-400 uppercase tracking-wider">{t('common.status')}</span>
@@ -197,7 +187,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
 
           <div
             onClick={() => setIsActive(!isActive)}
-            className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all mb-4 ${
+            className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all mb-4 ${
               isActive
                 ? 'border-green-200 bg-green-50'
                 : 'border-stone-200 bg-stone-50'
@@ -219,13 +209,13 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
                 {isActive ? t('topic.status.learning') : t('topics.locked')}
               </p>
               <p className="text-xs text-stone-400">
-                {isActive ? t('landing.forAllAges') : t('landing.parentMode')}
+                {isActive ? t('admin.roadmapForm.statusActive') : t('admin.roadmapForm.statusInactive')}
               </p>
             </div>
           </div>
 
           {error && (
-            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium mb-4">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium mb-4">
               {error}
             </div>
           )}

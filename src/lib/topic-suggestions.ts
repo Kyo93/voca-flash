@@ -1,4 +1,6 @@
 // ─── Icon Suggestion Map ──────────────────────────────────────
+import { stripDiacritics } from './utils'
+
 export const ICON_MAP: [string[], string][] = [
   [['giao tiếp', 'communication', 'chat', 'nói'], 'chat'],
   [['giáo dục', 'học', 'học tập', 'school', 'study', 'edu', 'learning'], 'school'],
@@ -63,7 +65,7 @@ export const COLOR_PALETTE = [
 ]
 
 export function suggestIcon(name: string): string {
-  const lower = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const lower = stripDiacritics(name.toLowerCase())
   for (const [keywords, icon] of ICON_MAP) {
     if (keywords.some(k => lower.includes(k.toLowerCase()))) return icon
   }
@@ -71,12 +73,12 @@ export function suggestIcon(name: string): string {
 }
 
 export function suggestImageUrl(name: string): string {
-  const seed = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-').toLowerCase()
+  const seed = stripDiacritics(name).replace(/\s+/g, '-').toLowerCase()
   return `https://picsum.photos/seed/${seed}/800/450`
 }
 
 export function suggestColor(name: string): string {
-  const idx = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const idx = stripDiacritics(name)
     .split('').reduce((acc, c) => acc + c.charCodeAt(0), 0) % COLOR_PALETTE.length
   return COLOR_PALETTE[idx]
 }

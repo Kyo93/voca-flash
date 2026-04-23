@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { UI_CONFIG } from '../../lib/constants'
 
 interface ConfirmExitModalProps {
   isOpen: boolean
@@ -12,7 +13,10 @@ export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: Confirm
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-10000 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
+        <div 
+          className="fixed inset-0 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl"
+          style={{ zIndex: UI_CONFIG.Z_INDEX.OVERLAY }}
+        >
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { useTranslation } from 'react-i18next'
 import { DESIGN_TOKENS } from '../../lib/tokens'
+import { TIME_CONSTANTS } from '../../lib/constants'
 
 interface Props {
   data: { date: string; reviews: number; duration_ms: number }[]
@@ -15,14 +16,14 @@ export default function ActivityChart({ data }: Props) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center">
         <span className="material-symbols-outlined text-2xl text-stone-200 mb-2">show_chart</span>
-        <p className="text-[10px] text-stone-300 font-medium italic">{t('progress.no_activity', 'Complete a study session to see your activity')}</p>
+        <p className="text-[10px] text-stone-300 font-medium italic">{t('progress.no_activity')}</p>
       </div>
     )
   }
 
   const chartData = data.map(item => ({
     ...item,
-    minutes: Math.round(item.duration_ms / 60000),
+    minutes: Math.round(item.duration_ms / TIME_CONSTANTS.ONE_MINUTE_MS),
     formattedDate: format(new Date(item.date), 'dd/MM', { locale: vi })
   }))
 
@@ -32,7 +33,7 @@ export default function ActivityChart({ data }: Props) {
     return (
       <div className="h-full w-full flex flex-col items-center justify-center">
         <span className="material-symbols-outlined text-2xl text-stone-200 mb-2">show_chart</span>
-        <p className="text-[10px] text-stone-300 font-medium italic">{t('progress.no_activity', 'Complete a study session to see your activity')}</p>
+        <p className="text-[10px] text-stone-300 font-medium italic">{t('progress.no_activity')}</p>
       </div>
     )
   }
@@ -69,7 +70,7 @@ export default function ActivityChart({ data }: Props) {
           <Area
             type="monotone"
             dataKey="minutes"
-            name={t('progress.studyMinutes', 'Study Minutes')}
+            name={t('progress.studyMinutes')}
             stroke={DESIGN_TOKENS.COLORS.PRIMARY}
             strokeWidth={3}
             fillOpacity={1}

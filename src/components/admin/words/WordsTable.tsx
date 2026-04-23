@@ -2,21 +2,10 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Word } from '../../../lib/types'
 import { formatDetailedDate } from '../../../lib/utils'
+import DifficultyDots from '../DifficultyDots'
 
-
-
-function DifficultyDots({ value }: { value: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <div
-          key={n}
-          className={`w-2 h-2 rounded-full ${n <= value ? 'bg-primary' : 'bg-stone-200'}`}
-        />
-      ))}
-    </div>
-  )
-}
+const MAX_VISIBLE_TAGS = 2
+const ROW_ANIMATION_STAGGER_S = 0.02
 
 interface WordsTableProps {
   paginated: Word[];
@@ -77,7 +66,7 @@ export default function WordsTable({
                 key={w.id}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.02 }}
+                transition={{ delay: idx * ROW_ANIMATION_STAGGER_S }}
                 className={`group border-b border-stone-50 last:border-0 transition-all ${selectedIds.has(w.id) ? 'bg-primary/5' : 'hover:bg-stone-50/50'}`}
               >
                 <td className="px-6 py-4 sticky-col group-hover:bg-stone-50/50 transition-colors">
@@ -113,11 +102,11 @@ export default function WordsTable({
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-wrap gap-1 max-w-[120px]">
-                    {w.tags?.slice(0, 2).map(tag => (
+                    {w.tags?.slice(0, MAX_VISIBLE_TAGS).map(tag => (
                       <span key={tag} className="text-[9px] bg-secondary/10 text-secondary px-2 py-0.5 rounded-full font-bold uppercase">{tag}</span>
                     ))}
-                    {w.tags && w.tags.length > 2 && (
-                      <span className="text-[9px] text-stone-300 font-bold">+{w.tags.length - 2}</span>
+                    {w.tags && w.tags.length > MAX_VISIBLE_TAGS && (
+                      <span className="text-[9px] text-stone-300 font-bold">+{w.tags.length - MAX_VISIBLE_TAGS}</span>
                     )}
                   </div>
                 </td>

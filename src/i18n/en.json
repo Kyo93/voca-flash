@@ -1,5 +1,11 @@
 {
   "common": {
+    "time": {
+      "just_now": "just now",
+      "minutes_ago": "{{count}}m ago",
+      "hours_ago": "{{count}}h ago",
+      "days_ago": "{{count}}d ago"
+    },
     "later": "Later",
     "days": "days",
     "excellent": "Excellent",
@@ -49,7 +55,7 @@
     "lastEditedBy": "Last edited by {{name}}"
   },
   "app": {
-    "name": "VocabMaster",
+    "name": "VocaFlash",
     "tagline": "Smart vocabulary learning"
   },
   "nav": {
@@ -99,6 +105,16 @@
       "cta": "Take Assessment"
     }
   },
+  "roadmap": {
+    "card": {
+      "activeChapter": "Active Chapter",
+      "upNext": "Up Next",
+      "topicPrefix": "Topic",
+      "preparation": "Preparation",
+      "locked": "Locked",
+      "defaultTopicDesc": "Detailed explore of this topic"
+    }
+  },
   "auth": {
     "signUpTitle": "Create a new account",
     "signInTitle": "Welcome back",
@@ -141,6 +157,7 @@
       "cta": "Start Review",
       "actionRequired": "ACTION REQUIRED"
     },
+    "activeRecall": "ACTIVE RECALL",
     "readyToday": "Ready to excel today",
     "continueDesc": "Continue learning from selected topics.",
     "tracking": "TRACKING",
@@ -229,7 +246,14 @@
       "name": "Vocabulary Master",
       "desc": "Reach 600 Mastered Gems to unlock the prestigious Academy Badge.",
       "view": "View Achievements"
-    }
+    },
+    "learnedWords": "Learned Words",
+    "masteredWords": "Mastered Words",
+    "learning_label": "LEARNING",
+    "total_label": "TOTAL",
+    "learned_label": "LEARNED",
+    "mastered_label": "MASTERED",
+    "mastery_label": "MASTERY"
   },
   "topics": {
     "title": "Topics",
@@ -278,6 +302,7 @@
   "progress": {
     "title": "Progress",
     "subtitle": "Track your knowledge journey through scientific metrics.",
+    "mentor_name": "Prof. Eleanor Vance",
     "dayStreak": "Day Streak!",
     "topStreak": "You're in the top 5% of learners this month. Keep going!",
     "masteredWords": "Mastered Words",
@@ -467,7 +492,7 @@
     "forAllAges": "Designed for all ages",
     "forAllAgesDesc": "Personalized roadmap for professionals and children.",
     "ready": "Ready to conquer?",
-    "ctaText": "Start your journey with VocabMaster today!",
+    "ctaText": "Start your journey with VocaFlash today!",
     "articles": "Lessons",
     "quizzes": "Quizzes",
     "community": "Community",
@@ -477,7 +502,14 @@
     "studyNow": "Study Now",
     "pricing": "Pricing",
     "aboutUs": "About Us",
-    "modernTechnique": "Modern Learning Technique"
+    "modernTechnique": "Modern Learning Technique",
+    "footer": {
+      "copyright": "© 2024 VocaFlash. The Tactile Scholar's Choice."
+    },
+    "floatingCard": {
+      "mastered": "Mastered!",
+      "word": "Perspective"
+    }
   },
   "arena": {
     "preparing": "Preparing Arena...",
@@ -647,7 +679,7 @@
     "learnNow": "Learn Now"
   },
   "meta": {
-    "title": "VocabMaster — Learn Vocabulary Effectively",
+    "title": "VocaFlash — Learn Vocabulary Effectively",
     "description": "Learn English vocabulary with Flashcards and Spaced Repetition System (SRS)."
   },
   "admin": {

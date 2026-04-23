@@ -1,5 +1,7 @@
 import { supabase } from '../supabase'
-import type { MasteryWord, MasteryStats } from '../types'
+import type { MasteryWord, MasteryStats, Word } from '../types'
+import type { Card } from '../srs'
+import { fetchPaginated } from './base'
 
 export async function getMasteryStats(userId: string): Promise<MasteryStats> {
   const { data, error } = await supabase.rpc('get_mastery_stats', { p_user_id: userId })
@@ -43,7 +45,7 @@ export async function getUserVocabulary(
     ? Number(result[0].total_count)
     : result.length
 
-  const mappedData: MasteryWord[] = result.map((r: any) => ({
+  const mappedData: MasteryWord[] = result.map((r: MasteryWord) => ({
     word_id: r.word_id,
     word: r.word,
     definition: r.definition,
@@ -59,7 +61,8 @@ export async function getUserVocabulary(
     fsrs_reps: r.fsrs_reps ?? 0,
     fsrs_lapses: r.fsrs_lapses ?? 0,
     is_orphaned: r.is_orphaned ?? false,
-    topic_names: r.topic_names ?? null
+    topic_names: r.topic_names ?? null,
+    personal_note: r.personal_note ?? null
   }))
 
   return { data: mappedData, total }
@@ -78,7 +81,7 @@ export async function fetchTopicWordCounts(): Promise<Record<string, number>> {
   return counts
 }
 
-export function mapWordToCard(word: any, topicSlug?: string): any {
+export function mapWordToCard(word: Word, topicSlug?: string): Card {
   return {
     id: word.id,
     front: word.word,
@@ -92,16 +95,18 @@ export function mapWordToCard(word: any, topicSlug?: string): any {
   }
 }
 
-export async function fetchWords(topicSlug?: string): Promise<any[]> {
+export async function fetchWords(topicSlug?: string): Promise<Card[]> {
   if (topicSlug) {
     const { data: topicData } = await supabase.from('topics').select('id, slug').eq('slug', topicSlug).single()
     if (!topicData) return []
     const { data: junctionRows } = await supabase.from('topic_words').select('word_id').eq('topic_id', topicData.id).order('sort_order')
     if (!junctionRows?.length) return []
     const wordIds = junctionRows.map(r => r.word_id)
-    const { data: words } = await supabase.from('words').select('*').in('id', wordIds)
+    const query = supabase.from('words').select('*').in('id', wordIds)
+    const words = await fetchPaginated<Word>(query)
     return (words ?? []).map(w => mapWordToCard(w, topicSlug))
   }
-  const { data } = await supabase.from('words').select('*')
+  const query = supabase.from('words').select('*')
+  const data = await fetchPaginated<Word>(query)
   return (data ?? []).map(w => mapWordToCard(w))
 }

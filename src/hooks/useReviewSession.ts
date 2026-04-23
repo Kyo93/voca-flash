@@ -4,9 +4,13 @@ import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word } from '../lib/types'
 import { selectQuadrant as sharedSelectQuadrant, type ReviewChallenge, type QuadrantType } from '../lib/challenge-logic'
+import { shuffleArray } from '../lib/utils'
 
 // Re-export for backward compatibility (used by other hooks)
 export type { ReviewChallenge, QuadrantType }
+
+const POINTS_PER_CORRECT = 10
+const POINTS_GHOST_RECALL_BONUS = 20
 
 export function useReviewSession() {
   const { user, profile } = useAuth()
@@ -45,7 +49,7 @@ export function useReviewSession() {
       }))
 
       // Shuffle the final queue
-      setQueue(challenges.sort(() => Math.random() - 0.5))
+      setQueue(shuffleArray(challenges))
       setChallengeStartTime(Date.now())
       setIsComplete(challenges.length === 0)
     } catch (err) {
@@ -96,7 +100,7 @@ export function useReviewSession() {
       return {
         correct: prev.correct + (isCorrect ? 1 : 0),
         wrong: prev.wrong + (isCorrect ? 0 : 1),
-        points: prev.points + (isCorrect ? (current.quadrant === 'ghost_recall' ? 20 : 10) : 0),
+        points: prev.points + (isCorrect ? (current.quadrant === 'ghost_recall' ? POINTS_GHOST_RECALL_BONUS : POINTS_PER_CORRECT) : 0),
         mistakes: updatedMistakes
       }
     })

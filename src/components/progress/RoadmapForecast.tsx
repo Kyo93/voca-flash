@@ -45,7 +45,7 @@ export default function RoadmapForecast({ velocity, totalWords, masteredWords }:
               {t('progress.roadmap_forecast', { defaultValue: 'Roadmap Forecast' })}
             </h3>
             <p className="text-on-surface-variant text-sm">
-              {t('progress.estimated_next_level', { defaultValue: 'Dự kiến hoàn thành cấp độ tiếp theo:' })}{' '}
+              {t('progress.estimated_next_level')}{' '}
               <span className="font-bold text-primary">
                 {finishDate ? formatMonthYear(finishDate) : t('progress.insufficient_data')}
               </span>
@@ -54,7 +54,7 @@ export default function RoadmapForecast({ velocity, totalWords, masteredWords }:
           <div className="text-right">
             <p className="text-5xl font-black text-secondary">{progressPct}%</p>
             <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mt-1">
-              {t('progress.total_progress', { defaultValue: 'Tổng tiến độ' })}
+              {t('progress.total_progress')}
             </p>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function RoadmapForecast({ velocity, totalWords, masteredWords }:
                     ? 'bg-[#33302B] text-[#F6F0E7] opacity-100'
                     : 'bg-[#33302B] text-[#F6F0E7] opacity-0 group-hover:opacity-100'
                 }`}>
-                  {isLast ? t('progress.current_label', { defaultValue: 'Hiện tại' }) : barLabels[i]}
+                  {isLast ? t('progress.current_label') : barLabels[i]}
                 </div>
               </motion.div>
             )

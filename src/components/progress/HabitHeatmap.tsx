@@ -16,9 +16,9 @@ export default function HabitHeatmap({ data, streak }: HabitHeatmapProps) {
   const days = eachDayOfInterval({ start: startDate, end: endDate })
 
   const getIntensity = (count: number) => {
-    if (count === 0) return 'bg-[#F9F2EF]'
-    if (count < 10) return 'bg-[#D7EAAE]'
-    if (count < 30) return 'bg-[#B0D66E]'
+    if (count === 0) return 'bg-surface-container'
+    if (count < 10) return 'bg-secondary-container'
+    if (count < 30) return 'bg-mastery-accent/60'
     if (count < 50) return 'bg-secondary/70'
     return 'bg-secondary'
   }
@@ -58,9 +58,9 @@ export default function HabitHeatmap({ data, streak }: HabitHeatmapProps) {
         <div className="flex items-center gap-2 text-[8px] font-black text-stone-400 uppercase tracking-tighter">
           <span>Less</span>
           <div className="flex gap-1">
-            <div className="w-2 h-2 rounded-[2px] bg-[#F9F2EF]" />
-            <div className="w-2 h-2 rounded-[2px] bg-[#D7EAAE]" />
-            <div className="w-2 h-2 rounded-[2px] bg-[#B0D66E]" />
+            <div className="w-2 h-2 rounded-[2px] bg-surface-container" />
+            <div className="w-2 h-2 rounded-[2px] bg-secondary-container" />
+            <div className="w-2 h-2 rounded-[2px] bg-mastery-accent/60" />
             <div className="w-2 h-2 rounded-[2px] bg-secondary/70" />
             <div className="w-2 h-2 rounded-[2px] bg-secondary" />
           </div>

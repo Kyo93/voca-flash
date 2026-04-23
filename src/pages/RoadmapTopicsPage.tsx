@@ -85,11 +85,11 @@ export default function RoadmapTopicsPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
           <div className="md:col-span-2 space-y-2">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-outline mb-0 block leading-none">HỌC TẬP</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-outline mb-0 block leading-none">{t('roadmapDetail.learning_label')}</span>
               <div className="text-5xl font-black tracking-tighter text-secondary leading-none">{learnedPercent}%</div>
             </div>
             <div className="opacity-50">
-              <span className="text-[9px] uppercase tracking-[0.15em] font-bold text-outline mb-0 block leading-none">MASTERY</span>
+              <span className="text-[9px] uppercase tracking-[0.15em] font-bold text-outline mb-0 block leading-none">{t('roadmapDetail.mastery_label')}</span>
               <div className="text-xl font-black tracking-tighter text-primary leading-none">{overallPercent}%</div>
             </div>
           </div>
@@ -116,7 +116,7 @@ export default function RoadmapTopicsPage() {
               </div>
               <div className="relative h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
                 <div 
-                  className="absolute top-0 left-0 h-full bg-[#829460] rounded-full liquid-shine transition-all duration-1000"
+                  className="absolute top-0 left-0 h-full bg-mastery-accent rounded-full liquid-shine transition-all duration-1000"
                   style={{ width: `${overallPercent}%` }}
                 ></div>
               </div>
@@ -131,21 +131,21 @@ export default function RoadmapTopicsPage() {
             <div className="flex flex-col items-center text-center">
               <span className="material-symbols-outlined text-primary-container text-base mb-0.5">book</span>
               <span className="text-sm font-black text-primary leading-none">{stats.total}</span>
-              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">TỔNG SỐ</span>
+              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">{t('roadmapDetail.total_label')}</span>
             </div>
 
             {/* Learned */}
             <div className="flex flex-col items-center text-center">
               <span className="material-symbols-outlined text-secondary text-base mb-0.5">menu_book</span>
               <span className="text-sm font-black text-secondary leading-none">{stats.learned}</span>
-              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">ĐÃ HỌC</span>
+              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">{t('roadmapDetail.learned_label')}</span>
             </div>
 
             {/* Mastered */}
             <div className="flex flex-col items-center text-center">
-              <span className="material-symbols-outlined text-[#829460] text-base mb-0.5">stars</span>
+              <span className="material-symbols-outlined text-mastery-accent text-base mb-0.5">stars</span>
               <span className="text-sm font-black text-primary leading-none">{stats.mastered}</span>
-              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">ĐÃ THUỘC</span>
+              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">{t('roadmapDetail.mastered_label')}</span>
             </div>
           </div>
         </div>

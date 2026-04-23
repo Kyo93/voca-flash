@@ -10,7 +10,8 @@ interface TopicCardProps {
   searchQuery?: string
 }
 
-import { hexToRgba, darkenColor } from '../../lib/utils'
+import { useTranslation } from 'react-i18next'
+import { getTopicTheme } from '../../lib/theme'
 
 export default function TopicCard({
   topic,
@@ -20,34 +21,9 @@ export default function TopicCard({
   isUpNext = false,
   searchQuery = ''
 }: TopicCardProps) {
+  const { t } = useTranslation()
   const isCompleted = stats.total > 0 && stats.learned >= stats.total
   const isStarted = stats.percent > 0
-
-  // --- Dynamic Theme Engine (Stitch Spec) ---
-  const getTopicTheme = (topic: Topic) => {
-    // 1. Priority: Use color from topic setup (database)
-    if (topic.color && topic.color.startsWith('#')) {
-      const baseColor = topic.color;
-      return {
-        bg: hexToRgba(baseColor, 0.12), // 12% alpha for rich pastel
-        text: darkenColor(baseColor, 0.4), // 40% darker for readable editorial text
-        accent: baseColor,
-        border: hexToRgba(baseColor, 0.1),
-        isDynamic: true
-      };
-    }
-
-    // 2. Fallback: Name-based mapping if color is missing
-    const n = topic.name.toLowerCase();
-    if (n.includes('marketing')) return { bg: '#E3F2FD', text: '#0D47A1', accent: '#2196F3', border: '#BBDEFB' };
-    if (n.includes('sustainability')) return { bg: '#E8F5E9', text: '#1B5E20', accent: '#4CAF50', border: '#C8E6C9' };
-    if (n.includes('tech')) return { bg: '#F3E5F5', text: '#4A148C', accent: '#9C27B0', border: '#E1BEE7' };
-    if (n.includes('human resources')) return { bg: '#FFF3E0', text: '#E65100', accent: '#FF9800', border: '#FFE0B2' };
-    if (n.includes('legal')) return { bg: '#ECEFF1', text: '#263238', accent: '#607D8B', border: '#CFD8DC' };
-    if (n.includes('data')) return { bg: '#F0F4C3', text: '#33691E', accent: '#827717', border: '#DCE775' };
-    
-    return { bg: '#F5F5F5', text: '#424242', accent: '#757575', border: '#EEEEEE' };
-  };
 
   const theme = getTopicTheme(topic);
 
@@ -69,8 +45,8 @@ export default function TopicCard({
         <div className="absolute inset-0 bg-linear-to-t from-[#1E1B17]/90 via-[#1E1B17]/40 to-transparent"></div>
         <div className="relative p-10 w-full space-y-5">
           <div className="space-y-2">
-            <span className="text-xs uppercase tracking-[0.2em] font-bold text-primary-fixed">Active Chapter</span>
-            <h2 className="text-4xl font-bold text-white">Topic: {topic.name}</h2>
+            <span className="text-xs uppercase tracking-[0.2em] font-bold text-primary-fixed">{t('roadmap.card.activeChapter')}</span>
+            <h2 className="text-4xl font-bold text-white">{t('roadmap.card.topicPrefix')}: {topic.name}</h2>
             {topic.description && (
               <p className="text-white/70 max-w-md text-lg leading-relaxed line-clamp-2">
                 {topic.description}
@@ -78,7 +54,7 @@ export default function TopicCard({
             )}
           </div>
           <button className="bg-linear-to-r from-primary to-primary-container text-white px-10 py-5 rounded-full font-bold text-lg shadow-xl hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-3 w-fit">
-            {isStarted ? 'Resume Learning' : 'Start Learning'}
+            {isStarted ? t('library.card.resume') : t('library.card.start')}
             <span className="material-symbols-outlined">play_circle</span>
           </button>
         </div>
@@ -100,11 +76,11 @@ export default function TopicCard({
         
         <div className="relative p-8 space-y-6 z-10">
           <div className="flex justify-between items-start">
-            <span className="bg-secondary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">Up Next</span>
+            <span className="bg-secondary text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">{t('roadmap.card.upNext')}</span>
             <span className="material-symbols-outlined text-white/80">trending_up</span>
           </div>
           <div className="space-y-2">
-            <h3 className="text-3xl font-bold text-white">Topic: {topic.name}</h3>
+            <h3 className="text-3xl font-bold text-white">{t('roadmap.card.topicPrefix')}: {topic.name}</h3>
             {topic.description && (
               <p className="text-white/70 leading-relaxed line-clamp-2 text-sm">
                 {topic.description}
@@ -115,7 +91,7 @@ export default function TopicCard({
 
         <div className="relative p-8 pt-0 space-y-4 z-10">
           <div className="flex justify-between text-xs font-bold text-white/60">
-            <span>Preparation</span>
+            <span>{t('roadmap.card.preparation')}</span>
             <span>{stats.percent}%</span>
           </div>
           <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
@@ -149,13 +125,13 @@ export default function TopicCard({
             className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded opacity-60"
             style={{ backgroundColor: theme.bg, color: theme.text }}
           >
-            Locked
+            {t('roadmap.card.locked')}
           </span>
         )}
       </div>
       <div className="mt-6">
         <h4 className="text-xl font-bold mb-1" style={{ color: theme.text }}>{topic.name}</h4>
-        <p className="text-xs opacity-70" style={{ color: theme.text }}>{topic.description || 'Topic detailed explore'}</p>
+        <p className="text-xs opacity-70" style={{ color: theme.text }}>{topic.description || t('roadmap.card.defaultTopicDesc')}</p>
       </div>
     </Link>
   )

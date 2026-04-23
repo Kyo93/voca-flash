@@ -2,6 +2,8 @@ import { supabase } from '../supabase'
 import type { UserProfile, MasteryStats } from '../types'
 import { fetchInitialAppData } from './roadmap'
 import { getMasteryStats } from './mastery'
+import { TIME_CONSTANTS } from '../constants'
+import { defaultSettings } from '../settings-defaults'
 
 export async function updateUserSettings(userId: string, settings: Partial<UserProfile>): Promise<void> {
   const { error } = await supabase
@@ -45,8 +47,8 @@ export async function recordStreak(userId: string): Promise<number> {
         streak_days: 1,
         last_study_date: today,
         longest_streak: 1,
-        daily_target: 20,
-        theme_mode: 'light',
+        daily_target: defaultSettings.daily_target,
+        theme_mode: defaultSettings.theme_mode,
       })
     if (insertError) {
       console.error('[Storage] recordStreak create profile failed:', insertError)
@@ -64,7 +66,7 @@ export async function recordStreak(userId: string): Promise<number> {
   } else if (lastDate) {
     const diff = Math.floor(
       (new Date(today).getTime() - new Date(lastDate).getTime()) /
-        (1000 * 60 * 60 * 24)
+        TIME_CONSTANTS.ONE_DAY_MS
     )
     if (diff === 1) {
       newStreak = currentStreak + 1

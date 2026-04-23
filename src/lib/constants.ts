@@ -9,6 +9,20 @@ export const SRS_STABILITY_LEVELS = {
   LEARNING: 3,
 } as const;
 
+export const FSRS_STATES = {
+  NEW: 0,
+  LEARNING: 1,
+  REVIEW: 2,
+  RELEARNING: 3,
+} as const;
+
+export const SRS_RATINGS = {
+  AGAIN: 1,
+  HARD: 2,
+  GOOD: 3,
+  EASY: 4,
+} as const;
+
 export const STUDY_SESSION_DEFAULTS = {
   /** Total challenge timeout in milliseconds */
   TIMEOUT_MS: 30000,
@@ -29,14 +43,34 @@ export const MASTERY_CONFIG = {
 } as const;
 
 export const FETCH_PAGE_SIZE = 1000;
+export const FETCH_REVIEWS_LIMIT = 20;
 
 export const TIME_CONSTANTS = {
+  ONE_MINUTE_MS: 60_000,
+  ONE_HOUR_MINS: 60,
+  ONE_DAY_HOURS: 24,
   ONE_DAY_MS: 86_400_000,
   TIMEOUT_SHORT_MS: 3000,
+  DAY_BOUNDARY_HOUR: 4,
 } as const;
 
 export const SRS_CONFIG = {
   RETENTION_DEFAULT: 0.9,
+  INTENSITY_DEFAULT: 1.0,
+  INTENSITY_THRESHOLDS: [
+    { threshold: 0.6, retention: 0.95 },
+    { threshold: 0.8, retention: 0.93 },
+    { threshold: 1.0, retention: 0.90 },
+    { threshold: 1.2, retention: 0.85 },
+    { threshold: Infinity, retention: 0.80 },
+  ],
+  DEFAULT_DAILY_TARGET: 20
+} as const;
+
+export const UI_CONFIG = {
+  Z_INDEX: {
+    OVERLAY: 10000,
+  }
 } as const;
 
 export const LIBRARY_IMAGES = {

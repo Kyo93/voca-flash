@@ -25,6 +25,6 @@ describe('i18n Sync', () => {
 
   it('vi.json has vi as primary language metadata', () => {
     const vi = JSON.parse(readFileSync('src/i18n/vi.json', 'utf-8'))
-    expect(vi.app.name).toBe('VocabMaster')
+    expect(vi.app.name).toBe('VocaFlash')
   })
 })
