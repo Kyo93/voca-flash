@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
 import type { Word } from '../../lib/types'
 import { useWordForm } from '../../hooks/admin/useWordForm'
+import ErrorBanner from '../common/ErrorBanner'
 import { WordTagsInput } from './WordTagsInput'
 
 /** Tailwind class chung cho mọi input/textarea/select trong form. */
@@ -305,11 +306,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
             <p className="text-xs text-stone-400 mt-1">{t('admin.wordForm.wrongChoicesDesc')}</p>
           </div>
 
-          {state.error && (
-            <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium">
-              {state.error}
-            </div>
-          )}
+          {state.error && <ErrorBanner message={state.error} />}
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">

@@ -6,6 +6,8 @@ import { getAllTopics } from '../../lib/queries/topic-queries'
 import { useRoadmapContext } from '../../contexts/RoadmapContext'
 import WordFormModal from '../../components/admin/WordFormModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
+import ErrorBanner from '../../components/common/ErrorBanner'
+import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { Word, Topic } from '../../lib/types'
 
 import WordsToolbar from '../../components/admin/words/WordsToolbar'
@@ -184,16 +186,16 @@ export default function AdminWordsPage() {
       />
 
       {/* Error */}
-      {error && (
-        <div className="mb-4 mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600">
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} className="mb-4 mt-4" />}
 
       {loading && words.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20 bg-white border border-stone-100 rounded-3xl mt-6">
-          <span className="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
-          <p className="text-sm font-bold text-stone-400">{t('admin.words.loading')}</p>
+          <LoadingSpinner
+            label={t('admin.words.loading')}
+            color="text-primary"
+            labelClassName="text-sm font-bold text-stone-400"
+            className="flex flex-col items-center gap-3"
+          />
         </div>
       ) : (
         <WordsTable 

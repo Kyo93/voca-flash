@@ -4,6 +4,8 @@ import type { Topic, Roadmap } from '../../lib/types'
 import { slugify, formatDetailedDate } from '../../lib/utils'
 import { useTopicForm } from '../../hooks/admin/useTopicForm'
 import { TopicIconPicker } from './TopicIconPicker'
+import ErrorBanner from '../common/ErrorBanner'
+import ImageUrlField from '../common/ImageUrlField'
 
 interface Props {
   open: boolean
@@ -215,43 +217,26 @@ export default function TopicFormModal({
           </div>
 
           {/* ── Image URL ───────── */}
-          <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
-              {t('common.image')}
-            </label>
-            <input
-              type="text"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://picsum.photos/..."
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-600 text-sm shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all"
-            />
-            {imageUrl ? (
-              <div className="mt-3 rounded-xl overflow-hidden border border-stone-100 aspect-video bg-stone-100">
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).src = 'https://placehold.co/800x450/e2e8f0/9ca3af?text=Invalid+URL'
-                  }}
-                />
-              </div>
-            ) : (
+          <ImageUrlField
+            value={imageUrl}
+            onChange={setImageUrl}
+            label={t('common.image')}
+            placeholder="https://picsum.photos/..."
+            inputClassName="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-600 text-sm shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all"
+            labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2"
+            previewWrapperClassName="mt-3 rounded-xl overflow-hidden border border-stone-100 bg-stone-100"
+            fallbackImage="https://placehold.co/800x450/e2e8f0/9ca3af?text=Invalid+URL"
+            emptyState={
               <div
                 className="mt-3 rounded-xl border-2 border-dashed border-stone-200 aspect-video bg-stone-50 flex items-center justify-center"
                 style={{ background: `linear-gradient(135deg, ${color}08, ${color}18)` }}
               >
                 <span className="material-symbols-outlined text-3xl text-stone-300">image</span>
               </div>
-            )}
-          </div>
+            }
+          />
 
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium">
-              {error}
-            </div>
-          )}
+          {error && <ErrorBanner message={error} />}
         </form>
 
         {/* Footer */}

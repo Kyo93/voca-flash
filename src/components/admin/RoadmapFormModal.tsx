@@ -2,6 +2,8 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Roadmap } from '../../lib/types'
 import { slugify } from '../../lib/utils'
+import ErrorBanner from '../common/ErrorBanner'
+import ImageUrlField from '../common/ImageUrlField'
 
 interface Props {
   open: boolean
@@ -156,26 +158,12 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-bold text-secondary mb-2">{t('admin.roadmapForm.iconLabel')}</label>
-            <input
-              type="text"
+            <ImageUrlField
               value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              onChange={setImageUrl}
+              label={t('admin.roadmapForm.iconLabel')}
               placeholder="https://picsum.photos/seed/roadmap-name/800/450"
-              className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all"
             />
-            {imageUrl && (
-              <div className="mt-3 aspect-video w-full overflow-hidden rounded-xl border-2 border-stone-200 bg-stone-50">
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).src = 'https://placehold.co/800x450/e5e7eb/9ca3af?text=Invalid+URL'
-                  }}
-                />
-              </div>
-            )}
           </div>
 
           {/* Section 3: Status */}
@@ -214,11 +202,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
             </div>
           </div>
 
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 font-medium mb-4">
-              {error}
-            </div>
-          )}
+          {error && <ErrorBanner message={error} className="mb-4" />}
 
           {/* Footer actions */}
           <div className="flex gap-3 pt-2 border-t border-stone-100 mt-2">

@@ -5,6 +5,8 @@ import type { UserProfile } from '../../lib/types'
 import { formatDetailedDate } from '../../lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import AdminCard from '../../components/admin/AdminCard'
+import ErrorBanner from '../../components/common/ErrorBanner'
+import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { supabase } from '../../lib/supabase'
 import { FSRS_STATES } from '../../lib/constants'
 
@@ -82,7 +84,7 @@ function UserSrsPanel({ user, onClose }: { user: UserProfile; onClose: () => voi
             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">{t('admin.users.panel.distribution')}</h3>
             {loading ? (
               <div className="flex items-center justify-center py-10">
-                <span className="material-symbols-outlined text-3xl text-stone-300 animate-spin">progress_activity</span>
+                <LoadingSpinner size="text-3xl" />
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
@@ -152,11 +154,7 @@ export default function AdminUsersPage() {
         </p>
       </div>
 
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600">
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} className="mb-4" />}
 
       <AdminCard title={t('admin.users.table.title')} description={t('admin.users.table.description')}>
         <div className="overflow-x-auto min-h-[300px]">

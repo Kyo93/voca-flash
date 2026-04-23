@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { TAG_META } from '../../lib/tag-constants'
 import { DESIGN_TOKENS } from '../../lib/tokens'
 import DifficultyPill from './DifficultyPill'
+import LoadingSpinner from '../common/LoadingSpinner'
 import type { Topic } from '../../lib/types'
 
 /** Màu fallback cho tag chưa có meta (terracotta brand từ DESIGN_TOKENS). */
@@ -237,10 +238,7 @@ export default function WordPool({
               {loading ? (
                 <tr>
                   <td colSpan={6} className="p-12 text-center">
-                    <div className="flex flex-col items-center gap-2">
-                      <span className="material-symbols-outlined text-4xl text-stone-300 animate-spin">progress_activity</span>
-                      <p className="text-stone-400">{t('common.loading')}</p>
-                    </div>
+                    <LoadingSpinner label={t('common.loading')} />
                   </td>
                 </tr>
               ) : visibleWords.length === 0 ? (

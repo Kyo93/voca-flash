@@ -27,18 +27,24 @@ async function replaceWordTopics(wordId: string, topicIds: string[]): Promise<vo
 }
 
 /**
+ * Build the row payload for inserting wrong-choices into `word_choices`.
+ * Sort starts at 1 to match existing DB ordering.
+ */
+export function buildChoicePayload(wordId: string, choices: string[]) {
+  return choices.map((choice, i) => ({
+    word_id: wordId,
+    choice,
+    sort: i + 1,
+  }))
+}
+
+/**
  * Replace tất cả wrong-choice của một word, giữ thứ tự theo index input.
  */
 async function replaceWordChoices(wordId: string, choices: string[]): Promise<void> {
   await supabase.from('word_choices').delete().eq('word_id', wordId)
   if (choices.length === 0) return
-  await supabase.from('word_choices').insert(
-    choices.map((choice, i) => ({
-      word_id: wordId,
-      choice,
-      sort: i + 1,
-    })),
-  )
+  await supabase.from('word_choices').insert(buildChoicePayload(wordId, choices))
 }
 
 /** Words */

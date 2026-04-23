@@ -10,6 +10,7 @@ import {
   createWordChoices,
   deleteWordChoices,
   getWordTopicIds,
+  buildChoicePayload,
 } from '../../lib/queries/word-queries'
 import type { Word, WordChoice } from '../../lib/types'
 
@@ -40,13 +41,7 @@ export function useAdminWords() {
     if (err) return { error: err.message }
 
     if (wrongChoices.length > 0) {
-      await createWordChoices(
-        wrongChoices.map((choice, i) => ({
-          word_id: data!.id,
-          choice,
-          sort: i + 1,
-        }))
-      )
+      await createWordChoices(buildChoicePayload(data!.id, wrongChoices))
     }
 
     await fetch()
@@ -65,13 +60,7 @@ export function useAdminWords() {
     if (wrongChoices !== undefined) {
       await deleteWordChoices(id)
       if (wrongChoices.length > 0) {
-        await createWordChoices(
-          wrongChoices.map((choice, i) => ({
-            word_id: id,
-            choice,
-            sort: i + 1,
-          }))
-        )
+        await createWordChoices(buildChoicePayload(id, wrongChoices))
       }
     }
 

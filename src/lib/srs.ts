@@ -179,6 +179,28 @@ export function mapSrsRecordToCardProgress(record: SrsRecord): CardProgress {
 }
 
 /**
+ * Maps an FSRS library Card back to our app CardProgress.
+ * Shared helper used by calculateFSRSReview, createInitialProgress, resetFSRSCard.
+ */
+function mapFSRSCardToProgress(
+  cardId: string,
+  card: FSRSCard,
+  lastReview: number,
+): CardProgress {
+  return {
+    cardId,
+    stability: card.stability,
+    difficulty: card.difficulty,
+    state: card.state,
+    reps: card.reps,
+    lapses: card.lapses,
+    scheduledDays: card.scheduled_days,
+    due: card.due.getTime(),
+    lastReview,
+  }
+}
+
+/**
  * Calculates the next review date using FSRS algorithm.
  */
 export function calculateFSRSReview(
@@ -190,19 +212,7 @@ export function calculateFSRSReview(
   const currentCard = mapCardProgressToFSRSCard(progress)
   const results = srsScheduler.repeat(currentCard, new Date())
   const selected = results[rating]
-  const newCard = selected.card
-
-  return {
-    cardId: progress.cardId,
-    stability: newCard.stability,
-    difficulty: newCard.difficulty,
-    state: newCard.state,
-    reps: newCard.reps,
-    lapses: newCard.lapses,
-    scheduledDays: newCard.scheduled_days,
-    due: newCard.due.getTime(),
-    lastReview: Date.now()
-  }
+  return mapFSRSCardToProgress(progress.cardId, selected.card, Date.now())
 }
 
 /**
@@ -216,18 +226,7 @@ export function isMastered(progress: CardProgress): boolean {
  * Creates initial progress for a newly encountered card.
  */
 export function createInitialProgress(cardId: string): CardProgress {
-  const empty = createEmptyCard()
-  return {
-    cardId,
-    stability: empty.stability,
-    difficulty: empty.difficulty,
-    state: empty.state,
-    reps: empty.reps,
-    lapses: empty.lapses,
-    scheduledDays: empty.scheduled_days,
-    due: empty.due.getTime(),
-    lastReview: 0
-  }
+  return mapFSRSCardToProgress(cardId, createEmptyCard(), 0)
 }
 
 /**
@@ -237,18 +236,7 @@ export function resetFSRSCard(progress: CardProgress): CardProgress {
   const currentCard = mapCardProgressToFSRSCard(progress)
   currentCard.elapsed_days = 0
   const { card: reset } = scheduler.forget(currentCard, new Date())
-
-  return {
-    cardId: progress.cardId,
-    stability: reset.stability,
-    difficulty: reset.difficulty,
-    state: reset.state,
-    reps: reset.reps,
-    lapses: reset.lapses,
-    scheduledDays: reset.scheduled_days,
-    due: reset.due.getTime(),
-    lastReview: Date.now()
-  }
+  return mapFSRSCardToProgress(progress.cardId, reset, Date.now())
 }
 
 /**

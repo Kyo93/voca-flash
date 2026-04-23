@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, memo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect, useState, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Word } from '../../lib/types'
 import { speak, stop } from '../../lib/tts'
+import { useTextChallengeInput } from '../../hooks/useTextChallengeInput'
+import ChallengeTextInput from './ChallengeTextInput'
 
 interface GhostRecallChallengeProps {
   word: Word
@@ -11,30 +12,16 @@ interface GhostRecallChallengeProps {
 
 export default memo(function GhostRecallChallengeInner({ word, onSubmit }: GhostRecallChallengeProps) {
   const { t } = useTranslation()
-  const [input, setInput] = useState('')
-  const [isWrong, setIsWrong] = useState(false)
   const [showHint, setShowHint] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const { input, setInput, isWrong, inputRef, handleSubmit } = useTextChallengeInput(
+    word.word,
+    (isCorrect) => onSubmit(isCorrect),
+  )
 
   useEffect(() => {
-    inputRef.current?.focus()
     speak(word.word)
     return () => stop()
   }, [word.word])
-
-  const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault()
-    if (!input.trim()) return
-
-    const isCorrect = input.trim().toLowerCase() === word.word.trim().toLowerCase()
-    if (isCorrect) {
-      onSubmit(true)
-      setInput('')
-    } else {
-      setIsWrong(true)
-      setTimeout(() => setIsWrong(false), 600)
-    }
-  }
 
   const getHintWord = () => {
     const w = word.word
@@ -84,36 +71,15 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
 
       {/* Input */}
       <form onSubmit={handleSubmit} className="w-full max-w-sm relative">
-        <div className="relative">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            placeholder={getHintWord()}
-            className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center text-3xl font-black font-headline text-primary outline-none transition-all placeholder:font-mono placeholder:text-primary/20 ${isWrong
-                ? 'border-error bg-error/5 animate-[shake_0.4s_cubic-bezier(.36,.07,.19,.97)_both]'
-                : 'border-outline-variant/20 focus:border-primary shadow-sm'
-              }`}
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <AnimatePresence>
-            {input.length > 0 && !isWrong && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="absolute -bottom-10 left-0 right-0 text-center"
-              >
-                <span className="text-[9px] font-bold uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
-                  {t('arena.pressEnterToConfirm')}
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <ChallengeTextInput
+          ref={inputRef}
+          value={input}
+          onChange={setInput}
+          onSubmit={() => handleSubmit()}
+          isWrong={isWrong}
+          placeholder={getHintWord()}
+          placeholderClassName="placeholder:font-mono"
+        />
       </form>
 
       {/* Hint Toggle */}

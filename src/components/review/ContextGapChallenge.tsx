@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Word } from '../../lib/types'
+import { useTextChallengeInput } from '../../hooks/useTextChallengeInput'
+import ChallengeTextInput from './ChallengeTextInput'
 
 interface ContextGapChallengeProps {
   word: Word
@@ -10,9 +10,10 @@ interface ContextGapChallengeProps {
 
 export default function ContextGapChallenge({ word, onSubmit }: ContextGapChallengeProps) {
   const { t } = useTranslation()
-  const [input, setInput] = useState('')
-  const [isWrong, setIsWrong] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const { input, setInput, isWrong, inputRef, handleSubmit } = useTextChallengeInput(
+    word.word,
+    (isCorrect) => onSubmit(isCorrect),
+  )
 
   const gappedSentence = (() => {
     if (!word.example) return null
@@ -28,23 +29,6 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
       </span>
     ))
   })()
-
-  useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
-
-  const handleSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault()
-    if (!input.trim()) return
-    const isCorrect = input.trim().toLowerCase() === word.word.trim().toLowerCase()
-    if (isCorrect) {
-      onSubmit(true)
-      setInput('')
-    } else {
-      setIsWrong(true)
-      setTimeout(() => setIsWrong(false), 600)
-    }
-  }
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -68,36 +52,15 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
 
       {/* Input */}
       <form onSubmit={handleSubmit} className="w-full max-w-sm relative">
-        <div className="relative">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            placeholder={t('arena.typeMissing')}
-            className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center text-2xl font-black font-headline text-primary outline-none transition-all placeholder:text-primary/20 ${isWrong
-                ? 'border-error bg-error/5 animate-[shake_0.4s_cubic-bezier(.36,.07,.19,.97)_both]'
-                : 'border-outline-variant/20 focus:border-primary shadow-sm'
-              }`}
-            autoComplete="off"
-            spellCheck={false}
-          />
-          <AnimatePresence>
-            {input.length > 0 && !isWrong && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="absolute -bottom-10 left-0 right-0 text-center"
-              >
-                <span className="text-[9px] font-bold uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
-                  {t('arena.pressEnterToConfirm')}
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <ChallengeTextInput
+          ref={inputRef}
+          value={input}
+          onChange={setInput}
+          onSubmit={() => handleSubmit()}
+          isWrong={isWrong}
+          placeholder={t('arena.typeMissing')}
+          textSize="text-2xl"
+        />
       </form>
 
       {/* Meaning hint */}
