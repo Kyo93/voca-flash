@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { getTodayBoundary } from '../../src/lib/storage/session'
+import { getTodayBoundary, getEndOfStudyDay } from '../../src/lib/storage/session'
 
 describe('SRS Boundary Logic', () => {
   describe('getTodayBoundary (Frontend)', () => {
@@ -33,6 +33,27 @@ describe('SRS Boundary Logic', () => {
       expect(boundary.getMonth()).toBe(3) // April
       expect(boundary.getDate()).toBe(19) // Should be yesterday
       expect(boundary.getHours()).toBe(4)
+    })
+  })
+
+  describe('getEndOfStudyDay (Frontend)', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('should return 4 AM of the next day when called after 4 AM today', () => {
+      const now = new Date('2026-04-20T09:00:00')
+      vi.setSystemTime(now)
+      
+      const endBoundary = getEndOfStudyDay()
+      expect(endBoundary.getFullYear()).toBe(2026)
+      expect(endBoundary.getMonth()).toBe(3) // April
+      expect(endBoundary.getDate()).toBe(21) // Tomorrow
+      expect(endBoundary.getHours()).toBe(4)
     })
   })
 

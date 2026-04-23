@@ -63,7 +63,7 @@ export async function fetchReviewWords(userId: string): Promise<{ word: Word; pr
     .select('*')
     .eq('user_id', userId)
     .eq('mastered', false)
-    .lte('next_review_at', new Date().toISOString())
+    .lte('next_review_at', getEndOfStudyDay().toISOString())
     .order('lapse_count', { ascending: false })
     .limit(FETCH_REVIEWS_LIMIT)
 
@@ -147,6 +147,12 @@ export function getTodayBoundary(): Date {
   if (new Date().getHours() < TIME_CONSTANTS.DAY_BOUNDARY_HOUR) {
     boundary.setDate(boundary.getDate() - 1)
   }
+  return boundary
+}
+
+export function getEndOfStudyDay(): Date {
+  const boundary = getTodayBoundary()
+  boundary.setDate(boundary.getDate() + 1)
   return boundary
 }
 
