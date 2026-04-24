@@ -5,13 +5,11 @@ import type { Word } from '../../lib/types'
 import { useWordForm } from '../../hooks/admin/useWordForm'
 import ErrorBanner from '../common/ErrorBanner'
 import { WordTagsInput } from './WordTagsInput'
+import { WrongChoicesInput } from './WordFormModal/WrongChoicesInput'
 
 /** Tailwind class chung cho mọi input/textarea/select trong form. */
 const FORM_FIELD_CLASS =
   'w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all'
-
-const WRONG_CHOICE_CLASS =
-  'px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50 text-secondary font-medium outline-none focus:border-orange-300 focus:bg-white transition-all'
 
 const FALLBACK_PREVIEW_IMAGE = 'https://placehold.co/600x450?text=Invalid+URL'
 
@@ -282,29 +280,11 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           </div>
 
           {/* Wrong choices */}
-          <div>
-            <label className="block text-sm font-bold text-secondary mb-2">
-              {t('admin.wordForm.wrongChoices')}
-            </label>
-            <div className="grid grid-cols-3 gap-3">
-              {([
-                [state.wrong1, actions.setWrong1, 'admin.wordForm.wrong1Placeholder'],
-                [state.wrong2, actions.setWrong2, 'admin.wordForm.wrong2Placeholder'],
-                [state.wrong3, actions.setWrong3, 'admin.wordForm.wrong3Placeholder'],
-              ] as const).map(([value, setValue, placeholderKey], idx) => (
-                <input
-                  key={placeholderKey}
-                  type="text"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  placeholder={t(placeholderKey)}
-                  className={WRONG_CHOICE_CLASS}
-                  data-testid={`wrong-choice-${idx + 1}`}
-                />
-              ))}
-            </div>
-            <p className="text-xs text-stone-400 mt-1">{t('admin.wordForm.wrongChoicesDesc')}</p>
-          </div>
+          <WrongChoicesInput
+            wrong1={state.wrong1} setWrong1={actions.setWrong1}
+            wrong2={state.wrong2} setWrong2={actions.setWrong2}
+            wrong3={state.wrong3} setWrong3={actions.setWrong3}
+          />
 
           {state.error && <ErrorBanner message={state.error} />}
 
