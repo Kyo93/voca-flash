@@ -1,55 +1,44 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, Link } from 'react-router-dom'
-import { useAdminTopics } from '../../hooks/admin/useAdminTopics'
-import {
-  getRoadmapById,
-  getTopicsByRoadmap,
-  getWordsWithTopicsByRoadmap,
-  assignWordsToTopic,
-  unassignWordsFromTopic,
-} from '../../lib/queries/roadmap-queries'
-import {
-  deleteTopic,
-  createTopic,
-  getTopicWordCounts,
-} from '../../lib/queries/topic-queries'
-import { deleteWord } from '../../lib/queries/word-queries'
-import { reorderTopics, updateTopic } from '../../lib/queries/topic-queries'
-import { useSelection } from '../../hooks/useSelection'
+import { useRoadmapSetup } from '../../hooks/admin/useRoadmapSetup'
 
 import TopicFormModal from '../../components/admin/TopicFormModal'
 import ImportWordsModal from '../../components/admin/ImportWordsModal'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import type { Topic, Roadmap } from '../../lib/types'
 import TopicPanel from '../../components/admin/TopicPanel'
-import WordPool, { EnrichedWord } from '../../components/admin/WordPool'
+import WordPool from '../../components/admin/WordPool'
+import type { Topic } from '../../lib/types'
 
-
-
-// ─── Main Page ───────────────────────────────────────────────
 export default function RoadmapSetupPage() {
   const { t } = useTranslation()
   const { roadmapId } = useParams<{ roadmapId: string }>()
-  const { fetch: fetchTopics } = useAdminTopics()
 
-  const [roadmap, setRoadmap] = useState<Roadmap | null>(null)
-  const [topics, setTopics] = useState<Topic[]>([])
-  const [words, setWords] = useState<EnrichedWord[]>([])
-  const [wordCounts, setWordCounts] = useState<Record<string, number>>({})
-  const [loading, setLoading] = useState(true)
-
-  // UI State
   const {
-    selectedIds: selectedWordIds,
-    toggleOne: toggleWord,
-    toggleAll: toggleAllSelection,
-    clear: clearSelectedWords,
-    remove: removeFromSelection,
-  } = useSelection()
-  const [search, setSearch] = useState('')
-  const [activeTopicId, setActiveTopicId] = useState<string | null>(null) // null = Uncategorized
-  const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null)
+    roadmap,
+    topics,
+    words,
+    wordCounts,
+    filteredWords,
+    uncategorizedCount,
+    loading,
+    selectedWordIds,
+    toggleWord,
+    toggleAll,
+    search,
+    setSearch,
+    activeTopicId,
+    setActiveTopicId,
+    activeTagFilter,
+    setActiveTagFilter,
+    refreshAll,
+    handleBulkAssign,
+    handleBulkUnassign,
+    handleDeleteTopic,
+    handleDeleteWord,
+    handleReorderTopics,
+    handleSaveTopic,
+  } = useRoadmapSetup(roadmapId)
 
   // Modals
   const [showTopicModal, setShowTopicModal] = useState(false)
@@ -57,108 +46,6 @@ export default function RoadmapSetupPage() {
   const [showImportModal, setShowImportModal] = useState(false)
   const [deleteTopicTarget, setDeleteTopicTarget] = useState<Topic | null>(null)
   const [deleteWordTarget, setDeleteWordTarget] = useState<string | null>(null)
-
-  // Load data
-  async function loadData() {
-    if (!roadmapId) return
-    setLoading(true)
-
-    const [roadmapResponse, topicsRes, wordsRes, countsRes] = await Promise.all([
-      getRoadmapById(roadmapId),
-      getTopicsByRoadmap(roadmapId),
-      getWordsWithTopicsByRoadmap(roadmapId),
-      getTopicWordCounts(roadmapId),
-    ])
-
-    if (roadmapResponse.data) setRoadmap(roadmapResponse.data as Roadmap)
-    if (topicsRes.data) setTopics((topicsRes.data as Topic[]) ?? [])
-    if (wordsRes.data) setWords((wordsRes.data as EnrichedWord[]) ?? [])
-    if (countsRes.data) setWordCounts(countsRes.data as Record<string, number>)
-
-    setLoading(false)
-  }
-
-  useEffect(() => {
-    loadData()
-  }, [roadmapId])
-
-  // Computed: filter words by selected topic (search + tag filter handled in WordPool)
-  const filteredWords = useMemo(() => {
-    if (activeTopicId === null) return words
-    return words.filter(w => w.topicIds.includes(activeTopicId))
-  }, [words, activeTopicId])
-
-  // Computed: uncategorized words
-  const uncategorizedCount = useMemo(() => {
-    return words.filter(w => w.topicIds.length === 0).length
-  }, [words])
-
-  // Toggle all visible words
-  function toggleAll() {
-    toggleAllSelection(filteredWords.map((w) => w.id))
-  }
-
-  // Bulk assign to topic
-  async function handleBulkAssign(targetTopicId: string) {
-    if (!roadmapId) return
-    const ids = [...selectedWordIds]
-    if (targetTopicId) {
-      await assignWordsToTopic(ids, targetTopicId)
-    }
-    clearSelectedWords()
-    await loadData()
-    await fetchTopics()
-  }
-
-  // Bulk unassign from active topic
-  async function handleBulkUnassign() {
-    if (!activeTopicId) return
-    const ids = [...selectedWordIds]
-    await unassignWordsFromTopic(ids, activeTopicId)
-    clearSelectedWords()
-    await loadData()
-    await fetchTopics()
-  }
-
-  // Delete topic
-  async function handleDeleteTopic() {
-    if (!deleteTopicTarget) return
-    await deleteTopic(deleteTopicTarget.id)
-    setDeleteTopicTarget(null)
-    await loadData()
-    await fetchTopics()
-  }
-
-  // Delete word
-  async function handleDeleteWord() {
-    if (!deleteWordTarget) return
-    await deleteWord(deleteWordTarget)
-    const removedId = deleteWordTarget
-    setDeleteWordTarget(null)
-    removeFromSelection(removedId)
-    await loadData()
-  }
-
-  // Reorder topics
-  async function handleReorderTopics(reordered: Topic[]) {
-    setTopics(reordered)
-    const updates = reordered.map((t, i) => ({ id: t.id, sort_order: i }))
-    await reorderTopics(updates)
-  }
-  async function handleSaveTopic(data: {
-    name: string; slug: string; description: string | null
-    image_url: string | null; icon: string; color: string; roadmap_id: string | null
-  }) {
-    if (editTopic) {
-      await updateTopic(editTopic.id, data)
-    } else {
-      await createTopic({ ...data, sort_order: topics.length })
-    }
-    setShowTopicModal(false)
-    setEditTopic(null)
-    await loadData()
-    await fetchTopics()
-  }
 
   if (!roadmapId) {
     return (
@@ -224,7 +111,6 @@ export default function RoadmapSetupPage() {
             onActiveTagFilterChange={setActiveTagFilter}
             roadmapName={roadmap?.name}
           />
-
         </div>
       </div>
 
@@ -236,7 +122,11 @@ export default function RoadmapSetupPage() {
         roadmapId={roadmapId}
         roadmapSlug={roadmap?.slug}
         lastEditedAt={editTopic?.updated_at}
-        onSave={handleSaveTopic}
+        onSave={async (data) => {
+          await handleSaveTopic(editTopic, data)
+          setShowTopicModal(false)
+          setEditTopic(null)
+        }}
         onClose={() => { setShowTopicModal(false); setEditTopic(null) }}
       />
 
@@ -247,7 +137,7 @@ export default function RoadmapSetupPage() {
         roadmapName={roadmap?.name ?? ''}
         roadmapSlug={roadmap?.slug}
         onClose={() => setShowImportModal(false)}
-        onImportComplete={() => { setShowImportModal(false); loadData() }}
+        onImportComplete={() => { setShowImportModal(false); refreshAll() }}
       />
 
       {/* Delete topic confirm */}
@@ -257,7 +147,10 @@ export default function RoadmapSetupPage() {
         message={t('admin.roadmapSetup.deleteTopic.confirm', { name: deleteTopicTarget?.name })}
         confirmLabel={t('common.delete')}
         danger
-        onConfirm={handleDeleteTopic}
+        onConfirm={async () => {
+          if (deleteTopicTarget) await handleDeleteTopic(deleteTopicTarget)
+          setDeleteTopicTarget(null)
+        }}
         onCancel={() => setDeleteTopicTarget(null)}
       />
 
@@ -268,7 +161,10 @@ export default function RoadmapSetupPage() {
         message={t('admin.words.delete.message', { word: words.find(w => w.id === deleteWordTarget)?.word || '' })}
         confirmLabel={t('common.delete')}
         danger
-        onConfirm={handleDeleteWord}
+        onConfirm={async () => {
+          if (deleteWordTarget) await handleDeleteWord(deleteWordTarget)
+          setDeleteWordTarget(null)
+        }}
         onCancel={() => setDeleteWordTarget(null)}
       />
     </div>
