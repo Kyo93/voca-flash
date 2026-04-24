@@ -3,14 +3,14 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-- **Clean Code April 2026 v2 — 35/39 tasks complete**. 13 commits on `production`. All phases done except high-risk A4/A1 splits (permanently deferred) and B2 AdminModal (design decision pending). Plan: `openspec/changes/clean-code-april-2026-v2/`.
+- **Clean Code April 2026 v3 — COMPLETE** (1 commit `ef6daef` on `production`). All 9 tasks done. 382/382 tests pass. Build 694ms.
 
 ## Current Phase
-- execution → complete. Only V.4 manual smoke test remains. All code changes committed.
+- complete. Codebase fully clean.
 
 ## Next Actions
-- [ ] V.4 Manual smoke test — login, study session, review challenges (GhostRecall/ContextGap/Construction), admin CRUD (word/topic/roadmap), import flow (file + Sheets URL), word pool tag filter + bulk assign
-- Archive OpenSpec folder to `openspec/changes/archive/2026-04-23-clean-code-v2/` after smoke test passes
+- [ ] V.4 Manual smoke test (from v2) — login, study session, review challenges, admin CRUD, import flow
+- [ ] Consider archiving all openspec/changes/clean-code-* folders to archive/
 
 ## Working Context (Clean Code v2)
 - 13 commits landed: `d874c22` (Phase 1), `6aca5c2` (Phase 2), `c540e40` (Phase 3 primitives), `5623646` (A10), `069c90e` (B1 useAdminResource), `dca414e` (A5 useRoadmapForm), `9482f9a` (A9 NoteTab), `4d39e15` (A2+B10 useRoadmapSetup + refreshAll), `d162d39` (A7 useDragReorder + AdminTopicCard), `6dbd9a1` (A8 useImportFlow), `ca4e088` (fix stale closure startSession), `bcbdc63` (A3 WrongChoicesInput), `935836d` (A6 WordPool sub-components).

@@ -118,18 +118,18 @@ export default function MasteryPage() {
               <thead className="sticky top-0 z-10">
                 <tr className="bg-surface-container">
                   <th className="py-6 px-8 w-12">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       checked={selectedIds.size === words.length && words.length > 0}
                       onChange={toggleSelectAll}
                       className="w-5 h-5 rounded-lg border-outline-variant text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
                     />
                   </th>
                   <th className="py-6 px-2 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.word')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] hidden lg:table-cell">{t('mastery.table.topic')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.notebook')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.strength')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] text-right">{t('mastery.table.nextReview')}</th>
+                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] w-24">{t('mastery.table.notebook')}</th>
+                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] w-48">{t('mastery.table.strength')}</th>
+                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] w-28 hidden md:table-cell">{t('mastery.table.progress')}</th>
+                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] text-right w-40">{t('mastery.table.nextReview')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/5">
@@ -164,10 +164,10 @@ export default function MasteryPage() {
                          </div>
                          <div className="h-3 bg-stone-100/50 rounded w-32" />
                       </td>
-                      <td className="py-6 px-8 hidden lg:table-cell"><div className="h-4 bg-stone-100 rounded w-20" /></td>
-                      <td className="py-6 px-8"><div className="h-4 bg-stone-100 rounded w-10" /></td>
-                      <td className="py-6 px-8"><div className="h-6 bg-stone-100 rounded w-32" /></td>
-                      <td className="py-6 px-8 text-right"><div className="h-8 bg-stone-100 rounded w-16 float-right" /></td>
+                      <td className="py-6 px-8"><div className="h-5 w-5 bg-stone-100 rounded" /></td>
+                      <td className="py-6 px-8"><div className="h-1.5 bg-stone-100 rounded-full w-32" /></td>
+                      <td className="py-6 px-8 hidden md:table-cell"><div className="h-4 bg-stone-100 rounded w-16" /></td>
+                      <td className="py-6 px-8 text-right"><div className="h-4 bg-stone-100 rounded w-16 float-right" /></td>
                     </tr>
                   ))
                 )}

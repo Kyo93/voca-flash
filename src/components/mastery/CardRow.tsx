@@ -39,6 +39,8 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
   const isDue = nextReviewDate && nextReviewDate <= new Date()
 
   const stability = Number(word.fsrs_stability ?? 0)
+  const reps = Number(word.fsrs_reps ?? 0)
+  const lapses = Number(word.fsrs_lapses ?? 0)
 
   return (
     <tr
@@ -75,17 +77,6 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
           <SrsLevelBadge stability={stability} />
         </div>
       </td>
-      <td className="py-6 px-8 hidden lg:table-cell">
-        {word.is_orphaned ? (
-          <span className="inline-flex px-3 py-1 bg-error-container/20 text-error text-[10px] font-black uppercase tracking-widest rounded-full">
-            {t('mastery.filters.orphaned')}
-          </span>
-        ) : (
-          <span className="inline-flex px-3 py-1 bg-surface-container-high text-on-surface-variant/60 text-[10px] font-black uppercase tracking-widest rounded-full">
-            {word.topic_names?.split(',')[0] || t('mastery.detail.untagged')}
-          </span>
-        )}
-      </td>
       <td className="py-6 px-8">
         <div className="flex items-center gap-2">
           <button
@@ -108,7 +99,22 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
         </div>
       </td>
       <td className="py-6 px-8">
-        <SrsLevelBadge stability={stability} showStrength />
+        <SrsLevelBadge stability={stability} showStrength hideLabel />
+      </td>
+      <td className="py-6 px-8 hidden md:table-cell">
+        <div className="flex items-center gap-3 text-[11px] font-bold tracking-tight">
+          <span className="inline-flex items-center gap-1 text-on-surface-variant/60" title={t('mastery.table.repsTooltip', { count: reps })}>
+            <span className="material-symbols-outlined text-sm text-primary/60">check_circle</span>
+            {reps}
+          </span>
+          <span
+            className={`inline-flex items-center gap-1 ${lapses > 0 ? 'text-error/70' : 'text-on-surface-variant/30'}`}
+            title={t('mastery.table.lapsesTooltip', { count: lapses })}
+          >
+            <span className="material-symbols-outlined text-sm">cancel</span>
+            {lapses}
+          </span>
+        </div>
       </td>
       <td className="py-6 px-8 text-right">
         <div className="flex items-center justify-end gap-4">

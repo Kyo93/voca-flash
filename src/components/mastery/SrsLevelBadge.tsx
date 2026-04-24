@@ -4,26 +4,35 @@ import { getSrsLevelConfig } from '../../lib/srs'
 interface SrsLevelBadgeProps {
   stability: number
   showStrength?: boolean
+  hideLabel?: boolean
   size?: 'sm' | 'md'
 }
 
 /**
  * SrsLevelBadge - Standardized badge for word mastery level.
  * Used in Mastery tables and Word Detail panels.
+ *
+ * - Default: renders the label chip only (e.g. "Hạt Mầm Vững Chắc").
+ * - `showStrength`: also renders the strength bar + stability days.
+ * - `hideLabel`: hides the label chip (useful when label is rendered elsewhere
+ *   and this instance should render the strength bar only).
  */
-export const SrsLevelBadge: React.FC<SrsLevelBadgeProps> = ({ 
-  stability, 
+export const SrsLevelBadge: React.FC<SrsLevelBadgeProps> = ({
+  stability,
   showStrength = false,
-  size = 'sm' 
+  hideLabel = false,
+  size = 'sm'
 }) => {
   const level = getSrsLevelConfig(stability)
   const strengthPercent = Math.min(100, (stability / 21) * 100)
 
   return (
     <div className="flex items-center gap-3">
-      <span className={`px-2.5 py-1 rounded-md font-black uppercase tracking-widest ${level.bg} ${level.text} ${level.glow} leading-none ${size === 'sm' ? 'text-[9px]' : 'text-[10px]'}`}>
-        {level.label}
-      </span>
+      {!hideLabel && (
+        <span className={`px-2.5 py-1 rounded-md font-black uppercase tracking-widest ${level.bg} ${level.text} ${level.glow} leading-none ${size === 'sm' ? 'text-[9px]' : 'text-[10px]'}`}>
+          {level.label}
+        </span>
+      )}
 
       {showStrength && (
         <div className="flex items-center gap-2">
