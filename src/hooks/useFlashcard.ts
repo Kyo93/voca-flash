@@ -110,7 +110,7 @@ export function useFlashcard() {
         cardStartTime: Date.now(),
       }
     })
-  }, [user])
+  }, [user, profile])
 
   const flip = useCallback(() => {
     setState((s) => ({ ...s, isFlipped: !s.isFlipped }))
