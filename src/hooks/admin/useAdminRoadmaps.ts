@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   getAllRoadmaps,
   createRoadmap,
@@ -6,44 +5,31 @@ import {
   deleteRoadmap,
 } from '../../lib/queries/roadmap-queries'
 import type { Roadmap } from '../../lib/types'
+import { useAdminResource } from './useAdminResource'
+
+type RoadmapWithTopicCount = Roadmap & { topics?: [{ count: number }] }
 
 export function useAdminRoadmaps() {
-  const [roadmaps, setRoadmaps] = useState<Roadmap[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { items: roadmaps, setItems: setRoadmaps, loading, error, fetchItems, runMutation } =
+    useAdminResource<Roadmap>({
+      load: () => getAllRoadmaps(),
+      mapData: (data) =>
+        ((data ?? []) as RoadmapWithTopicCount[]).map((r) => ({
+          ...r,
+          topic_count: r.topics?.[0]?.count ?? 0,
+        })) as Roadmap[],
+    })
 
-  async function fetch() {
-    setLoading(true)
-    setError(null)
-    const { data, error: err } = await getAllRoadmaps()
-    if (err) {
-      setError(err.message)
-      setLoading(false)
-      return
-    }
-    type RoadmapWithTopicCount = Roadmap & { topics?: [{ count: number }] }
-    const formatted = ((data ?? []) as RoadmapWithTopicCount[]).map(r => ({
-      ...r,
-      topic_count: r.topics?.[0]?.count ?? 0,
-    }))
-    setRoadmaps(formatted as Roadmap[])
-    setLoading(false)
-  }
+  const fetch = fetchItems
 
   async function addRoadmap(
-    roadmap: Omit<Roadmap, 'id' | 'created_at' | 'updated_at'>
+    roadmap: Omit<Roadmap, 'id' | 'created_at' | 'updated_at'>,
   ) {
-    const { error: err } = await createRoadmap(roadmap)
-    if (err) return { error: err.message }
-    await fetch()
-    return { error: null }
+    return runMutation(() => createRoadmap(roadmap), { refetch: fetch })
   }
 
   async function editRoadmap(id: string, roadmap: Partial<Roadmap>) {
-    const { error: err } = await updateRoadmap(id, roadmap)
-    if (err) return { error: err.message }
-    await fetch()
-    return { error: null }
+    return runMutation(() => updateRoadmap(id, roadmap), { refetch: fetch })
   }
 
   async function removeRoadmap(id: string) {

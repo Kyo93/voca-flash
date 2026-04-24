@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   getAllWords,
   createWord,
@@ -13,29 +12,20 @@ import {
   buildChoicePayload,
 } from '../../lib/queries/word-queries'
 import type { Word, WordChoice } from '../../lib/types'
+import { useAdminResource } from './useAdminResource'
 
 export function useAdminWords() {
-  const [words, setWords] = useState<Word[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { items: words, setItems: setWords, loading, error, fetchItems } =
+    useAdminResource<Word, [topicFilter?: string, search?: string]>({
+      load: (topicFilter, search) => getAllWords(topicFilter, search),
+    })
 
-  async function fetch(topicFilter?: string, search?: string) {
-    setLoading(true)
-    setError(null)
-    const { data, error: err } = await getAllWords(topicFilter, search)
-    if (err) {
-      setError(err.message)
-      setLoading(false)
-      return
-    }
-    setWords((data as Word[]) ?? [])
-    setLoading(false)
-  }
+  const fetch = fetchItems
 
   async function addWord(
     word: Omit<Word, 'id' | 'created_at' | 'updated_at'>,
     wrongChoices: string[],
-    topicIds: string[] = []
+    topicIds: string[] = [],
   ) {
     const { data, error: err } = await createWord({ ...word }, topicIds)
     if (err) return { error: err.message }
@@ -52,7 +42,7 @@ export function useAdminWords() {
     id: string,
     word: Partial<Word>,
     wrongChoices?: string[],
-    topicIds?: string[]
+    topicIds?: string[],
   ) {
     const { error: err } = await updateWord(id, word, topicIds)
     if (err) return { error: err.message }

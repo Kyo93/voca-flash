@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   getAllTopics,
   createTopic,
@@ -7,37 +6,20 @@ import {
   reorderTopics,
 } from '../../lib/queries/topic-queries'
 import type { Topic } from '../../lib/types'
+import { useAdminResource } from './useAdminResource'
 
 export function useAdminTopics() {
-  const [topics, setTopics] = useState<Topic[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { items: topics, setItems: setTopics, loading, error, fetchItems, runMutation } =
+    useAdminResource<Topic>({ load: () => getAllTopics() })
 
-  async function fetch() {
-    setLoading(true)
-    setError(null)
-    const { data, error: err } = await getAllTopics()
-    if (err) {
-      setError(err.message)
-      setLoading(false)
-      return
-    }
-    setTopics((data as Topic[]) ?? [])
-    setLoading(false)
-  }
+  const fetch = fetchItems
 
   async function addTopic(topic: Omit<Topic, 'id' | 'created_at' | 'updated_at'>) {
-    const { error: err } = await createTopic(topic)
-    if (err) return { error: err.message }
-    await fetch()
-    return { error: null }
+    return runMutation(() => createTopic(topic), { refetch: fetch })
   }
 
   async function editTopic(id: string, topic: Partial<Topic>) {
-    const { error: err } = await updateTopic(id, topic)
-    if (err) return { error: err.message }
-    await fetch()
-    return { error: null }
+    return runMutation(() => updateTopic(id, topic), { refetch: fetch })
   }
 
   async function removeTopic(id: string) {
