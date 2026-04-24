@@ -1,13 +1,10 @@
-import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Topic, BatchInsertResult, NormalizedWord } from '../../lib/types'
-import { parseFile, parseSheetsUrl, parseErrorToMessage } from '../../lib/import-parser'
-import { batchInsertWords } from '../../lib/queries/word-queries'
-import ImportPreviewTable, { ImportRow, DuplicateAction } from './ImportPreviewTable'
-import { processImportData } from '../../lib/import-logic'
+import type { Topic } from '../../lib/types'
+import ImportPreviewTable from './ImportPreviewTable'
 import { ImportDropZone } from './import/ImportDropZone'
 import { ImportProgressIndicator } from './import/ImportProgressIndicator'
 import { ImportResultSummary } from './import/ImportResultSummary'
+import { useImportFlow } from '../../hooks/admin/useImportFlow'
 
 // ── Props ─────────────────────────────────────────────────
 interface Props {
@@ -20,106 +17,18 @@ interface Props {
   roadmapSlug?: string
 }
 
-// ── Helpers ──────────────────────────────────────────────
-function getTopicNameMap(topics: Topic[]): Map<string, Topic> {
-  const map = new Map<string, Topic>()
-  for (const t of topics) {
-    map.set(t.name.toLowerCase(), t)
-  }
-  return map
-}
-
-type ImportState = 'idle' | 'parsing' | 'preview' | 'importing' | 'done' | 'error'
-
 export default function ImportWordsModal({ open, onClose, onImportComplete, topics, roadmapId, roadmapName, roadmapSlug }: Props) {
   const { t } = useTranslation()
-  const filteredTopics = topics.filter(t => t.roadmap_id === roadmapId)
+  const flow = useImportFlow({ topics, roadmapId, roadmapSlug })
 
-  const [state, setState] = useState<ImportState>('idle')
-  const [sheetsUrl, setSheetsUrl] = useState('')
-  const [urlError, setUrlError] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [rows, setRows] = useState<ImportRow[]>([])
-  const [progress, setProgress] = useState({ done: 0, total: 0 })
-  const [result, setResult] = useState<BatchInsertResult | null>(null)
-
-  const handleClose = useCallback(() => {
-    setState('idle')
-    setRows([])
-    setErrorMessage('')
-    setResult(null)
-    setSheetsUrl('')
-    setUrlError('')
+  const handleClose = () => {
+    flow.reset()
     onClose()
-  }, [onClose])
-
-  const handleParse = useCallback(async (parsed: { rows: NormalizedWord[]; unmatchedTopics: string[] }) => {
-    try {
-      const topicMap = getTopicNameMap(filteredTopics)
-      const { importRows } = await processImportData(parsed, roadmapId, roadmapSlug, topicMap)
-      setRows(importRows)
-      setState('preview')
-    } catch (err) {
-      setErrorMessage(t('admin.import.postParseError'))
-      setState('error')
-    }
-  }, [filteredTopics, roadmapId, roadmapSlug])
-
-  const handleFileSelected = useCallback(async (file: File) => {
-    setState('parsing')
-    setErrorMessage('')
-    try {
-      const topicMap = getTopicNameMap(filteredTopics)
-      const parsed = await parseFile(file, topicMap)
-      await handleParse(parsed)
-    } catch (err) {
-      const code = err instanceof Error ? err.message : 'PARSE_ERROR'
-      setErrorMessage(parseErrorToMessage(code))
-      setState('error')
-    }
-  }, [filteredTopics, handleParse])
-
-  const handleSheetsUrl = useCallback(async () => {
-    if (!sheetsUrl.trim()) {
-      setUrlError(t('admin.import.fileRequired'))
-      return
-    }
-    setUrlError('')
-    setState('parsing')
-    setErrorMessage('')
-    try {
-      const topicMap = getTopicNameMap(filteredTopics)
-      const parsed = await parseSheetsUrl(sheetsUrl, topicMap)
-      await handleParse(parsed)
-    } catch (err) {
-      const code = err instanceof Error ? err.message : 'PARSE_ERROR'
-      setErrorMessage(parseErrorToMessage(code))
-      setState('error')
-    }
-  }, [filteredTopics, sheetsUrl, t, handleParse])
-
-  function handleDuplicateAction(rowIndex: number, action: DuplicateAction) {
-    setRows(prev => prev.map((r, i) => i === rowIndex ? { ...r, duplicateAction: action } : r))
-  }
-
-  function handleBulkDuplicateAction(action: DuplicateAction) {
-    setRows(prev => prev.map(r => r.status === 'duplicate' ? { ...r, duplicateAction: action } : r))
-  }
-
-  async function handleStartImport() {
-    const validRows = rows.filter(r => r.status !== 'invalid')
-    const toImport = validRows.filter(r => !(r.status === 'duplicate' && r.duplicateAction === 'skip'))
-    if (toImport.length === 0) return
-
-    setState('importing')
-    setProgress({ done: 0, total: toImport.length })
-    const insertResult = await batchInsertWords(toImport)
-    setProgress({ done: toImport.length, total: toImport.length })
-    setResult(insertResult)
-    setState('done')
   }
 
   if (!open) return null
+
+  const { state, rows, progress, result } = flow
 
   const stats = {
     ok: rows.filter(r => r.status === 'new').length,
@@ -165,11 +74,11 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
 
           {state === 'idle' && roadmapId && (
             <ImportDropZone
-              onFileSelected={handleFileSelected}
-              sheetsUrl={sheetsUrl}
-              setSheetsUrl={setSheetsUrl}
-              urlError={urlError}
-              onSheetsUrlSubmit={handleSheetsUrl}
+              onFileSelected={flow.handleFileSelected}
+              sheetsUrl={flow.sheetsUrl}
+              setSheetsUrl={flow.setSheetsUrl}
+              urlError={flow.urlError}
+              onSheetsUrlSubmit={flow.handleSheetsUrl}
             />
           )}
 
@@ -178,8 +87,8 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
               rows={rows}
               topics={topics}
               stats={stats}
-              onRowDuplicateAction={handleDuplicateAction}
-              onBulkDuplicateAction={handleBulkDuplicateAction}
+              onRowDuplicateAction={flow.handleDuplicateAction}
+              onBulkDuplicateAction={flow.handleBulkDuplicateAction}
             />
           )}
 
@@ -190,8 +99,8 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
             <div className="space-y-4 py-6">
               <div className="flex flex-col items-center gap-3">
                 <span className="material-symbols-outlined text-6xl text-red-400">error</span>
-                <p className="text-lg font-bold text-red-600">{t(errorMessage) || errorMessage || t('admin.import.importFailed')}</p>
-                <button onClick={() => { setState('idle'); setErrorMessage('') }} className="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-xl hover:bg-stone-200 transition-all">
+                <p className="text-lg font-bold text-red-600">{t(flow.errorMessage) || flow.errorMessage || t('admin.import.importFailed')}</p>
+                <button onClick={flow.clearError} className="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-xl hover:bg-stone-200 transition-all">
                   {t('admin.import.resetAndTryAgain')}
                 </button>
               </div>
@@ -206,7 +115,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
 
           {state === 'preview' && (
             <button
-              onClick={handleStartImport}
+              onClick={flow.handleStartImport}
               disabled={stats.willImport === 0 || stats.errors > 0}
               className="flex items-center gap-2 px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >

@@ -17,10 +17,10 @@ describe('parseSheetsUrlIntoRows alias — RED', () => {
     expect(source).not.toMatch(/export.*parseSheetsUrlIntoRows/)
   })
 
-  it('ImportWordsModal.tsx must use parseSheetsUrl (not parseSheetsUrlIntoRows)', async () => {
+  it('useImportFlow.ts must use parseSheetsUrl (not parseSheetsUrlIntoRows)', async () => {
     const fs = await import('fs')
     const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/components/admin/ImportWordsModal.tsx',
+      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/hooks/admin/useImportFlow.ts',
       'utf-8'
     )
     // After fix: no reference to parseSheetsUrlIntoRows
