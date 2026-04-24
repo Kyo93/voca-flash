@@ -3,23 +3,35 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-- **Clean Code April 2026 v2**: Fix all 20+ hygiene issues from scan report — 5 bugs, 10 duplication clusters, 10 large functions. Plan at `openspec/changes/clean-code-april-2026-v2/`.
+- **Clean Code April 2026 v2 — 31/39 tasks complete**. 10 commits on `production`. Phase 1+2 full; Phase 3: 12/14 (B2 deferred, B7 skipped); Phase 4: 6/10. Plan: `openspec/changes/clean-code-april-2026-v2/`.
 
 ## Current Phase
-- planning → ready for execution
+- execution → near-complete. Remaining items are the 2 highest-risk hook/context splits (`useFlashcard`, `AuthProvider`) plus 2 sub-component extractions (WordFormModal/WordPool) — all need integration tests first.
 
 ## Next Actions
-### Clean Code April 2026 v2 (ACTIVE)
-- [ ] 1.1 Fix `useFlashcard.ts:186` stale `refreshInitialData` dep
-- [ ] 1.2 Fix `AuthContext.tsx:263–285` stale-closure `useMemo` deps
-- [ ] 1.3 Fix `StudyPage.tsx:59` `useRef<string|undefined>(null)` type error
-- See full list: `openspec/changes/clean-code-april-2026-v2/tasks.md`
+### Clean Code April 2026 v2 — Final follow-up session (high-risk items)
+- [ ] 4.9 A4 split `useFlashcard` into `useSrsSession` + `useSrsSync` — write integration tests first
+- [ ] 4.10 A1 split `AuthProvider` into `useThemeSync` / `useTtsSync` / `useLanguageSync`
+- [ ] 4.2 A3 WordFormModal sub-components (WordBasicFields, WrongChoicesInput)
+- [ ] 4.3 A6 WordPool sub-components (TagFilterChips, WordPoolTable, BulkAssignBar)
+- [ ] 3.3 B2 AdminModal wrapper — needs design for header/footer variations across 3 modals
 
 ## Working Context (Clean Code v2)
-- Order: bugs → quick cleanups → extract primitives → refactor large functions. Primitives land BEFORE large-function refactors so consumers shrink for free.
-- Key primitives to create: `AdminModal`, `ErrorBanner`, `LoadingSpinner`, `ImageUrlField`, `SlugField`, `useAdminResource<T>`, `ChallengeTextInput`, `mapFSRSCardToProgress`, `buildChoicePayload`.
-- Largest targets (touch last, with tests green): `AuthProvider` (236 lines, 5 concerns), `RoadmapSetupPage` (245 lines God Page), `useFlashcard` (198 lines).
-- Verification between every commit: `npm run test` + `npm run typecheck`.
+- 10 commits landed: `d874c22` (Phase 1), `6aca5c2` (Phase 2), `c540e40` (Phase 3 primitives), `5623646` (A10), `069c90e` (B1 useAdminResource), `dca414e` (A5 useRoadmapForm), `9482f9a` (A9 NoteTab), `4d39e15` (A2+B10 useRoadmapSetup + refreshAll), `d162d39` (A7 useDragReorder + AdminTopicCard), `6dbd9a1` (A8 useImportFlow).
+- New primitives: `ErrorBanner`, `LoadingSpinner`, `ImageUrlField`, `ChallengeTextInput` + `useTextChallengeInput`, `UserSrsPanel` + inline `useUserSrsStats`, `NoteTab`, `AdminTopicCard`.
+- New hooks: `useAdminResource<T, Args>` factory, `useRoadmapForm`, `useRoadmapSetup` (with `refreshAll()`), `useImportFlow` (with `parseSource()`), `useDragReorder<T extends {id}>`.
+- New utils: `mapFSRSCardToProgress()`, `buildChoicePayload()`, `getScheduler()` retention cache.
+- All 378 tests pass. Typecheck clean across all 10 commits.
+- Tests that grep file contents (`topic-card-design.test.ts`, `parse-sheets-alias.test.ts`) updated to follow code into the extracted files.
+
+## Lessons Learned (this session)
+- Primitives-first ordering paid off: each consumer migration was isolated, typecheck stayed green between commits.
+- Don't over-unify — when two "similar" UIs diverge in critical ways (slug with prefix vs plain slug), keeping them separate beats an awkward options-soup component.
+- `parseSource((load) => ...)` callback-injection pattern collapses two near-identical try/catch wrappers into one — same trick as the `useAdminResource.runMutation` helper.
+- Generic admin-CRUD factory works cleanly with `<T, Args extends unknown[] = []>` so `getAllWords(topicFilter, search)` and `getAllTopics()` both fit one base hook.
+- `useDragReorder<T extends {id: string}>` was straightforward to extract because TopicPanel's drag logic was pure HTML5 — no library coupling.
+- React 19 `useRef<T | undefined>(null)` no longer compiles — pass `undefined` explicitly.
+- File-grep tests that reference moved code need updating in the same commit; verify with `npx vitest run --reporter=dot` before pushing.
 
 ## Previous Goal (archived)
 - **Finalize Spaced Repetition (SRS) Integration**: Refining the SRS algorithm implementation, updating storage layers for FSRS v5, and ensuring full data synchronization across devices.
