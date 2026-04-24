@@ -7,7 +7,7 @@ import { MASTERY_CONFIG } from '../lib/constants'
 export type FilterType = 'all' | 'due' | 'weak' | 'orphaned' | 'mastered'
 
 interface AdvancedFilters {
-  topicId: string | null
+  roadmapId: string | null
   pos: string | null
   stability: string | null
   abcLetter: string | null
@@ -35,7 +35,7 @@ export function useMasteryWords({ userId }: UseMasteryWordsProps) {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
-    topicId: null,
+    roadmapId: null,
     pos: null,
     stability: null,
     abcLetter: null,
@@ -102,7 +102,10 @@ export function useMasteryWords({ userId }: UseMasteryWordsProps) {
         offset: pageNum * PAGE_SIZE,
         search: debouncedSearch,
         filter: activeFilter,
-        letter: advancedFilters.abcLetter || ''
+        letter: advancedFilters.abcLetter || '',
+        roadmapId: advancedFilters.roadmapId,
+        stability: advancedFilters.stability,
+        sortBy: advancedFilters.sortBy,
       })
 
       setTotalCount(total)
@@ -114,7 +117,7 @@ export function useMasteryWords({ userId }: UseMasteryWordsProps) {
       setLoading(false)
       setLoadingMore(false)
     }
-  }, [userId, debouncedSearch, activeFilter, advancedFilters.abcLetter, PAGE_SIZE])
+  }, [userId, debouncedSearch, activeFilter, advancedFilters, PAGE_SIZE])
 
   useEffect(() => {
     loadData(page)

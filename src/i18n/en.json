@@ -1044,6 +1044,7 @@
       "orphaned": "Orphaned",
       "mastered": "Mastered",
       "allTopics": "All Topics",
+      "allRoadmaps": "All Roadmaps",
       "allPos": "All Parts of Speech",
       "allStability": "All Stability Levels",
       "sortBy": "Sort By",
@@ -1072,6 +1073,9 @@
       "topic": "Topic",
       "notebook": "Notebook",
       "strength": "Strength",
+      "progress": "Progress",
+      "repsTooltip": "{{count}} reviews",
+      "lapsesTooltip": "{{count}} lapses",
       "nextReview": "Next Review"
     },
     "empty": {

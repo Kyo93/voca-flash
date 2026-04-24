@@ -1044,6 +1044,7 @@
       "orphaned": "Từ mồ côi",
       "mastered": "Đã thuộc",
       "allTopics": "Tất cả chủ đề",
+      "allRoadmaps": "Tất cả lộ trình",
       "allPos": "Tất cả từ loại",
       "allStability": "Tất cả trạng thái",
       "sortBy": "Sắp xếp",
@@ -1072,6 +1073,9 @@
       "topic": "Chủ đề",
       "notebook": "Sổ tay",
       "strength": "Sức mạnh",
+      "progress": "Tiến độ",
+      "repsTooltip": "{{count}} lần ôn",
+      "lapsesTooltip": "{{count}} lần quên",
       "nextReview": "Ôn tập tiếp"
     },
     "empty": {

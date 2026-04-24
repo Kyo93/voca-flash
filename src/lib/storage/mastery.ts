@@ -19,20 +19,35 @@ interface FetchVocabularyOptions {
   search?: string
   filter?: 'all' | 'due' | 'weak' | 'orphaned' | 'mastered'
   letter?: string
+  roadmapId?: string | null
+  stability?: string | null
+  sortBy?: string
 }
 
 export async function getUserVocabulary(
   userId: string,
   options: FetchVocabularyOptions = {}
 ): Promise<{ data: MasteryWord[]; total: number }> {
-  const { limit = MASTERY_CONFIG.DEFAULT_PAGE_SIZE, offset = 0, search = '', filter = 'all', letter = '' } = options
+  const {
+    limit = MASTERY_CONFIG.DEFAULT_PAGE_SIZE,
+    offset = 0,
+    search = '',
+    filter = 'all',
+    letter = '',
+    roadmapId = null,
+    stability = '',
+    sortBy = 'date',
+  } = options
   const { data, error } = await supabase.rpc('get_user_vocabulary_v2', {
     p_user_id: userId,
     p_limit: limit,
     p_offset: offset,
     p_search: search,
     p_filter: filter,
-    p_letter: letter
+    p_letter: letter,
+    p_roadmap_id: roadmapId,
+    p_stability: stability ?? '',
+    p_sort_by: sortBy,
   })
 
   if (error) {
