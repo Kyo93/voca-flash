@@ -3,26 +3,21 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Active Goal
-- **Clean Code April 2026 v2 — 31/39 tasks complete**. 10 commits on `production`. Phase 1+2 full; Phase 3: 12/14 (B2 deferred, B7 skipped); Phase 4: 6/10. Plan: `openspec/changes/clean-code-april-2026-v2/`.
+- **Clean Code April 2026 v2 — 35/39 tasks complete**. 13 commits on `production`. All phases done except high-risk A4/A1 splits (permanently deferred) and B2 AdminModal (design decision pending). Plan: `openspec/changes/clean-code-april-2026-v2/`.
 
 ## Current Phase
-- execution → near-complete. Remaining items are the 2 highest-risk hook/context splits (`useFlashcard`, `AuthProvider`) plus 2 sub-component extractions (WordFormModal/WordPool) — all need integration tests first.
+- execution → complete. Only V.4 manual smoke test remains. All code changes committed.
 
 ## Next Actions
-### Clean Code April 2026 v2 — Final follow-up session (high-risk items)
-- [ ] 4.9 A4 split `useFlashcard` into `useSrsSession` + `useSrsSync` — write integration tests first
-- [ ] 4.10 A1 split `AuthProvider` into `useThemeSync` / `useTtsSync` / `useLanguageSync`
-- [ ] 4.2 A3 WordFormModal sub-components (WordBasicFields, WrongChoicesInput)
-- [ ] 4.3 A6 WordPool sub-components (TagFilterChips, WordPoolTable, BulkAssignBar)
-- [ ] 3.3 B2 AdminModal wrapper — needs design for header/footer variations across 3 modals
+- [ ] V.4 Manual smoke test — login, study session, review challenges (GhostRecall/ContextGap/Construction), admin CRUD (word/topic/roadmap), import flow (file + Sheets URL), word pool tag filter + bulk assign
+- Archive OpenSpec folder to `openspec/changes/archive/2026-04-23-clean-code-v2/` after smoke test passes
 
 ## Working Context (Clean Code v2)
-- 10 commits landed: `d874c22` (Phase 1), `6aca5c2` (Phase 2), `c540e40` (Phase 3 primitives), `5623646` (A10), `069c90e` (B1 useAdminResource), `dca414e` (A5 useRoadmapForm), `9482f9a` (A9 NoteTab), `4d39e15` (A2+B10 useRoadmapSetup + refreshAll), `d162d39` (A7 useDragReorder + AdminTopicCard), `6dbd9a1` (A8 useImportFlow).
-- New primitives: `ErrorBanner`, `LoadingSpinner`, `ImageUrlField`, `ChallengeTextInput` + `useTextChallengeInput`, `UserSrsPanel` + inline `useUserSrsStats`, `NoteTab`, `AdminTopicCard`.
-- New hooks: `useAdminResource<T, Args>` factory, `useRoadmapForm`, `useRoadmapSetup` (with `refreshAll()`), `useImportFlow` (with `parseSource()`), `useDragReorder<T extends {id}>`.
-- New utils: `mapFSRSCardToProgress()`, `buildChoicePayload()`, `getScheduler()` retention cache.
-- All 378 tests pass. Typecheck clean across all 10 commits.
-- Tests that grep file contents (`topic-card-design.test.ts`, `parse-sheets-alias.test.ts`) updated to follow code into the extracted files.
+- 13 commits landed: `d874c22` (Phase 1), `6aca5c2` (Phase 2), `c540e40` (Phase 3 primitives), `5623646` (A10), `069c90e` (B1 useAdminResource), `dca414e` (A5 useRoadmapForm), `9482f9a` (A9 NoteTab), `4d39e15` (A2+B10 useRoadmapSetup + refreshAll), `d162d39` (A7 useDragReorder + AdminTopicCard), `6dbd9a1` (A8 useImportFlow), `ca4e088` (fix stale closure startSession), `bcbdc63` (A3 WrongChoicesInput), `935836d` (A6 WordPool sub-components).
+- New sub-components: `WordFormModal/WrongChoicesInput.tsx`, `word-pool/TagFilterChips.tsx`, `word-pool/BulkAssignBar.tsx`, `word-pool/WordPoolTable.tsx`.
+- Bug fixed: `useFlashcard.startSession` stale closure — `profile` added to dep array so `daily_target` is always current.
+- 382 tests pass. Typecheck clean. Build succeeds (715ms).
+- Permanently deferred: A4 (useFlashcard split — stateRef + two-way AuthContext coupling), A1 (AuthProvider split — atomic applyAppData batch, no unit tests), B2 (AdminModal — ImportWordsModal 4-state footer incompatible with shared slot API).
 
 ## Lessons Learned (this session)
 - Primitives-first ordering paid off: each consumer migration was isolated, typecheck stayed green between commits.

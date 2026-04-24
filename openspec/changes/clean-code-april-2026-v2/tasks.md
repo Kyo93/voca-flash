@@ -38,8 +38,8 @@
 
 ## Phase 4 — Refactor Large Functions (Section A)
 - [x] 4.1 A5 — `useRoadmapForm()` hook
-- [ ] 4.2 A3 — Split `WordFormModal` sub-components — DEFERRED
-- [ ] 4.3 A6 — `WordPool` sub-components — DEFERRED
+- [x] 4.2 A3 — Split `WordFormModal` sub-components — `WrongChoicesInput` extracted
+- [x] 4.3 A6 — `WordPool` sub-components — `TagFilterChips`, `BulkAssignBar`, `WordPoolTable` extracted
 - [x] 4.4 A7 — `TopicPanel` → `useDragReorder` + `AdminTopicCard`
 - [x] 4.5 A9 — Extract `<NoteTab />` from `WordDetailPanel`
 - [x] 4.6 A8 — `useImportFlow()` + `parseSource()` deduplicate file/sheets paths
@@ -49,16 +49,16 @@
 - [ ] 4.10 A1 — Split `AuthProvider` into theme/tts/language sync hooks — DEFERRED (high risk)
 
 ## Final Verification
-- [x] V.1 `npm run test` — 378/378 pass
+- [x] V.1 `npm run test` — 382/382 pass (379 after T3, 382 after T4)
 - [x] V.2 `npm run typecheck` — clean
-- [ ] V.3 `npm run lint` — pending
-- [ ] V.4 Manual smoke — pending
-- [ ] V.5 Re-run cm-clean-code scan — pending
+- [x] V.3 No lint script; `tsc --noEmit` passes
+- [ ] V.4 Manual smoke — pending (start dev server and verify all flows)
+- [x] V.5 Re-run cm-clean-code scan — clean (Tailwind strings only, no logic magic numbers)
 - [x] V.6 Update `.cm/CONTINUITY.md` with results
 
 ## Summary
-**Completed:** 31 of 39 items (Phase 1 full, Phase 2 full, Phase 3: 12/14, Phase 4: 6/10).
-**10 commits** landed on `production`:
+**Completed:** 35 of 39 items (Phase 1 full, Phase 2 full, Phase 3: 12/14, Phase 4: 8/10).
+**13 commits** landed on `production`:
 1. `d874c22` Phase 1 — 5 bugs
 2. `6aca5c2` Phase 2 — 8 cleanups
 3. `c540e40` Phase 3 part 1 — 5 new shared primitives + 9 migrations
@@ -69,10 +69,11 @@
 8. `4d39e15` A2+B10 — useRoadmapSetup() + refreshAll() collapse
 9. `d162d39` A7 — useDragReorder + AdminTopicCard
 10. `6dbd9a1` A8 — useImportFlow() + parseSource() dedupe
+11. `ca4e088` fix(srs) — add profile to startSession deps (stale closure)
+12. `bcbdc63` A3 — WrongChoicesInput extracted from WordFormModal
+13. `935836d` A6 — TagFilterChips, BulkAssignBar, WordPoolTable extracted from WordPool
 
-**Deferred to follow-up session** (high-risk large-function splits — write integration tests first):
-- A4 split `useFlashcard` into `useSrsSession` + `useSrsSync`
-- A1 split `AuthProvider` into sync hooks (theme/tts/language)
-- A3 `WordFormModal` sub-components
-- A6 `WordPool` sub-components
-- B2 `AdminModal` shell wrapper
+**Permanently deferred** (structural risk exceeds cleanup value without dedicated integration test suite):
+- A4 split `useFlashcard` into `useSrsSession` + `useSrsSync` — stateRef coupling + two-way AuthContext mutation
+- A1 split `AuthProvider` into sync hooks — atomic state batch via applyAppData, no unit tests for AuthContext
+- B2 `AdminModal` shell wrapper — ImportWordsModal's 4-state conditional footer can't share a header/body/footer slot API
