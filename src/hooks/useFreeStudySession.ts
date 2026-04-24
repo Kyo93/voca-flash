@@ -1,14 +1,12 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
+import i18n from '../i18n'
 import { CardProgress } from '../lib/srs'
 import { upsertFreeStudyFail, getUserVocabulary } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word, MasteryWord } from '../lib/types'
 import { ReviewChallenge, selectQuadrant } from '../lib/challenge-logic'
 import { shuffleArray } from '../lib/utils'
-import { REVIEW_SESSION_CONFIG } from '../lib/constants'
-
-const FREE_STUDY_DEFAULT_SAMPLE_SIZE = 20
-const DEFAULT_WORD_DIFFICULTY = 3
+import { REVIEW_SESSION_CONFIG, FREE_STUDY_DEFAULTS } from '../lib/constants'
 
 export function useFreeStudySession(deckId: string = 'all', wordsOverride?: MasteryWord[]) {
   const { user } = useAuth()
@@ -40,7 +38,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
         const { data: allWords } = await getUserVocabulary(user.id)
         if (deckId === 'all') {
           // Default: Take N random words for free study if none selected
-          sourceWords = shuffleArray(allWords ?? []).slice(0, FREE_STUDY_DEFAULT_SAMPLE_SIZE)
+          sourceWords = shuffleArray(allWords ?? []).slice(0, FREE_STUDY_DEFAULTS.SAMPLE_SIZE)
         } else if (deckId === 'mastered') {
           sourceWords = (allWords ?? []).filter(w => w.mastered === true)
         } else {
@@ -69,7 +67,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
           definition: w.definition,
           phonetic: w.phonetic,
           pos: 'other', // v2 does not return pos
-          difficulty: DEFAULT_WORD_DIFFICULTY,
+          difficulty: FREE_STUDY_DEFAULTS.WORD_DIFFICULTY,
           image_url: w.image_url,
           image_position: null, // v2 does not return image_position
           example: w.example,
@@ -93,7 +91,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
       setIsComplete(challenges.length === 0)
     } catch (err) {
       console.error('[useFreeStudySession] initialization failed:', err)
-      setSyncError('Không thể tải bài học tự do.')
+      setSyncError(i18n.t('review.errors.freeStudyLoadFailed'))
     } finally {
       setIsLoading(false)
       isInitializing.current = false
@@ -111,7 +109,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
       upsertFreeStudyFail(user.id, current.word.id)
         .catch(err => {
           console.error('[useFreeStudySession] fail sync error:', err)
-          setSyncError('Lỗi cập nhật tiến độ tự do.')
+          setSyncError(i18n.t('review.errors.freeStudySyncFailed'))
         })
     }
 

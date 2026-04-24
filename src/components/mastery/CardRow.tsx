@@ -82,7 +82,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
           </span>
         ) : (
           <span className="inline-flex px-3 py-1 bg-surface-container-high text-on-surface-variant/60 text-[10px] font-black uppercase tracking-widest rounded-full">
-            {word.topic_names?.split(',')[0] || 'General'}
+            {word.topic_names?.split(',')[0] || t('mastery.detail.untagged')}
           </span>
         )}
       </td>

@@ -106,6 +106,13 @@ export const SRS_SM2_MIGRATION_CONSTANTS = {
   EASE_MAPPING_FACTOR: 2,
 } as const;
 
+export const FREE_STUDY_DEFAULTS = {
+  SAMPLE_SIZE: 20,
+  WORD_DIFFICULTY: 3,
+} as const;
+
+export const ADMIN_FALLBACK_IMAGE = 'https://placehold.co/800x450/e2e8f0/9ca3af?text=Invalid+URL';
+
 export const UI_DEFAULTS = {
   FLASHCARD_FALLBACK_IMAGE: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80',
   TTS_DEFAULT_RATE: 0.85,

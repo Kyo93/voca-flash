@@ -6,6 +6,7 @@ import { useTopicForm } from '../../hooks/admin/useTopicForm'
 import { TopicIconPicker } from './TopicIconPicker'
 import ErrorBanner from '../common/ErrorBanner'
 import ImageUrlField from '../common/ImageUrlField'
+import { ADMIN_FALLBACK_IMAGE } from '../../lib/constants'
 
 interface Props {
   open: boolean
@@ -225,7 +226,7 @@ export default function TopicFormModal({
             inputClassName="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-600 text-sm shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all"
             labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2"
             previewWrapperClassName="mt-3 rounded-xl overflow-hidden border border-stone-100 bg-stone-100"
-            fallbackImage="https://placehold.co/800x450/e2e8f0/9ca3af?text=Invalid+URL"
+            fallbackImage={ADMIN_FALLBACK_IMAGE}
             emptyState={
               <div
                 className="mt-3 rounded-xl border-2 border-dashed border-stone-200 aspect-video bg-stone-50 flex items-center justify-center"

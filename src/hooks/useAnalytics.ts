@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import i18n from '../i18n'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -52,7 +53,7 @@ export function useAnalytics() {
         setData(result as AnalyticsData)
       } catch (err) {
         console.error('[useAnalytics] Error:', err)
-        setError('Không thể tải dữ liệu phân tích.')
+        setError(i18n.t('analytics.errors.loadFailed'))
       } finally {
         setIsLoading(false)
       }

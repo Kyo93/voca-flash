@@ -11,7 +11,9 @@ import { WrongChoicesInput } from './WordFormModal/WrongChoicesInput'
 const FORM_FIELD_CLASS =
   'w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all'
 
-const FALLBACK_PREVIEW_IMAGE = 'https://placehold.co/600x450?text=Invalid+URL'
+import { ADMIN_FALLBACK_IMAGE } from '../../lib/constants'
+
+const FALLBACK_PREVIEW_IMAGE = ADMIN_FALLBACK_IMAGE
 
 const getPosOptions = (t: TFunction) => [
   { value: 'noun', label: t('common.pos.noun') },

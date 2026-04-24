@@ -243,14 +243,14 @@ export function resetFSRSCard(progress: CardProgress): CardProgress {
  * Conversion helper: SM-2 to FSRS (used by migration tests).
  */
 export function sm2ToFsrs(sm2: { ease: number, interval: number, repetitions: number, lapse_count?: number }): Partial<CardProgress> {
-  const { 
-    MIN_STABILITY, MIN_DIFFICULTY, MAX_DIFFICULTY, 
-    EASE_MAPPING_BASE, EASE_MAPPING_FACTOR 
+  const {
+    MIN_STABILITY, MIN_DIFFICULTY, MAX_DIFFICULTY,
+    EASE_MAPPING_BASE, EASE_MAPPING_FACTOR
   } = SRS_SM2_MIGRATION_CONSTANTS
 
   return {
     stability: Math.max(MIN_STABILITY, sm2.interval),
-    difficulty: Math.max(MIN_DIFFICULTY, Math.min(MAX_DIFFICULTY, 5 + (EASE_MAPPING_BASE - sm2.ease) * EASE_MAPPING_FACTOR)), 
+    difficulty: Math.max(MIN_DIFFICULTY, Math.min(MAX_DIFFICULTY, 5 + (EASE_MAPPING_BASE - sm2.ease) * EASE_MAPPING_FACTOR)),
     state: sm2.repetitions === 0 ? State.Relearning : (sm2.repetitions < 2 ? State.Learning : State.Review),
     reps: sm2.repetitions,
     lapses: sm2.lapse_count ?? 0,

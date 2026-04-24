@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { ADMIN_FALLBACK_IMAGE } from '../../lib/constants'
 
 interface ImageUrlFieldProps {
   /** Current URL value (controlled). */
@@ -29,7 +30,7 @@ interface ImageUrlFieldProps {
   fallbackImage?: string
 }
 
-const DEFAULT_FALLBACK = 'https://placehold.co/800x450/e5e7eb/9ca3af?text=Invalid+URL'
+const DEFAULT_FALLBACK = ADMIN_FALLBACK_IMAGE
 
 /**
  * Reusable image URL input + live preview with onError fallback.

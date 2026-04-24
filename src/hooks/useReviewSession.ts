@@ -1,11 +1,12 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
+import i18n from '../i18n'
 import { SrsRating, calculateFSRSReview, mapIntensityToRetention } from '../lib/srs'
 import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word } from '../lib/types'
 import { selectQuadrant, generateChoices, type ReviewChallenge, type QuadrantType } from '../lib/challenge-logic'
 import { shuffleArray } from '../lib/utils'
-import { REVIEW_SESSION_CONFIG, SRS_RATINGS } from '../lib/constants'
+import { REVIEW_SESSION_CONFIG, SRS_RATINGS, SRS_CONFIG } from '../lib/constants'
 
 // Re-export for backward compatibility (used by other hooks)
 export type { ReviewChallenge, QuadrantType }
@@ -59,7 +60,7 @@ export function useReviewSession() {
       setIsComplete(shuffled.length === 0)
     } catch (err) {
       console.error('[useReviewSession] Init failed:', err)
-      setSyncError('Không thể tải dữ liệu ôn tập.')
+      setSyncError(i18n.t('review.errors.loadFailed'))
     } finally {
       setIsLoading(false)
       isInitializing.current = false
@@ -81,7 +82,7 @@ export function useReviewSession() {
     if (isFirstAttempt) {
       processedWordIds.current.add(current.word.id)
       
-      const intensity = profile?.srs_intensity ?? 1.0
+      const intensity = profile?.srs_intensity ?? SRS_CONFIG.INTENSITY_DEFAULT
       const retention = mapIntensityToRetention(intensity)
       const newProgress = calculateFSRSReview(current.progress, rating, retention)
 
@@ -94,7 +95,7 @@ export function useReviewSession() {
         duration
       }).catch(err => {
         console.error('[useReviewSession] sync error:', err)
-        setSyncError('Lỗi đồng bộ dữ liệu. Kết quả có thể không được lưu.')
+        setSyncError(i18n.t('review.errors.syncFailed'))
       })
 
       setStats(prev => {

@@ -9,7 +9,7 @@ import {
   computeIntervalPreviews, 
   createInitialProgress 
 } from '../lib/srs'
-import { STUDY_SESSION_DEFAULTS, CHALLENGE_TYPES } from '../lib/constants'
+import { STUDY_SESSION_DEFAULTS, CHALLENGE_TYPES, SRS_RATINGS, FREE_STUDY_DEFAULTS } from '../lib/constants'
 import { generateChoices } from '../lib/challenge-logic'
 import { Word } from '../lib/types'
 
@@ -56,7 +56,7 @@ export function useStudySessionMode({
     definition: card.back,
     phonetic: card.phonetic ?? null,
     pos: null,
-    difficulty: 3,
+    difficulty: FREE_STUDY_DEFAULTS.WORD_DIFFICULTY,
     example: card.example ?? null,
     example_vi: card.example_vi ?? null,
     image_url: card.image_url ?? null,
@@ -104,7 +104,7 @@ export function useStudySessionMode({
       srsIntensity,
     )
 
-    setSuggestedRating(2) // Hard
+    setSuggestedRating(SRS_RATINGS.HARD) // Hard
     setIntervalPreviews(previews)
     setPhase('RATING')
   }, [currentProgress, srsIntensity])

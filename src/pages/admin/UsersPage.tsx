@@ -24,11 +24,7 @@ export default function AdminUsersPage() {
       })
   }, [])
 
-  async function handleSelectUser(user: UserProfile) {
-    setSelectedUser(user)
-  }
-
-  return (
+return (
     <div>
       {/* Header */}
       <div className="mb-6">
@@ -60,7 +56,7 @@ export default function AdminUsersPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.05 }}
                   className={`group border-b border-stone-50 last:border-0 hover:bg-stone-50/50 transition-all cursor-pointer ${selectedUser?.id === u.id ? 'bg-primary/5' : ''}`}
-                  onClick={() => handleSelectUser(u)}
+                  onClick={() => setSelectedUser(u)}
                 >
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-4">

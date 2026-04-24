@@ -1002,6 +1002,17 @@
       "undo": "Undo",
       "reset": "Reset",
       "give_up": "Give up"
+    },
+    "errors": {
+      "loadFailed": "Failed to load review data.",
+      "syncFailed": "Sync error. Results may not be saved.",
+      "freeStudyLoadFailed": "Failed to load free study session.",
+      "freeStudySyncFailed": "Failed to update free study progress."
+    }
+  },
+  "analytics": {
+    "errors": {
+      "loadFailed": "Failed to load analytics data."
     }
   },
   "notebook": {

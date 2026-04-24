@@ -1002,6 +1002,17 @@
       "undo": "Quay lại",
       "reset": "Reset",
       "give_up": "Bỏ cuộc"
+    },
+    "errors": {
+      "loadFailed": "Không thể tải dữ liệu ôn tập.",
+      "syncFailed": "Lỗi đồng bộ dữ liệu. Kết quả có thể không được lưu.",
+      "freeStudyLoadFailed": "Không thể tải bài học tự do.",
+      "freeStudySyncFailed": "Lỗi cập nhật tiến độ tự do."
+    }
+  },
+  "analytics": {
+    "errors": {
+      "loadFailed": "Không thể tải dữ liệu phân tích."
     }
   },
   "notebook": {
