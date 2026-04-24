@@ -1,73 +1,21 @@
-import { useState, useEffect, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Roadmap } from '../../lib/types'
-import { slugify } from '../../lib/utils'
 import ErrorBanner from '../common/ErrorBanner'
 import ImageUrlField from '../common/ImageUrlField'
+import { useRoadmapForm, type RoadmapFormPayload } from '../../hooks/admin/useRoadmapForm'
 
 interface Props {
   open: boolean
   roadmap?: Roadmap | null
-  onSave: (data: {
-    name: string
-    slug: string
-    description: string | null
-    image_url: string | null
-    is_active: boolean
-  }) => Promise<void>
+  onSave: (data: RoadmapFormPayload) => Promise<void>
   onClose: () => void
 }
 
 export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Props) {
   const { t } = useTranslation()
-  const [name, setName] = useState('')
-  const [slug, setSlug] = useState('')
-  const [description, setDescription] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
-  const [isActive, setIsActive] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (roadmap) {
-      setName(roadmap.name)
-      setSlug(roadmap.slug)
-      setDescription(roadmap.description ?? '')
-      setImageUrl(roadmap.image_url ?? '')
-      setIsActive(roadmap.is_active ?? true)
-    } else {
-      setName('')
-      setSlug('')
-      setDescription('')
-      setImageUrl('')
-      setIsActive(true)
-    }
-    setError(null)
-  }, [roadmap, open])
-
-  useEffect(() => {
-    if (!roadmap) setSlug(slugify(name))
-  }, [name, roadmap])
+  const form = useRoadmapForm({ roadmap, open, onSave })
 
   if (!open) return null
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    if (!name.trim()) {
-      setError(t('admin.roadmapForm.errorName'))
-      return
-    }
-    setLoading(true)
-    setError(null)
-    await onSave({
-      name: name.trim(),
-      slug: slug.trim() || slugify(name),
-      description: description.trim() || null,
-      image_url: imageUrl.trim() || null,
-      is_active: isActive,
-    })
-    setLoading(false)
-  }
 
   return (
     <div
@@ -96,7 +44,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={form.handleSubmit} className="p-6">
 
           {/* Section 1: Info */}
           <div className="flex items-center gap-2 mb-3">
@@ -110,8 +58,8 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
               <label className="block text-sm font-bold text-secondary mb-2">{t('admin.roadmapForm.nameLabel')} *</label>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={form.name}
+                onChange={(e) => form.setName(e.target.value)}
                 placeholder={t('admin.roadmapForm.namePlaceholder')}
                 required
                 className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
@@ -122,14 +70,14 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
               <div className="flex gap-2">
                 <input
                   type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
+                  value={form.slug}
+                  onChange={(e) => form.setSlug(e.target.value)}
                   placeholder="english-mastery"
                   className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-xs outline-none focus:border-primary focus:bg-white transition-all min-w-0"
                 />
                 <button
                   type="button"
-                  onClick={() => setSlug(slugify(name))}
+                  onClick={form.regenerateSlug}
                   className="shrink-0 px-3 py-2 rounded-xl bg-stone-100 text-stone-500 hover:bg-stone-200 transition-all cursor-pointer"
                   title={t('common.refresh')}
                 >
@@ -142,8 +90,8 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           <div className="mb-4">
             <label className="block text-sm font-bold text-secondary mb-2">{t('admin.roadmapForm.descLabel')}</label>
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={form.description}
+              onChange={(e) => form.setDescription(e.target.value)}
               placeholder={t('admin.roadmapForm.descPlaceholder')}
               rows={2}
               className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all resize-none"
@@ -159,8 +107,8 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
 
           <div className="mb-4">
             <ImageUrlField
-              value={imageUrl}
-              onChange={setImageUrl}
+              value={form.imageUrl}
+              onChange={form.setImageUrl}
               label={t('admin.roadmapForm.iconLabel')}
               placeholder="https://picsum.photos/seed/roadmap-name/800/450"
             />
@@ -174,35 +122,35 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           </div>
 
           <div
-            onClick={() => setIsActive(!isActive)}
+            onClick={() => form.setIsActive(!form.isActive)}
             className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all mb-4 ${
-              isActive
+              form.isActive
                 ? 'border-green-200 bg-green-50'
                 : 'border-stone-200 bg-stone-50'
             }`}
           >
             <div
               className={`w-12 h-7 rounded-full relative transition-colors shrink-0 ${
-                isActive ? 'bg-green-500' : 'bg-stone-300'
+                form.isActive ? 'bg-green-500' : 'bg-stone-300'
               }`}
             >
               <div
                 className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                  isActive ? 'translate-x-6' : 'translate-x-1'
+                  form.isActive ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
             </div>
             <div>
               <p className="font-bold text-secondary text-sm">
-                {isActive ? t('topic.status.learning') : t('topics.locked')}
+                {form.isActive ? t('topic.status.learning') : t('topics.locked')}
               </p>
               <p className="text-xs text-stone-400">
-                {isActive ? t('admin.roadmapForm.statusActive') : t('admin.roadmapForm.statusInactive')}
+                {form.isActive ? t('admin.roadmapForm.statusActive') : t('admin.roadmapForm.statusInactive')}
               </p>
             </div>
           </div>
 
-          {error && <ErrorBanner message={error} className="mb-4" />}
+          {form.error && <ErrorBanner message={form.error} className="mb-4" />}
 
           {/* Footer actions */}
           <div className="flex gap-3 pt-2 border-t border-stone-100 mt-2">
@@ -215,10 +163,10 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={form.loading}
               className="flex-1 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? t('common.loading') : roadmap ? t('common.save') : t('common.add')}
+              {form.loading ? t('common.loading') : roadmap ? t('common.save') : t('common.add')}
             </button>
           </div>
         </form>
