@@ -107,10 +107,10 @@ describe('WordDetailPanel Rich Text Support', () => {
     );
 
     // Toolbar should be visible with premium buttons
-    expect(screen.getByTitle('Bold (Ctrl+B)')).toBeDefined();
-    expect(screen.getByTitle('Bullet List')).toBeDefined();
-    expect(screen.getByTitle('Red Text')).toBeDefined();
-    expect(screen.getByTitle('Undo (Ctrl+Z)')).toBeDefined();
+    expect(await screen.findByTitle('editor.toolbar.bold')).toBeDefined();
+    expect(screen.getByTitle('editor.toolbar.bulletList')).toBeDefined();
+    expect(screen.getAllByTitle('editor.toolbar.colorText').length).toBeGreaterThan(0);
+    expect(screen.getByTitle('editor.toolbar.undo')).toBeDefined();
 
     // Tiptap uses a div with contenteditable instead of textarea
     const editor = container.querySelector('.ProseMirror');

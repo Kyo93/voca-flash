@@ -6,6 +6,7 @@ import WeakWordsList from '../components/progress/WeakWordsList'
 import BadgeGallery from '../components/progress/BadgeGallery'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useRewardProgress } from '../hooks/useRewardProgress'
 import MasterySunburst from '../components/progress/MasterySunburst'
 import { PROGRESS_THRESHOLDS } from '../lib/constants'
 import { getUserLevel, getRetentionDisplay, getGreetingKey } from '../lib/progress-utils'
@@ -13,7 +14,8 @@ import { getUserLevel, getRetentionDisplay, getGreetingKey } from '../lib/progre
 export default function ProgressPage() {
   const { t } = useTranslation()
   const { data, isLoading, error } = useAnalytics()
-  const { initialData } = useAuth()
+  const { initialData, user } = useAuth()
+  const { rewardProgress } = useRewardProgress(user?.id)
   const reviewCount = initialData?.global_review_count ?? 0
   // Source-of-truth for "new words today": health.new_today (count of NEW SRS
   // records created since 4am Asia/Ho_Chi_Minh). Must match Dashboard's
@@ -143,57 +145,48 @@ export default function ProgressPage() {
           </div>
         </section>
 
-        {/* Bento Grid: Roadmap + Mentor */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Roadmap Forecast - 2 cols */}
-          <div className="lg:col-span-2">
+        {/* Roadmap, Mentor, and Achievements */}
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+          <div className="lg:col-span-2 space-y-6 h-full">
             <RoadmapForecast
               velocity={data.learning_velocity}
               totalWords={totalWords}
               masteredWords={data.mastered_count}
             />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <WeakWordsList words={data.weak_words} />
+              <MasterySunburst topicStats={data.topic_stats} />
+            </div>
           </div>
 
-          {/* Mentor Advice - 1 col */}
-          <div className="bg-secondary text-on-secondary rounded-xl p-7 shadow-lg relative overflow-hidden flex flex-col justify-between">
-            <span className="material-symbols-outlined absolute -top-4 -right-4 text-8xl opacity-10" style={{ fontVariationSettings: "'FILL' 1" }}>format_quote</span>
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-secondary-container mb-5">
-                {t('progress.mentor_advice_title')}
-              </h3>
-              <p className="text-lg font-medium leading-relaxed mb-6">
-                "{t('progress.mentor_quote')}"
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary-container text-lg font-bold">
-                E
-              </div>
+          <div className="flex flex-col gap-5 h-full">
+            <div className="bg-secondary text-on-secondary rounded-xl p-6 shadow-lg relative overflow-hidden flex flex-col justify-between">
+              <span className="material-symbols-outlined absolute -top-4 -right-4 text-8xl opacity-10" style={{ fontVariationSettings: "'FILL' 1" }}>format_quote</span>
               <div>
-                <p className="font-bold text-on-secondary text-sm">{t('progress.mentor_name')}</p>
-                <p className="text-xs text-secondary-container">{t('progress.mentor_role')}</p>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-secondary-container mb-4">
+                  {t('progress.mentor_advice_title')}
+                </h3>
+                <p className="text-base font-medium leading-7 mb-5">
+                  "{t('progress.mentor_quote')}"
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary-container text-base font-bold">
+                  E
+                </div>
+                <div>
+                  <p className="font-bold text-on-secondary text-sm">{t('progress.mentor_name')}</p>
+                  <p className="text-xs text-secondary-container">{t('progress.mentor_role')}</p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Weak Areas + Knowledge Structure + Achievements */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left column - 2 parts */}
-          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Weak Areas */}
-            <WeakWordsList words={data.weak_words} />
-
-            {/* Knowledge Structure Donut */}
-            <MasterySunburst topicStats={data.topic_stats} />
-          </div>
-
-          {/* Achievements */}
-          <div>
             <BadgeGallery
               streak={data.streak_days}
               totalMastered={data.mastered_count}
               totalTimeMs={data.total_time_ms}
+              rewardProgress={rewardProgress}
             />
           </div>
         </section>

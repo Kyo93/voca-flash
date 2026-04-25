@@ -42,7 +42,7 @@ export default function TopicCard({
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-[#1E1B17]/90 via-[#1E1B17]/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-on-surface/90 via-on-surface/40 to-transparent"></div>
         <div className="relative p-10 w-full space-y-5">
           <div className="space-y-2">
             <span className="text-xs uppercase tracking-[0.2em] font-bold text-primary-fixed">{t('roadmap.card.activeChapter')}</span>
@@ -83,7 +83,7 @@ export default function TopicCard({
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-[#1E1B17]/90 via-[#1E1B17]/40 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-on-surface/90 via-on-surface/40 to-transparent"></div>
         
         <div className="relative p-8 space-y-6 z-10">
           <div className="flex justify-between items-start">

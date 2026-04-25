@@ -83,7 +83,7 @@ export default function TopicFormModal({
       onClick={onClose}
     >
       <div
-        className="bg-[#FAF8F5] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+        className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -121,7 +121,7 @@ export default function TopicFormModal({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Quantum Fundamentals"
+                  placeholder={t('admin.topicForm.namePlaceholder')}
                   required
                   className="w-full px-4 py-3 pr-12 rounded-xl border border-stone-200 bg-white text-stone-800 font-medium text-base shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all"
                 />
@@ -148,7 +148,7 @@ export default function TopicFormModal({
                   type="text"
                   value={slug}
                   onChange={(e) => { setSlug(e.target.value); setSlugManuallyEdited(true) }}
-                  placeholder="quantum-fundamentals"
+                  placeholder={t('admin.topicForm.slugPlaceholder')}
                   className="flex-1 px-3 py-3 font-mono text-sm text-stone-700 outline-none bg-transparent"
                 />
                 <button
@@ -222,7 +222,7 @@ export default function TopicFormModal({
             value={imageUrl}
             onChange={setImageUrl}
             label={t('common.image')}
-            placeholder="https://picsum.photos/..."
+            placeholder={t('admin.topicForm.imagePlaceholder')}
             inputClassName="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-600 text-sm shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all"
             labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2"
             previewWrapperClassName="mt-3 rounded-xl overflow-hidden border border-stone-100 bg-stone-100"

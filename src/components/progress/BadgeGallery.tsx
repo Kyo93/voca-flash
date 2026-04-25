@@ -1,87 +1,90 @@
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import type { RewardProgressView } from '../../lib/rewards'
+import {
+  buildAchievements,
+  getAchievementCounts,
+  getRecentAchievements,
+} from '../../lib/achievements'
+import AchievementCard from './AchievementCard'
 
 interface BadgeGalleryProps {
   streak: number
   totalMastered: number
   totalTimeMs: number
+  rewardProgress?: RewardProgressView | null
 }
 
-export default function BadgeGallery({ streak, totalMastered }: BadgeGalleryProps) {
+export default function BadgeGallery({ streak, totalMastered, totalTimeMs, rewardProgress }: BadgeGalleryProps) {
   const { t } = useTranslation()
-
-  const badges = [
-    {
-      id: 'persistent_scholar',
-      icon: 'emoji_events',
-      unlocked: streak >= 100,
-      label: t('progress.badges_v2.persistent.label'),
-      description: t('progress.badges_v2.persistent.desc'),
-      gradient: 'from-[#8B6914] to-[#6B4F10]',
-      textColor: 'text-white',
-    },
-    {
-      id: 'vocab_master',
-      icon: 'military_tech',
-      unlocked: totalMastered >= 4000,
-      label: t('progress.badges_v2.vocab_master.label'),
-      description: t('progress.badges_v2.vocab_master.desc'),
-      gradient: 'from-[#546435] to-[#3C4C20]',
-      textColor: 'text-white',
-    },
-    {
-      id: 'c1_peak',
-      icon: 'lock',
-      unlocked: false,
-      label: t('progress.badges_v2.c1_peak.label'),
-      description: t('progress.badges_v2.c1_peak.desc'),
-      gradient: '',
-      textColor: 'text-on-surface-variant',
-    },
-  ]
+  const achievements = buildAchievements({
+    rewardProgress,
+    streak,
+    totalMastered,
+    totalTimeMs,
+  })
+  const recentAchievements = getRecentAchievements(achievements, 2)
+  const achievementCounts = getAchievementCounts(achievements)
 
   return (
-    <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)]">
-      <div className="flex justify-between items-center mb-5">
-        <h3 className="text-lg font-bold text-on-surface">
-          {t('progress.recent_achievements')}
-        </h3>
-        <button className="text-primary hover:text-primary-container transition-colors">
+    <div className="bg-surface-container-lowest rounded-xl p-6 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] flex-1 flex flex-col">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h3 className="text-lg font-bold text-on-surface">
+            {t('progress.recent_achievements')}
+          </h3>
+          <p className="text-xs text-on-surface-variant mt-1">
+            {t('achievements.unlockedSummary', achievementCounts)}
+          </p>
+        </div>
+        <Link
+          to="/achievements"
+          aria-label={t('achievements.viewAll')}
+          className="text-primary hover:text-primary-container transition-colors"
+        >
           <span className="material-symbols-outlined">chevron_right</span>
-        </button>
+        </Link>
       </div>
 
-      <div className="space-y-3">
-        {badges.map((badge, idx) => (
-          <motion.div
-            key={badge.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className={`flex items-center gap-4 p-4 rounded-lg transition-colors ${
-              badge.unlocked
-                ? 'bg-surface-container-low hover:bg-surface-variant cursor-default'
-                : 'border-2 border-dashed border-outline-variant opacity-70'
-            }`}
-          >
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
-              badge.unlocked
-                ? `bg-linear-to-br ${badge.gradient} ${badge.textColor} shadow-inner`
-                : 'bg-surface-dim text-on-surface-variant'
-            }`}>
-              <span className="material-symbols-outlined" style={badge.unlocked ? { fontVariationSettings: "'FILL' 1" } : undefined}>
-                {badge.icon}
+      {rewardProgress && (
+        <div className="mb-4 p-3 rounded-lg bg-primary/5 border border-primary/10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {rewardProgress.currentLevel.icon}
               </span>
             </div>
-            <div>
-              <p className={`font-bold ${badge.unlocked ? 'text-on-surface' : 'text-on-surface-variant'}`}>
-                {badge.label}
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-on-surface truncate">{t(rewardProgress.currentLevel.titleKey)}</p>
+              <p className="text-xs text-on-surface-variant truncate">
+                {t('rewards.totalXp', { xp: rewardProgress.totalXp })}
               </p>
-              <p className="text-sm text-on-surface-variant">{badge.description}</p>
             </div>
-          </motion.div>
+          </div>
+          <div className="h-2 rounded-full bg-surface-container overflow-hidden">
+            <div className="h-full rounded-full bg-primary" style={{ width: `${rewardProgress.levelProgress}%` }} />
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-2.5">
+        {recentAchievements.map((achievement, idx) => (
+          <AchievementCard
+            key={achievement.id}
+            achievement={achievement}
+            compact
+            index={idx}
+          />
         ))}
       </div>
+
+      <Link
+        to="/achievements"
+        className="mt-auto pt-4 inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-container transition-colors"
+      >
+        {t('achievements.viewAll')}
+        <span className="material-symbols-outlined text-base">chevron_right</span>
+      </Link>
     </div>
   )
 }

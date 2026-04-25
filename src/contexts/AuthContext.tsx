@@ -28,6 +28,7 @@ interface AuthContextValue {
   profile: UserProfile | null
   loading: boolean
   isAdmin: boolean
+  adminLoading: boolean
   activeRoadmapSlug: string | null
   initialData: InitialAppData | null // Chứa stats khởi tạo
   refreshActiveRoadmap: (targetRoadmapId?: string, forcedUserId?: string) => Promise<void>
@@ -54,12 +55,26 @@ function deriveIsAdmin(email: string | null | undefined): boolean {
   return ADMIN_EMAILS.includes(email.toLowerCase())
 }
 
+export async function resolveAdminAccess(authUser: Pick<User, 'id' | 'email'> | null | undefined): Promise<boolean> {
+  if (!authUser) return false
+  if (deriveIsAdmin(authUser.email)) return true
+
+  const { data, error } = await supabase.rpc('is_admin')
+  if (error) {
+    console.warn('Admin role check failed:', error)
+    return false
+  }
+
+  return data === true
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [adminLoading, setAdminLoading] = useState(false)
   const [activeRoadmapSlug, setActiveRoadmapSlug] = useState<string | null>(null)
   const [initialData, setInitialData] = useState<InitialAppData | null>(null)
 
@@ -79,25 +94,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!currentSession?.user) {
       setProfile(null)
       setIsAdmin(false)
+      setAdminLoading(false)
       setActiveRoadmapSlug(null)
       setInitialData(null)
       return
     }
 
     const userId = currentSession.user.id
-    const userEmail = currentSession.user.email
-
     try {
       // MEGA RPC: Lấy toàn bộ dữ liệu chỉ trong 1 request
       const data = await fetchInitialAppData(userId)
       applyAppData(data)
-      setIsAdmin(deriveIsAdmin(userEmail))
     } catch (err) {
       console.error('UserData loading error:', err)
-      // Fallback: vẫn cho phép admin bypass UI khi DB lỗi
-      if (deriveIsAdmin(userEmail)) {
-        setIsAdmin(true)
-      }
+    }
+  }
+
+  async function loadAdminAccess(currentSession: Session | null) {
+    if (!currentSession?.user) {
+      setIsAdmin(false)
+      setAdminLoading(false)
+      return
+    }
+
+    const adminEmailMatch = deriveIsAdmin(currentSession.user.email)
+    setIsAdmin(adminEmailMatch)
+
+    if (adminEmailMatch) {
+      setAdminLoading(false)
+      return
+    }
+
+    setAdminLoading(true)
+    try {
+      setIsAdmin(await resolveAdminAccess(currentSession.user))
+    } finally {
+      setAdminLoading(false)
     }
   }
 
@@ -118,6 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (initialSession) {
           const userEmail = initialSession.user.email;
           setIsAdmin(deriveIsAdmin(userEmail));
+          loadAdminAccess(initialSession)
           // KHÔNG await loadInitialUserData để tránh treo màn hình "Đang tải"
           loadInitialUserData(initialSession)
         }
@@ -141,12 +174,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (newSession) {
           const userEmail = newSession.user.email;
           setIsAdmin(deriveIsAdmin(userEmail));
+          loadAdminAccess(newSession)
           // Bắt đầu load data ngầm, nhưng cho phép vào App ngay
           loadInitialUserData(newSession)
           setLoading(false)
         } else {
           setProfile(null)
           setIsAdmin(false)
+          setAdminLoading(false)
           setActiveRoadmapSlug(null)
           setLoading(false)
         }
@@ -267,6 +302,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     loading,
     isAdmin,
+    adminLoading,
     activeRoadmapSlug,
     initialData,
     refreshActiveRoadmap,
@@ -281,6 +317,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     loading,
     isAdmin,
+    adminLoading,
     activeRoadmapSlug,
     initialData,
     refreshActiveRoadmap,

@@ -89,7 +89,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
                   required
                   className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary placeholder:text-on-surface-variant/50 font-medium outline-none focus:border-primary focus:bg-white transition-all"
                 />

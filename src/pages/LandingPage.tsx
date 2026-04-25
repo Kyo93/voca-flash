@@ -87,7 +87,7 @@ export default function LandingPage() {
                 <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse" />
                 <div className="relative rounded-4xl overflow-hidden shadow-2xl border-8 border-white group">
                   <img
-                    alt="3D Language Learning"
+                    alt={t('landing.heroImageAlt')}
                     loading="lazy"
                     className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-1000"
                     src="/images/hero-3d.png"

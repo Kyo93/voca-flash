@@ -8,6 +8,7 @@ vi.mock('../../src/lib/supabase-storage', () => ({
   fetchWords: vi.fn(),
   fetchSrsStates: vi.fn(),
   upsertSrsRecord: vi.fn(async () => ({})),
+  applyUserRewardGain: vi.fn(async () => ({})),
   recordStreak: vi.fn(async () => {}),
   saveResumePointer: vi.fn(async () => {}),
 }))

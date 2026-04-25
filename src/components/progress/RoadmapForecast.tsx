@@ -80,8 +80,8 @@ export default function RoadmapForecast({ velocity, totalWords, masteredWords }:
               >
                 <div className={`absolute -top-7 left-1/2 -translate-x-1/2 text-xs px-2 py-0.5 rounded font-bold ${
                   isLast
-                    ? 'bg-[#33302B] text-[#F6F0E7] opacity-100'
-                    : 'bg-[#33302B] text-[#F6F0E7] opacity-0 group-hover:opacity-100'
+                    ? 'bg-on-surface text-surface opacity-100'
+                    : 'bg-on-surface text-surface opacity-0 group-hover:opacity-100'
                 }`}>
                   {isLast ? t('progress.current_label') : barLabels[i]}
                 </div>

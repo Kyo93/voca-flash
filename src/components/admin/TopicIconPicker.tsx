@@ -69,7 +69,7 @@ export function TopicIconPicker({
                         onClick={() => { setIcon(iconName); setIconPickerOpen(false); setIconSearch('') }}
                         title={iconName}
                         className="w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer hover:bg-stone-50"
-                        style={icon === iconName ? { backgroundColor: color + '20', color } : { color: '#6B7280' }}
+                        style={icon === iconName ? { backgroundColor: color + '20', color } : { color: 'var(--color-on-surface-variant)' }}
                       >
                         <span className="material-symbols-outlined text-base">{iconName}</span>
                       </button>

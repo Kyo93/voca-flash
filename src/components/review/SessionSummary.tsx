@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Word } from '../../lib/types'
+import type { RewardBadge, RewardProgressView } from '../../lib/rewards'
 
 interface SessionSummaryProps {
   stats: {
@@ -11,10 +12,17 @@ interface SessionSummaryProps {
     points: number
     mistakes: Word[]
   }
+  rewardProgress?: RewardProgressView
+  unlockedBadges?: RewardBadge[]
   onRestart: () => void
 }
 
-export default function SessionSummary({ stats, onRestart }: SessionSummaryProps) {
+export default function SessionSummary({
+  stats,
+  rewardProgress,
+  unlockedBadges = [],
+  onRestart
+}: SessionSummaryProps) {
   const { t } = useTranslation()
   const [displayXP, setDisplayXP] = useState(0)
   const total = stats.correct + stats.wrong
@@ -105,6 +113,62 @@ export default function SessionSummary({ stats, onRestart }: SessionSummaryProps
             <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">{t('sessionSummary.accuracy')}</span>
           </motion.div>
         </div>
+
+        {rewardProgress && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65 }}
+            className="glass-arena-item p-5 rounded-3xl mb-8 border-white/10"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-secondary/20 text-secondary flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  {rewardProgress.currentLevel.icon}
+                </span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-4 mb-1">
+                  <p className="text-white font-black truncate">{t(rewardProgress.currentLevel.titleKey)}</p>
+                  <span className="text-[10px] text-secondary font-black uppercase tracking-widest shrink-0">
+                    {t('rewards.levelShort', { level: rewardProgress.currentLevel.level })}
+                  </span>
+                </div>
+                <p className="text-sm text-white/40 font-medium truncate">{t(rewardProgress.currentLevel.characterKey)}</p>
+                <div className="h-2 mt-4 rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-full rounded-full bg-secondary" style={{ width: `${rewardProgress.levelProgress}%` }} />
+                </div>
+                <div className="flex items-center justify-between mt-2 text-[10px] font-black uppercase tracking-widest text-white/25">
+                  <span>{t('rewards.totalXp', { xp: rewardProgress.totalXp })}</span>
+                  <span>
+                    {rewardProgress.nextLevel
+                      ? t('rewards.progressToNext', {
+                        current: rewardProgress.xpIntoLevel,
+                        target: rewardProgress.xpForNextLevel
+                      })
+                      : t('rewards.maxLevel')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {unlockedBadges.length > 0 && (
+              <div className="mt-5 pt-5 border-t border-white/10">
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-secondary mb-3">
+                  {t('rewards.unlocked')}
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {unlockedBadges.map(badge => (
+                    <div key={badge.id} className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10">
+                      <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>{badge.icon}</span>
+                      <span className="text-xs font-black text-white">{t(badge.titleKey)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         {/* Mistakes Audit Section */}
         <AnimatePresence>

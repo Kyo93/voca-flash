@@ -11,7 +11,7 @@ export default function AdminSidebar() {
   const w = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
 
   const navItems = [
-    { path: '/admin', label: 'Dashboard', icon: 'dashboard', exact: true },
+    { path: '/admin', label: t('admin.dashboard.title'), icon: 'dashboard', exact: true },
     { path: '/admin/words', label: t('admin.sidebar.words'), icon: 'spellcheck' },
     { path: '/admin/roadmaps', label: t('admin.sidebar.roadmaps'), icon: 'route' },
     { path: '/admin/users', label: t('admin.sidebar.users'), icon: 'group' },
@@ -34,8 +34,8 @@ export default function AdminSidebar() {
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <p className="text-xl font-black text-primary leading-none whitespace-nowrap">Admin Panel</p>
-            <p className="text-[10px] text-stone-500 font-medium tracking-widest uppercase whitespace-nowrap">VocaFlash CMS</p>
+            <p className="text-xl font-black text-primary leading-none whitespace-nowrap">{t('admin.sidebar.panelTitle')}</p>
+            <p className="text-[10px] text-stone-500 font-medium tracking-widest uppercase whitespace-nowrap">{t('admin.sidebar.panelSubtitle')}</p>
           </div>
         )}
       </div>
@@ -108,7 +108,7 @@ export default function AdminSidebar() {
             <>
               <div className="overflow-hidden flex-1">
                 <p className="text-[13px] font-black truncate">
-                  {profile?.display_name ?? 'Admin'}
+                  {profile?.display_name ?? t('common.admin')}
                 </p>
                 <p className="text-[10px] text-stone-400 font-bold uppercase truncate">
                   {profile?.email ?? ''}
@@ -116,7 +116,7 @@ export default function AdminSidebar() {
               </div>
               <button
                 onClick={signOut}
-                title="Sign out"
+                title={t('sidebar.signout')}
                 className="material-symbols-outlined text-stone-300 text-lg hover:text-red-400 transition-colors cursor-pointer"
               >
                 logout

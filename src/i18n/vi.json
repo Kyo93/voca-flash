@@ -53,7 +53,8 @@
     "status": "Trạng thái",
     "refresh": "Làm mới",
     "lastEdited": "Sửa lần cuối",
-    "lastEditedBy": "Sửa lần cuối bởi {{name}}"
+    "lastEditedBy": "Sửa lần cuối bởi {{name}}",
+    "preview": "Xem tr??c"
   },
   "app": {
     "name": "VocaFlash",
@@ -69,7 +70,8 @@
     "search": "Tìm kiếm...",
     "searchPlaceholder": "Tìm bài học, từ vựng...",
     "methodology": "Phương pháp học",
-    "mastery": "Kho từ vựng"
+    "mastery": "Kho từ vựng",
+    "achievements": "Huy hiệu"
   },
   "library": {
     "title": "Chọn hành trình của bạn",
@@ -118,7 +120,8 @@
     "signIn": "Đăng nhập",
     "hasAccount": "Đã có tài khoản? Đăng nhập",
     "noAccount": "Chưa có tài khoản? Đăng ký ngay",
-    "signUpSuccess": "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản."
+    "signUpSuccess": "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.",
+    "emailPlaceholder": "ban@example.com"
   },
   "home": {
     "welcome": "Chào mừng trở lại!",
@@ -173,25 +176,25 @@
     "streakDay": "{{count}} 🔥 ngày",
     "tagline": "The Tactile Scholar"
   },
-    "flashcard": {
-      "showAnswer": "Hiển thị đáp án",
-      "markLearned": "Đánh dấu đã học",
-      "audioNormal": "Phát âm",
-      "audioSlow": "Nghe chậm",
-      "englishWord": "Từ Tiếng Anh",
-      "vietnamese": "Tiếng Việt",
-      "contextUsage": "Cách dùng thực tế",
-      "tapToFlip": "Chạm để xem nghĩa",
-      "mastered": "Đã thuộc lòng",
-      "interval": "Khoảng cách",
-      "deck": "Bộ thẻ",
-      "level": "Cấp độ",
-      "meaning": "Nghĩa của từ",
-      "saveToNotebook": "Lưu vào sổ tay",
-      "removeFromNotebook": "Xóa khỏi sổ tay",
-      "noTopic": "Không có chủ đề",
-      "srsReady": "SRS READY"
-    },
+  "flashcard": {
+    "showAnswer": "Hiển thị đáp án",
+    "markLearned": "Đánh dấu đã học",
+    "audioNormal": "Phát âm",
+    "audioSlow": "Nghe chậm",
+    "englishWord": "Từ Tiếng Anh",
+    "vietnamese": "Tiếng Việt",
+    "contextUsage": "Cách dùng thực tế",
+    "tapToFlip": "Chạm để xem nghĩa",
+    "mastered": "Đã thuộc lòng",
+    "interval": "Khoảng cách",
+    "deck": "Bộ thẻ",
+    "level": "Cấp độ",
+    "meaning": "Nghĩa của từ",
+    "saveToNotebook": "Lưu vào sổ tay",
+    "removeFromNotebook": "Xóa khỏi sổ tay",
+    "noTopic": "Không có chủ đề",
+    "srsReady": "SRS READY"
+  },
   "srs": {
     "hard": "Khó",
     "good": "Vừa",
@@ -255,7 +258,8 @@
     "total_label": "TỔNG SỐ",
     "learned_label": "ĐÃ HỌC",
     "mastered_label": "ĐÃ THUỘC",
-    "mastery_label": "NHUẦN NHUYỄN"
+    "mastery_label": "NHUẦN NHUYỄN",
+    "scholarAlt": "H?c gi?"
   },
   "topics": {
     "title": "Chủ đề",
@@ -300,6 +304,57 @@
     "comeBackLater": "Hãy quay lại sau để tiếp tục hành trình!",
     "learnMore": "Học thêm",
     "dashboard": "Quay lại Dashboard"
+  },
+  "rewards": {
+    "xpAmount": "{{xp}} XP",
+    "totalXp": "Tổng {{xp}} XP",
+    "levelShort": "Cấp {{level}}",
+    "progressToNext": "{{current}} / {{target}} XP",
+    "maxLevel": "Đã đạt cấp cao nhất",
+    "unlocked": "Huy chương mới",
+    "unlockAt": "Mở khóa ở {{xp}} XP",
+    "sidebarTitle": "Cấp độ Scholar",
+    "toNextLevel": "Còn {{xp}} XP",
+    "levels": {
+      "seedling": "Người gieo mầm",
+      "apprentice": "Học giả tập sự",
+      "archivist": "Người giữ kho từ",
+      "strategist": "Chiến lược gia trí nhớ",
+      "mentor": "Mentor học thuật",
+      "sage": "Bậc hiền tri thức",
+      "master": "Bậc thầy từ vựng"
+    },
+    "characters": {
+      "seedling": "Mầm tri thức",
+      "apprentice": "Thủ thư nhỏ",
+      "archivist": "Người canh giữ ký ức",
+      "strategist": "Kiến trúc sư trí nhớ",
+      "mentor": "Người dẫn đường học thuật",
+      "sage": "Hiền giả ngôn ngữ",
+      "master": "Đại sứ từ vựng"
+    },
+    "badges": {
+      "first_spark": {
+        "title": "Tia sáng đầu tiên",
+        "desc": "Đạt 50 XP đầu tiên."
+      },
+      "arena_regular": {
+        "title": "Chiến binh Arena",
+        "desc": "Đạt 250 XP từ hành trình học."
+      },
+      "memory_keeper": {
+        "title": "Người giữ ký ức",
+        "desc": "Đạt 500 XP và duy trì nhịp ôn tập."
+      },
+      "lexical_champion": {
+        "title": "Nhà vô địch từ vựng",
+        "desc": "Đạt 900 XP trong VocaFlash."
+      },
+      "scholar_legend": {
+        "title": "Huyền thoại học giả",
+        "desc": "Đạt 1400 XP."
+      }
+    }
   },
   "progress": {
     "title": "Tiến độ",
@@ -464,6 +519,32 @@
       }
     }
   },
+  "achievements": {
+    "title": "Huy hiệu",
+    "subtitle": "Theo dõi các mốc EXP, chuỗi học, vốn từ đã thuộc và thời gian học bằng dữ liệu thật của bạn.",
+    "viewAll": "Xem tất cả huy hiệu",
+    "backToProgress": "Quay lại tiến độ",
+    "unlockedSummary": "{{unlocked}} / {{total}} huy hiệu",
+    "totalBadges": "Tổng huy hiệu",
+    "currentLevel": "Cấp độ hiện tại",
+    "nextFocus": "Mốc EXP tiếp theo",
+    "allXpUnlocked": "Đã mở khóa toàn bộ huy hiệu EXP",
+    "keepGoing": "Tiếp tục học để duy trì nhịp tiến bộ.",
+    "statusUnlocked": "Đã mở",
+    "statusLocked": "Chưa mở",
+    "categories": {
+      "xp": "Huy hiệu EXP",
+      "streak": "Chuỗi học",
+      "mastery": "Vốn từ đã thuộc",
+      "time": "Thời gian học"
+    },
+    "progress": {
+      "xp": "{{current}} / {{target}} XP",
+      "days": "{{current}} / {{target}} ngày",
+      "words": "{{current}} / {{target}} từ",
+      "hours": "{{current}} / {{target}} giờ"
+    }
+  },
   "rightSidebar": {
     "updates": "Cập nhật",
     "seeAll": "Xem tất cả",
@@ -512,7 +593,8 @@
     "floatingCard": {
       "mastered": "Đã thuộc!",
       "word": "Perspective"
-    }
+    },
+    "heroImageAlt": "Minh h?a h?c ng?n ng? 3D"
   },
   "arena": {
     "preparing": "Đang chuẩn bị đấu trường...",
@@ -624,7 +706,10 @@
     "confirmDelete": "Xóa vĩnh viễn",
     "deleting": "Đang xóa...",
     "cancel": "Hủy bỏ",
-    "selectTopicRequired": "Vui lòng chọn một chủ đề."
+    "selectTopicRequired": "Vui lòng chọn một chủ đề.",
+    "avatarAlt": "?nh ??i di?n",
+    "avatarPlaceholder": "https://images.unsplash.com/photo...",
+    "resetAction": "??t l?i"
   },
   "challenges": {
     "cloze": "Điền từ",
@@ -755,7 +840,8 @@
           "hard": "Khó",
           "good": "Tốt",
           "easy": "Dễ"
-        }
+        },
+        "userId": "ID ng??i d?ng"
       }
     },
     "wordTable": {
@@ -807,7 +893,9 @@
       "expand": "Mở rộng menu",
       "collapse": "Thu nhỏ menu",
       "collapseAction": "Thu nhỏ",
-      "adminRole": "Quyền Admin"
+      "adminRole": "Quyền Admin",
+      "panelTitle": "B?ng qu?n tr?",
+      "panelSubtitle": "VocaFlash CMS"
     },
     "topics": {
       "title": "Chủ đề",
@@ -894,7 +982,8 @@
         "update": "Cập nhật"
       },
       "criticalError": "⚠️ Import lỗi nghiêm trọng: đã gửi {{submitted}} từ nhưng chỉ insert thành công {{inserted}} từ.",
-      "templateCsv": "word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Xin chào,Hello world!,Xin chào thế giới!,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Quả táo,An apple a day,Ăn táo mỗi ngày,,Food,pear,orange,fruit"
+      "templateCsv": "word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Xin chào,Hello world!,Xin chào thế giới!,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Quả táo,An apple a day,Ăn táo mỗi ngày,,Food,pear,orange,fruit",
+      "sheetsPlaceholder": "https://docs.google.com/spreadsheets/d/..."
     },
     "wordForm": {
       "titleAdd": "Thêm từ mới",
@@ -943,7 +1032,9 @@
       "descPlaceholder": "Mô tả mục tiêu của lộ trình...",
       "iconLabel": "Biểu tượng",
       "colorLabel": "Màu sắc chủ đạo",
-      "errorName": "Tên lộ trình không được trống"
+      "errorName": "Tên lộ trình không được trống",
+      "slugPlaceholder": "english-mastery",
+      "imagePlaceholder": "https://picsum.photos/seed/roadmap-name/800/450"
     },
     "topicForm": {
       "titleEdit": "Sửa chủ đề",
@@ -961,7 +1052,9 @@
       "slugHint": "Auto-prefix {{slug}} để tránh trùng slug toàn app",
       "colorPalette": "Bảng màu",
       "customColor": "Màu tùy chỉnh",
-      "errorName": "Tên chủ đề không được trống"
+      "errorName": "Tên chủ đề không được trống",
+      "slugPlaceholder": "quantum-fundamentals",
+      "imagePlaceholder": "https://picsum.photos/..."
     },
     "wordPool": {
       "uncategorized": "Chưa phân loại",
@@ -1113,6 +1206,40 @@
     "showAnswer": "Hiện đáp án",
     "markLearned": "Đánh dấu đã học",
     "exit": "Thoát",
-    "resign": "Thoát"
+    "resign": "Thoát",
+    "liveSession": "Bu?i h?c tr?c ti?p"
+  },
+  "editor": {
+    "placeholder": "Vi?t ghi ch?...",
+    "linkPrompt": "Nh?p URL",
+    "toolbar": {
+      "undo": "Ho?n t?c (Ctrl+Z)",
+      "redo": "L?m l?i (Ctrl+Y)",
+      "bold": "In ??m (Ctrl+B)",
+      "italic": "In nghi?ng (Ctrl+I)",
+      "underline": "G?ch ch?n (Ctrl+U)",
+      "strikethrough": "G?ch ngang",
+      "bulletList": "Danh s?ch g?ch ??u d?ng",
+      "numberedList": "Danh s?ch ??nh s?",
+      "alignLeft": "C?n tr?i",
+      "alignCenter": "C?n gi?a",
+      "resetColor": "??t l?i m?u",
+      "link": "Th?m/S?a li?n k?t",
+      "clearFormatting": "X?a ??nh d?ng",
+      "colorText": "Ch? m?u {{color}}"
+    },
+    "colors": {
+      "red": "??",
+      "green": "Xanh l?",
+      "blue": "Xanh d??ng",
+      "amber": "H? ph?ch",
+      "purple": "T?m"
+    },
+    "status": {
+      "characters": "{{count}} k? t?",
+      "words": "{{count}} t?",
+      "editing": "?ang s?a",
+      "saved": "?? l?u"
+    }
   }
 }

@@ -68,7 +68,7 @@ export default function RoadmapTopicsPage() {
                     key={i}
                     src={`https://i.pravatar.cc/100?u=${i + 40}`} 
                     className="w-8 h-8 rounded-full border-2 border-surface-container-low" 
-                    alt="Scholar" 
+              alt={t('roadmapDetail.scholarAlt')}
                     loading="lazy"
                   />
                 ))}

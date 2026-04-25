@@ -1,9 +1,10 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { Card, CardProgress, calculateFSRSReview, createInitialProgress, isMastered, SrsRating, mapIntensityToRetention } from '../lib/srs'
-import { fetchWords, fetchSrsStates, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
+import { applyUserRewardGain, fetchWords, fetchSrsStates, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { StudySessionMode } from '../lib/types'
 import { SRS_RATINGS, TIME_CONSTANTS, SRS_CONFIG } from '../lib/constants'
+import { calculateStudyReward } from '../lib/rewards'
 
 interface FlashcardState {
   queue: Card[]
@@ -35,10 +36,12 @@ export function useFlashcard() {
   // Mirror state in a ref so async callbacks (rate → upsert → refresh) read
   // the current value synchronously without depending on React's batching.
   const stateRef = useRef(state)
+  const rewardedWordIds = useRef<Set<string>>(new Set())
   useEffect(() => { stateRef.current = state }, [state])
 
   const initialize = useCallback(async (topic?: string) => {
     setState((s) => ({ ...s, isLoading: true }))
+    rewardedWordIds.current.clear()
 
     // Fetch words and progress in parallel
     const [cards, progressMap] = await Promise.all([
@@ -75,6 +78,7 @@ export function useFlashcard() {
   }, [user])
 
   const startSession = useCallback(async (roadmapId: string | undefined, topicId: string, mode: StudySessionMode) => {
+    rewardedWordIds.current.clear()
     setState((s) => {
       if (!s.prepStats) return s
       const { unlearned, learning, mastered } = s.prepStats
@@ -124,10 +128,12 @@ export function useFlashcard() {
     if (!card) return
 
     const prevProgress = s.progressMap.get(card.id) || createInitialProgress(card.id)
+    const isNewWord = !s.progressMap.has(card.id)
     const intensity = profile?.srs_intensity ?? SRS_CONFIG.INTENSITY_DEFAULT
     const retention = mapIntensityToRetention(intensity)
     const newProgress = calculateFSRSReview(prevProgress, rating, retention)
     const durationMs = Date.now() - s.cardStartTime
+    const shouldAwardReward = user && !rewardedWordIds.current.has(card.id)
 
     setState((prev) => {
       const updatedMap = new Map(prev.progressMap)
@@ -155,6 +161,12 @@ export function useFlashcard() {
     })
 
     if (user) {
+      if (shouldAwardReward) {
+        rewardedWordIds.current.add(card.id)
+        applyUserRewardGain(user.id, calculateStudyReward({ isNewWord, rating }))
+          .catch(err => console.error('[useFlashcard] reward sync error:', err))
+      }
+
       syncSrsUpdate(user.id, card.id, newProgress, rating, durationMs)
       
       // If this was the last card, refresh the dashboard data

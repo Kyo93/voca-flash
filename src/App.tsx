@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SidebarProvider } from './contexts/SidebarContext'
+import { useTranslation } from 'react-i18next'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import AppLayout from './components/AppLayout'
@@ -18,6 +19,7 @@ const AdminDashboardPage = lazy(() => import('./pages/admin/DashboardPage'))
 const AdminUsersPage = lazy(() => import('./pages/admin/UsersPage'))
 const RoadmapSetupPage = lazy(() => import('./pages/admin/RoadmapSetupPage'))
 const ProgressPage = lazy(() => import('./pages/ProgressPage'))
+const AchievementsPage = lazy(() => import('./pages/AchievementsPage'))
 const MethodologyPage = lazy(() => import('./pages/MethodologyPage'))
 const MasteryPage = lazy(() => import('./pages/MasteryPage'))
 const FreeStudyPage = lazy(() => import('./pages/FreeStudyPage'))
@@ -26,9 +28,10 @@ const RoadmapTopicsPage = lazy(() => import('./pages/RoadmapTopicsPage'))
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth()
+  const { t } = useTranslation()
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-surface">
-      <div className="text-primary font-bold animate-pulse">Đang tải...</div>
+      <div className="text-primary font-bold animate-pulse">{t('common.loading')}</div>
     </div>
   )
   if (!user) return <Navigate to="/login" replace />
@@ -37,10 +40,11 @@ function RequireAuth({ children }: { children: ReactNode }) {
 
 // Admin route: requires admin role
 function RequireAdmin({ children }: { children: ReactNode }) {
-  const { user, isAdmin, loading } = useAuth()
-  if (loading) return (
+  const { user, isAdmin, loading, adminLoading } = useAuth()
+  const { t } = useTranslation()
+  if (loading || adminLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-surface">
-      <div className="text-primary font-bold animate-pulse">Đang tải...</div>
+      <div className="text-primary font-bold animate-pulse">{t('common.loading')}</div>
     </div>
   )
   if (!user) return <Navigate to="/login" replace />
@@ -65,6 +69,7 @@ function App() {
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/library/:roadmapSlug" element={<RoadmapTopicsPage />} />
             <Route path="/progress" element={<ProgressPage />} />
+            <Route path="/achievements" element={<AchievementsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/methodology" element={<MethodologyPage />} />
             <Route path="/mastery" element={<MasteryPage />} />

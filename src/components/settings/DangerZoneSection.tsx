@@ -99,7 +99,7 @@ export default function DangerZoneSection() {
               onClick={() => setShowConfirmReset(true)}
               className="px-6 py-3 bg-rose-50 text-rose-600 font-black rounded-2xl hover:bg-rose-100 transition-all disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap text-sm shadow-sm"
             >
-              Reset
+              {t('settings.resetAction')}
             </button>
           </div>
         </div>

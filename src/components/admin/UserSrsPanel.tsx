@@ -126,7 +126,7 @@ export default function UserSrsPanel({ user, onClose }: { user: UserProfile; onC
             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-4">{t('admin.users.panel.systemInfo')}</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
-                <span className="text-sm text-stone-500 font-medium">User ID</span>
+                <span className="text-sm text-stone-500 font-medium">{t('admin.users.panel.userId')}</span>
                 <span className="text-xs font-mono text-stone-400 truncate max-w-[150px]">{user.id}</span>
               </div>
             </div>

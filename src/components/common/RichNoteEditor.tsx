@@ -70,7 +70,7 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
         types: ['heading', 'paragraph'],
       }),
       Placeholder.configure({
-        placeholder: placeholder || 'Write something...',
+        placeholder: placeholder || t('editor.placeholder'),
       }),
       Markdown.configure({
         html: true,
@@ -102,13 +102,13 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
           <MenuButton
             onClick={() => editor.chain().focus().undo().run()}
             disabled={!editor.can().undo()}
-            title="Undo (Ctrl+Z)"
+            title={t('editor.toolbar.undo')}
             icon="undo"
           />
           <MenuButton
             onClick={() => editor.chain().focus().redo().run()}
             disabled={!editor.can().redo()}
-            title="Redo (Ctrl+Y)"
+            title={t('editor.toolbar.redo')}
             icon="redo"
           />
         </div>
@@ -118,26 +118,26 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
           <MenuButton
             onClick={() => editor.chain().focus().toggleBold().run()}
             isActive={editor.isActive('bold')}
-            title="Bold (Ctrl+B)"
+            title={t('editor.toolbar.bold')}
             icon="format_bold"
             className="font-bold"
           />
           <MenuButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
             isActive={editor.isActive('italic')}
-            title="Italic (Ctrl+I)"
+            title={t('editor.toolbar.italic')}
             icon="format_italic"
           />
           <MenuButton
             onClick={() => editor.chain().focus().toggleUnderline().run()}
             isActive={editor.isActive('underline')}
-            title="Underline (Ctrl+U)"
+            title={t('editor.toolbar.underline')}
             icon="format_underlined"
           />
           <MenuButton
             onClick={() => editor.chain().focus().toggleStrike().run()}
             isActive={editor.isActive('strike')}
-            title="Strikethrough"
+            title={t('editor.toolbar.strikethrough')}
             icon="format_strikethrough"
           />
         </div>
@@ -147,26 +147,26 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
           <MenuButton
             onClick={() => editor.chain().focus().toggleBulletList().run()}
             isActive={editor.isActive('bulletList')}
-            title="Bullet List"
+            title={t('editor.toolbar.bulletList')}
             icon="format_list_bulleted"
           />
           <MenuButton
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
             isActive={editor.isActive('orderedList')}
-            title="Numbered List"
+            title={t('editor.toolbar.numberedList')}
             icon="format_list_numbered"
           />
           <div className="w-px h-4 bg-outline-variant/20 mx-1" />
           <MenuButton
             onClick={() => editor.chain().focus().setTextAlign('left').run()}
             isActive={editor.isActive({ textAlign: 'left' })}
-            title="Align Left"
+            title={t('editor.toolbar.alignLeft')}
             icon="format_align_left"
           />
           <MenuButton
             onClick={() => editor.chain().focus().setTextAlign('center').run()}
             isActive={editor.isActive({ textAlign: 'center' })}
-            title="Align Center"
+            title={t('editor.toolbar.alignCenter')}
             icon="format_align_center"
           />
         </div>
@@ -175,11 +175,11 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
         <div className="flex items-center bg-surface-container-lowest/50 rounded-xl p-1 mr-2 border border-outline-variant/5">
           <div className="flex items-center gap-1.5 px-2">
             {[
-              { color: '#ef4444', label: 'Red' },
-              { color: '#22c55e', label: 'Green' },
-              { color: '#3b82f6', label: 'Blue' },
-              { color: '#f59e0b', label: 'Amber' },
-              { color: '#a855f7', label: 'Purple' }
+              { color: 'var(--color-error)', labelKey: 'editor.colors.red' },
+              { color: 'var(--color-success)', labelKey: 'editor.colors.green' },
+              { color: 'var(--color-tertiary)', labelKey: 'editor.colors.blue' },
+              { color: 'var(--color-primary)', labelKey: 'editor.colors.amber' },
+              { color: 'var(--color-secondary)', labelKey: 'editor.colors.purple' }
             ].map((preset) => (
               <button
                 key={preset.color}
@@ -188,13 +188,13 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
                   editor.isActive('textStyle', { color: preset.color }) ? 'border-primary ring-2 ring-primary/20 scale-110' : 'border-white/10'
                 }`}
                 style={{ backgroundColor: preset.color }}
-                title={`${preset.label} Text`}
+                title={t('editor.toolbar.colorText', { color: t(preset.labelKey) })}
               />
             ))}
             <button
               onClick={() => editor.chain().focus().unsetColor().run()}
               className="ml-1 p-1.5 hover:bg-primary/10 text-on-surface-variant rounded-lg transition-all"
-              title="Reset Color"
+              title={t('editor.toolbar.resetColor')}
             >
               <span className="material-symbols-outlined text-[18px]">format_color_reset</span>
             </button>
@@ -205,7 +205,7 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
         <div className="flex items-center bg-surface-container-lowest/50 rounded-xl p-1 ml-auto border border-outline-variant/5">
           <MenuButton
             onClick={() => {
-              const url = window.prompt('Enter URL', editor.getAttributes('link').href || '')
+              const url = window.prompt(t('editor.linkPrompt'), editor.getAttributes('link').href || '')
               if (url === '') {
                 editor.chain().focus().extendMarkRange('link').unsetLink().run()
               } else if (url) {
@@ -213,12 +213,12 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
               }
             }}
             isActive={editor.isActive('link')}
-            title="Add/Edit Link"
+            title={t('editor.toolbar.link')}
             icon="link"
           />
           <MenuButton
             onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
-            title="Clear Formatting"
+            title={t('editor.toolbar.clearFormatting')}
             icon="format_clear"
           />
         </div>
@@ -238,16 +238,16 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
       <div className="px-6 py-2 bg-surface-container-low border-t border-outline-variant/5 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
-            {getMarkdown(editor).length} characters
+            {t('editor.status.characters', { count: getMarkdown(editor).length })}
           </span>
           <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
-            {getMarkdown(editor).split(/\s+/).filter(Boolean).length} words
+            {t('editor.status.words', { count: getMarkdown(editor).split(/\s+/).filter(Boolean).length })}
           </span>
         </div>
         <div className="flex items-center gap-1">
           <div className={`w-1.5 h-1.5 rounded-full ${editor.isFocused ? 'bg-primary animate-pulse' : 'bg-on-surface-variant/20'}`} />
           <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
-            {editor.isFocused ? 'Editing' : 'Saved'}
+            {editor.isFocused ? t('editor.status.editing') : t('editor.status.saved')}
           </span>
         </div>
       </div>

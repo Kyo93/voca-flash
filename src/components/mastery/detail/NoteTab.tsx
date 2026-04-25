@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion'
+import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
-import RichNoteEditor from '../../common/RichNoteEditor'
+
+const RichNoteEditor = lazy(() => import('../../common/RichNoteEditor'))
 
 interface NoteTabProps {
   isEditing: boolean
@@ -51,11 +53,13 @@ export function NoteTab({
 
       {isEditing ? (
         <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          <RichNoteEditor
-            content={draftNote}
-            onChange={onDraftChange}
-            placeholder={t('notebook.notePlaceholder')}
-          />
+          <Suspense fallback={<div className="p-8 text-sm text-on-surface-variant">{t('common.loading')}</div>}>
+            <RichNoteEditor
+              content={draftNote}
+              onChange={onDraftChange}
+              placeholder={t('notebook.notePlaceholder')}
+            />
+          </Suspense>
 
           <div className="flex gap-3">
             <button

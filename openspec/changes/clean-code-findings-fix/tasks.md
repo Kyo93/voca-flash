@@ -1,0 +1,11 @@
+# Implementation Checklist
+- [x] 1.1 Add hygiene guard tests and verify they fail on current code.
+- [x] 1.2 Move `_orphan_rpc_backup.sql` out of Supabase migrations.
+- [x] 2.1 Replace remaining active hardcoded UI text with i18n keys.
+- [x] 2.2 Replace active TSX direct hex colors with tokens/constants.
+- [x] 3.1 Remove unreachable legacy progress/Home files.
+- [x] 3.2 Tighten Vite manual chunks and lazy-load RichNoteEditor.
+- [x] 4.1 Run build and `test:gate`.
+- [x] 5.1 Fix `/admin` access regression by checking Supabase `is_admin()`.
+- [x] 5.2 Add focused admin access unit coverage.
+- [x] 5.3 Verify build, `test:gate`, and user smoke for `/admin`.

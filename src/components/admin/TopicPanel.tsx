@@ -59,7 +59,7 @@ export default function TopicPanel({
         onClick={() => onViewWords(null)}
         className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all mb-2 mr-4 ${
           activeTopicId === null
-            ? 'bg-surface-container-lowest shadow-[inset_4px_0_0_#944a00]'
+            ? 'bg-surface-container-lowest shadow-[inset_4px_0_0_var(--color-primary-dim)]'
             : 'bg-white border border-stone-200 hover:bg-surface-container transition-colors'
         }`}
       >

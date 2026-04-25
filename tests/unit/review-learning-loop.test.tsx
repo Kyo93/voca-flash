@@ -15,6 +15,8 @@ vi.mock('../../src/contexts/AuthContext', () => ({
 // Mock Supabase storage
 vi.mock('../../src/lib/supabase-storage', () => ({
   fetchReviewWords: vi.fn(),
+  fetchRewardProgress: vi.fn(),
+  applyUserRewardGain: vi.fn(),
   upsertSrsRecord: vi.fn().mockResolvedValue({})
 }))
 
@@ -42,9 +44,33 @@ describe('useReviewSession Learning Loop (TDD)', () => {
     { word: { id: 'w2', word: 'World' }, progress: {}, choices: [] }
   ]
 
+  const mockRewardProgress = {
+    userId: 'user-123',
+    totalXp: 0,
+    studyXp: 0,
+    reviewXp: 0,
+    arenaSessions: 0,
+    updatedAt: null,
+    currentLevel: {
+      level: 1,
+      minXp: 0,
+      titleKey: 'rewards.levels.seedling',
+      characterKey: 'rewards.characters.seedling',
+      icon: 'school',
+    },
+    nextLevel: null,
+    xpIntoLevel: 0,
+    xpForNextLevel: 0,
+    levelProgress: 100,
+    unlockedBadges: [],
+    nextBadge: null,
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(storage.fetchReviewWords).mockResolvedValue(mockWords as any)
+    vi.mocked(storage.fetchRewardProgress).mockResolvedValue(mockRewardProgress as any)
+    vi.mocked(storage.applyUserRewardGain).mockResolvedValue(mockRewardProgress as any)
   })
 
   it('appends failed words to the end of the queue', async () => {

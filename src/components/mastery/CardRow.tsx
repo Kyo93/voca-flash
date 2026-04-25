@@ -45,7 +45,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
   return (
     <tr
       ref={ref}
-      className={`group hover:bg-[#F2F4F0] transition-all cursor-pointer border-none ${isSelectedFocus ? 'bg-[#F2F4F0]' : ''}`}
+      className={`group hover:bg-mint-container transition-all cursor-pointer border-none ${isSelectedFocus ? 'bg-mint-container' : ''}`}
       onClick={onSelectFocus}
     >
       <td className="py-6 px-8">

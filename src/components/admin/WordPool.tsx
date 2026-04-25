@@ -88,7 +88,7 @@ export default function WordPool({
     <div className="flex flex-col h-full px-6 py-4">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-[10px] text-stone-500 mb-2 font-bold uppercase tracking-widest">
-        <Link to="/admin/roadmaps" className="hover:text-primary transition-colors">Roadmaps</Link>
+        <Link to="/admin/roadmaps" className="hover:text-primary transition-colors">{t('admin.sidebar.roadmaps')}</Link>
         <span className="material-symbols-outlined text-xs">chevron_right</span>
         <span className="text-stone-500 uppercase tracking-widest">
           {roadmapName ? roadmapName.toUpperCase() : '...'}

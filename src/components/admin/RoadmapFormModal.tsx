@@ -66,13 +66,13 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">Slug</label>
+              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.topicForm.slugLabel')}</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={form.slug}
                   onChange={(e) => form.setSlug(e.target.value)}
-                  placeholder="english-mastery"
+                  placeholder={t('admin.roadmapForm.slugPlaceholder')}
                   className="flex-1 px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-mono text-xs outline-none focus:border-primary focus:bg-white transition-all min-w-0"
                 />
                 <button
@@ -110,7 +110,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
               value={form.imageUrl}
               onChange={form.setImageUrl}
               label={t('admin.roadmapForm.iconLabel')}
-              placeholder="https://picsum.photos/seed/roadmap-name/800/450"
+              placeholder={t('admin.roadmapForm.imagePlaceholder')}
             />
           </div>
 

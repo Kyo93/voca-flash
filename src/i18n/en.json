@@ -53,7 +53,8 @@
     "status": "Status",
     "refresh": "Refresh",
     "lastEdited": "Last edited",
-    "lastEditedBy": "Last edited by {{name}}"
+    "lastEditedBy": "Last edited by {{name}}",
+    "preview": "Preview"
   },
   "app": {
     "name": "VocaFlash",
@@ -69,7 +70,8 @@
     "search": "Search...",
     "searchPlaceholder": "Search paths, words, or lessons...",
     "methodology": "Methodology",
-    "mastery": "Vocabulary Vault"
+    "mastery": "Vocabulary Vault",
+    "achievements": "Achievements"
   },
   "library": {
     "title": "Choose Your Journey",
@@ -118,7 +120,8 @@
     "signIn": "Sign In",
     "hasAccount": "Already have an account? Sign In",
     "noAccount": "Don't have an account? Sign Up Now",
-    "signUpSuccess": "Sign up successful! Please check your email to confirm your account."
+    "signUpSuccess": "Sign up successful! Please check your email to confirm your account.",
+    "emailPlaceholder": "you@example.com"
   },
   "home": {
     "welcome": "Welcome back!",
@@ -255,7 +258,8 @@
     "total_label": "TOTAL",
     "learned_label": "LEARNED",
     "mastered_label": "MASTERED",
-    "mastery_label": "MASTERY"
+    "mastery_label": "MASTERY",
+    "scholarAlt": "Scholar"
   },
   "topics": {
     "title": "Topics",
@@ -300,6 +304,57 @@
     "comeBackLater": "Come back later to continue your journey!",
     "learnMore": "Learn More",
     "dashboard": "Back to Dashboard"
+  },
+  "rewards": {
+    "xpAmount": "{{xp}} XP",
+    "totalXp": "{{xp}} total XP",
+    "levelShort": "Level {{level}}",
+    "progressToNext": "{{current}} / {{target}} XP",
+    "maxLevel": "Max level reached",
+    "unlocked": "New medal unlocked",
+    "unlockAt": "Unlocks at {{xp}} XP",
+    "sidebarTitle": "Scholar Level",
+    "toNextLevel": "{{xp}} XP left",
+    "levels": {
+      "seedling": "Seed Scholar",
+      "apprentice": "Scholar Apprentice",
+      "archivist": "Vocabulary Archivist",
+      "strategist": "Memory Strategist",
+      "mentor": "Academic Mentor",
+      "sage": "Language Sage",
+      "master": "Vocabulary Master"
+    },
+    "characters": {
+      "seedling": "Knowledge Seed",
+      "apprentice": "Junior Librarian",
+      "archivist": "Memory Keeper",
+      "strategist": "Memory Architect",
+      "mentor": "Academic Guide",
+      "sage": "Language Sage",
+      "master": "Vocabulary Ambassador"
+    },
+    "badges": {
+      "first_spark": {
+        "title": "First Spark",
+        "desc": "Reach your first 50 XP."
+      },
+      "arena_regular": {
+        "title": "Arena Regular",
+        "desc": "Reach 250 XP across your learning journey."
+      },
+      "memory_keeper": {
+        "title": "Memory Keeper",
+        "desc": "Reach 500 XP and keep reviews moving."
+      },
+      "lexical_champion": {
+        "title": "Lexical Champion",
+        "desc": "Reach 900 XP in VocaFlash."
+      },
+      "scholar_legend": {
+        "title": "Scholar Legend",
+        "desc": "Reach 1400 XP."
+      }
+    }
   },
   "progress": {
     "title": "Progress",
@@ -464,6 +519,32 @@
       }
     }
   },
+  "achievements": {
+    "title": "Achievements",
+    "subtitle": "Track EXP, streak, mastered vocabulary, and study-time badges backed by your real learning data.",
+    "viewAll": "View all badges",
+    "backToProgress": "Back to progress",
+    "unlockedSummary": "{{unlocked}} / {{total}} badges",
+    "totalBadges": "Total badges",
+    "currentLevel": "Current level",
+    "nextFocus": "Next EXP milestone",
+    "allXpUnlocked": "All EXP badges unlocked",
+    "keepGoing": "Keep learning to maintain your progress rhythm.",
+    "statusUnlocked": "Unlocked",
+    "statusLocked": "Locked",
+    "categories": {
+      "xp": "EXP badges",
+      "streak": "Learning streak",
+      "mastery": "Mastered vocabulary",
+      "time": "Study time"
+    },
+    "progress": {
+      "xp": "{{current}} / {{target}} XP",
+      "days": "{{current}} / {{target}} days",
+      "words": "{{current}} / {{target}} words",
+      "hours": "{{current}} / {{target}} hours"
+    }
+  },
   "rightSidebar": {
     "updates": "Updates",
     "seeAll": "See all",
@@ -512,7 +593,8 @@
     "floatingCard": {
       "mastered": "Mastered!",
       "word": "Perspective"
-    }
+    },
+    "heroImageAlt": "3D language learning illustration"
   },
   "arena": {
     "preparing": "Preparing Arena...",
@@ -624,7 +706,10 @@
     "confirmDelete": "Permanently Delete",
     "deleting": "Deleting...",
     "cancel": "Cancel",
-    "selectTopicRequired": "Please select a topic."
+    "selectTopicRequired": "Please select a topic.",
+    "avatarAlt": "Avatar",
+    "avatarPlaceholder": "https://images.unsplash.com/photo...",
+    "resetAction": "Reset"
   },
   "challenges": {
     "cloze": "Cloze",
@@ -755,7 +840,8 @@
           "hard": "Hard",
           "good": "Good",
           "easy": "Easy"
-        }
+        },
+        "userId": "User ID"
       }
     },
     "wordTable": {
@@ -807,7 +893,9 @@
       "expand": "Expand Sidebar",
       "collapse": "Collapse Sidebar",
       "collapseAction": "Collapse",
-      "adminRole": "Admin Access"
+      "adminRole": "Admin Access",
+      "panelTitle": "Admin Panel",
+      "panelSubtitle": "VocaFlash CMS"
     },
     "topics": {
       "title": "Topics",
@@ -894,7 +982,8 @@
         "update": "Update"
       },
       "criticalError": "⚠️ Critical Import Error: submitted {{submitted}} words but only successfully inserted {{inserted}} words.",
-      "templateCsv": "word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Hello,Hello world!,,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Apple,An apple a day,,,Food,pear,orange,fruit"
+      "templateCsv": "word,phonetic,pos,difficulty,definition,example,example_vi,image_url,topics,wrong1,wrong2,wrong3\nhello,/həˈloʊ/,noun,2,Hello,Hello world!,,,Travel;Greetings,hola,greetings,hi\napple,/ˈæpəl/,noun,1,Apple,An apple a day,,,Food,pear,orange,fruit",
+      "sheetsPlaceholder": "https://docs.google.com/spreadsheets/d/..."
     },
     "wordForm": {
       "titleAdd": "Add New Word",
@@ -943,7 +1032,9 @@
       "descPlaceholder": "Describe the roadmap goals...",
       "iconLabel": "Icon",
       "colorLabel": "Primary Color",
-      "errorName": "Roadmap name is required"
+      "errorName": "Roadmap name is required",
+      "slugPlaceholder": "english-mastery",
+      "imagePlaceholder": "https://picsum.photos/seed/roadmap-name/800/450"
     },
     "topicForm": {
       "titleEdit": "Edit Topic",
@@ -961,7 +1052,9 @@
       "customColor": "Custom color",
       "slugLabel": "Slug",
       "slugHint": "Auto-prefix {{slug}} to avoid duplicate slugs app-wide",
-      "errorName": "Topic name is required"
+      "errorName": "Topic name is required",
+      "slugPlaceholder": "quantum-fundamentals",
+      "imagePlaceholder": "https://picsum.photos/..."
     },
     "wordPool": {
       "uncategorized": "Uncategorized",
@@ -1113,6 +1206,40 @@
     "showAnswer": "Show Answer",
     "markLearned": "Mark as Learned",
     "exit": "Exit",
-    "resign": "Resign"
+    "resign": "Resign",
+    "liveSession": "Live Session"
+  },
+  "editor": {
+    "placeholder": "Write something...",
+    "linkPrompt": "Enter URL",
+    "toolbar": {
+      "undo": "Undo (Ctrl+Z)",
+      "redo": "Redo (Ctrl+Y)",
+      "bold": "Bold (Ctrl+B)",
+      "italic": "Italic (Ctrl+I)",
+      "underline": "Underline (Ctrl+U)",
+      "strikethrough": "Strikethrough",
+      "bulletList": "Bullet List",
+      "numberedList": "Numbered List",
+      "alignLeft": "Align Left",
+      "alignCenter": "Align Center",
+      "resetColor": "Reset Color",
+      "link": "Add/Edit Link",
+      "clearFormatting": "Clear Formatting",
+      "colorText": "{{color}} Text"
+    },
+    "colors": {
+      "red": "Red",
+      "green": "Green",
+      "blue": "Blue",
+      "amber": "Amber",
+      "purple": "Purple"
+    },
+    "status": {
+      "characters": "{{count}} characters",
+      "words": "{{count}} words",
+      "editing": "Editing",
+      "saved": "Saved"
+    }
   }
 }

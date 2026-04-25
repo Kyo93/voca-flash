@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Topic } from '../../lib/types'
+import { DEFAULT_TOPIC_COLOR } from '../../lib/utils'
 
 interface AdminTopicCardProps {
   topic: Topic
@@ -38,7 +39,7 @@ export default function AdminTopicCard({
   onDragEnd,
 }: AdminTopicCardProps) {
   const { t } = useTranslation()
-  const topicColor = topic.color ?? '#F97316'
+  const topicColor = topic.color ?? DEFAULT_TOPIC_COLOR
 
   return (
     <div
@@ -54,7 +55,7 @@ export default function AdminTopicCard({
           : isDragOver
             ? 'border border-primary shadow-md'
             : isActive
-              ? 'border border-stone-200 shadow-[inset_4px_0_0_#944a00]'
+              ? 'border border-stone-200 shadow-[inset_4px_0_0_var(--color-primary-dim)]'
               : 'border border-stone-200 hover:bg-surface-container'
       }`}
       style={{ backgroundColor: `${topicColor}1A` }}

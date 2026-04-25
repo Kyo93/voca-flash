@@ -8,14 +8,44 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) return 'react-core';
-            if (id.includes('react-router-dom')) return 'router';
+          const normalizedId = id.replace(/\\/g, '/')
+          if (normalizedId.includes('node_modules')) {
+            if (/node_modules\/(react|react-dom)\//.test(normalizedId)) return 'react-core';
+            if (normalizedId.includes('node_modules/react-router-dom')) return 'router';
             if (
-              id.includes('framer-motion') || 
-              id.includes('@dnd-kit') || 
-              id.includes('ts-fsrs') || 
-              id.includes('papaparse')
+              normalizedId.includes('node_modules/@tiptap/react') ||
+              normalizedId.includes('node_modules/@tiptap/core')
+            ) {
+              return 'editor-core';
+            }
+            if (
+              normalizedId.includes('node_modules/@tiptap/starter-kit') ||
+              normalizedId.includes('node_modules/@tiptap/extension')
+            ) {
+              return 'editor-extensions';
+            }
+            if (
+              normalizedId.includes('node_modules/@tiptap/pm') ||
+              normalizedId.includes('node_modules/prosemirror-')
+            ) {
+              return 'editor-pm';
+            }
+            if (normalizedId.includes('node_modules/tiptap-markdown')) {
+              return 'editor-markdown-adapter';
+            }
+            if (
+              normalizedId.includes('node_modules/react-markdown') ||
+              normalizedId.includes('node_modules/remark-gfm') ||
+              normalizedId.includes('node_modules/rehype-raw')
+            ) {
+              return 'markdown';
+            }
+            if (normalizedId.includes('node_modules/recharts')) return 'charts';
+            if (
+              normalizedId.includes('node_modules/framer-motion') || 
+              normalizedId.includes('node_modules/@dnd-kit') || 
+              normalizedId.includes('node_modules/ts-fsrs') || 
+              normalizedId.includes('node_modules/papaparse')
             ) {
               return 'ui-heavy';
             }

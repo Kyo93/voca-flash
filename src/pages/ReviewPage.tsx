@@ -23,7 +23,14 @@ export default function ReviewPage() {
   }
 
   if (session.isComplete && session.stats.correct + session.stats.wrong > 0) {
-    return <SessionSummary stats={session.stats} onRestart={session.initialize} />
+    return (
+      <SessionSummary
+        stats={session.stats}
+        rewardProgress={session.rewardProgress}
+        unlockedBadges={session.sessionUnlockedBadges}
+        onRestart={session.initialize}
+      />
+    )
   }
 
   if (session.isComplete && session.stats.correct + session.stats.wrong === 0) {
@@ -61,6 +68,7 @@ export default function ReviewPage() {
       total={session.totalCount}
       currentIndex={session.currentIndex}
       points={session.stats.points}
+      rewardProgress={session.rewardProgress}
       onExitClick={() => setIsExitModalOpen(true)}
       isExitModalOpen={isExitModalOpen}
       onExitClose={() => setIsExitModalOpen(false)}

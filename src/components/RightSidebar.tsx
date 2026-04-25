@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { useSidebar, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
 import { useStreak } from '../hooks/useStreak'
+import { useAuth } from '../contexts/AuthContext'
+import { useRewardProgress } from '../hooks/useRewardProgress'
 
 const STREAK_WEEK_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as const
 const STREAK_DAY_HEIGHTS = [40, 60, 50, 70, 80, 0, 0] as const
@@ -9,8 +11,10 @@ const STREAK_TODAY_INDEX = 4
 export default function RightSidebar() {
   const { t } = useTranslation()
   const { rightCollapsed, toggleRightSidebar } = useSidebar()
+  const { user } = useAuth()
 
   const streak = useStreak()
+  const { rewardProgress } = useRewardProgress(user?.id)
 
   const sidebarWidth = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
 
@@ -69,6 +73,55 @@ export default function RightSidebar() {
             </div>
           )}
         </div>
+
+        {/* EXP Widget */}
+        {rewardProgress && (
+          <div className={`bg-white rounded-2xl border border-stone-100 shadow-sm ${rightCollapsed ? 'p-3' : 'p-5'} transition-all`}>
+            <div className={`flex ${rightCollapsed ? 'justify-center' : 'items-center gap-3'}`}>
+              <div
+                className={`${rightCollapsed ? 'w-10 h-10' : 'w-12 h-12'} rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0`}
+                title={rightCollapsed ? t('rewards.sidebarTitle') : undefined}
+              >
+                <span className={`material-symbols-outlined ${rightCollapsed ? 'text-xl' : 'text-2xl'}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                  {rewardProgress.currentLevel.icon}
+                </span>
+              </div>
+
+              {!rightCollapsed && (
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-[11px] font-black uppercase tracking-widest text-stone-400">
+                      {t('rewards.sidebarTitle')}
+                    </p>
+                    <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full whitespace-nowrap">
+                      {t('rewards.levelShort', { level: rewardProgress.currentLevel.level })}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm font-black text-on-surface truncate">
+                    {t(rewardProgress.currentLevel.titleKey)}
+                  </p>
+                  <div className="mt-3 h-2 rounded-full bg-stone-100 overflow-hidden">
+                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${rewardProgress.levelProgress}%` }} />
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-[10px] font-bold text-stone-400">
+                    <span>{t('rewards.xpAmount', { xp: rewardProgress.totalXp })}</span>
+                    <span>
+                      {rewardProgress.nextLevel
+                        ? t('rewards.toNextLevel', { xp: rewardProgress.nextLevel.minXp - rewardProgress.totalXp })
+                        : t('rewards.maxLevel')}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {rightCollapsed && (
+              <div className="bg-primary text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center mx-auto mt-2">
+                {rewardProgress.currentLevel.level}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Reminders */}
         <div className={`bg-white rounded-2xl border border-stone-100 shadow-sm ${rightCollapsed ? 'p-3' : 'p-5'} transition-all`}>

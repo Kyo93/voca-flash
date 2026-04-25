@@ -23,7 +23,7 @@ export default function ChallengingScreen({
 }: ChallengingScreenProps) {
   const { t } = useTranslation()
   const isWarning = timerSeconds <= STUDY_SESSION_DEFAULTS.WARNING_THRESHOLD_S
-  const borderColor = isWarning ? 'var(--color-error, #B3261E)' : 'var(--color-secondary, #829460)'
+  const borderColor = isWarning ? 'var(--color-error)' : 'var(--color-secondary)'
   const borderGlow = `0 0 8px ${borderColor}`
   const timerProgress = `${(timerSeconds / STUDY_SESSION_DEFAULTS.TIMER_SECONDS) * 100}%`
   const timerTextClass = isWarning ? 'text-error animate-pulse' : 'text-secondary'

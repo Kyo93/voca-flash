@@ -3,7 +3,7 @@ import { TAG_META } from '../../../lib/tag-constants'
 import { DESIGN_TOKENS } from '../../../lib/tokens'
 
 const FALLBACK_TAG_COLOR = DESIGN_TOKENS.COLORS.PRIMARY
-const FALLBACK_NEUTRAL_COLOR = '#9CA3AF'
+const FALLBACK_NEUTRAL_COLOR = 'var(--color-on-surface-variant)'
 
 interface Props {
   allTags: string[]

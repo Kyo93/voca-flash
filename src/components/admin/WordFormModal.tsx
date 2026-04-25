@@ -266,7 +266,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                   <div className="aspect-4/3 w-full max-w-[280px] rounded-lg overflow-hidden border border-stone-200 shadow-sm relative">
                     <img
                       src={state.imageUrl}
-                      alt="Preview"
+                    alt={t('common.preview')}
                       className="w-full h-full object-cover transition-all duration-300"
                       style={{ objectPosition: state.imagePosition }}
                       onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_PREVIEW_IMAGE; }}

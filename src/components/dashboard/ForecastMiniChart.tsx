@@ -18,7 +18,7 @@ export default function ForecastMiniChart({ forecast }: ForecastMiniChartProps) 
   const max = Math.max(...data, 1)
 
   return (
-    <div className="col-span-3 bg-secondary p-8 rounded-4xl flex flex-col text-white sun-drenched-shadow relative overflow-hidden group hover:bg-[#6D7D51] transition-all duration-500">
+    <div className="col-span-3 bg-secondary p-8 rounded-4xl flex flex-col text-white sun-drenched-shadow relative overflow-hidden group hover:bg-secondary-stable transition-all duration-500">
       <div className="relative z-10 h-full flex flex-col">
         <div className="flex justify-between items-start mb-5">
           <div className="flex items-center gap-2">

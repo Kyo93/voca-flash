@@ -2,12 +2,14 @@ import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import ConfirmExitModal from './ConfirmExitModal'
+import type { RewardProgressView } from '../../lib/rewards'
 
 interface ArenaShellProps {
   progress: number
   total: number
   currentIndex: number
   points: number
+  rewardProgress?: RewardProgressView
   onExitClick: () => void
   isExitModalOpen: boolean
   onExitClose: () => void
@@ -23,6 +25,7 @@ export default function ArenaShell({
   total,
   currentIndex,
   points,
+  rewardProgress,
   onExitClick,
   isExitModalOpen,
   onExitClose,
@@ -90,6 +93,26 @@ export default function ArenaShell({
             <span className="material-symbols-outlined text-lg font-black" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
             <span className="font-black text-sm">{points}</span>
           </div>
+
+          {rewardProgress && (
+            <div
+              className="hidden sm:flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/60 min-w-[164px]"
+              title={t('rewards.totalXp', { xp: rewardProgress.totalXp })}
+            >
+              <span className="material-symbols-outlined text-lg text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {rewardProgress.currentLevel.icon}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 text-[9px] font-black uppercase tracking-widest">
+                  <span>{t('rewards.levelShort', { level: rewardProgress.currentLevel.level })}</span>
+                  <span className="text-white/30">{t('rewards.xpAmount', { xp: rewardProgress.totalXp })}</span>
+                </div>
+                <div className="h-1 mt-1 rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-full rounded-full bg-secondary" style={{ width: `${rewardProgress.levelProgress}%` }} />
+                </div>
+              </div>
+            </div>
+          )}
 
           {modeLabel && (
             <div className="hidden md:block px-3 py-1 rounded-full border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/20">

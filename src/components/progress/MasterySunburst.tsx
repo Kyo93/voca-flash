@@ -69,7 +69,7 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
           <circle
             cx="50" cy="50" r="44"
             fill="none"
-            stroke="#D4E7AC"
+            stroke="var(--color-secondary-container)"
             strokeWidth="12"
             strokeDasharray={`${practicalDash} ${circumference}`}
             strokeDashoffset="0"
@@ -79,7 +79,7 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
           <circle
             cx="50" cy="50" r="44"
             fill="none"
-            stroke="#E67E22"
+            stroke="var(--color-primary)"
             strokeWidth="12"
             strokeDasharray={`${academicDash} ${circumference}`}
             strokeDashoffset={`${-practicalDash}`}

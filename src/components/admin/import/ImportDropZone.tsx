@@ -65,7 +65,7 @@ export function ImportDropZone({
           type="url"
           value={sheetsUrl}
           onChange={e => setSheetsUrl(e.target.value)}
-          placeholder="https://docs.google.com/spreadsheets/d/..."
+          placeholder={t('admin.import.sheetsPlaceholder')}
           className="w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary font-medium outline-none focus:border-primary focus:bg-white transition-all"
         />
         {urlError && (

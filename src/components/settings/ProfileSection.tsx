@@ -38,7 +38,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
             {formData.avatar_url && !avatarError ? (
               <img
                 src={formData.avatar_url}
-                alt="Avatar"
+              alt={t('settings.avatarAlt')}
                 className="w-full h-full object-cover"
                 onError={() => setAvatarError(true)}
               />
@@ -100,7 +100,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
                     onChange({ avatar_url: val })
                   }
                 }}
-                placeholder="https://images.unsplash.com/photo..."
+              placeholder={t('settings.avatarPlaceholder')}
                 className="w-full px-5 py-4 bg-stone-50/50 border border-stone-200 rounded-2xl text-secondary font-medium focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all pr-12"
               />
               <span className="absolute right-5 top-1/2 -translate-y-1/2 material-symbols-outlined text-stone-300 group-focus-within:text-primary transition-colors">link</span>

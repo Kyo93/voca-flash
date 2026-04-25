@@ -2,6 +2,15 @@
 
 > Auto-updated by CM skills. Read at session start.
 
+## Current Session Override
+- Active Goal: 3D character unlock showcase brainstorming.
+- Current Phase: planning drafted.
+- Next Actions: implement reward wallet fields; add character unlock migration/RPC; build character catalog and Dashboard showcase.
+- Just Completed: centralized real badge logic in `src/lib/achievements.ts`; Progress now limits recent badges to 2 compact rows, places the card directly below the green Mentor block, and stretches the card to align the right-column bottom with the left blocks; placeholder-only badges like `c1_peak` are no longer rendered; focused tests, `npm run build`, and `npm run test:gate` passed.
+- Dev Server: http://127.0.0.1:5173/
+- Supabase: `040_user_reward_progress.sql` applied via `supabase db query --linked --file`; verified table, RPC, and RLS policies on project `nhnusgnlhnzwavpltbqj`.
+- Sidebar: EXP/Level widget added to `RightSidebar`; reward storage dispatches live update event so Study/Arena gains refresh visible totals. `npm run build` and `npm run test:gate` passed (383/383 tests).
+
 ## Active Goal
 - **Clean Code April 2026 v3 — COMPLETE** (1 commit `ef6daef` on `production`). All 9 tasks done. 382/382 tests pass. Build 694ms.
 
@@ -89,6 +98,7 @@
 - [x] Admin Module Refactoring (Clean Code SRP) — COMPLETED
 
 ## Mistakes & Learnings (Latest)
+- **Admin Access Regression**: Frontend admin guards cannot rely only on `VITE_ADMIN_EMAILS`; local env may omit it while the real source of truth is `admin_users` + `is_admin()`. Fix: resolve admin access through env allowlist first, then Supabase `is_admin()`, and keep `RequireAdmin` in loading state until the async check completes. (2026-04-25)
 - **Suspense Layout UX Bug**: Wrapping <Routes> directly with <Suspense> unmounts the entire Layout including the Sidebar when switching routes. Fix: Place <Suspense> INSIDE the Layout component wrapping the <Outlet /> element. (2026-04-21)
 - **TopicFormModal Save Button**: Buttons in footer div OUTSIDE <form> tag don't trigger onSubmit. Fix: Add id="topic-form" to <form> and form="topic-form" to submit button. (2026-04-20)
 - **Refactor Type Mismatch**: Extracting components without verifying child component props causes type errors. Fix: Use `view_file` on child components and run `npm run build` after refactoring to ensure type safety. (2026-04-21)

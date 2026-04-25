@@ -1,15 +1,39 @@
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react'
 import i18n from '../i18n'
 import { SrsRating, calculateFSRSReview, mapIntensityToRetention } from '../lib/srs'
-import { fetchReviewWords, upsertSrsRecord } from '../lib/supabase-storage'
+import { applyUserRewardGain, fetchReviewWords, fetchRewardProgress, upsertSrsRecord } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { Word } from '../lib/types'
 import { selectQuadrant, generateChoices, type ReviewChallenge, type QuadrantType } from '../lib/challenge-logic'
 import { shuffleArray } from '../lib/utils'
-import { REVIEW_SESSION_CONFIG, SRS_RATINGS, SRS_CONFIG } from '../lib/constants'
+import { SRS_RATINGS, SRS_CONFIG } from '../lib/constants'
+import {
+  applyRewardGainToStoredProgress,
+  calculateReviewReward,
+  createEmptyRewardProgress,
+  getNewlyUnlockedRewardBadges,
+  toRewardProgressView,
+  type RewardBadge,
+  type RewardProgressView,
+} from '../lib/rewards'
 
 // Re-export for backward compatibility (used by other hooks)
 export type { ReviewChallenge, QuadrantType }
+
+function createInitialStats() {
+  return {
+    correct: 0,
+    wrong: 0,
+    points: 0,
+    mistakes: [] as Word[]
+  }
+}
+
+function mergeRewardBadges(current: RewardBadge[], incoming: RewardBadge[]): RewardBadge[] {
+  const merged = new Map(current.map(badge => [badge.id, badge]))
+  incoming.forEach(badge => merged.set(badge.id, badge))
+  return [...merged.values()]
+}
 
 export function useReviewSession() {
   const { user, profile } = useAuth()
@@ -17,28 +41,40 @@ export function useReviewSession() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [isComplete, setIsComplete] = useState(false)
-  const [stats, setStats] = useState({
-    correct: 0,
-    wrong: 0,
-    points: 0,
-    mistakes: [] as Word[]
-  })
+  const [stats, setStats] = useState(createInitialStats)
+  const [rewardProgress, setRewardProgress] = useState<RewardProgressView>(() => (
+    toRewardProgressView(createEmptyRewardProgress('anonymous'))
+  ))
+  const [sessionUnlockedBadges, setSessionUnlockedBadges] = useState<RewardBadge[]>([])
   const [syncError, setSyncError] = useState<string | null>(null)
   const [challengeStartTime, setChallengeStartTime] = useState<number>(0)
   const isInitializing = useRef(false)
   const processedWordIds = useRef<Set<string>>(new Set())
   const queueRef = useRef<ReviewChallenge[]>([])
+  const rewardProgressRef = useRef(rewardProgress)
+
+  useEffect(() => {
+    rewardProgressRef.current = rewardProgress
+  }, [rewardProgress])
 
   const initialize = useCallback(async () => {
     if (!user || isInitializing.current) return
     isInitializing.current = true
     setIsLoading(true)
     setSyncError(null)
+    setStats(createInitialStats())
+    setCurrentIndex(0)
+    setSessionUnlockedBadges([])
     processedWordIds.current.clear()
     queueRef.current = []
     
     try {
-      const rawCards = await fetchReviewWords(user.id)
+      const [rawCards, rewards] = await Promise.all([
+        fetchReviewWords(user.id),
+        fetchRewardProgress(user.id)
+      ])
+      setRewardProgress(rewards)
+      rewardProgressRef.current = rewards
       
       const challenges: ReviewChallenge[] = rawCards.map(c => {
         // Ensure we always have the correct definition + 3 distractors
@@ -81,6 +117,21 @@ export function useReviewSession() {
 
     if (isFirstAttempt) {
       processedWordIds.current.add(current.word.id)
+      const rewardGain = calculateReviewReward({
+        isCorrect,
+        isSkipped,
+        quadrant: current.quadrant,
+      })
+      const previousXp = rewardProgressRef.current.totalXp
+      const optimisticRewards = toRewardProgressView(
+        applyRewardGainToStoredProgress(rewardProgressRef.current, rewardGain)
+      )
+      rewardProgressRef.current = optimisticRewards
+      setRewardProgress(optimisticRewards)
+      setSessionUnlockedBadges(prev => mergeRewardBadges(
+        prev,
+        getNewlyUnlockedRewardBadges(previousXp, optimisticRewards.totalXp)
+      ))
       
       const intensity = profile?.srs_intensity ?? SRS_CONFIG.INTENSITY_DEFAULT
       const retention = mapIntensityToRetention(intensity)
@@ -106,9 +157,20 @@ export function useReviewSession() {
         return {
           correct: prev.correct + (isCorrect ? 1 : 0),
           wrong: prev.wrong + (isCorrect ? 0 : 1),
-          points: prev.points + (isCorrect ? (current.quadrant === 'ghost_recall' ? REVIEW_SESSION_CONFIG.POINTS_GHOST_RECALL_BONUS : REVIEW_SESSION_CONFIG.POINTS_PER_CORRECT) : 0),
+          points: prev.points + rewardGain.xp,
           mistakes: updatedMistakes
         }
+      })
+
+      applyUserRewardGain(user.id, rewardGain).then(serverRewards => {
+        rewardProgressRef.current = serverRewards
+        setRewardProgress(serverRewards)
+        setSessionUnlockedBadges(prev => mergeRewardBadges(
+          prev,
+          getNewlyUnlockedRewardBadges(previousXp, serverRewards.totalXp)
+        ))
+      }).catch(err => {
+        console.error('[useReviewSession] reward sync error:', err)
       })
     }
 
@@ -132,7 +194,7 @@ export function useReviewSession() {
       setChallengeStartTime(Date.now())
       return nextIndex
     })
-  }, [currentIndex, queue, user, challengeStartTime])
+  }, [currentIndex, queue, user, challengeStartTime, profile?.srs_intensity])
 
   const currentChallenge = useMemo(() => queue[currentIndex] || null, [queue, currentIndex])
 
@@ -143,6 +205,8 @@ export function useReviewSession() {
     totalCount: queue.length,
     currentChallenge,
     stats,
+    rewardProgress,
+    sessionUnlockedBadges,
     syncError,
     initialize,
     submitAnswer

@@ -67,7 +67,7 @@ export default function ImageUrlField({
         <div className={`${previewWrapperClassName} ${previewAspect}`}>
           <img
             src={value}
-            alt="Preview"
+            alt={t('common.preview')}
             className="w-full h-full object-cover"
             onError={(e) => {
               ;(e.target as HTMLImageElement).src = fallbackImage

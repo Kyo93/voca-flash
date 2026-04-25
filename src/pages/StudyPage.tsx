@@ -148,7 +148,7 @@ export default function StudyPage() {
           
           <div className="flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full border border-outline-variant/30">
             <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-            <span className="text-[10px] font-bold text-secondary uppercase tracking-tighter">Live Session</span>
+            <span className="text-[10px] font-bold text-secondary uppercase tracking-tighter">{t('study.liveSession')}</span>
           </div>
         </div>
 
