@@ -4,8 +4,11 @@ import { describe, expect, it } from 'vitest'
 import {
   CHARACTER_ANIMATION_STATES,
   CHARACTER_ASSET_MANIFEST,
+  CHARACTER_MODEL_ASSET_MANIFEST,
   type CharacterAssetManifest,
+  type CharacterModelAssetManifest,
   resolveCharacterMediaAsset,
+  resolveCharacterModelAsset,
 } from '../../src/lib/character-assets'
 
 const manifest: CharacterAssetManifest = {
@@ -15,6 +18,13 @@ const manifest: CharacterAssetManifest = {
       correct: { poster: true, video: true },
       wrong: { poster: true },
     },
+  },
+}
+
+const modelManifest: CharacterModelAssetManifest = {
+  arcane_brawler: {
+    1: { model: true },
+    2: { model: true, diffuseTexture: true },
   },
 }
 
@@ -129,6 +139,107 @@ describe('character asset resolver', () => {
 
     expect(asset?.state).toBe('celebrate')
     expect(asset?.videoSrc).toBe('/character-assets/seedling_scholar/stage-3/celebrate.webm')
+  })
+
+  it('registers quiz alchemist reactions for every stage', () => {
+    for (const stage of [1, 2, 3, 4]) {
+      for (const state of CHARACTER_ANIMATION_STATES) {
+        expect(CHARACTER_ASSET_MANIFEST.quiz_alchemist?.[stage]?.[state]).toEqual({
+          poster: true,
+          video: true,
+        })
+      }
+    }
+  })
+
+  it('does not register media manifests for removed characters', () => {
+    expect(CHARACTER_ASSET_MANIFEST.flashcard_fighter).toBeUndefined()
+    expect(CHARACTER_ASSET_MANIFEST.lexical_invoker).toBeUndefined()
+  })
+
+  it('resolves OBJ source paths for model-backed characters', () => {
+    const asset = resolveCharacterModelAsset({
+      characterId: 'arcane_brawler',
+      stage: 2,
+      manifest: modelManifest,
+    })
+
+    expect(asset).toEqual({
+      characterId: 'arcane_brawler',
+      stage: 2,
+      modelSrc: '/character-assets/arcane_brawler/source/base.obj',
+      diffuseTextureSrc: '/character-assets/arcane_brawler/source/texture_diffuse.png',
+    })
+  })
+
+  it('can resolve an OBJ-backed character with only base.obj registered', () => {
+    const asset = resolveCharacterModelAsset({
+      characterId: 'arcane_brawler',
+      stage: 1,
+      manifest: modelManifest,
+    })
+
+    expect(asset?.modelSrc).toBe('/character-assets/arcane_brawler/source/base.obj')
+    expect(asset?.diffuseTextureSrc).toBeUndefined()
+  })
+
+  it('registers arcane brawler as a copy-only OBJ character source', () => {
+    for (const stage of [1, 2, 3, 4]) {
+      expect(CHARACTER_MODEL_ASSET_MANIFEST.arcane_brawler?.[stage]).toEqual({
+        model: true,
+        diffuseTexture: true,
+        normalTexture: true,
+        roughnessTexture: true,
+        metallicTexture: true,
+        pbrTexture: true,
+      })
+    }
+  })
+
+  it('registers sunlit scholar as a copy-only OBJ character source with PBR textures', () => {
+    for (const stage of [1, 2, 3, 4]) {
+      expect(CHARACTER_MODEL_ASSET_MANIFEST.sunlit_scholar?.[stage]).toEqual({
+        model: true,
+        diffuseTexture: true,
+        normalTexture: true,
+        roughnessTexture: true,
+        metallicTexture: true,
+        pbrTexture: true,
+      })
+    }
+
+    expect(resolveCharacterModelAsset({ characterId: 'sunlit_scholar', stage: 3 })).toEqual({
+      characterId: 'sunlit_scholar',
+      stage: 3,
+      modelSrc: '/character-assets/sunlit_scholar/source/base.obj',
+      diffuseTextureSrc: '/character-assets/sunlit_scholar/source/texture_diffuse.png',
+      normalTextureSrc: '/character-assets/sunlit_scholar/source/texture_normal.png',
+      roughnessTextureSrc: '/character-assets/sunlit_scholar/source/texture_roughness.png',
+      metallicTextureSrc: '/character-assets/sunlit_scholar/source/texture_metallic.png',
+      pbrTextureSrc: '/character-assets/sunlit_scholar/source/texture_pbr.png',
+    })
+  })
+
+  it('keeps the arcane brawler OBJ source on disk', () => {
+    const sourceRoot = path.join(process.cwd(), 'public', 'character-assets', 'arcane_brawler', 'source')
+
+    expect(fs.existsSync(path.join(sourceRoot, 'base.obj'))).toBe(true)
+  })
+
+  it('keeps the sunlit scholar OBJ source and textures on disk', () => {
+    const sourceRoot = path.join(process.cwd(), 'public', 'character-assets', 'sunlit_scholar', 'source')
+
+    for (const fileName of [
+      'base.obj',
+      'shaded.png',
+      'texture_diffuse.png',
+      'texture_metallic.png',
+      'texture_normal.png',
+      'texture_pbr.png',
+      'texture_roughness.png',
+    ]) {
+      expect(fs.existsSync(path.join(sourceRoot, fileName)), fileName).toBe(true)
+    }
   })
 
   it('keeps registered public character assets on disk', () => {

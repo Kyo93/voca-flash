@@ -1,20 +1,28 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import {
   type CharacterAnimationState,
   type CharacterAssetManifest,
+  type CharacterModelAssetManifest,
+  type CharacterModelMaterialQuality,
   CHARACTER_ASSET_MANIFEST,
+  CHARACTER_MODEL_ASSET_MANIFEST,
   resolveCharacterMediaAsset,
+  resolveCharacterModelAsset,
 } from '../../lib/character-assets'
 import type { CharacterDefinition, CharacterEvolutionStage } from '../../lib/characters'
 import CharacterFallbackAvatar from './CharacterFallbackAvatar'
 
+const CharacterModelAvatar = lazy(() => import('./CharacterModelAvatar'))
+
 interface CharacterAvatarProps {
   character: CharacterDefinition
   stageDefinition?: CharacterEvolutionStage
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'display'
   animated?: boolean
   animationState?: CharacterAnimationState
+  materialQuality?: CharacterModelMaterialQuality
   assetManifest?: CharacterAssetManifest
+  modelAssetManifest?: CharacterModelAssetManifest
   onReactionEnd?: () => void
 }
 
@@ -30,6 +38,9 @@ const sizeClasses = {
   },
   xl: {
     frame: 'w-72 h-72',
+  },
+  display: {
+    frame: 'w-[min(92vw,64rem)] h-[min(88vh,52rem)]',
   },
 } as const
 
@@ -59,13 +70,16 @@ export default function CharacterAvatar({
   size = 'md',
   animated = false,
   animationState = 'idle',
+  materialQuality = 'standard',
   assetManifest = CHARACTER_ASSET_MANIFEST,
+  modelAssetManifest = CHARACTER_MODEL_ASSET_MANIFEST,
   onReactionEnd,
 }: CharacterAvatarProps) {
   const classes = sizeClasses[size]
   const visual = stageDefinition ?? character.evolutionStages[0]
   const prefersReducedMotion = usePrefersReducedMotion()
   const [mediaFailed, setMediaFailed] = useState(false)
+  const [modelFailed, setModelFailed] = useState(false)
   const allowAnimation = animated && !prefersReducedMotion
   const mediaAsset = resolveCharacterMediaAsset({
     characterId: character.id,
@@ -74,20 +88,25 @@ export default function CharacterAvatar({
     animated: allowAnimation,
     manifest: assetManifest,
   })
+  const modelAsset = resolveCharacterModelAsset({
+    characterId: character.id,
+    stage: visual.stage,
+    manifest: modelAssetManifest,
+  })
 
   useEffect(() => {
     setMediaFailed(false)
+    setModelFailed(false)
   }, [character.id, visual.stage, animationState, allowAnimation])
 
-  if (!mediaAsset || mediaFailed) {
-    return <CharacterFallbackAvatar character={character} stageDefinition={visual} size={size} />
-  }
-
-  if (mediaAsset.videoSrc) {
+  if (mediaAsset?.videoSrc && !mediaFailed) {
     const isIdle = mediaAsset.state === 'idle'
 
     return (
-      <div className={`${classes.frame} relative shrink-0 flex items-center justify-center`}>
+      <div
+        className={`${classes.frame} relative shrink-0 flex items-center justify-center`}
+        data-character-material-quality={materialQuality}
+      >
         <video
           className="h-full w-full object-contain"
           src={mediaAsset.videoSrc}
@@ -106,16 +125,39 @@ export default function CharacterAvatar({
     )
   }
 
-  return (
-    <div className={`${classes.frame} relative shrink-0 flex items-center justify-center`}>
-      <img
-        className="h-full w-full object-contain"
-        src={mediaAsset.imageSrc}
-        alt=""
-        role="presentation"
-        loading="lazy"
-        onError={() => setMediaFailed(true)}
-      />
-    </div>
-  )
+  if (mediaAsset?.imageSrc && !mediaFailed) {
+    return (
+      <div
+        className={`${classes.frame} relative shrink-0 flex items-center justify-center`}
+        data-character-material-quality={materialQuality}
+      >
+        <img
+          className="h-full w-full object-contain"
+          src={mediaAsset.imageSrc}
+          alt=""
+          role="presentation"
+          loading="lazy"
+          onError={() => setMediaFailed(true)}
+        />
+      </div>
+    )
+  }
+
+  if (modelAsset && !modelFailed) {
+    return (
+      <Suspense fallback={<CharacterFallbackAvatar character={character} stageDefinition={visual} size={size} />}>
+        <CharacterModelAvatar
+          asset={modelAsset}
+          className={classes.frame}
+          animated={allowAnimation}
+          animationState={animationState}
+          materialQuality={materialQuality}
+          onError={() => setModelFailed(true)}
+          onReactionEnd={onReactionEnd}
+        />
+      </Suspense>
+    )
+  }
+
+  return <CharacterFallbackAvatar character={character} stageDefinition={visual} size={size} />
 }

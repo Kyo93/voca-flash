@@ -11,6 +11,17 @@ export type CharacterStageAssetManifest = Partial<Record<CharacterAnimationState
 
 export type CharacterAssetManifest = Partial<Record<string, Partial<Record<number, CharacterStageAssetManifest>>>>
 
+export interface CharacterModelAssetAvailability {
+  model?: boolean
+  diffuseTexture?: boolean
+  normalTexture?: boolean
+  roughnessTexture?: boolean
+  metallicTexture?: boolean
+  pbrTexture?: boolean
+}
+
+export type CharacterModelAssetManifest = Partial<Record<string, Partial<Record<number, CharacterModelAssetAvailability>>>>
+
 export interface CharacterMediaAsset {
   characterId: string
   stage: number
@@ -20,12 +31,31 @@ export interface CharacterMediaAsset {
   videoSrc?: string
 }
 
+export interface CharacterModelAsset {
+  characterId: string
+  stage: number
+  modelSrc: string
+  diffuseTextureSrc?: string
+  normalTextureSrc?: string
+  roughnessTextureSrc?: string
+  metallicTextureSrc?: string
+  pbrTextureSrc?: string
+}
+
+export type CharacterModelMaterialQuality = 'standard' | 'pbr'
+
 export interface ResolveCharacterMediaAssetOptions {
   characterId: string
   stage: number | null | undefined
   state?: CharacterAnimationState
   animated?: boolean
   manifest?: CharacterAssetManifest
+}
+
+export interface ResolveCharacterModelAssetOptions {
+  characterId: string
+  stage: number | null | undefined
+  manifest?: CharacterModelAssetManifest
 }
 
 export const CHARACTER_ASSET_MANIFEST: CharacterAssetManifest = {
@@ -52,6 +82,107 @@ export const CHARACTER_ASSET_MANIFEST: CharacterAssetManifest = {
       evolve: { poster: true, video: true },
     },
   },
+  quiz_alchemist: {
+    1: {
+      idle: { poster: true, video: true },
+      correct: { poster: true, video: true },
+      wrong: { poster: true, video: true },
+      celebrate: { poster: true, video: true },
+      evolve: { poster: true, video: true },
+    },
+    2: {
+      idle: { poster: true, video: true },
+      correct: { poster: true, video: true },
+      wrong: { poster: true, video: true },
+      celebrate: { poster: true, video: true },
+      evolve: { poster: true, video: true },
+    },
+    3: {
+      idle: { poster: true, video: true },
+      correct: { poster: true, video: true },
+      wrong: { poster: true, video: true },
+      celebrate: { poster: true, video: true },
+      evolve: { poster: true, video: true },
+    },
+    4: {
+      idle: { poster: true, video: true },
+      correct: { poster: true, video: true },
+      wrong: { poster: true, video: true },
+      celebrate: { poster: true, video: true },
+      evolve: { poster: true, video: true },
+    },
+  },
+}
+
+export const CHARACTER_MODEL_ASSET_MANIFEST: CharacterModelAssetManifest = {
+  arcane_brawler: {
+    1: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+    2: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+    3: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+    4: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+  },
+  sunlit_scholar: {
+    1: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+    2: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+    3: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+    4: {
+      model: true,
+      diffuseTexture: true,
+      normalTexture: true,
+      roughnessTexture: true,
+      metallicTexture: true,
+      pbrTexture: true,
+    },
+  },
 }
 
 function normalizeStage(stage: number | null | undefined): number {
@@ -64,6 +195,10 @@ function hasAsset(asset: CharacterAssetAvailability | undefined): asset is Chara
 
 function assetBasePath(characterId: string, stage: number, state: CharacterAnimationState): string {
   return `/character-assets/${characterId}/stage-${stage}/${state}`
+}
+
+function modelSourceBasePath(characterId: string): string {
+  return `/character-assets/${characterId}/source`
 }
 
 export function resolveCharacterMediaAsset({
@@ -103,5 +238,28 @@ export function resolveCharacterMediaAsset({
     imageSrc: posterSrc,
     posterSrc,
     videoSrc,
+  }
+}
+
+export function resolveCharacterModelAsset({
+  characterId,
+  stage,
+  manifest = CHARACTER_MODEL_ASSET_MANIFEST,
+}: ResolveCharacterModelAssetOptions): CharacterModelAsset | null {
+  const normalizedStage = normalizeStage(stage)
+  const stageAsset = manifest[characterId]?.[normalizedStage]
+  if (!stageAsset?.model) return null
+
+  const basePath = modelSourceBasePath(characterId)
+
+  return {
+    characterId,
+    stage: normalizedStage,
+    modelSrc: `${basePath}/base.obj`,
+    diffuseTextureSrc: stageAsset.diffuseTexture ? `${basePath}/texture_diffuse.png` : undefined,
+    normalTextureSrc: stageAsset.normalTexture ? `${basePath}/texture_normal.png` : undefined,
+    roughnessTextureSrc: stageAsset.roughnessTexture ? `${basePath}/texture_roughness.png` : undefined,
+    metallicTextureSrc: stageAsset.metallicTexture ? `${basePath}/texture_metallic.png` : undefined,
+    pbrTextureSrc: stageAsset.pbrTexture ? `${basePath}/texture_pbr.png` : undefined,
   }
 }

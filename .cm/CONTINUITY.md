@@ -3,9 +3,38 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
-- Active Goal: Enlarge and make Dashboard mascot interactive.
+- Active Goal: Enable opt-in PBR rendering from the Dashboard expanded character view.
 - Current Phase: verified.
-- Next Actions: visually smoke-test Dashboard at desktop/2xl width on `http://127.0.0.1:5173/`; click the mascot repeatedly and confirm it cycles correct/celebrate/wrong/evolve animations.
+- Next Actions: refresh Dashboard with an OBJ-backed selected character, double-click the mascot, and manually confirm the expanded view opens/closes and renders the PBR material correctly.
+- Just Completed: added opt-in `materialQuality` support; normal Dashboard avatars stay `standard`, while the Dashboard double-click expanded view renders `CharacterAvatar` with `materialQuality="pbr"`.
+- Just Completed: `CharacterModelAvatar` now loads diffuse texture by default and only loads normal, roughness, and metallic maps in PBR mode; loaded texture resources are disposed on cleanup.
+- Just Completed: added Dashboard expanded character dialog with double-click open, close button, Escape close, large avatar sizing, and vi/en accessible labels.
+- Just Completed: verification passed for opt-in PBR: focused tests passed (12 tests), `npm run build` passed, `npm run test:gate` passed with 447 tests, and Playwright WebGL PBR smoke checks passed on desktop (`opaque=87291/691200`) and mobile (`opaque=69065/249600`).
+- Just Completed: fixed Dashboard expanded view not opening reliably on double-click. Root cause: the first mascot click changes animation state and can remount the avatar before native `dblclick` is delivered. Added manual two-click detection within 320ms plus an explicit `open_in_full` expand button. Verification passed: focused Dashboard/PBR tests passed (14 tests), `npm run build` passed, and `npm run test:gate` passed with 449 tests.
+- Just Completed: fixed Arcane Brawler PBR not visibly changing in expanded view. Root cause: `public/character-assets/arcane_brawler/source/` had normal/roughness/metallic/PBR files, but `CHARACTER_MODEL_ASSET_MANIFEST.arcane_brawler` only registered diffuse texture. Registered full PBR map availability for stages 1-4; focused asset/PBR tests passed (21 tests), `npm run build` passed, and `npm run test:gate` passed with 449 tests.
+- Just Completed: redesigned Dashboard expanded character viewer into a character-first full-screen portal. It now mounts under `document.body` with `z-[1000]`, covers sidebar/topbar/rightbar, removes the white card background, uses a dark blurred overlay, and enlarges display-mode avatar sizing to `min(92vw,64rem)` by `min(88vh,52rem)`. Focused tests passed (15 tests), `npm run build` passed, and `npm run test:gate` passed with 450 tests.
+- Just Completed: removed the visible `open_in_full` expand button from the Dashboard mascot; expanded view remains available through double-click/two-click quick interaction only. Focused Dashboard tests passed (6 tests), `npm run build` passed, and `npm run test:gate` passed with 449 tests.
+- Previous Active Goal: Add the user's new copy-only OBJ character as `sunlit_scholar`.
+- Just Completed: added `sunlit_scholar` / "Hoc gia nang mai" as a rare 4-stage OBJ-backed character with vi/en i18n, catalog registration, model manifest registration, and source files copied from `C:\Users\Ocean\Downloads\5bd85db1-1c90-4f5e-bd75-10a5bcbd8aec` into `public/character-assets/sunlit_scholar/source/`.
+- Just Completed: copied `base.obj`, `shaded.png`, `texture_diffuse.png`, `texture_metallic.png`, `texture_normal.png`, `texture_pbr.png`, and `texture_roughness.png`; current renderer uses diffuse texture, with other textures preserved for future PBR support.
+- Just Completed: verification passed for Sunlit Scholar: focused character tests passed (29 tests), `npm run build` passed, and `npm run test:gate` passed with 444 tests and 0 failures.
+- Just Completed: dev server at `http://127.0.0.1:5173/` returned 200, and all seven `sunlit_scholar` source asset URLs returned HTTP 200.
+- Previous Active Goal: Remove deprecated `flashcard_fighter` and `lexical_invoker` characters from VocaFlash.
+- Just Completed: removed `flashcard_fighter` / "Tien phong the tu" and `lexical_invoker` / "Tap su Tu vung" from the character catalog, asset manifest, vi/en i18n, public character assets, generator scripts, and obsolete OpenSpec change folders.
+- Just Completed: added regression tests that assert both removed character IDs are absent from the catalog and media manifest.
+- Just Completed: verification passed after character removal: focused character tests passed (26 tests), `npm run build` passed, and `npm run test:gate` passed with 441 tests and 0 failures.
+- Previous Active Goal: Integrate copy-only OBJ character support so `arcane_brawler` can render directly from `public/character-assets/arcane_brawler/source/base.obj`.
+- Just Completed: added Three.js OBJ rendering fallback through `CharacterModelAvatar`; `CharacterAvatar` now uses WebP/WebM first, then registered OBJ source, then CSS fallback.
+- Just Completed: registered `arcane_brawler` as a rare 4-stage character with vi/en i18n, model source manifest, source OBJ/texture files, focused tests, `npm run build`, and `npm run test:gate` passing with 436 tests.
+- Just Completed: Playwright standalone WebGL pixel smoke test loaded `/character-assets/arcane_brawler/source/base.obj` and `texture_diffuse.png` from the dev server; desktop and mobile canvases were nonblank.
+- Just Completed: upgraded OBJ viewer with OrbitControls; users can drag/touch to rotate the character, scroll/pinch to zoom, and idle auto-rotation pauses during interaction. `npm run build` passed and `npm run test:gate` passed with 438 tests.
+- Just Completed: fixed OBJ frame clipping by fitting camera distance from each loaded model's bounds plus canvas aspect ratio. Arcane Brawler projected bounds smoke check passed (`maxAbsX=0.763`, `maxAbsY=0.721`), `npm run build` passed, and `npm run test:gate` passed with 441 tests.
+- Just Completed: refreshed `flashcard_fighter` from the user's reference into an original golden-haired martial scholar with orange/blue outfit and `VF` badge; added `scripts/generate-flashcard-fighter-source.mjs` and regenerated all 30 WebP/WebM stage/reaction files.
+- Just Completed: verification passed after the reference refresh: focused character tests passed, `npm run build` passed, and `npm run test:gate` passed with 430 tests and 0 failures.
+- Just Completed: added `quiz_alchemist` rare character with 4 evolution stages, vi/en i18n copy, manifest registration, deterministic generator script, reusable source cutout, and 40 WebP/WebM public assets.
+- Just Completed: verification passed for Quiz Alchemist: focused character tests passed (21 tests), `npm run build` passed, `npm run test:gate` passed with 430 tests and 0 failures, and all 40 Quiz Alchemist asset URLs returned HTTP 200.
+- Just Completed: generated and imported `flashcard_fighter` assets: reusable cutout source, generator script, 30 WebP/WebM files for stage 1-3 and all reaction states, catalog entry, manifest registration, and en/vi i18n copy.
+- Just Completed: verification passed for Flashcard Fighter: focused character tests passed, `npm run build` passed, and `npm run test:gate` passed with 428 tests and 0 failures.
 - Just Completed: enlarged `DashboardMascotDock` from `lg` to new `xl` avatar sizing (`w-72 h-72`), moved the dock to `-left-56 top-6`, and made it an accessible button with i18n label `characters.actions.playReaction`.
 - Just Completed: Dashboard mascot click now cycles `correct -> celebrate -> wrong -> evolve` and returns to `idle` on video end; stage 2/3 starter reactions are generated and registered so evolved mascots no longer fallback to idle for reaction states.
 - Just Completed: verification passed after Dashboard mascot interaction changes: focused tests passed, `npm run build` passed, `npm run test:gate` passed with 426 tests and 0 failures, and all 30 starter asset URLs returned HTTP 200.

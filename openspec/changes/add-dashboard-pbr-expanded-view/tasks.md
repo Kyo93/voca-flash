@@ -1,0 +1,11 @@
+# Implementation Checklist
+- [x] 1.1 Add failing tests for opt-in PBR texture loading.
+- [x] 1.2 Add failing tests for Dashboard double-click expanded view.
+- [x] 2.1 Add material quality prop through `CharacterAvatar` and `CharacterModelAvatar`.
+- [x] 2.2 Load normal, roughness, and metallic maps only in PBR mode.
+- [x] 2.3 Add Dashboard expanded view with close and Escape behavior.
+- [x] 2.4 Add vi/en i18n labels.
+- [x] 3.1 Run focused tests.
+- [x] 3.2 Run `npm run build`.
+- [x] 3.3 Run `npm run test:gate`.
+- [x] 3.4 Run Playwright PBR WebGL canvas smoke check on desktop and mobile.

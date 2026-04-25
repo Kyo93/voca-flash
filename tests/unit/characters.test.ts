@@ -53,6 +53,43 @@ describe('character collection domain', () => {
     expect(collection.selectedCharacter?.id).toBe('memory_archivist')
   })
 
+  it('includes the quiz alchemist as a rare four-stage recall character', () => {
+    const character = getCharacterById('quiz_alchemist')
+
+    expect(character).toBeDefined()
+    expect(character?.rarity).toBe('rare')
+    expect(character?.costXp).toBe(0)
+    expect(character?.evolutionStages).toHaveLength(4)
+    expect(character?.nameKey).toBe('characters.items.quiz_alchemist.name')
+  })
+
+  it('includes the arcane brawler as a rare four-stage OBJ-backed character', () => {
+    const character = getCharacterById('arcane_brawler')
+
+    expect(character).toBeDefined()
+    expect(character?.rarity).toBe('rare')
+    expect(character?.costXp).toBe(0)
+    expect(character?.evolutionStages).toHaveLength(4)
+    expect(character?.nameKey).toBe('characters.items.arcane_brawler.name')
+  })
+
+  it('includes the sunlit scholar as a rare four-stage OBJ-backed character', () => {
+    const character = getCharacterById('sunlit_scholar')
+
+    expect(character).toBeDefined()
+    expect(character?.rarity).toBe('rare')
+    expect(character?.costXp).toBe(0)
+    expect(character?.evolutionStages).toHaveLength(4)
+    expect(character?.nameKey).toBe('characters.items.sunlit_scholar.name')
+  })
+
+  it('does not include removed flashcard fighter or lexical invoker characters', () => {
+    expect(getCharacterById('flashcard_fighter')).toBeNull()
+    expect(getCharacterById('lexical_invoker')).toBeNull()
+    expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('flashcard_fighter')
+    expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('lexical_invoker')
+  })
+
   it('falls back to the default character when selected id is unavailable', () => {
     const collection = buildCharacterCollection({
       rewardProgress: rewardProgress(0),
@@ -113,7 +150,7 @@ describe('character collection domain', () => {
     expect(item?.maxed).toBe(true)
   })
 
-  it('reports remaining EXP when the next stage is not affordable', () => {
+  it('allows free evolution progression when next stage has zero cost', () => {
     const collection = buildCharacterCollection({
       rewardProgress: rewardProgress(500, 450),
       unlockedCharacterIds: ['arena_guardian'],
@@ -124,7 +161,7 @@ describe('character collection domain', () => {
 
     expect(collection.availableXp).toBe(50)
     expect(item?.nextStageDefinition).toBeDefined()
-    expect(item?.canEvolve).toBe(false)
-    expect(item?.remainingXpForEvolution).toBeGreaterThan(0)
+    expect(item?.canEvolve).toBe(true)
+    expect(item?.remainingXpForEvolution).toBe(0)
   })
 })

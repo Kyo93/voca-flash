@@ -3,7 +3,7 @@ import type { CharacterDefinition, CharacterEvolutionStage } from '../../lib/cha
 interface CharacterFallbackAvatarProps {
   character: CharacterDefinition
   stageDefinition?: CharacterEvolutionStage
-  size: 'sm' | 'md' | 'lg' | 'xl'
+  size: 'sm' | 'md' | 'lg' | 'xl' | 'display'
 }
 
 const sizeClasses = {
@@ -30,6 +30,12 @@ const sizeClasses = {
     head: 'w-32 h-32',
     body: 'w-44 h-24',
     icon: 'text-6xl',
+  },
+  display: {
+    frame: 'w-[min(92vw,64rem)] h-[min(88vh,52rem)]',
+    head: 'w-64 h-64',
+    body: 'w-80 h-44',
+    icon: 'text-8xl',
   },
 } as const
 

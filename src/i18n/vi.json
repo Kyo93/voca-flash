@@ -573,7 +573,9 @@
       "selected": "Đang trưng bày",
       "locked": "Chưa đủ EXP",
       "maxed": "Tối đa",
-      "playReaction": "Phát animation nhân vật"
+      "playReaction": "Phát animation nhân vật",
+      "expandedView": "Xem nhân vật kích thước lớn",
+      "closeExpandedView": "Đóng khung xem nhân vật"
     },
     "errors": {
       "loadFailed": "Chưa tải được bộ sưu tập nhân vật.",
@@ -647,8 +649,7 @@
             "pose": "Phòng thủ"
           }
         }
-      },
-      "memory_archivist": {
+      },      "memory_archivist": {
         "name": "Người giữ ký ức",
         "description": "Lưu giữ các từ đã gặp và biến chúng thành trí nhớ dài hạn.",
         "pose": "Mở kho lưu trữ",
@@ -726,6 +727,87 @@
             "name": "Tinh tú từ vựng",
             "description": "Dạng tiến hóa hiếm nhất của hành trình từ vựng.",
             "pose": "Tỏa quang"
+          }
+        }
+      },
+      "quiz_alchemist": {
+        "name": "Giả kim sư câu hỏi",
+        "description": "Pha trộn gợi ý, ví dụ và lựa chọn để biến mỗi câu hỏi thành phản xạ nhớ.",
+        "pose": "Khuấy bình tri thức",
+        "stages": {
+          "1": {
+            "name": "Giả kim sư câu hỏi",
+            "description": "Pha trộn gợi ý, ví dụ và lựa chọn để biến mỗi câu hỏi thành phản xạ nhớ.",
+            "pose": "Khuấy bình tri thức"
+          },
+          "2": {
+            "name": "Nhà luyện công thức nhớ",
+            "description": "Tách lỗi sai thành dấu hiệu rõ ràng để lần sau chọn nhanh hơn.",
+            "pose": "Chưng cất gợi ý"
+          },
+          "3": {
+            "name": "Pháp sư phản xạ",
+            "description": "Biến chuỗi trả lời đúng thành năng lượng học tập ổn định.",
+            "pose": "Kích hoạt vòng nhớ"
+          },
+          "4": {
+            "name": "Đại giả kim trí nhớ",
+            "description": "Kết tinh mọi phiên quiz thành trí nhớ bền vững.",
+            "pose": "Khai mở tinh thể"
+          }
+        }
+      },
+      "sunlit_scholar": {
+        "name": "Học giả nắng mai",
+        "description": "Nhân vật 3D mới, mang năng lượng sáng và nhịp học lạc quan vào mỗi phiên ôn tập.",
+        "pose": "Tỏa sáng sẵn sàng",
+        "stages": {
+          "1": {
+            "name": "Học giả nắng mai",
+            "description": "Bắt đầu hành trình học với nguồn năng lượng tươi sáng và bình tĩnh.",
+            "pose": "Tỏa sáng sẵn sàng"
+          },
+          "2": {
+            "name": "Người giữ tia nhớ",
+            "description": "Gom từng câu trả lời đúng thành một nhịp học rõ ràng hơn.",
+            "pose": "Thắp sáng ý tưởng"
+          },
+          "3": {
+            "name": "Hiền giả ban mai",
+            "description": "Biến các phiên ôn tập đều đặn thành phản xạ nhớ tự tin.",
+            "pose": "Tập trung ánh sáng"
+          },
+          "4": {
+            "name": "Tinh tú nắng mai",
+            "description": "Dẫn dắt hành trình từ vựng bằng sự sáng rõ và trí nhớ bền vững.",
+            "pose": "Khai mở vầng sáng"
+          }
+        }
+      },
+      "arcane_brawler": {
+        "name": "Đấu sĩ ẩn thuật",
+        "description": "Nhân vật 3D được tải trực tiếp từ thư mục nguồn OBJ.",
+        "pose": "Thế sẵn sàng",
+        "stages": {
+          "1": {
+            "name": "Đấu sĩ ẩn thuật",
+            "description": "Làm quen với nhịp phản xạ đầu tiên của việc nhớ nhanh.",
+            "pose": "Thế sẵn sàng"
+          },
+          "2": {
+            "name": "Đòn chớp ẩn thuật",
+            "description": "Biến các phiên học ngắn thành chuyển động tự tin.",
+            "pose": "Ra đòn tập trung"
+          },
+          "3": {
+            "name": "Kiếm khách ký ức",
+            "description": "Đọc mỗi thẻ như một thế mở và trả lời bằng sự kiểm soát.",
+            "pose": "Thế phản công"
+          },
+          "4": {
+            "name": "Đại đấu sĩ ẩn thuật",
+            "description": "Dẫn mọi lượt ôn tập vào trí nhớ dài hạn sắc bén.",
+            "pose": "Kết ấn ẩn thuật"
           }
         }
       }

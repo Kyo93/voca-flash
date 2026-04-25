@@ -573,7 +573,9 @@
       "selected": "Displayed",
       "locked": "Need more EXP",
       "maxed": "Maxed",
-      "playReaction": "Play character animation"
+      "playReaction": "Play character animation",
+      "expandedView": "View character in large size",
+      "closeExpandedView": "Close character viewer"
     },
     "errors": {
       "loadFailed": "Could not load your character collection.",
@@ -611,8 +613,7 @@
           "2": { "name": "Arena Captain", "description": "Stands firm through harder recall rounds.", "pose": "Commanding" },
           "3": { "name": "Memory Protector", "description": "Protects learned words from fading away.", "pose": "Defending" }
         }
-      },
-      "memory_archivist": {
+      },      "memory_archivist": {
         "name": "Memory Archivist",
         "description": "Stores encountered words and turns them into long-term memory.",
         "pose": "Opening archive",
@@ -643,6 +644,71 @@
           "2": { "name": "Grand Sage", "description": "Understands how words connect through context.", "pose": "Summoning words" },
           "3": { "name": "Word Master", "description": "Turns vocabulary into flexible recall.", "pose": "Awakening" },
           "4": { "name": "Lexical Star", "description": "The rarest form of the vocabulary journey.", "pose": "Shining" }
+        }
+      },
+      "quiz_alchemist": {
+        "name": "Quiz Alchemist",
+        "description": "Mixes clues, examples, and choices into sharper recall reflexes.",
+        "pose": "Stirring knowledge",
+        "stages": {
+          "1": { "name": "Quiz Alchemist", "description": "Mixes clues, examples, and choices into sharper recall reflexes.", "pose": "Stirring knowledge" },
+          "2": { "name": "Memory Formula Keeper", "description": "Distills mistakes into clearer signals for the next attempt.", "pose": "Distilling clues" },
+          "3": { "name": "Recall Mage", "description": "Turns correct-answer streaks into steady study energy.", "pose": "Activating recall" },
+          "4": { "name": "Grand Memory Alchemist", "description": "Crystallizes every quiz session into durable memory.", "pose": "Opening crystal" }
+        }
+      },
+      "sunlit_scholar": {
+        "name": "Sunlit Scholar",
+        "description": "A new 3D companion that brings bright energy and an optimistic study rhythm to each review session.",
+        "pose": "Ready glow",
+        "stages": {
+          "1": {
+            "name": "Sunlit Scholar",
+            "description": "Begins the study journey with calm, bright momentum.",
+            "pose": "Ready glow"
+          },
+          "2": {
+            "name": "Recall Raykeeper",
+            "description": "Turns each correct answer into a clearer learning rhythm.",
+            "pose": "Lighting an idea"
+          },
+          "3": {
+            "name": "Dawn Sage",
+            "description": "Turns steady review sessions into confident recall reflexes.",
+            "pose": "Focused light"
+          },
+          "4": {
+            "name": "Sunlit Star",
+            "description": "Guides the vocabulary journey with clarity and durable memory.",
+            "pose": "Opening radiance"
+          }
+        }
+      },
+      "arcane_brawler": {
+        "name": "Arcane Brawler",
+        "description": "A 3D companion loaded directly from the OBJ source folder.",
+        "pose": "Ready stance",
+        "stages": {
+          "1": {
+            "name": "Arcane Brawler",
+            "description": "Learns the first rhythm of quick recall.",
+            "pose": "Ready stance"
+          },
+          "2": {
+            "name": "Arcane Striker",
+            "description": "Turns short study bursts into confident movement.",
+            "pose": "Focused strike"
+          },
+          "3": {
+            "name": "Memory Duelist",
+            "description": "Reads each card like an opening and answers with control.",
+            "pose": "Counter stance"
+          },
+          "4": {
+            "name": "Grand Arcane Brawler",
+            "description": "Channels every review into sharp long-term memory.",
+            "pose": "Arcane finish"
+          }
         }
       }
     }

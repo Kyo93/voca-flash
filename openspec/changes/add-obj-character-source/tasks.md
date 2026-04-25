@@ -1,0 +1,11 @@
+# Implementation Checklist
+- [x] 1.1 Add failing tests for `arcane_brawler` catalog and model source registration.
+- [x] 1.2 Copy OBJ source package into `public/character-assets/arcane_brawler/source/`.
+- [x] 1.3 Add Three.js OBJ renderer for direct source playback.
+- [x] 1.4 Register character catalog, model manifest, and i18n copy.
+- [x] 1.5 Add OrbitControls so OBJ characters can be rotated and zoomed as true 3D models.
+- [x] 1.6 Fit camera from OBJ bounds and canvas aspect ratio so large/wide characters are not clipped.
+- [x] 2.1 Run focused tests.
+- [x] 2.2 Run `npm run build`.
+- [x] 2.3 Run `npm run test:gate`.
+- [x] 2.4 Run Playwright WebGL pixel/projected-bounds smoke checks against the public OBJ source.
