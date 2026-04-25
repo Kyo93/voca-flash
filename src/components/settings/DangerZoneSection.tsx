@@ -146,7 +146,7 @@ export default function DangerZoneSection() {
       {/* Reset Topic Modal */}
       {showConfirmReset && (
         <div className="fixed inset-0 bg-secondary/60 backdrop-blur-md flex items-center justify-center z-1000 p-6 animate-fade-in touch-none">
-          <div className="bg-white rounded-[40px] p-10 max-w-md w-full shadow-2xl relative animate-slide-up border border-stone-100">
+          <div className="bg-white rounded-4xl p-10 max-w-md w-full shadow-2xl relative animate-slide-up border border-stone-100">
             <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-rose-500 shadow-inner">
               <span className="material-symbols-outlined text-4xl font-variation-fill">delete_forever</span>
             </div>
@@ -183,8 +183,8 @@ export default function DangerZoneSection() {
       {/* Global Reset Modal */}
       {showConfirmGlobal && (
         <div className="fixed inset-0 bg-rose-950/40 backdrop-blur-md flex items-center justify-center z-1000 p-6 animate-fade-in">
-          <div className="bg-white rounded-[40px] p-12 max-w-lg w-full shadow-2xl relative animate-slide-up border border-rose-100">
-            <div className="w-24 h-24 bg-rose-600 rounded-[32px] flex items-center justify-center mx-auto mb-10 text-white shadow-xl rotate-3">
+          <div className="bg-white rounded-4xl p-12 max-w-lg w-full shadow-2xl relative animate-slide-up border border-rose-100">
+            <div className="w-24 h-24 bg-rose-600 rounded-3xl flex items-center justify-center mx-auto mb-10 text-white shadow-xl rotate-3">
               <span className="material-symbols-outlined text-5xl font-variation-fill">bomb</span>
             </div>
 

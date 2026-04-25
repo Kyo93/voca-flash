@@ -52,7 +52,7 @@ export default function RoadmapTopicsPage() {
           {t('common.back')}
         </Link>
         <div className="flex flex-col md:flex-row md:items-end gap-10">
-          <div className="w-28 h-28 shrink-0 bg-linear-to-br from-primary to-primary-container rounded-[24px] flex items-center justify-center shadow-[0_20px_40px_-10px_rgba(148,74,0,0.3)]">
+          <div className="w-28 h-28 shrink-0 bg-linear-to-br from-primary to-primary-container rounded-xl flex items-center justify-center shadow-[0_20px_40px_-10px_rgba(148,74,0,0.3)]">
             <span className="material-symbols-outlined text-white text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
               {roadmap.slug.includes('kids') ? 'child_care' : roadmap.slug.includes('business') ? 'business_center' : 'history_edu'}
             </span>
@@ -81,7 +81,7 @@ export default function RoadmapTopicsPage() {
       </header>
 
       {/* Mastery Progress Board */}
-      <section className="bg-surface-container-lowest rounded-[32px] py-4 px-10 shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)] border border-outline-variant/15">
+      <section className="bg-surface-container-lowest rounded-3xl py-4 px-10 shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)] border border-outline-variant/15">
         <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
           <div className="md:col-span-2 space-y-2">
             <div>
@@ -182,7 +182,7 @@ export default function RoadmapTopicsPage() {
               <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="#">{t('roadmapDetail.footer.research')}</a>
               <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold" href="#">{t('roadmapDetail.footer.privacy')}</a>
             </div>
-            <div className="bg-secondary-container/40 p-10 rounded-[32px] space-y-6 w-full sm:w-[320px]">
+            <div className="bg-secondary-container/40 p-10 rounded-3xl space-y-6 w-full sm:w-[320px]">
               <div>
                 <span className="text-[10px] uppercase tracking-widest font-black text-on-secondary-container">{t('roadmapDetail.milestone.title')}</span>
                 <h4 className="text-2xl font-bold mt-1 text-on-secondary-container">{t('roadmapDetail.milestone.name')}</h4>

@@ -35,7 +35,7 @@ export default function TopicCard({
   // --- Variant 1: Featured (Large) ---
   if (isFeatured && !searchQuery) {
     return (
-      <Link {...commonProps} className={`${commonProps.className} topic-card md:col-span-2 relative group overflow-hidden rounded-[48px] bg-surface-container-highest min-h-[400px] flex items-end shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)]`}>
+      <Link {...commonProps} className={`${commonProps.className} topic-card md:col-span-2 relative group overflow-hidden rounded-5xl bg-surface-container-highest min-h-[400px] flex items-end shadow-[0_40px_60px_-10px_rgba(113,55,0,0.06)]`}>
         <img 
           alt={topic.name} 
           src={topic.image_url || 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80'} 
@@ -76,7 +76,7 @@ export default function TopicCard({
   // --- Variant 2: Up Next (Kinetic/Flashy) ---
   if (isUpNext && !searchQuery) {
     return (
-      <Link {...commonProps} className={`${commonProps.className} topic-card relative group overflow-hidden rounded-[40px] bg-surface-container-low min-h-[340px] flex flex-col justify-between border-b-4 border-secondary/20 shadow-lg shadow-secondary/5`}>
+      <Link {...commonProps} className={`${commonProps.className} topic-card relative group overflow-hidden rounded-4xl bg-surface-container-low min-h-[340px] flex flex-col justify-between border-b-4 border-secondary/20 shadow-lg shadow-secondary/5`}>
         <img 
           alt={topic.name} 
           src={topic.image_url || 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&q=80'} 
@@ -123,7 +123,7 @@ export default function TopicCard({
   return (
     <Link
       {...commonProps}
-      className={`${commonProps.className} topic-card rounded-[32px] p-6 flex flex-col justify-between group hover:shadow-md transition-all border`}
+      className={`${commonProps.className} topic-card rounded-3xl p-6 flex flex-col justify-between group hover:shadow-md transition-all border`}
       style={{ backgroundColor: theme.bg, borderColor: theme.border }}
     >
       <div className="flex justify-between items-start">

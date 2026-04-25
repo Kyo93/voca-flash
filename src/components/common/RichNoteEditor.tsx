@@ -93,7 +93,7 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
   if (!editor) return null
 
   return (
-    <div className="flex flex-col bg-surface rounded-[32px] overflow-hidden border border-outline-variant/10 sun-drenched-shadow-lg group transition-all focus-within:ring-2 focus-within:ring-primary/20">
+    <div className="flex flex-col bg-surface rounded-3xl overflow-hidden border border-outline-variant/10 sun-drenched-shadow-lg group transition-all focus-within:ring-2 focus-within:ring-primary/20">
       {/* Gmail-style Premium Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 p-3 bg-surface-container-low border-b border-outline-variant/10 backdrop-blur-md sticky top-0 z-20">
         

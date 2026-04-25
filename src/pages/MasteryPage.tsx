@@ -112,7 +112,7 @@ export default function MasteryPage() {
         />
 
         {/* Word Table (Scholarly Ledger) */}
-        <div className="bg-surface-container-lowest rounded-[40px] shadow-sun-drenched overflow-hidden mb-12 border-none">
+        <div className="bg-surface-container-lowest rounded-4xl shadow-sun-drenched overflow-hidden mb-12 border-none">
           <div className="w-full overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="sticky top-0 z-10">

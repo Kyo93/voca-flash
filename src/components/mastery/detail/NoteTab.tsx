@@ -78,7 +78,7 @@ export function NoteTab({
           </div>
         </div>
       ) : (
-        <div className="p-10 bg-surface-container-highest/30 rounded-[32px] relative overflow-hidden group min-h-[200px] border border-outline-variant/10">
+        <div className="p-10 bg-surface-container-highest/30 rounded-3xl relative overflow-hidden group min-h-[200px] border border-outline-variant/10">
           <span className="material-symbols-outlined absolute -right-6 -bottom-6 text-9xl text-primary/5 rotate-12 group-hover:rotate-0 transition-transform duration-700">edit_note</span>
           <div className={`text-on-surface text-xl leading-relaxed relative z-10 font-normal prose max-w-none prose-p:leading-relaxed prose-li:my-1 ${!personalNote ? 'opacity-30' : ''}`}>
             {personalNote ? (
