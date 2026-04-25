@@ -1,0 +1,12 @@
+# Implementation Checklist
+- [x] 1.1 Add tests for `playful_dog` catalog and GLB asset registration.
+- [x] 1.2 Add regression coverage for common dog GLB clip aliases.
+- [x] 1.3 Verify focused tests fail before implementation.
+- [x] 2.1 Register `playful_dog` in catalog.
+- [x] 2.2 Register `playful_dog` GLB model assets.
+- [x] 2.3 Add vi/en i18n copy.
+- [x] 2.4 Copy source GLB into public character assets.
+- [x] 2.5 Extend GLB animation clip alias selection.
+- [x] 3.1 Run focused tests.
+- [x] 3.2 Run `npm run build`.
+- [x] 3.3 Run `npm run test:gate`.

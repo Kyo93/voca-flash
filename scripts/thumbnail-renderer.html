@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html,
+      body {
+        width: 512px;
+        height: 512px;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      canvas {
+        display: block;
+        width: 512px;
+        height: 512px;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import * as THREE from 'three'
+      import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+      import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+      import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+
+      const params = new URLSearchParams(window.location.search)
+      const modelSrc = params.get('model')
+      const diffuseSrc = params.get('diffuse')
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
+      renderer.setClearColor(0x000000, 0)
+      renderer.setPixelRatio(1)
+      renderer.setSize(512, 512, false)
+      renderer.outputColorSpace = THREE.SRGBColorSpace
+      renderer.toneMapping = THREE.ACESFilmicToneMapping
+      renderer.toneMappingExposure = 0.8
+      document.body.appendChild(renderer.domElement)
+
+      const scene = new THREE.Scene()
+      const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100)
+      const pmremGenerator = new THREE.PMREMGenerator(renderer)
+      const environmentTexture = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture
+      scene.environment = environmentTexture
+      pmremGenerator.dispose()
+
+      const keyLight = new THREE.DirectionalLight(0xfff0d0, 1.4)
+      keyLight.position.set(2.2, 3.2, 3.4)
+      scene.add(keyLight)
+
+      const fillLight = new THREE.DirectionalLight(0xdce8ff, 0.5)
+      fillLight.position.set(-2.4, 1.8, 1.8)
+      scene.add(fillLight)
+      scene.add(new THREE.HemisphereLight(0xfff3d5, 0x2b221d, 0.45))
+
+      function disposeAndFail(error) {
+        window.__THUMBNAIL_ERROR__ = String(error?.message ?? error)
+      }
+
+      async function restoreLegacyDiffuse(gltf, model) {
+        const materials = []
+        model.traverse(child => {
+          if (!(child instanceof THREE.Mesh)) return
+          const childMaterials = Array.isArray(child.material) ? child.material : [child.material]
+          childMaterials.forEach(material => {
+            if (material instanceof THREE.MeshStandardMaterial) materials.push(material)
+          })
+        })
+
+        await Promise.all(materials.map(async material => {
+          const materialIndex = gltf.parser.associations.get(material)?.materials
+          const materialDefinition = typeof materialIndex === 'number'
+            ? gltf.parser.json.materials?.[materialIndex]
+            : null
+          const diffuseTexture = materialDefinition?.extensions
+            ?.KHR_materials_pbrSpecularGlossiness
+            ?.diffuseTexture
+
+          if (!diffuseTexture || material.map) return
+          const texture = await gltf.parser.getDependency('texture', diffuseTexture.index)
+          texture.colorSpace = THREE.SRGBColorSpace
+          material.map = texture
+          material.needsUpdate = true
+        }))
+      }
+
+      function fitModel(model) {
+        const bounds = new THREE.Box3().setFromObject(model)
+        const size = bounds.getSize(new THREE.Vector3())
+        const maxDimension = Math.max(size.x, size.y, size.z, 0.1)
+        model.scale.setScalar(2.2 / maxDimension)
+
+        const normalizedBounds = new THREE.Box3().setFromObject(model)
+        const normalizedSize = normalizedBounds.getSize(new THREE.Vector3())
+        const normalizedCenter = normalizedBounds.getCenter(new THREE.Vector3())
+        model.position.sub(normalizedCenter)
+
+        const recenteredBounds = new THREE.Box3().setFromObject(model)
+        const recenteredSize = recenteredBounds.getSize(new THREE.Vector3())
+        const recenteredCenter = recenteredBounds.getCenter(new THREE.Vector3())
+        const distance = Math.max(recenteredSize.x, recenteredSize.y, recenteredSize.z) * 2.35
+        camera.position.set(recenteredCenter.x, recenteredCenter.y + recenteredSize.y * 0.04, recenteredCenter.z + distance)
+        camera.lookAt(recenteredCenter.x, recenteredCenter.y, recenteredCenter.z)
+      }
+
+      async function loadModel() {
+        if (!modelSrc) throw new Error('Missing model query parameter')
+
+        if (modelSrc.endsWith('.glb')) {
+          const gltf = await new GLTFLoader().loadAsync(modelSrc)
+          await restoreLegacyDiffuse(gltf, gltf.scene)
+          return gltf.scene
+        }
+
+        const model = await new OBJLoader().loadAsync(modelSrc)
+        const texture = diffuseSrc
+          ? await new THREE.TextureLoader().loadAsync(diffuseSrc).catch(() => null)
+          : null
+        if (texture) texture.colorSpace = THREE.SRGBColorSpace
+
+        model.traverse(child => {
+          if (!(child instanceof THREE.Mesh)) return
+          child.material = new THREE.MeshStandardMaterial({
+            map: texture ?? undefined,
+            roughness: 0.72,
+            metalness: 0.06,
+            envMapIntensity: 0.8,
+          })
+        })
+
+        return model
+      }
+
+      try {
+        const model = await loadModel()
+        scene.add(model)
+        fitModel(model)
+        renderer.render(scene, camera)
+        window.__THUMBNAIL_READY__ = true
+      } catch (error) {
+        disposeAndFail(error)
+      }
+    </script>
+  </body>
+</html>

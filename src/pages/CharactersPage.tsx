@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import CharacterAvatar from '../components/characters/CharacterAvatar'
+import CharacterExpandedViewer from '../components/characters/CharacterExpandedViewer'
 import { useAuth } from '../contexts/AuthContext'
 import { useCharacterCollection } from '../hooks/useCharacterCollection'
 
@@ -9,6 +10,7 @@ export default function CharactersPage() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const [reactionCharacterId, setReactionCharacterId] = useState<string | null>(null)
+  const [expandedCharacterId, setExpandedCharacterId] = useState<string | null>(null)
   const {
     collection,
     isLoadingCharacters,
@@ -18,6 +20,7 @@ export default function CharactersPage() {
     selectCharacter,
     evolveCharacter,
   } = useCharacterCollection(user?.id)
+  const expandedItem = collection?.items.find(item => item.character.id === expandedCharacterId) ?? null
 
   if (isLoadingCharacters && !collection) {
     return <div className="p-12 animate-pulse text-on-surface-variant font-medium">{t('common.loading')}</div>
@@ -93,16 +96,25 @@ export default function CharactersPage() {
                 }`}
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <CharacterAvatar
-                    character={character}
-                    stageDefinition={item.currentStageDefinition}
-                    size="sm"
-                    animated={reactionCharacterId === character.id}
-                    animationState={reactionCharacterId === character.id ? 'evolve' : 'idle'}
-                    onReactionEnd={() => {
-                      setReactionCharacterId(current => current === character.id ? null : current)
-                    }}
-                  />
+                  <button
+                    type="button"
+                    className="group relative flex h-20 w-20 shrink-0 items-center justify-center rounded-xl outline-none transition-transform hover:scale-105 focus-visible:ring-4 focus-visible:ring-primary/20 active:scale-95"
+                    aria-label={t('characters.actions.expandedView')}
+                    title={t('characters.actions.expandedView')}
+                    onClick={() => setExpandedCharacterId(character.id)}
+                    onDoubleClick={() => setExpandedCharacterId(character.id)}
+                  >
+                    <CharacterAvatar
+                      character={character}
+                      stageDefinition={item.currentStageDefinition}
+                      size="sm"
+                      animated={reactionCharacterId === character.id}
+                      animationState={reactionCharacterId === character.id ? 'evolve' : 'idle'}
+                      onReactionEnd={() => {
+                        setReactionCharacterId(current => current === character.id ? null : current)
+                      }}
+                    />
+                  </button>
                   <div className="flex flex-col items-end gap-2">
                     <span className={`text-[10px] font-black uppercase tracking-widest rounded-full px-3 py-1 ${
                       item.unlocked
@@ -199,6 +211,13 @@ export default function CharactersPage() {
           })}
         </section>
       </main>
+      {expandedItem && (
+        <CharacterExpandedViewer
+          character={expandedItem.character}
+          stageDefinition={expandedItem.currentStageDefinition}
+          onClose={() => setExpandedCharacterId(null)}
+        />
+      )}
     </div>
   )
 }

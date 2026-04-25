@@ -1,13 +1,19 @@
 // @vitest-environment jsdom
 
+import fs from 'node:fs'
+import path from 'node:path'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import CharacterAvatar from '../../src/components/characters/CharacterAvatar'
-import type { CharacterAssetManifest } from '../../src/lib/character-assets'
+import type { CharacterAssetManifest, CharacterModelAssetManifest } from '../../src/lib/character-assets'
 import { getCharacterById } from '../../src/lib/characters'
 
 const character = getCharacterById('seedling_scholar')
 const stageDefinition = character?.evolutionStages[0]
+const characterAvatarSource = fs.readFileSync(
+  path.join(process.cwd(), 'src', 'components', 'characters', 'CharacterAvatar.tsx'),
+  'utf-8',
+)
 
 const manifest: CharacterAssetManifest = {
   seedling_scholar: {
@@ -18,7 +24,78 @@ const manifest: CharacterAssetManifest = {
   },
 }
 
+const modelManifest: CharacterModelAssetManifest = {
+  arcane_brawler: {
+    1: { model: true, thumbnail: true },
+  },
+}
+
 describe('CharacterAvatar media renderer', () => {
+  it('uses a full-stage display frame for expanded 3D viewer interaction', () => {
+    expect(characterAvatarSource).toContain("display: {\n    frame: 'h-full w-full'")
+  })
+
+  it('can pass through a request to disable procedural model reactions', () => {
+    expect(characterAvatarSource).toContain('disableProceduralAnimation?: boolean')
+    expect(characterAvatarSource).toContain('disableModelProceduralAnimation')
+  })
+
+  it('uses static model thumbnails for non-display avatars before loading WebGL', () => {
+    expect(characterAvatarSource).toContain('useModelThumbnail?: boolean')
+    expect(characterAvatarSource).toContain('shouldUseModelThumbnail')
+    expect(characterAvatarSource).toContain('useModelThumbnail &&')
+    expect(characterAvatarSource).toContain('modelAsset.thumbnailSrc')
+    expect(characterAvatarSource).toContain('data-character-avatar-model-thumbnail="true"')
+    expect(characterAvatarSource).toContain("size !== 'display'")
+  })
+
+  it('renders a static thumbnail for small model-backed avatars', () => {
+    const modelCharacter = getCharacterById('arcane_brawler')
+    const modelStage = modelCharacter?.evolutionStages[0]
+    if (!modelCharacter || !modelStage) throw new Error('Missing test model character')
+
+    const { container } = render(
+      <CharacterAvatar
+        character={modelCharacter}
+        stageDefinition={modelStage}
+        size="sm"
+        animated
+        assetManifest={{}}
+        modelAssetManifest={modelManifest}
+      />
+    )
+
+    const image = screen.getByRole('presentation')
+    expect(container.querySelector('[data-character-avatar-model-thumbnail="true"]')).toBeTruthy()
+    expect(image.getAttribute('src')).toBe('/character-assets/arcane_brawler/source/thumbnail.png')
+    expect(container.querySelector('[data-character-avatar-model="true"]')).toBeNull()
+  })
+
+  it('can opt out of static thumbnails for prominent model-backed avatars', () => {
+    const modelCharacter = getCharacterById('arcane_brawler')
+    const modelStage = modelCharacter?.evolutionStages[0]
+    if (!modelCharacter || !modelStage) throw new Error('Missing test model character')
+
+    const { container } = render(
+      <CharacterAvatar
+        character={modelCharacter}
+        stageDefinition={modelStage}
+        size="sm"
+        animated
+        useModelThumbnail={false}
+        assetManifest={{}}
+        modelAssetManifest={modelManifest}
+      />
+    )
+
+    expect(container.querySelector('[data-character-avatar-model-thumbnail="true"]')).toBeNull()
+  })
+
+  it('automatically disables procedural reactions for GLB models with embedded clips', () => {
+    expect(characterAvatarSource).toContain('modelAsset?.embeddedAnimationStates?.length')
+    expect(characterAvatarSource).toContain('disableProceduralAnimation ||')
+  })
+
   it('uses the CSS fallback when no media asset is registered', () => {
     if (!character || !stageDefinition) throw new Error('Missing test character')
 

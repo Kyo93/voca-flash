@@ -1,10 +1,17 @@
 // @vitest-environment jsdom
 
+import fs from 'node:fs'
+import path from 'node:path'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import DashboardMascotDock from '../../src/components/dashboard/DashboardMascotDock'
 import { buildCharacterCollection, DEFAULT_CHARACTER_ID } from '../../src/lib/characters'
 import { createEmptyRewardProgress, toRewardProgressView } from '../../src/lib/rewards'
+
+const dashboardMascotSource = fs.readFileSync(
+  path.join(process.cwd(), 'src', 'components', 'dashboard', 'DashboardMascotDock.tsx'),
+  'utf-8',
+)
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -41,6 +48,10 @@ describe('DashboardMascotDock', () => {
     expect(screen.queryByRole('button', { name: 'characters.actions.expandedView' })).toBeNull()
   })
 
+  it('opts out of static model thumbnails so the Dashboard showcase can stay 3D', () => {
+    expect(dashboardMascotSource).toContain('useModelThumbnail={false}')
+  })
+
   it('cycles click reactions and returns to idle when the clip ends', () => {
     let now = 1000
     const performanceNow = vi.spyOn(window.performance, 'now').mockImplementation(() => now)
@@ -72,53 +83,30 @@ describe('DashboardMascotDock', () => {
     performanceNow.mockRestore()
   })
 
-  it('opens a PBR expanded character viewer on double click', () => {
+  it('does not open an expanded character viewer on double click', () => {
     render(<DashboardMascotDock collection={createCollection()} />)
 
     fireEvent.doubleClick(screen.getByRole('button', { name: 'characters.actions.playReaction' }))
 
-    expect(screen.getByRole('dialog', { name: 'characters.actions.expandedView' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'characters.actions.closeExpandedView' })).toBeTruthy()
-    expect(document.querySelector('[data-dashboard-expanded-view="true"]')).toBeTruthy()
-    expect(document.querySelector('[data-character-material-quality="pbr"]')).toBeTruthy()
+    expect(screen.queryByRole('dialog', { name: 'characters.actions.expandedView' })).toBeNull()
+    expect(document.querySelector('[data-character-expanded-view="true"]')).toBeNull()
+    expect(document.querySelector('[data-dashboard-expanded-view="true"]')).toBeNull()
   })
 
-  it('renders the expanded viewer as a full-screen character-first portal without a white card', () => {
-    render(<DashboardMascotDock collection={createCollection()} />)
-
-    fireEvent.doubleClick(screen.getByRole('button', { name: 'characters.actions.playReaction' }))
-
-    const overlay = document.querySelector('[data-dashboard-expanded-view="true"]')
-    const stage = document.querySelector('[data-dashboard-expanded-stage="true"]')
-
-    expect(overlay?.parentElement).toBe(document.body)
-    expect(overlay?.className).toContain('fixed inset-0')
-    expect(overlay?.className).toContain('z-[1000]')
-    expect(overlay?.className).toContain('bg-on-surface')
-    expect(stage?.className).not.toContain('bg-surface')
-    expect(stage?.className).not.toContain('rounded-3xl')
-  })
-
-  it('opens the expanded viewer when two mascot clicks happen quickly', () => {
+  it('keeps quick mascot clicks as reactions instead of opening the expanded viewer', () => {
     let now = 1000
     const performanceNow = vi.spyOn(window.performance, 'now').mockImplementation(() => now)
-    render(<DashboardMascotDock collection={createCollection()} />)
+    const { container } = render(<DashboardMascotDock collection={createCollection()} />)
 
     const mascotButton = screen.getByRole('button', { name: 'characters.actions.playReaction' })
     fireEvent.click(mascotButton)
     now = 1120
     fireEvent.click(mascotButton)
 
-    expect(screen.getByRole('dialog', { name: 'characters.actions.expandedView' })).toBeTruthy()
-    performanceNow.mockRestore()
-  })
-
-  it('closes the expanded character viewer with Escape', () => {
-    render(<DashboardMascotDock collection={createCollection()} />)
-
-    fireEvent.doubleClick(screen.getByRole('button', { name: 'characters.actions.playReaction' }))
-    fireEvent.keyDown(window, { key: 'Escape' })
-
     expect(screen.queryByRole('dialog', { name: 'characters.actions.expandedView' })).toBeNull()
+    expect(container.querySelector('video')?.getAttribute('src')).toBe(
+      '/character-assets/seedling_scholar/stage-1/celebrate.webm'
+    )
+    performanceNow.mockRestore()
   })
 })

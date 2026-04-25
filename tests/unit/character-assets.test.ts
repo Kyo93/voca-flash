@@ -23,8 +23,17 @@ const manifest: CharacterAssetManifest = {
 
 const modelManifest: CharacterModelAssetManifest = {
   arcane_brawler: {
-    1: { model: true },
-    2: { model: true, diffuseTexture: true },
+    1: { model: true, thumbnail: true },
+    2: { model: true, diffuseTexture: true, thumbnail: true },
+  },
+  falling_leaf_tree: {
+    1: { glbModel: true, thumbnail: true },
+  },
+  playful_dog: {
+    1: { glbModel: true, thumbnail: true, embeddedAnimationStates: CHARACTER_ANIMATION_STATES },
+  },
+  rampaging_t_rex: {
+    1: { glbModel: true, thumbnail: true, embeddedAnimationStates: CHARACTER_ANIMATION_STATES },
   },
 }
 
@@ -141,20 +150,10 @@ describe('character asset resolver', () => {
     expect(asset?.videoSrc).toBe('/character-assets/seedling_scholar/stage-3/celebrate.webm')
   })
 
-  it('registers quiz alchemist reactions for every stage', () => {
-    for (const stage of [1, 2, 3, 4]) {
-      for (const state of CHARACTER_ANIMATION_STATES) {
-        expect(CHARACTER_ASSET_MANIFEST.quiz_alchemist?.[stage]?.[state]).toEqual({
-          poster: true,
-          video: true,
-        })
-      }
-    }
-  })
-
   it('does not register media manifests for removed characters', () => {
     expect(CHARACTER_ASSET_MANIFEST.flashcard_fighter).toBeUndefined()
     expect(CHARACTER_ASSET_MANIFEST.lexical_invoker).toBeUndefined()
+    expect(CHARACTER_ASSET_MANIFEST.quiz_alchemist).toBeUndefined()
   })
 
   it('resolves OBJ source paths for model-backed characters', () => {
@@ -168,6 +167,7 @@ describe('character asset resolver', () => {
       characterId: 'arcane_brawler',
       stage: 2,
       modelSrc: '/character-assets/arcane_brawler/source/base.obj',
+      thumbnailSrc: '/character-assets/arcane_brawler/source/thumbnail.png',
       diffuseTextureSrc: '/character-assets/arcane_brawler/source/texture_diffuse.png',
     })
   })
@@ -180,13 +180,62 @@ describe('character asset resolver', () => {
     })
 
     expect(asset?.modelSrc).toBe('/character-assets/arcane_brawler/source/base.obj')
+    expect(asset?.thumbnailSrc).toBe('/character-assets/arcane_brawler/source/thumbnail.png')
     expect(asset?.diffuseTextureSrc).toBeUndefined()
+  })
+
+  it('resolves GLB source paths for model-backed characters', () => {
+    const asset = resolveCharacterModelAsset({
+      characterId: 'falling_leaf_tree',
+      stage: 1,
+      manifest: modelManifest,
+    })
+
+    expect(asset).toEqual({
+      characterId: 'falling_leaf_tree',
+      stage: 1,
+      modelSrc: '/character-assets/falling_leaf_tree/source/base.glb',
+      thumbnailSrc: '/character-assets/falling_leaf_tree/source/thumbnail.png',
+    })
+  })
+
+  it('resolves Rampaging T-Rex as a GLB source path', () => {
+    const asset = resolveCharacterModelAsset({
+      characterId: 'rampaging_t_rex',
+      stage: 1,
+      manifest: modelManifest,
+    })
+
+    expect(asset).toEqual({
+      characterId: 'rampaging_t_rex',
+      stage: 1,
+      modelSrc: '/character-assets/rampaging_t_rex/source/base.glb',
+      thumbnailSrc: '/character-assets/rampaging_t_rex/source/thumbnail.png',
+      embeddedAnimationStates: CHARACTER_ANIMATION_STATES,
+    })
+  })
+
+  it('resolves Playful Dog as a GLB source path', () => {
+    const asset = resolveCharacterModelAsset({
+      characterId: 'playful_dog',
+      stage: 1,
+      manifest: modelManifest,
+    })
+
+    expect(asset).toEqual({
+      characterId: 'playful_dog',
+      stage: 1,
+      modelSrc: '/character-assets/playful_dog/source/base.glb',
+      thumbnailSrc: '/character-assets/playful_dog/source/thumbnail.png',
+      embeddedAnimationStates: CHARACTER_ANIMATION_STATES,
+    })
   })
 
   it('registers arcane brawler as a copy-only OBJ character source', () => {
     for (const stage of [1, 2, 3, 4]) {
       expect(CHARACTER_MODEL_ASSET_MANIFEST.arcane_brawler?.[stage]).toEqual({
         model: true,
+        thumbnail: true,
         diffuseTexture: true,
         normalTexture: true,
         roughnessTexture: true,
@@ -200,6 +249,7 @@ describe('character asset resolver', () => {
     for (const stage of [1, 2, 3, 4]) {
       expect(CHARACTER_MODEL_ASSET_MANIFEST.sunlit_scholar?.[stage]).toEqual({
         model: true,
+        thumbnail: true,
         diffuseTexture: true,
         normalTexture: true,
         roughnessTexture: true,
@@ -212,11 +262,64 @@ describe('character asset resolver', () => {
       characterId: 'sunlit_scholar',
       stage: 3,
       modelSrc: '/character-assets/sunlit_scholar/source/base.obj',
+      thumbnailSrc: '/character-assets/sunlit_scholar/source/thumbnail.png',
       diffuseTextureSrc: '/character-assets/sunlit_scholar/source/texture_diffuse.png',
       normalTextureSrc: '/character-assets/sunlit_scholar/source/texture_normal.png',
       roughnessTextureSrc: '/character-assets/sunlit_scholar/source/texture_roughness.png',
       metallicTextureSrc: '/character-assets/sunlit_scholar/source/texture_metallic.png',
       pbrTextureSrc: '/character-assets/sunlit_scholar/source/texture_pbr.png',
+    })
+  })
+
+  it('registers falling leaf tree as a copy-only GLB character source', () => {
+    for (const stage of [1, 2, 3, 4]) {
+      expect(CHARACTER_MODEL_ASSET_MANIFEST.falling_leaf_tree?.[stage]).toEqual({
+        glbModel: true,
+        thumbnail: true,
+      })
+    }
+
+    expect(resolveCharacterModelAsset({ characterId: 'falling_leaf_tree', stage: 4 })).toEqual({
+      characterId: 'falling_leaf_tree',
+      stage: 4,
+      modelSrc: '/character-assets/falling_leaf_tree/source/base.glb',
+      thumbnailSrc: '/character-assets/falling_leaf_tree/source/thumbnail.png',
+    })
+  })
+
+  it('registers rampaging T-Rex as a copy-only GLB character source', () => {
+    for (const stage of [1, 2, 3, 4]) {
+      expect(CHARACTER_MODEL_ASSET_MANIFEST.rampaging_t_rex?.[stage]).toEqual({
+        glbModel: true,
+        thumbnail: true,
+        embeddedAnimationStates: CHARACTER_ANIMATION_STATES,
+      })
+    }
+
+    expect(resolveCharacterModelAsset({ characterId: 'rampaging_t_rex', stage: 4 })).toEqual({
+      characterId: 'rampaging_t_rex',
+      stage: 4,
+      modelSrc: '/character-assets/rampaging_t_rex/source/base.glb',
+      thumbnailSrc: '/character-assets/rampaging_t_rex/source/thumbnail.png',
+      embeddedAnimationStates: CHARACTER_ANIMATION_STATES,
+    })
+  })
+
+  it('registers playful dog as a copy-only GLB character source', () => {
+    for (const stage of [1, 2, 3, 4]) {
+      expect(CHARACTER_MODEL_ASSET_MANIFEST.playful_dog?.[stage]).toEqual({
+        glbModel: true,
+        thumbnail: true,
+        embeddedAnimationStates: CHARACTER_ANIMATION_STATES,
+      })
+    }
+
+    expect(resolveCharacterModelAsset({ characterId: 'playful_dog', stage: 4 })).toEqual({
+      characterId: 'playful_dog',
+      stage: 4,
+      modelSrc: '/character-assets/playful_dog/source/base.glb',
+      thumbnailSrc: '/character-assets/playful_dog/source/thumbnail.png',
+      embeddedAnimationStates: CHARACTER_ANIMATION_STATES,
     })
   })
 
@@ -239,6 +342,42 @@ describe('character asset resolver', () => {
       'texture_roughness.png',
     ]) {
       expect(fs.existsSync(path.join(sourceRoot, fileName)), fileName).toBe(true)
+    }
+  })
+
+  it('keeps the falling leaf tree GLB source on disk', () => {
+    const sourceRoot = path.join(process.cwd(), 'public', 'character-assets', 'falling_leaf_tree', 'source')
+
+    expect(fs.existsSync(path.join(sourceRoot, 'base.glb'))).toBe(true)
+  })
+
+  it('keeps the rampaging T-Rex GLB source on disk', () => {
+    const sourceRoot = path.join(process.cwd(), 'public', 'character-assets', 'rampaging_t_rex', 'source')
+
+    expect(fs.existsSync(path.join(sourceRoot, 'base.glb'))).toBe(true)
+  })
+
+  it('keeps the playful dog GLB source on disk', () => {
+    const sourceRoot = path.join(process.cwd(), 'public', 'character-assets', 'playful_dog', 'source')
+
+    expect(fs.existsSync(path.join(sourceRoot, 'base.glb'))).toBe(true)
+  })
+
+  it('keeps registered model thumbnails on disk', () => {
+    for (const [characterId, stages] of Object.entries(CHARACTER_MODEL_ASSET_MANIFEST)) {
+      const hasThumbnail = Object.values(stages ?? {}).some(stageAsset => stageAsset?.thumbnail)
+      if (!hasThumbnail) continue
+
+      const thumbnailPath = path.join(
+        process.cwd(),
+        'public',
+        'character-assets',
+        characterId,
+        'source',
+        'thumbnail.png',
+      )
+
+      expect(fs.existsSync(thumbnailPath), thumbnailPath).toBe(true)
     }
   })
 

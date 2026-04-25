@@ -589,9 +589,21 @@
         "description": "Your first companion for the vocabulary journey.",
         "pose": "Ready to study",
         "stages": {
-          "1": { "name": "Seedling Scholar", "description": "Your first companion for the vocabulary journey.", "pose": "Ready to study" },
-          "2": { "name": "Young Scholar", "description": "Learning to keep rhythm and gather word cards.", "pose": "Holding books" },
-          "3": { "name": "Knowledge Guide", "description": "A steady companion for longer study sessions.", "pose": "Guiding" }
+          "1": {
+            "name": "Seedling Scholar",
+            "description": "Your first companion for the vocabulary journey.",
+            "pose": "Ready to study"
+          },
+          "2": {
+            "name": "Young Scholar",
+            "description": "Learning to keep rhythm and gather word cards.",
+            "pose": "Holding books"
+          },
+          "3": {
+            "name": "Knowledge Guide",
+            "description": "A steady companion for longer study sessions.",
+            "pose": "Guiding"
+          }
         }
       },
       "library_sprite": {
@@ -599,9 +611,21 @@
         "description": "Guards new word cards and reminds you to return each day.",
         "pose": "Holding books",
         "stages": {
-          "1": { "name": "Library Sprite", "description": "Guards new word cards and reminds you to return each day.", "pose": "Holding books" },
-          "2": { "name": "Academic Librarian", "description": "Organizes knowledge into clear shelves.", "pose": "Taking notes" },
-          "3": { "name": "Grand Library Keeper", "description": "Holds the memory map of the vocabulary vault.", "pose": "Opening library" }
+          "1": {
+            "name": "Library Sprite",
+            "description": "Guards new word cards and reminds you to return each day.",
+            "pose": "Holding books"
+          },
+          "2": {
+            "name": "Academic Librarian",
+            "description": "Organizes knowledge into clear shelves.",
+            "pose": "Taking notes"
+          },
+          "3": {
+            "name": "Grand Library Keeper",
+            "description": "Holds the memory map of the vocabulary vault.",
+            "pose": "Opening library"
+          }
         }
       },
       "arena_guardian": {
@@ -609,19 +633,48 @@
         "description": "A symbol for steady review rounds in the Arena.",
         "pose": "Shield stance",
         "stages": {
-          "1": { "name": "Arena Guardian", "description": "A symbol for steady review rounds in the Arena.", "pose": "Shield stance" },
-          "2": { "name": "Arena Captain", "description": "Stands firm through harder recall rounds.", "pose": "Commanding" },
-          "3": { "name": "Memory Protector", "description": "Protects learned words from fading away.", "pose": "Defending" }
+          "1": {
+            "name": "Arena Guardian",
+            "description": "A symbol for steady review rounds in the Arena.",
+            "pose": "Shield stance"
+          },
+          "2": {
+            "name": "Arena Captain",
+            "description": "Stands firm through harder recall rounds.",
+            "pose": "Commanding"
+          },
+          "3": {
+            "name": "Memory Protector",
+            "description": "Protects learned words from fading away.",
+            "pose": "Defending"
+          }
         }
-      },      "memory_archivist": {
+      },
+      "memory_archivist": {
         "name": "Memory Archivist",
         "description": "Stores encountered words and turns them into long-term memory.",
         "pose": "Opening archive",
         "stages": {
-          "1": { "name": "Memory Archivist", "description": "Stores encountered words and turns them into long-term memory.", "pose": "Opening archive" },
-          "2": { "name": "Recall Curator", "description": "Turns review sessions into stronger structure.", "pose": "Sorting files" },
-          "3": { "name": "Memory Architect", "description": "Builds deeper memory layers through repeated encounters.", "pose": "Mapping memory" },
-          "4": { "name": "Grand Archive Keeper", "description": "The highest form of the memory guardian.", "pose": "Opening grand archive" }
+          "1": {
+            "name": "Memory Archivist",
+            "description": "Stores encountered words and turns them into long-term memory.",
+            "pose": "Opening archive"
+          },
+          "2": {
+            "name": "Recall Curator",
+            "description": "Turns review sessions into stronger structure.",
+            "pose": "Sorting files"
+          },
+          "3": {
+            "name": "Memory Architect",
+            "description": "Builds deeper memory layers through repeated encounters.",
+            "pose": "Mapping memory"
+          },
+          "4": {
+            "name": "Grand Archive Keeper",
+            "description": "The highest form of the memory guardian.",
+            "pose": "Opening grand archive"
+          }
         }
       },
       "focus_monk": {
@@ -629,10 +682,26 @@
         "description": "Represents deep, calm, consistent study rhythm.",
         "pose": "Meditating",
         "stages": {
-          "1": { "name": "Focus Monk", "description": "Represents deep, calm, consistent study rhythm.", "pose": "Meditating" },
-          "2": { "name": "Stillness Monk", "description": "Keeps attention steady through each session.", "pose": "Breathing" },
-          "3": { "name": "Focus Master", "description": "Turns small habits into deep learning capacity.", "pose": "Charging focus" },
-          "4": { "name": "Knowledge Zen Master", "description": "The calmest form of the focus companion.", "pose": "Radiating focus" }
+          "1": {
+            "name": "Focus Monk",
+            "description": "Represents deep, calm, consistent study rhythm.",
+            "pose": "Meditating"
+          },
+          "2": {
+            "name": "Stillness Monk",
+            "description": "Keeps attention steady through each session.",
+            "pose": "Breathing"
+          },
+          "3": {
+            "name": "Focus Master",
+            "description": "Turns small habits into deep learning capacity.",
+            "pose": "Charging focus"
+          },
+          "4": {
+            "name": "Knowledge Zen Master",
+            "description": "The calmest form of the focus companion.",
+            "pose": "Radiating focus"
+          }
         }
       },
       "lexical_sage": {
@@ -640,21 +709,26 @@
         "description": "A character for learners with a strong vocabulary foundation.",
         "pose": "Radiant",
         "stages": {
-          "1": { "name": "Lexical Sage", "description": "A character for learners with a strong vocabulary foundation.", "pose": "Radiant" },
-          "2": { "name": "Grand Sage", "description": "Understands how words connect through context.", "pose": "Summoning words" },
-          "3": { "name": "Word Master", "description": "Turns vocabulary into flexible recall.", "pose": "Awakening" },
-          "4": { "name": "Lexical Star", "description": "The rarest form of the vocabulary journey.", "pose": "Shining" }
-        }
-      },
-      "quiz_alchemist": {
-        "name": "Quiz Alchemist",
-        "description": "Mixes clues, examples, and choices into sharper recall reflexes.",
-        "pose": "Stirring knowledge",
-        "stages": {
-          "1": { "name": "Quiz Alchemist", "description": "Mixes clues, examples, and choices into sharper recall reflexes.", "pose": "Stirring knowledge" },
-          "2": { "name": "Memory Formula Keeper", "description": "Distills mistakes into clearer signals for the next attempt.", "pose": "Distilling clues" },
-          "3": { "name": "Recall Mage", "description": "Turns correct-answer streaks into steady study energy.", "pose": "Activating recall" },
-          "4": { "name": "Grand Memory Alchemist", "description": "Crystallizes every quiz session into durable memory.", "pose": "Opening crystal" }
+          "1": {
+            "name": "Lexical Sage",
+            "description": "A character for learners with a strong vocabulary foundation.",
+            "pose": "Radiant"
+          },
+          "2": {
+            "name": "Grand Sage",
+            "description": "Understands how words connect through context.",
+            "pose": "Summoning words"
+          },
+          "3": {
+            "name": "Word Master",
+            "description": "Turns vocabulary into flexible recall.",
+            "pose": "Awakening"
+          },
+          "4": {
+            "name": "Lexical Star",
+            "description": "The rarest form of the vocabulary journey.",
+            "pose": "Shining"
+          }
         }
       },
       "sunlit_scholar": {
@@ -684,6 +758,87 @@
           }
         }
       },
+      "falling_leaf_tree": {
+        "name": "Falling Leaf Tree",
+        "description": "A GLB 3D companion that brings natural rhythm and calm focus to each study session.",
+        "pose": "Shifting canopy",
+        "stages": {
+          "1": {
+            "name": "Falling Leaf Tree",
+            "description": "Stands as a quiet anchor for the first review sessions.",
+            "pose": "Shifting canopy"
+          },
+          "2": {
+            "name": "Green Recall Sapling",
+            "description": "Turns each correct answer into a lighter, steadier learning rhythm.",
+            "pose": "Catching study wind"
+          },
+          "3": {
+            "name": "Memory Grove Spirit",
+            "description": "Turns review habits into a durable canopy of recall.",
+            "pose": "Scattering recall leaves"
+          },
+          "4": {
+            "name": "Ancient Recall Tree",
+            "description": "Shelters the vocabulary journey with calm and long-term memory.",
+            "pose": "Opening knowledge canopy"
+          }
+        }
+      },
+      "playful_dog": {
+        "name": "Playful Dog",
+        "description": "A cheerful GLB 3D companion that keeps study sessions light with friendly motion.",
+        "pose": "Ready wag",
+        "stages": {
+          "1": {
+            "name": "Playful Dog",
+            "description": "Starts each study session with eager, friendly recall energy.",
+            "pose": "Ready wag"
+          },
+          "2": {
+            "name": "Clever Study Buddy",
+            "description": "Turns each correct answer into a cheerful rhythm for stronger memory.",
+            "pose": "Recall shake"
+          },
+          "3": {
+            "name": "Joy Keeper",
+            "description": "Keeps review momentum steady with flexible focus.",
+            "pose": "Victory rollover"
+          },
+          "4": {
+            "name": "Loyal Recall Star",
+            "description": "Companions the vocabulary journey with joy and durable memory.",
+            "pose": "Faithful shine"
+          }
+        }
+      },
+      "rampaging_t_rex": {
+        "name": "Rampaging T-Rex",
+        "description": "A GLB 3D companion for study sessions that need burst energy and sharp reflex.",
+        "pose": "Ready roar",
+        "stages": {
+          "1": {
+            "name": "Rampaging T-Rex",
+            "description": "Enters each study session with forceful, decisive recall.",
+            "pose": "Ready roar"
+          },
+          "2": {
+            "name": "Memory Hunter",
+            "description": "Tracks each correct answer with focus and speed.",
+            "pose": "Stalking knowledge"
+          },
+          "3": {
+            "name": "Review Tyrant",
+            "description": "Turns repeated reviews into stronger recall momentum.",
+            "pose": "Breaking recall open"
+          },
+          "4": {
+            "name": "Recall Apex",
+            "description": "Leads the vocabulary journey with power and long-term memory.",
+            "pose": "Ruling memory"
+          }
+        }
+      },
       "arcane_brawler": {
         "name": "Arcane Brawler",
         "description": "A 3D companion loaded directly from the OBJ source folder.",
@@ -710,6 +865,23 @@
             "pose": "Arcane finish"
           }
         }
+      }
+    },
+    "viewer": {
+      "exposure": "Exposure",
+      "animation": {
+        "label": "Animation",
+        "idle": "Idle",
+        "correct": "Correct",
+        "wrong": "Wrong",
+        "celebrate": "Celebrate",
+        "evolve": "Evolve"
+      },
+      "lightPreset": {
+        "label": "Light",
+        "soft": "Soft",
+        "studio": "Studio",
+        "vivid": "Vivid"
       }
     }
   },

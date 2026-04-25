@@ -1,0 +1,13 @@
+# Implementation Checklist
+- [x] 1.1 Add failing tests for GLB animation metadata in the model asset manifest.
+- [x] 1.2 Add failing tests for expanded-view animation controls and selected state changes.
+- [x] 1.3 Add failing source-contract test for lower PBR pixel ratio cap and high-performance renderer setup.
+- [x] 2.1 Add `embeddedAnimationStates` to model asset types, manifest entries, and resolver output.
+- [x] 2.2 Add expanded-view animation state UI and wire it into `CharacterAvatar`.
+- [x] 2.3 Add i18n labels for the animation control.
+- [x] 2.4 Tune WebGL renderer setup for lower full-screen PBR cost.
+- [x] 3.1 Run focused tests for character assets, expanded viewer, and model avatar interaction.
+- [x] 3.2 Run `npm run build`.
+- [x] 3.3 Run `npm run test:gate`.
+- [x] 4.1 Disable procedural quick reactions when expanded GLB animation controls are driving embedded clips.
+- [x] 4.2 Verify focused avatar/viewer/model tests, `npm run build`, and `npm run test:gate` after the procedural animation split.

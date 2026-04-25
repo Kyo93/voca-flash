@@ -1,0 +1,11 @@
+# Implementation Checklist
+- [x] 1.1 Add tests for 3D-only expanded viewer controls.
+- [x] 1.2 Add tests that model rendering accepts exposure and light preset settings.
+- [x] 1.3 Verify new tests fail before implementation.
+- [x] 2.1 Add viewer setting types/defaults.
+- [x] 2.2 Pass model viewer settings through `CharacterAvatar`.
+- [x] 2.3 Apply exposure and light preset in `CharacterModelAvatar`.
+- [x] 2.4 Add the expanded viewer control panel and i18n keys.
+- [x] 3.1 Run focused tests.
+- [x] 3.2 Run `npm run build`.
+- [x] 3.3 Run `npm run test:gate`.

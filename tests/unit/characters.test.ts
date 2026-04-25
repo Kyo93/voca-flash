@@ -53,16 +53,6 @@ describe('character collection domain', () => {
     expect(collection.selectedCharacter?.id).toBe('memory_archivist')
   })
 
-  it('includes the quiz alchemist as a rare four-stage recall character', () => {
-    const character = getCharacterById('quiz_alchemist')
-
-    expect(character).toBeDefined()
-    expect(character?.rarity).toBe('rare')
-    expect(character?.costXp).toBe(0)
-    expect(character?.evolutionStages).toHaveLength(4)
-    expect(character?.nameKey).toBe('characters.items.quiz_alchemist.name')
-  })
-
   it('includes the arcane brawler as a rare four-stage OBJ-backed character', () => {
     const character = getCharacterById('arcane_brawler')
 
@@ -83,11 +73,43 @@ describe('character collection domain', () => {
     expect(character?.nameKey).toBe('characters.items.sunlit_scholar.name')
   })
 
-  it('does not include removed flashcard fighter or lexical invoker characters', () => {
+  it('includes the falling leaf tree as a rare four-stage GLB-backed character', () => {
+    const character = getCharacterById('falling_leaf_tree')
+
+    expect(character).toBeDefined()
+    expect(character?.rarity).toBe('rare')
+    expect(character?.costXp).toBe(0)
+    expect(character?.evolutionStages).toHaveLength(4)
+    expect(character?.nameKey).toBe('characters.items.falling_leaf_tree.name')
+  })
+
+  it('includes the playful dog as a rare four-stage GLB-backed character', () => {
+    const character = getCharacterById('playful_dog')
+
+    expect(character).toBeDefined()
+    expect(character?.rarity).toBe('rare')
+    expect(character?.costXp).toBe(0)
+    expect(character?.evolutionStages).toHaveLength(4)
+    expect(character?.nameKey).toBe('characters.items.playful_dog.name')
+  })
+
+  it('includes the rampaging T-Rex as an epic four-stage GLB-backed character', () => {
+    const character = getCharacterById('rampaging_t_rex')
+
+    expect(character).toBeDefined()
+    expect(character?.rarity).toBe('epic')
+    expect(character?.costXp).toBe(0)
+    expect(character?.evolutionStages).toHaveLength(4)
+    expect(character?.nameKey).toBe('characters.items.rampaging_t_rex.name')
+  })
+
+  it('does not include removed flashcard fighter, lexical invoker, or quiz alchemist characters', () => {
     expect(getCharacterById('flashcard_fighter')).toBeNull()
     expect(getCharacterById('lexical_invoker')).toBeNull()
+    expect(getCharacterById('quiz_alchemist')).toBeNull()
     expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('flashcard_fighter')
     expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('lexical_invoker')
+    expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('quiz_alchemist')
   })
 
   it('falls back to the default character when selected id is unavailable', () => {

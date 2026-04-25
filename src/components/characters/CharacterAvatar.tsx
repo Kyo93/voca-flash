@@ -4,6 +4,7 @@ import {
   type CharacterAssetManifest,
   type CharacterModelAssetManifest,
   type CharacterModelMaterialQuality,
+  type CharacterModelViewerSettings,
   CHARACTER_ASSET_MANIFEST,
   CHARACTER_MODEL_ASSET_MANIFEST,
   resolveCharacterMediaAsset,
@@ -20,7 +21,10 @@ interface CharacterAvatarProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'display'
   animated?: boolean
   animationState?: CharacterAnimationState
+  useModelThumbnail?: boolean
+  disableProceduralAnimation?: boolean
   materialQuality?: CharacterModelMaterialQuality
+  modelViewerSettings?: CharacterModelViewerSettings
   assetManifest?: CharacterAssetManifest
   modelAssetManifest?: CharacterModelAssetManifest
   onReactionEnd?: () => void
@@ -40,7 +44,7 @@ const sizeClasses = {
     frame: 'w-72 h-72',
   },
   display: {
-    frame: 'w-[min(92vw,64rem)] h-[min(88vh,52rem)]',
+    frame: 'h-full w-full',
   },
 } as const
 
@@ -70,7 +74,10 @@ export default function CharacterAvatar({
   size = 'md',
   animated = false,
   animationState = 'idle',
+  useModelThumbnail = true,
+  disableProceduralAnimation = false,
   materialQuality = 'standard',
+  modelViewerSettings,
   assetManifest = CHARACTER_ASSET_MANIFEST,
   modelAssetManifest = CHARACTER_MODEL_ASSET_MANIFEST,
   onReactionEnd,
@@ -93,6 +100,9 @@ export default function CharacterAvatar({
     stage: visual.stage,
     manifest: modelAssetManifest,
   })
+  const hasEmbeddedModelAnimation = (modelAsset?.embeddedAnimationStates?.length ?? 0) > 0
+  const disableModelProceduralAnimation = disableProceduralAnimation || hasEmbeddedModelAnimation
+  const shouldUseModelThumbnail = useModelThumbnail && !!modelAsset?.thumbnailSrc && size !== 'display' && !modelFailed
 
   useEffect(() => {
     setMediaFailed(false)
@@ -143,6 +153,25 @@ export default function CharacterAvatar({
     )
   }
 
+  if (shouldUseModelThumbnail) {
+    return (
+      <div
+        className={`${classes.frame} relative shrink-0 flex items-center justify-center`}
+        data-character-avatar-model-thumbnail="true"
+        data-character-material-quality={materialQuality}
+      >
+        <img
+          className="h-full w-full object-contain"
+          src={modelAsset.thumbnailSrc}
+          alt=""
+          role="presentation"
+          loading="lazy"
+          onError={() => setModelFailed(true)}
+        />
+      </div>
+    )
+  }
+
   if (modelAsset && !modelFailed) {
     return (
       <Suspense fallback={<CharacterFallbackAvatar character={character} stageDefinition={visual} size={size} />}>
@@ -151,7 +180,9 @@ export default function CharacterAvatar({
           className={classes.frame}
           animated={allowAnimation}
           animationState={animationState}
+          disableProceduralAnimation={disableModelProceduralAnimation}
           materialQuality={materialQuality}
+          modelViewerSettings={modelViewerSettings}
           onError={() => setModelFailed(true)}
           onReactionEnd={onReactionEnd}
         />

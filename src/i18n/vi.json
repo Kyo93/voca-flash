@@ -649,7 +649,8 @@
             "pose": "Phòng thủ"
           }
         }
-      },      "memory_archivist": {
+      },
+      "memory_archivist": {
         "name": "Người giữ ký ức",
         "description": "Lưu giữ các từ đã gặp và biến chúng thành trí nhớ dài hạn.",
         "pose": "Mở kho lưu trữ",
@@ -730,33 +731,6 @@
           }
         }
       },
-      "quiz_alchemist": {
-        "name": "Giả kim sư câu hỏi",
-        "description": "Pha trộn gợi ý, ví dụ và lựa chọn để biến mỗi câu hỏi thành phản xạ nhớ.",
-        "pose": "Khuấy bình tri thức",
-        "stages": {
-          "1": {
-            "name": "Giả kim sư câu hỏi",
-            "description": "Pha trộn gợi ý, ví dụ và lựa chọn để biến mỗi câu hỏi thành phản xạ nhớ.",
-            "pose": "Khuấy bình tri thức"
-          },
-          "2": {
-            "name": "Nhà luyện công thức nhớ",
-            "description": "Tách lỗi sai thành dấu hiệu rõ ràng để lần sau chọn nhanh hơn.",
-            "pose": "Chưng cất gợi ý"
-          },
-          "3": {
-            "name": "Pháp sư phản xạ",
-            "description": "Biến chuỗi trả lời đúng thành năng lượng học tập ổn định.",
-            "pose": "Kích hoạt vòng nhớ"
-          },
-          "4": {
-            "name": "Đại giả kim trí nhớ",
-            "description": "Kết tinh mọi phiên quiz thành trí nhớ bền vững.",
-            "pose": "Khai mở tinh thể"
-          }
-        }
-      },
       "sunlit_scholar": {
         "name": "Học giả nắng mai",
         "description": "Nhân vật 3D mới, mang năng lượng sáng và nhịp học lạc quan vào mỗi phiên ôn tập.",
@@ -781,6 +755,87 @@
             "name": "Tinh tú nắng mai",
             "description": "Dẫn dắt hành trình từ vựng bằng sự sáng rõ và trí nhớ bền vững.",
             "pose": "Khai mở vầng sáng"
+          }
+        }
+      },
+      "falling_leaf_tree": {
+        "name": "Cây lá rơi",
+        "description": "Nhân vật 3D GLB mang nhịp thở tự nhiên và cảm giác bình tĩnh vào mỗi phiên học.",
+        "pose": "Tán lá chuyển động",
+        "stages": {
+          "1": {
+            "name": "Cây lá rơi",
+            "description": "Đứng vững như một điểm tựa yên tĩnh cho những lượt ôn đầu tiên.",
+            "pose": "Tán lá chuyển động"
+          },
+          "2": {
+            "name": "Mầm nhớ xanh",
+            "description": "Gom từng câu trả lời đúng thành một nhịp học đều và nhẹ.",
+            "pose": "Đón gió học tập"
+          },
+          "3": {
+            "name": "Linh mộc ký ức",
+            "description": "Biến thói quen ôn tập thành một tán cây trí nhớ bền bỉ.",
+            "pose": "Rải lá ghi nhớ"
+          },
+          "4": {
+            "name": "Cổ thụ hồi tưởng",
+            "description": "Che chở hành trình từ vựng bằng sự bình tĩnh và trí nhớ dài hạn.",
+            "pose": "Mở tán tri thức"
+          }
+        }
+      },
+      "playful_dog": {
+        "name": "Cún tinh nghịch",
+        "description": "Nhân vật 3D GLB vui nhộn, giúp phiên học nhẹ nhàng hơn bằng những chuyển động đáng yêu.",
+        "pose": "Vẫy vui sẵn sàng",
+        "stages": {
+          "1": {
+            "name": "Cún tinh nghịch",
+            "description": "Bước vào phiên học với sự háo hức và nhịp phản xạ thân thiện.",
+            "pose": "Vẫy vui sẵn sàng"
+          },
+          "2": {
+            "name": "Bạn học lanh lợi",
+            "description": "Biến từng câu trả lời đúng thành một nhịp vui giúp ghi nhớ lâu hơn.",
+            "pose": "Bắt tay ghi nhớ"
+          },
+          "3": {
+            "name": "Người giữ nhịp vui",
+            "description": "Giữ năng lượng ôn tập ổn định bằng sự linh hoạt và tập trung.",
+            "pose": "Lăn tròn chiến thắng"
+          },
+          "4": {
+            "name": "Tinh tú đồng hành",
+            "description": "Đồng hành cùng hành trình từ vựng bằng niềm vui và trí nhớ bền bỉ.",
+            "pose": "Tỏa sáng trung thành"
+          }
+        }
+      },
+      "rampaging_t_rex": {
+        "name": "T-Rex cuồng nộ",
+        "description": "Nhân vật 3D GLB dành cho những phiên học cần năng lượng bứt phá và phản xạ mạnh.",
+        "pose": "Gầm vang sẵn sàng",
+        "stages": {
+          "1": {
+            "name": "T-Rex cuồng nộ",
+            "description": "Bước vào phiên học với nhịp phản xạ mạnh và quyết đoán.",
+            "pose": "Gầm vang sẵn sàng"
+          },
+          "2": {
+            "name": "Thợ săn ký ức",
+            "description": "Săn từng câu trả lời đúng bằng sự tập trung và tốc độ.",
+            "pose": "Rình mồi tri thức"
+          },
+          "3": {
+            "name": "Bạo long ôn tập",
+            "description": "Biến các lượt ôn liên tiếp thành sức bật ghi nhớ bền hơn.",
+            "pose": "Bứt phá phản xạ"
+          },
+          "4": {
+            "name": "Chúa tể hồi tưởng",
+            "description": "Dẫn đầu hành trình từ vựng bằng uy lực và trí nhớ dài hạn.",
+            "pose": "Thống lĩnh ký ức"
           }
         }
       },
@@ -810,6 +865,23 @@
             "pose": "Kết ấn ẩn thuật"
           }
         }
+      }
+    },
+    "viewer": {
+      "exposure": "Độ sáng",
+      "animation": {
+        "label": "Chuyển động",
+        "idle": "Đứng chờ",
+        "correct": "Đúng",
+        "wrong": "Sai",
+        "celebrate": "Ăn mừng",
+        "evolve": "Tiến hóa"
+      },
+      "lightPreset": {
+        "label": "Ánh sáng",
+        "soft": "Mềm",
+        "studio": "Cân bằng",
+        "vivid": "Rực"
       }
     }
   },

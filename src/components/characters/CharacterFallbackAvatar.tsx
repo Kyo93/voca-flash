@@ -32,7 +32,7 @@ const sizeClasses = {
     icon: 'text-6xl',
   },
   display: {
-    frame: 'w-[min(92vw,64rem)] h-[min(88vh,52rem)]',
+    frame: 'h-full w-full',
     head: 'w-64 h-64',
     body: 'w-80 h-44',
     icon: 'text-8xl',
