@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,13 +15,15 @@ interface SessionSummaryProps {
   rewardProgress?: RewardProgressView
   unlockedBadges?: RewardBadge[]
   onRestart: () => void
+  mascot?: ReactNode
 }
 
 export default function SessionSummary({
   stats,
   rewardProgress,
   unlockedBadges = [],
-  onRestart
+  onRestart,
+  mascot
 }: SessionSummaryProps) {
   const { t } = useTranslation()
   const [displayXP, setDisplayXP] = useState(0)
@@ -223,6 +225,12 @@ export default function SessionSummary({
           </Link>
         </motion.div>
       </motion.div>
+
+      {mascot && (
+        <div className="pointer-events-none absolute bottom-8 right-8 z-20 hidden lg:block">
+          {mascot}
+        </div>
+      )}
     </div>
   )
 }

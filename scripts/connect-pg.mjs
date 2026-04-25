@@ -1,14 +1,20 @@
 /**
- * connect-pg.mjs
- * Try connecting to Supabase DB directly using pg driver.
- * Supabase accepts service role JWT as password for direct Postgres connections.
+ * Tries connecting to Supabase DB directly using pg.
+ *
+ * Required env:
+ * - SUPABASE_DB_PASSWORD or SUPABASE_SERVICE_ROLE_KEY/SUPABASE_SERVICE_KEY
  */
 
-import pg from 'pg';
-const { Client } = pg;
+import pg from 'pg'
 
-const dbHost = 'db.nhnusgnlhnzwavpltbqj.supabase.co';
-const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5obnVzZ25saG56d2F2cGx0YnFqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTg0MDU4MywiZXhwIjoyMDkxNDE2NTgzfQ.xDU4pXcz3VYmB9vic9vTBRCyhnoXLVZ9EGTEdat8UY0';
+const { Client } = pg
+
+const dbHost = 'db.nhnusgnlhnzwavpltbqj.supabase.co'
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_KEY
+
+if (!serviceKey && !process.env.SUPABASE_DB_PASSWORD) {
+  throw new Error('Set SUPABASE_DB_PASSWORD or SUPABASE_SERVICE_ROLE_KEY before running this script.')
+}
 
 const migrationSQL = `
 -- 1. Ensure handle_new_user trigger
@@ -39,7 +45,7 @@ CREATE POLICY "user_insert_own_profile" ON user_profiles
 ALTER TABLE user_profiles
 ADD COLUMN IF NOT EXISTS last_study_date DATE DEFAULT NULL,
 ADD COLUMN IF NOT EXISTS daily_words_studied INTEGER DEFAULT 0;
-`;
+`
 
 async function tryConnect(passwords) {
   for (const password of passwords) {
@@ -51,61 +57,62 @@ async function tryConnect(passwords) {
       password,
       ssl: { rejectUnauthorized: false },
       connectionTimeoutMillis: 5000,
-    });
+    })
+
     try {
-      await client.connect();
-      console.log(`✅ Connected with password: ${password.substring(0, 20)}...`);
-      await client.end();
-      return password;
-    } catch (e) {
-      if (e.code === '28P01') {
-        // Wrong password, try next
-      } else if (e.code === 'ENOTFOUND' || e.code === 'ETIMEDOUT') {
-        console.log(`Network error with password: ${password.substring(0, 20)}...`);
+      await client.connect()
+      console.log('Connected with a configured database credential.')
+      await client.end()
+      return password
+    } catch (error) {
+      if (error.code === '28P01') {
+        // Wrong password, try next.
+      } else if (error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
+        console.log('Network error with a configured database credential.')
       } else {
-        console.log(`Error ${e.code}: ${e.message}`);
+        console.log(`Error ${error.code}: ${error.message}`)
       }
     }
   }
-  return null;
+  return null
 }
 
 async function main() {
-  console.log('🔍 Trying to connect to Supabase PostgreSQL...\n');
+  console.log('Trying to connect to Supabase PostgreSQL...\n')
 
-  // Supabase accepts different formats as password
   const passwords = [
-    serviceKey,                          // Service role JWT directly
-    'postgres',                          // Default
-    'mysecurepassword',                  // Common default
-  ];
+    process.env.SUPABASE_DB_PASSWORD,
+    serviceKey,
+  ].filter(Boolean)
 
-  const connectedPw = await tryConnect(passwords);
-  if (!connectedPw) {
-    console.log('\n❌ Could not connect to Supabase DB directly.');
-    console.log('\n📋 Please run this SQL in Supabase SQL Editor:');
-    console.log('https://supabase.com/dashboard/project/nhnusgnlhnzwavpltbqj/sql-editor\n');
-    console.log(migrationSQL);
-    return;
+  const connectedPassword = await tryConnect(passwords)
+  if (!connectedPassword) {
+    console.log('\nCould not connect to Supabase DB directly.')
+    console.log('\nPlease run this SQL in Supabase SQL Editor:')
+    console.log('https://supabase.com/dashboard/project/nhnusgnlhnzwavpltbqj/sql-editor\n')
+    console.log(migrationSQL)
+    return
   }
 
-  // Connected! Now run migration
-  console.log('\n🚀 Running migration...');
+  console.log('\nRunning migration...')
   const client = new Client({
-    host: dbHost, port: 5432, database: 'postgres',
-    user: 'postgres', password: connectedPw,
+    host: dbHost,
+    port: 5432,
+    database: 'postgres',
+    user: 'postgres',
+    password: connectedPassword,
     ssl: { rejectUnauthorized: false },
-  });
+  })
 
   try {
-    await client.connect();
-    await client.query(migrationSQL);
-    console.log('✅ Migration 009 applied successfully!');
-  } catch (e) {
-    console.error('❌ Migration failed:', e.message);
+    await client.connect()
+    await client.query(migrationSQL)
+    console.log('Migration 009 applied successfully.')
+  } catch (error) {
+    console.error('Migration failed:', error.message)
   } finally {
-    await client.end();
+    await client.end()
   }
 }
 
-main();
+main()

@@ -71,7 +71,8 @@
     "searchPlaceholder": "Search paths, words, or lessons...",
     "methodology": "Methodology",
     "mastery": "Vocabulary Vault",
-    "achievements": "Achievements"
+    "achievements": "Achievements",
+    "characters": "Characters"
   },
   "library": {
     "title": "Choose Your Journey",
@@ -543,6 +544,107 @@
       "days": "{{current}} / {{target}} days",
       "words": "{{current}} / {{target}} words",
       "hours": "{{current}} / {{target}} hours"
+    }
+  },
+  "characters": {
+    "title": "Character Collection",
+    "subtitle": "Use available EXP to unlock and evolve 3D characters, then choose one to display on your Dashboard.",
+    "showcaseLabel": "Showcase Character",
+    "availableXp": "Available EXP",
+    "openCollection": "Open collection",
+    "loadingCollection": "Loading your character collection.",
+    "backToDashboard": "Back to Dashboard",
+    "cost": "Cost",
+    "evolutionCost": "Evolution",
+    "stageLabel": "Stage {{current}} / {{total}}",
+    "nextEvolutionCost": "Next evolution: {{xp}} XP",
+    "needMoreXp": "Need {{xp}} more XP",
+    "maxStage": "Max stage",
+    "rarity": {
+      "starter": "Starter",
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic"
+    },
+    "actions": {
+      "unlock": "Unlock",
+      "select": "Display",
+      "evolve": "Evolve",
+      "selected": "Displayed",
+      "locked": "Need more EXP",
+      "maxed": "Maxed",
+      "playReaction": "Play character animation"
+    },
+    "errors": {
+      "loadFailed": "Could not load your character collection.",
+      "unlockFailed": "Could not unlock this character.",
+      "selectFailed": "Could not select this character.",
+      "evolveFailed": "Could not evolve this character."
+    },
+    "items": {
+      "seedling_scholar": {
+        "name": "Seedling Scholar",
+        "description": "Your first companion for the vocabulary journey.",
+        "pose": "Ready to study",
+        "stages": {
+          "1": { "name": "Seedling Scholar", "description": "Your first companion for the vocabulary journey.", "pose": "Ready to study" },
+          "2": { "name": "Young Scholar", "description": "Learning to keep rhythm and gather word cards.", "pose": "Holding books" },
+          "3": { "name": "Knowledge Guide", "description": "A steady companion for longer study sessions.", "pose": "Guiding" }
+        }
+      },
+      "library_sprite": {
+        "name": "Library Sprite",
+        "description": "Guards new word cards and reminds you to return each day.",
+        "pose": "Holding books",
+        "stages": {
+          "1": { "name": "Library Sprite", "description": "Guards new word cards and reminds you to return each day.", "pose": "Holding books" },
+          "2": { "name": "Academic Librarian", "description": "Organizes knowledge into clear shelves.", "pose": "Taking notes" },
+          "3": { "name": "Grand Library Keeper", "description": "Holds the memory map of the vocabulary vault.", "pose": "Opening library" }
+        }
+      },
+      "arena_guardian": {
+        "name": "Arena Guardian",
+        "description": "A symbol for steady review rounds in the Arena.",
+        "pose": "Shield stance",
+        "stages": {
+          "1": { "name": "Arena Guardian", "description": "A symbol for steady review rounds in the Arena.", "pose": "Shield stance" },
+          "2": { "name": "Arena Captain", "description": "Stands firm through harder recall rounds.", "pose": "Commanding" },
+          "3": { "name": "Memory Protector", "description": "Protects learned words from fading away.", "pose": "Defending" }
+        }
+      },
+      "memory_archivist": {
+        "name": "Memory Archivist",
+        "description": "Stores encountered words and turns them into long-term memory.",
+        "pose": "Opening archive",
+        "stages": {
+          "1": { "name": "Memory Archivist", "description": "Stores encountered words and turns them into long-term memory.", "pose": "Opening archive" },
+          "2": { "name": "Recall Curator", "description": "Turns review sessions into stronger structure.", "pose": "Sorting files" },
+          "3": { "name": "Memory Architect", "description": "Builds deeper memory layers through repeated encounters.", "pose": "Mapping memory" },
+          "4": { "name": "Grand Archive Keeper", "description": "The highest form of the memory guardian.", "pose": "Opening grand archive" }
+        }
+      },
+      "focus_monk": {
+        "name": "Focus Monk",
+        "description": "Represents deep, calm, consistent study rhythm.",
+        "pose": "Meditating",
+        "stages": {
+          "1": { "name": "Focus Monk", "description": "Represents deep, calm, consistent study rhythm.", "pose": "Meditating" },
+          "2": { "name": "Stillness Monk", "description": "Keeps attention steady through each session.", "pose": "Breathing" },
+          "3": { "name": "Focus Master", "description": "Turns small habits into deep learning capacity.", "pose": "Charging focus" },
+          "4": { "name": "Knowledge Zen Master", "description": "The calmest form of the focus companion.", "pose": "Radiating focus" }
+        }
+      },
+      "lexical_sage": {
+        "name": "Lexical Sage",
+        "description": "A character for learners with a strong vocabulary foundation.",
+        "pose": "Radiant",
+        "stages": {
+          "1": { "name": "Lexical Sage", "description": "A character for learners with a strong vocabulary foundation.", "pose": "Radiant" },
+          "2": { "name": "Grand Sage", "description": "Understands how words connect through context.", "pose": "Summoning words" },
+          "3": { "name": "Word Master", "description": "Turns vocabulary into flexible recall.", "pose": "Awakening" },
+          "4": { "name": "Lexical Star", "description": "The rarest form of the vocabulary journey.", "pose": "Shining" }
+        }
+      }
     }
   },
   "rightSidebar": {

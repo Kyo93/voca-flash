@@ -70,8 +70,9 @@
     "search": "Tìm kiếm...",
     "searchPlaceholder": "Tìm bài học, từ vựng...",
     "methodology": "Phương pháp học",
-    "mastery": "Kho từ vựng",
-    "achievements": "Huy hiệu"
+    "mastery": "Từ vựng",
+    "achievements": "Huy hiệu",
+    "characters": "Nhân vật"
   },
   "library": {
     "title": "Chọn hành trình của bạn",
@@ -543,6 +544,191 @@
       "days": "{{current}} / {{target}} ngày",
       "words": "{{current}} / {{target}} từ",
       "hours": "{{current}} / {{target}} giờ"
+    }
+  },
+  "characters": {
+    "title": "Bộ sưu tập nhân vật",
+    "subtitle": "Dùng EXP khả dụng để mở khóa, tiến hóa nhân vật 3D và chọn một nhân vật trưng bày trên Dashboard.",
+    "showcaseLabel": "Nhân vật trưng bày",
+    "availableXp": "EXP khả dụng",
+    "openCollection": "Mở bộ sưu tập",
+    "loadingCollection": "Đang tải bộ sưu tập nhân vật.",
+    "backToDashboard": "Quay lại Dashboard",
+    "cost": "Chi phí",
+    "evolutionCost": "Tiến hóa",
+    "stageLabel": "Stage {{current}} / {{total}}",
+    "nextEvolutionCost": "Tiến hóa tiếp: {{xp}} XP",
+    "needMoreXp": "Cần thêm {{xp}} XP",
+    "maxStage": "Đã đạt tối đa",
+    "rarity": {
+      "starter": "Khởi đầu",
+      "common": "Phổ thông",
+      "rare": "Hiếm",
+      "epic": "Sử thi"
+    },
+    "actions": {
+      "unlock": "Mở khóa",
+      "select": "Trưng bày",
+      "evolve": "Tiến hóa",
+      "selected": "Đang trưng bày",
+      "locked": "Chưa đủ EXP",
+      "maxed": "Tối đa",
+      "playReaction": "Phát animation nhân vật"
+    },
+    "errors": {
+      "loadFailed": "Chưa tải được bộ sưu tập nhân vật.",
+      "unlockFailed": "Chưa thể mở khóa nhân vật này.",
+      "selectFailed": "Chưa thể chọn nhân vật này.",
+      "evolveFailed": "Chưa thể tiến hóa nhân vật này."
+    },
+    "items": {
+      "seedling_scholar": {
+        "name": "Mầm học giả",
+        "description": "Người bạn đầu tiên đồng hành cùng hành trình từ vựng.",
+        "pose": "Sẵn sàng học",
+        "stages": {
+          "1": {
+            "name": "Mầm học giả",
+            "description": "Người bạn đầu tiên đồng hành cùng hành trình từ vựng.",
+            "pose": "Sẵn sàng học"
+          },
+          "2": {
+            "name": "Học giả non trẻ",
+            "description": "Đã biết cách giữ nhịp học và tích lũy từng thẻ từ.",
+            "pose": "Giữ sách"
+          },
+          "3": {
+            "name": "Người dẫn đường tri thức",
+            "description": "Một companion vững vàng cho những buổi học dài hơi.",
+            "pose": "Dẫn đường"
+          }
+        }
+      },
+      "library_sprite": {
+        "name": "Thủ thư nhỏ",
+        "description": "Canh giữ các thẻ từ mới và nhắc bạn quay lại mỗi ngày.",
+        "pose": "Giữ sách",
+        "stages": {
+          "1": {
+            "name": "Thủ thư nhỏ",
+            "description": "Canh giữ các thẻ từ mới và nhắc bạn quay lại mỗi ngày.",
+            "pose": "Giữ sách"
+          },
+          "2": {
+            "name": "Quản thư học thuật",
+            "description": "Sắp xếp tri thức thành từng ngăn rõ ràng.",
+            "pose": "Ghi chép"
+          },
+          "3": {
+            "name": "Người giữ đại thư viện",
+            "description": "Nắm giữ bản đồ ký ức của cả kho từ.",
+            "pose": "Mở thư viện"
+          }
+        }
+      },
+      "arena_guardian": {
+        "name": "Vệ binh Arena",
+        "description": "Biểu tượng cho những lượt ôn tập bền bỉ trong Arena.",
+        "pose": "Cầm khiên",
+        "stages": {
+          "1": {
+            "name": "Vệ binh Arena",
+            "description": "Biểu tượng cho những lượt ôn tập bền bỉ trong Arena.",
+            "pose": "Cầm khiên"
+          },
+          "2": {
+            "name": "Đội trưởng Arena",
+            "description": "Đứng vững qua các lượt recall khó hơn.",
+            "pose": "Chỉ huy"
+          },
+          "3": {
+            "name": "Hộ pháp ký ức",
+            "description": "Bảo vệ các từ đã học khỏi bị lãng quên.",
+            "pose": "Phòng thủ"
+          }
+        }
+      },
+      "memory_archivist": {
+        "name": "Người giữ ký ức",
+        "description": "Lưu giữ các từ đã gặp và biến chúng thành trí nhớ dài hạn.",
+        "pose": "Mở kho lưu trữ",
+        "stages": {
+          "1": {
+            "name": "Người giữ ký ức",
+            "description": "Lưu giữ các từ đã gặp và biến chúng thành trí nhớ dài hạn.",
+            "pose": "Mở kho lưu trữ"
+          },
+          "2": {
+            "name": "Quản lý hồi ức",
+            "description": "Biết gom các lần ôn tập thành cấu trúc bền hơn.",
+            "pose": "Sắp hồ sơ"
+          },
+          "3": {
+            "name": "Kiến trúc sư trí nhớ",
+            "description": "Xây lớp nền trí nhớ sâu từ các lần gặp lại.",
+            "pose": "Dựng bản đồ"
+          },
+          "4": {
+            "name": "Đại lưu trữ ký ức",
+            "description": "Dạng tiến hóa cao nhất của người bảo vệ trí nhớ.",
+            "pose": "Khai mở kho lớn"
+          }
+        }
+      },
+      "focus_monk": {
+        "name": "Ẩn sĩ tập trung",
+        "description": "Đại diện cho nhịp học sâu, chậm và đều.",
+        "pose": "Thiền định",
+        "stages": {
+          "1": {
+            "name": "Ẩn sĩ tập trung",
+            "description": "Đại diện cho nhịp học sâu, chậm và đều.",
+            "pose": "Thiền định"
+          },
+          "2": {
+            "name": "Tu sĩ tĩnh tâm",
+            "description": "Giữ sự chú ý ổn định qua từng phiên học.",
+            "pose": "Thở đều"
+          },
+          "3": {
+            "name": "Bậc thầy tập trung",
+            "description": "Biến thói quen nhỏ thành năng lực học sâu.",
+            "pose": "Tụ lực"
+          },
+          "4": {
+            "name": "Thiền sư tri thức",
+            "description": "Dạng tĩnh tại nhất của companion tập trung.",
+            "pose": "Tỏa tâm"
+          }
+        }
+      },
+      "lexical_sage": {
+        "name": "Hiền giả từ vựng",
+        "description": "Nhân vật dành cho người học đã tích lũy vốn từ vững chắc.",
+        "pose": "Tỏa sáng",
+        "stages": {
+          "1": {
+            "name": "Hiền giả từ vựng",
+            "description": "Nhân vật dành cho người học đã tích lũy vốn từ vững chắc.",
+            "pose": "Tỏa sáng"
+          },
+          "2": {
+            "name": "Đại hiền giả",
+            "description": "Hiểu sâu hơn cách từ vựng kết nối trong ngữ cảnh.",
+            "pose": "Triệu hồi chữ"
+          },
+          "3": {
+            "name": "Bậc thầy ngôn từ",
+            "description": "Biến vốn từ thành khả năng phản xạ linh hoạt.",
+            "pose": "Khai mở"
+          },
+          "4": {
+            "name": "Tinh tú từ vựng",
+            "description": "Dạng tiến hóa hiếm nhất của hành trình từ vựng.",
+            "pose": "Tỏa quang"
+          }
+        }
+      }
     }
   },
   "rightSidebar": {

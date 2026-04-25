@@ -18,7 +18,9 @@ export interface StoredRewardProgress {
   totalXp: number
   studyXp: number
   reviewXp: number
+  spentXp: number
   arenaSessions: number
+  selectedCharacterId: string | null
   updatedAt: string | null
 }
 
@@ -39,6 +41,7 @@ export interface RewardBadge {
 }
 
 export interface RewardProgressView extends StoredRewardProgress {
+  availableXp: number
   currentLevel: RewardLevel
   nextLevel: RewardLevel | null
   xpIntoLevel: number
@@ -154,7 +157,9 @@ export function createEmptyRewardProgress(userId: string): StoredRewardProgress 
     totalXp: 0,
     studyXp: 0,
     reviewXp: 0,
+    spentXp: 0,
     arenaSessions: 0,
+    selectedCharacterId: null,
     updatedAt: null,
   }
 }
@@ -193,6 +198,7 @@ export function getNewlyUnlockedRewardBadges(previousXp: number, nextXp: number)
 
 export function toRewardProgressView(progress: StoredRewardProgress): RewardProgressView {
   const totalXp = normalizeXp(progress.totalXp)
+  const spentXp = Math.min(totalXp, normalizeXp(progress.spentXp))
   const currentLevel = getRewardLevel(totalXp)
   const nextLevel = getNextRewardLevel(totalXp)
   const xpIntoLevel = totalXp - currentLevel.minXp
@@ -203,7 +209,10 @@ export function toRewardProgressView(progress: StoredRewardProgress): RewardProg
     totalXp,
     studyXp: normalizeXp(progress.studyXp),
     reviewXp: normalizeXp(progress.reviewXp),
+    spentXp,
+    availableXp: Math.max(0, totalXp - spentXp),
     arenaSessions: normalizeXp(progress.arenaSessions),
+    selectedCharacterId: progress.selectedCharacterId ?? null,
     currentLevel,
     nextLevel,
     xpIntoLevel,
@@ -228,6 +237,7 @@ export function applyRewardGainToStoredProgress(
     totalXp: normalizeXp(progress.totalXp) + xp,
     studyXp: normalizeXp(progress.studyXp) + (gain.source === 'study' ? xp : 0),
     reviewXp: normalizeXp(progress.reviewXp) + (gain.source === 'arena' ? xp : 0),
+    spentXp: Math.min(normalizeXp(progress.totalXp) + xp, normalizeXp(progress.spentXp)),
     arenaSessions: normalizeXp(progress.arenaSessions),
     updatedAt: now,
   }

@@ -15,6 +15,7 @@ interface ArenaShellProps {
   onExitClose: () => void
   onExitConfirm: () => void
   children: ReactNode
+  mascot?: ReactNode
   hotkeys?: { key: string; label: string }[]
   modeLabel?: string
   syncError?: string | null
@@ -31,6 +32,7 @@ export default function ArenaShell({
   onExitClose,
   onExitConfirm,
   children,
+  mascot,
   hotkeys,
   modeLabel,
   syncError
@@ -128,6 +130,12 @@ export default function ArenaShell({
           {children}
         </div>
       </div>
+
+      {mascot && (
+        <div className="pointer-events-none absolute bottom-24 right-8 z-40 hidden lg:block">
+          {mascot}
+        </div>
+      )}
 
       {/* Footer Hotkeys */}
       <div className="py-10 text-white/20 flex flex-wrap justify-center gap-8 font-black text-[9px] tracking-[0.2em] uppercase relative z-50">

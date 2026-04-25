@@ -14,7 +14,9 @@ interface RewardProgressRow {
   total_xp: number
   study_xp: number
   review_xp: number
+  spent_xp?: number
   arena_sessions: number
+  selected_character_id?: string | null
   updated_at: string | null
 }
 
@@ -27,7 +29,9 @@ function rowToStored(row: RewardProgressRow): StoredRewardProgress {
     totalXp: row.total_xp ?? 0,
     studyXp: row.study_xp ?? 0,
     reviewXp: row.review_xp ?? 0,
+    spentXp: row.spent_xp ?? 0,
     arenaSessions: row.arena_sessions ?? 0,
+    selectedCharacterId: row.selected_character_id ?? null,
     updatedAt: row.updated_at ?? null,
   }
 }

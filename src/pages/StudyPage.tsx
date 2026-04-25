@@ -14,9 +14,14 @@ import ChallengingScreen from '../components/study/ChallengingScreen'
 import { useStudySessionMode } from '../hooks/useStudySessionMode'
 import { DESIGN_TOKENS } from '../lib/tokens'
 import StudyActions from '../components/study/StudyActions'
+import { useCharacterCollection } from '../hooks/useCharacterCollection'
+import CharacterReactionAvatar from '../components/characters/CharacterReactionAvatar'
+import type { CharacterAnimationState } from '../lib/character-assets'
+import type { SrsRating } from '../lib/srs'
+import { SRS_RATINGS } from '../lib/constants'
 
 export default function StudyPage() {
-  const { profile } = useAuth()
+  const { user, profile } = useAuth()
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
   const topic = searchParams.get('topic') || undefined
@@ -43,6 +48,8 @@ export default function StudyPage() {
 
   const { isSaved, toggle, getNote, updateNote } = useNotebook()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [mascotReaction, setMascotReaction] = useState<CharacterAnimationState>('idle')
+  const { collection: characterCollection } = useCharacterCollection(user?.id)
 
   const handleToggleNotebook = useCallback(async () => {
     if (!currentCard) return
@@ -100,6 +107,30 @@ export default function StudyPage() {
     startSession(roadmapId, topicId || '', mode)
   }, [startSession, roadmapId, topicId])
 
+  const handleMascotReactionEnd = useCallback(() => {
+    setMascotReaction('idle')
+  }, [])
+
+  const handleStudyChallengeSubmit = useCallback((isCorrect: boolean) => {
+    setMascotReaction(isCorrect ? 'correct' : 'wrong')
+    handleChallengeSubmit(isCorrect)
+  }, [handleChallengeSubmit])
+
+  const handleStudySkipChallenge = useCallback(() => {
+    setMascotReaction('wrong')
+    handleSkipChallenge()
+  }, [handleSkipChallenge])
+
+  const handleStudyRate = useCallback((rating: SrsRating) => {
+    setMascotReaction(rating === SRS_RATINGS.AGAIN ? 'wrong' : 'correct')
+    handleRate(rating)
+  }, [handleRate])
+
+  const handleStudyMarkLearned = useCallback(() => {
+    setMascotReaction('correct')
+    markLearned()
+  }, [markLearned])
+
   // --- Guard Clauses for Loading/Prep/Completion ---
 
   if (isLoading) {
@@ -125,7 +156,14 @@ export default function StudyPage() {
 
   if (isComplete || !currentCard) {
     return (
-      <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh]">
+      <div className="relative flex flex-col items-center justify-center pt-8 min-h-[80vh]">
+        <CharacterReactionAvatar
+          collection={characterCollection}
+          animationState="celebrate"
+          animated
+          size="md"
+          className="pointer-events-none absolute right-6 top-8 hidden xl:block"
+        />
         <StudyComplete total={total} />
       </div>
     )
@@ -135,6 +173,14 @@ export default function StudyPage() {
 
   return (
     <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12 relative">
+      <CharacterReactionAvatar
+        collection={characterCollection}
+        animationState={mascotReaction}
+        animated
+        size="sm"
+        className="pointer-events-none absolute right-6 top-24 hidden xl:block"
+        onReactionEnd={handleMascotReactionEnd}
+      />
       <div className="max-w-md w-full space-y-8">
         {/* Header with Exit */}
         <div className="flex justify-between items-center mb-4">
@@ -175,8 +221,8 @@ export default function StudyPage() {
             currentChallengeType={currentChallengeType}
             word={word!}
             precomputedChoices={precomputedChoices}
-            onSubmit={handleChallengeSubmit}
-            onSkip={handleSkipChallenge}
+            onSubmit={handleStudyChallengeSubmit}
+            onSkip={handleStudySkipChallenge}
           />
         ) : (
           <div className="group relative">
@@ -214,8 +260,8 @@ export default function StudyPage() {
           suggestedRating={suggestedRating}
           intervalPreviews={intervalPreviews}
           onFlip={flip}
-          onMarkLearned={markLearned}
-          onRate={handleRate}
+          onMarkLearned={handleStudyMarkLearned}
+          onRate={handleStudyRate}
           onNextToChallenge={handleNextToChallenge}
         />
       </div>

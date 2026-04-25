@@ -1,21 +1,21 @@
 # Implementation Checklist
-- [ ] 1.1 Extend reward domain with `spentXp` and `availableXp`.
-- [ ] 1.2 Update reward storage row mapping and fallback persistence.
-- [ ] 1.3 Add unit tests proving lifetime EXP remains separate from spendable EXP.
-- [ ] 2.1 Add `041_user_character_unlocks.sql` migration.
-- [ ] 2.2 Add unlock/select RPCs with idempotent spending.
-- [ ] 2.3 Add RLS policies for character unlock/profile data.
-- [ ] 3.1 Add character catalog in `src/lib/characters.ts`.
-- [ ] 3.2 Add i18n keys for character names, descriptions, rarity, and actions.
-- [ ] 3.3 Add or generate MVP 3D-style character assets.
-- [ ] 4.1 Add character storage helpers in `src/lib/storage/characters.ts`.
-- [ ] 4.2 Export helpers through `src/lib/supabase-storage.ts`.
-- [ ] 4.3 Add `useCharacterCollection(userId)` hook.
-- [ ] 5.1 Build Dashboard `CharacterShowcaseCard`.
-- [ ] 5.2 Add `/characters` authenticated collection page.
-- [ ] 5.3 Add route title and navigation entry/link surface.
-- [ ] 5.4 Wire unlock/select actions with loading and error states.
-- [ ] 6.1 Add focused unit tests for character domain and collection state.
-- [ ] 6.2 Run `npm run build`.
-- [ ] 6.3 Run `npm run test:gate`.
+- [x] 1.1 Extend reward domain with `spentXp` and `availableXp`.
+- [x] 1.2 Update reward storage row mapping and fallback persistence.
+- [x] 1.3 Add unit tests proving lifetime EXP remains separate from spendable EXP.
+- [x] 2.1 Add `041_user_character_unlocks.sql` migration.
+- [x] 2.2 Add unlock/select RPCs with idempotent spending.
+- [x] 2.3 Add RLS policies for character unlock/profile data.
+- [x] 3.1 Add character catalog in `src/lib/characters.ts`.
+- [x] 3.2 Add i18n keys for character names, descriptions, rarity, and actions.
+- [x] 3.3 Add or generate MVP 3D-style character assets.
+- [x] 4.1 Add character storage helpers in `src/lib/storage/characters.ts`.
+- [x] 4.2 Export helpers through `src/lib/supabase-storage.ts`.
+- [x] 4.3 Add `useCharacterCollection(userId)` hook.
+- [x] 5.1 Build Dashboard `CharacterShowcaseCard`.
+- [x] 5.2 Add `/characters` authenticated collection page.
+- [x] 5.3 Add route title and navigation entry/link surface.
+- [x] 5.4 Wire unlock/select actions with loading and error states.
+- [x] 6.1 Add focused unit tests for character domain and collection state.
+- [x] 6.2 Run `npm run build`.
+- [x] 6.3 Run `npm run test:gate`.
 - [ ] 6.4 Manual smoke test unlock, select, and Dashboard showcase.

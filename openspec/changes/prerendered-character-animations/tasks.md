@@ -1,0 +1,21 @@
+# Implementation Checklist
+- [x] 1.1 Finalize `public/character-assets/{characterId}/stage-{stage}/{state}.{webm,webp}` naming.
+- [x] 1.2 Add `CharacterAnimationState` and asset path resolver.
+- [x] 1.3 Add resolver tests for idle, reaction, missing asset, and stage fallback cases.
+- [x] 2.1 Extract the current CSS avatar into a fallback renderer.
+- [x] 2.2 Update `CharacterAvatar` to support image/video rendering while preserving existing props.
+- [x] 2.3 Add `animated`, `animationState`, and `onReactionEnd` props with safe defaults.
+- [x] 2.4 Verify focused component tests pass.
+- [x] 3.1 Add first asset batch for `seedling_scholar` stage 1-3 idle posters and loops.
+- [x] 3.2 Add correct, wrong, celebrate, and evolve clips for the default selected mascot.
+- [x] 3.3 Keep placeholder CSS fallback for characters without generated assets.
+- [x] 4.1 Update Dashboard `CharacterShowcaseCard` to render selected character idle loop.
+- [x] 4.2 Update `/characters` cards to render static previews by default.
+- [x] 4.3 Add evolve celebration on successful evolve action when media exists.
+- [x] 5.1 Add Study/Review mascot reaction state after the base renderer is stable.
+- [x] 5.2 Trigger correct/wrong/celebrate states from existing answer and completion outcomes.
+- [x] 5.3 Ensure reactions never block SRS, reward, or navigation flows.
+- [x] 6.1 Run `npm run build`.
+- [x] 6.2 Run focused tests for character assets and renderer behavior.
+- [x] 6.3 Run `npm run test:gate` before merging the full feature.
+- [ ] 6.4 Manual smoke Dashboard, `/characters`, Study correct/wrong, reduced motion, and mobile layout.

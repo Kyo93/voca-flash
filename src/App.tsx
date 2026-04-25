@@ -20,6 +20,7 @@ const AdminUsersPage = lazy(() => import('./pages/admin/UsersPage'))
 const RoadmapSetupPage = lazy(() => import('./pages/admin/RoadmapSetupPage'))
 const ProgressPage = lazy(() => import('./pages/ProgressPage'))
 const AchievementsPage = lazy(() => import('./pages/AchievementsPage'))
+const CharactersPage = lazy(() => import('./pages/CharactersPage'))
 const MethodologyPage = lazy(() => import('./pages/MethodologyPage'))
 const MasteryPage = lazy(() => import('./pages/MasteryPage'))
 const FreeStudyPage = lazy(() => import('./pages/FreeStudyPage'))
@@ -70,6 +71,7 @@ function App() {
             <Route path="/library/:roadmapSlug" element={<RoadmapTopicsPage />} />
             <Route path="/progress" element={<ProgressPage />} />
             <Route path="/achievements" element={<AchievementsPage />} />
+            <Route path="/characters" element={<CharactersPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/methodology" element={<MethodologyPage />} />
             <Route path="/mastery" element={<MasteryPage />} />

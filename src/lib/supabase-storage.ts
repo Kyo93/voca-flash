@@ -9,6 +9,7 @@ export * from './storage/roadmap'
 export * from './storage/session'
 export * from './storage/notebook'
 export * from './storage/rewards'
+export * from './storage/characters'
 
 // Common Types (Centrally managed in lib/types.ts)
 export type { 

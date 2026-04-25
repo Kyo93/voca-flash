@@ -1,0 +1,20 @@
+# Implementation Checklist
+- [x] 1.1 Add RED tests for character evolution domain state.
+- [x] 1.2 Extend character catalog with evolution stage definitions.
+- [x] 1.3 Update `buildCharacterCollection` to derive current/next/max evolution state.
+- [x] 1.4 Verify focused domain tests pass.
+- [x] 2.1 Add `042_user_character_evolution.sql`.
+- [x] 2.2 Add `current_stage`, `evolution_spent_xp`, and `evolved_at` columns.
+- [x] 2.3 Add `evolve_user_character` RPC with sequential stage and available EXP checks.
+- [x] 2.4 Verify migration on linked Supabase project.
+- [x] 3.1 Update character storage row mapping for evolution fields.
+- [x] 3.2 Add `evolveUserCharacter` storage helper with local fallback.
+- [x] 3.3 Extend `useCharacterCollection` with `evolveCharacter`.
+- [x] 4.1 Add i18n keys for evolution labels, actions, and stage names.
+- [x] 4.2 Update `CharacterAvatar` to render current stage definition.
+- [x] 4.3 Update Dashboard `CharacterShowcaseCard` with current stage and next evolution status.
+- [x] 4.4 Update `/characters` card actions for unlock/select/evolve/maxed states.
+- [x] 5.1 Run focused evolution and reward tests.
+- [x] 5.2 Run `npm run build`.
+- [x] 5.3 Run `npm run test:gate`.
+- [ ] 5.4 Manual smoke unlock, evolve, select, and Dashboard display.

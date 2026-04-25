@@ -3,9 +3,34 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
-- Active Goal: 3D character unlock showcase brainstorming.
-- Current Phase: planning drafted.
-- Next Actions: implement reward wallet fields; add character unlock migration/RPC; build character catalog and Dashboard showcase.
+- Active Goal: Enlarge and make Dashboard mascot interactive.
+- Current Phase: verified.
+- Next Actions: visually smoke-test Dashboard at desktop/2xl width on `http://127.0.0.1:5173/`; click the mascot repeatedly and confirm it cycles correct/celebrate/wrong/evolve animations.
+- Just Completed: enlarged `DashboardMascotDock` from `lg` to new `xl` avatar sizing (`w-72 h-72`), moved the dock to `-left-56 top-6`, and made it an accessible button with i18n label `characters.actions.playReaction`.
+- Just Completed: Dashboard mascot click now cycles `correct -> celebrate -> wrong -> evolve` and returns to `idle` on video end; stage 2/3 starter reactions are generated and registered so evolved mascots no longer fallback to idle for reaction states.
+- Just Completed: verification passed after Dashboard mascot interaction changes: focused tests passed, `npm run build` passed, `npm run test:gate` passed with 426 tests and 0 failures, and all 30 starter asset URLs returned HTTP 200.
+- Just Completed: pre-push Secret Shield found a hardcoded Supabase service-role key in migration helper scripts; replaced it with env vars (`SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_SERVICE_KEY`) and staged secret scan passed.
+- Just Completed: generated original `seedling_scholar` OC mascot source with AI image generation, removed chroma background, saved reusable source at `scripts/assets/seedling_scholar_cutout.png`, added `scripts/generate-seedling-scholar-assets.mjs`, and exported all registered WebP/WebM files under `public/character-assets/seedling_scholar/`.
+- Just Completed: verification passed for generated character assets: all 14 public asset URLs returned HTTP 200 from dev server, `npm run build` passed, and `npm run test:gate` passed with 423 tests and 0 failures.
+- Just Completed: updated `DashboardMascotDock` from sidebar-fixed positioning to content-anchored absolute positioning inside the centered Dashboard container (`-left-40 top-14`), so the mascot sits nearer the hero block and tracks that block instead of the sidebar.
+- Just Completed: Quality gate passed after content-anchored Dashboard mascot relocation: focused mascot tests passed, `npm run build` passed, and `npm run test:gate` passed with 423 tests and 0 failures.
+- Next Actions: refresh `/characters` in browser and retry evolving `Mầm học giả`; manually confirm stage changes to 2/3 and available EXP drops by 120; replace placeholder generated assets with final AI/Blender renders when ready.
+- Just Completed: fixed starter character evolution persistence by adding `043_default_character_evolution.sql`; `evolve_user_character` now inserts the always-unlocked `seedling_scholar` row before locking/evolving, so DB stage state no longer reverts to stage 1 after refresh. Applied migration to linked Supabase project `nhnusgnlhnzwavpltbqj` and verified the function definition contains the starter seed logic.
+- Just Completed: answered KomikoAI character import workflow; current app imports character visuals as static files in `public/character-assets/` via `CHARACTER_ASSET_MANIFEST`, not through an in-app upload UI.
+- Just Completed: Quality gate passed after starter evolution fix: `npm run test:gate` passed with 422 tests and 0 failures.
+- Just Completed: added `CharacterReactionAvatar` and wired Study/Review mascot states: correct/wrong reactions on answers, celebrate on completion, and idle fallback after reaction end. Mascot rendering is isolated from SRS, reward sync, and navigation callbacks.
+- Just Completed: Quality gate passed after Study/Review reaction wiring: `npm run test:gate` passed with 421 tests and 0 failures.
+- Just Completed: added first `seedling_scholar` placeholder asset batch under `public/character-assets/` with stage 1-3 idle WebP/WebM and stage 1 correct/wrong/celebrate/evolve WebP/WebM; registered assets in `CHARACTER_ASSET_MANIFEST`; `/characters` now plays the `evolve` reaction after successful evolution.
+- Just Completed: Quality gate passed for character media foundation: `npm run test:gate` passed with 416 tests and 0 failures.
+- Just Completed: implemented pre-rendered character media foundation: `character-assets` resolver, CSS fallback avatar, media-capable `CharacterAvatar`, Dashboard animated selected mascot, static `/characters` grid previews, and focused tests. `npm run build` and `npm run test:gate` passed (413 tests).
+- Just Completed: reduced `/characters` action button sizes (`Tiến hóa`, `Trưng bày`, `Chưa đủ EXP`) and selected icon size for a more compact footer. `npm run build` and focused character tests passed.
+- Just Planned: created `openspec/changes/prerendered-character-animations/` with design, tasks, and asset contract for WebM/WebP character animations that keep the current EXP/unlock/evolution logic unchanged.
+- Just Completed: replaced the selected character footer button text `Đang trưng bày` with a compact `verified` status icon using the existing selected i18n label for title/aria. `npm run build` and focused character tests passed.
+- Just Completed: normalized `/characters` unlocked-card action layout by always rendering a display-state slot: selected cards show disabled `Đang trưng bày`, unselected cards show `Trưng bày`, so the first two character cards no longer have different button structures. `npm run build` and focused character tests passed.
+- Just Completed: polished `/characters` card action footer so `Tiến hóa` and `Trưng bày` sit in one aligned button group with consistent height/width and footer anchoring; focused character tests and `npm run build` passed.
+- Just Completed: fixed `/characters` action logic so unlocked characters with another evolution stage always show `Tiến hóa`; the evolve button is disabled when EXP is insufficient and a separate `Trưng bày` action remains available. `npm run build`, focused character/reward tests, and `npm run test:gate` passed (400 tests).
+- Just Completed: added character evolution stages, `evolve_user_character` RPC, migration `042_user_character_evolution.sql`, storage/hook `evolveCharacter`, Dashboard stage display, `/characters` evolve/maxed actions, and i18n stage copy. Migration verified on linked Supabase project `nhnusgnlhnzwavpltbqj`; `npm run build` and `npm run test:gate` passed (400 tests).
+- Just Completed: added spendable EXP wallet (`spentXp`, `availableXp`), character catalog, Supabase migration `041_user_character_unlocks.sql`, unlock/select RPCs, collection storage/hook, Dashboard showcase card, `/characters` page, nav/i18n, and focused tests. Migration verified on linked Supabase project `nhnusgnlhnzwavpltbqj`; `npm run build` and `npm run test:gate` passed (396 tests).
 - Just Completed: centralized real badge logic in `src/lib/achievements.ts`; Progress now limits recent badges to 2 compact rows, places the card directly below the green Mentor block, and stretches the card to align the right-column bottom with the left blocks; placeholder-only badges like `c1_peak` are no longer rendered; focused tests, `npm run build`, and `npm run test:gate` passed.
 - Dev Server: http://127.0.0.1:5173/
 - Supabase: `040_user_reward_progress.sql` applied via `supabase db query --linked --file`; verified table, RPC, and RLS policies on project `nhnusgnlhnzwavpltbqj`.
@@ -98,6 +123,7 @@
 - [x] Admin Module Refactoring (Clean Code SRP) — COMPLETED
 
 ## Mistakes & Learnings (Latest)
+- **Starter Character Persistence Bug**: Frontend treated `seedling_scholar` as always unlocked, but `evolve_user_character` required a physical row in `user_character_unlocks`; server RPC failed, local fallback briefly showed stage 2, then reward refresh re-read DB and reverted to stage 1. Fix: RPC must create the starter unlock row with `ON CONFLICT DO NOTHING` before selecting/locking it. Scope: `module:characters`. (2026-04-25)
 - **Admin Access Regression**: Frontend admin guards cannot rely only on `VITE_ADMIN_EMAILS`; local env may omit it while the real source of truth is `admin_users` + `is_admin()`. Fix: resolve admin access through env allowlist first, then Supabase `is_admin()`, and keep `RequireAdmin` in loading state until the async check completes. (2026-04-25)
 - **Suspense Layout UX Bug**: Wrapping <Routes> directly with <Suspense> unmounts the entire Layout including the Sidebar when switching routes. Fix: Place <Suspense> INSIDE the Layout component wrapping the <Outlet /> element. (2026-04-21)
 - **TopicFormModal Save Button**: Buttons in footer div OUTSIDE <form> tag don't trigger onSubmit. Fix: Add id="topic-form" to <form> and form="topic-form" to submit button. (2026-04-20)

@@ -23,6 +23,7 @@ export default function AppLayout() {
     if (location.pathname.startsWith('/library/')) return 'Roadmap Explorer'
     if (location.pathname.startsWith('/progress')) return t('nav.progress')
     if (location.pathname.startsWith('/achievements')) return t('nav.achievements')
+    if (location.pathname.startsWith('/characters')) return t('nav.characters')
     if (location.pathname.startsWith('/settings')) return t('nav.settings')
     if (location.pathname.startsWith('/admin')) return t('common.admin')
     if (location.pathname.startsWith('/mastery')) return t('nav.mastery')

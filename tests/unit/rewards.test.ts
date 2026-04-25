@@ -82,4 +82,29 @@ describe('reward domain logic', () => {
     expect(updated.reviewXp).toBe(10)
     expect(updated.studyXp).toBe(0)
   })
+
+  it('keeps lifetime XP separate from spendable character XP', () => {
+    const progress = toRewardProgressView({
+      ...createEmptyRewardProgress('user-1'),
+      totalXp: 500,
+      studyXp: 300,
+      reviewXp: 200,
+      spentXp: 150,
+    })
+
+    expect(progress.totalXp).toBe(500)
+    expect(progress.spentXp).toBe(150)
+    expect(progress.availableXp).toBe(350)
+    expect(progress.currentLevel).toEqual(getRewardLevel(500))
+  })
+
+  it('never lets spent XP create a negative available balance', () => {
+    const progress = toRewardProgressView({
+      ...createEmptyRewardProgress('user-1'),
+      totalXp: 40,
+      spentXp: 100,
+    })
+
+    expect(progress.availableXp).toBe(0)
+  })
 })

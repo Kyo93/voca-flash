@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useReviewSession } from '../hooks/useReviewSession'
 import SessionSummary from '../components/review/SessionSummary'
@@ -7,16 +7,32 @@ import ArenaShell from '../components/review/ArenaShell'
 import ArenaLoading from '../components/review/ArenaLoading'
 import { cancelSpeech } from '../lib/tts'
 import { useTranslation } from 'react-i18next'
+import { useAuth } from '../contexts/AuthContext'
+import { useCharacterCollection } from '../hooks/useCharacterCollection'
+import CharacterReactionAvatar from '../components/characters/CharacterReactionAvatar'
+import type { CharacterAnimationState } from '../lib/character-assets'
 
 export default function ReviewPage() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const session = useReviewSession()
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
+  const [mascotReaction, setMascotReaction] = useState<CharacterAnimationState>('idle')
+  const { collection: characterCollection } = useCharacterCollection(user?.id)
 
   useEffect(() => {
     session.initialize()
   }, [])
+
+  const handleMascotReactionEnd = useCallback(() => {
+    setMascotReaction('idle')
+  }, [])
+
+  const handleReviewSubmit = useCallback((isCorrect: boolean, isSkipped?: boolean) => {
+    setMascotReaction(isCorrect && !isSkipped ? 'correct' : 'wrong')
+    session.submitAnswer(isCorrect, isSkipped)
+  }, [session.submitAnswer])
 
   if (session.isLoading) {
     return <ArenaLoading />
@@ -29,6 +45,14 @@ export default function ReviewPage() {
         rewardProgress={session.rewardProgress}
         unlockedBadges={session.sessionUnlockedBadges}
         onRestart={session.initialize}
+        mascot={
+          <CharacterReactionAvatar
+            collection={characterCollection}
+            animationState="celebrate"
+            animated
+            size="md"
+          />
+        }
       />
     )
   }
@@ -77,12 +101,21 @@ export default function ReviewPage() {
         navigate('/dashboard')
       }}
       syncError={session.syncError}
+      mascot={
+        <CharacterReactionAvatar
+          collection={characterCollection}
+          animationState={mascotReaction}
+          animated
+          size="sm"
+          onReactionEnd={handleMascotReactionEnd}
+        />
+      }
     >
       {session.currentChallenge && (
         <ChallengeManager
           key={session.currentChallenge.id}
           challenge={session.currentChallenge}
-          onSubmit={session.submitAnswer}
+          onSubmit={handleReviewSubmit}
         />
       )}
     </ArenaShell>

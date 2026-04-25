@@ -5,10 +5,16 @@ import DashboardHero from '../components/dashboard/DashboardHero'
 import MemoryHealthCard from '../components/dashboard/MemoryHealthCard'
 import DailyMissionCard from '../components/dashboard/DailyMissionCard'
 import ForecastMiniChart from '../components/dashboard/ForecastMiniChart'
+import CharacterShowcaseCard from '../components/dashboard/CharacterShowcaseCard'
+import DashboardMascotDock from '../components/dashboard/DashboardMascotDock'
+import { useAuth } from '../contexts/AuthContext'
 import { LAYOUT_TOKENS, DESIGN_TOKENS } from '../lib/tokens'
+import { useCharacterCollection } from '../hooks/useCharacterCollection'
 
 export default function DashboardPage() {
   const { t } = useTranslation()
+  const { user } = useAuth()
+  const { collection, isLoadingCharacters } = useCharacterCollection(user?.id)
   const {
     profile,
     initialData,
@@ -36,7 +42,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex-1 px-10 py-8 overflow-y-auto" style={{ maxWidth: LAYOUT_TOKENS.MAX_WIDTH, margin: '0 auto', width: '100%' }}>
+    <div className="relative flex-1 px-10 py-8" style={{ maxWidth: LAYOUT_TOKENS.MAX_WIDTH, margin: '0 auto', width: '100%' }}>
+      <DashboardMascotDock collection={collection} />
 
       <DashboardHero
         profile={profile}
@@ -63,6 +70,11 @@ export default function DashboardPage() {
           forecast={initialData?.health.forecast || []}
         />
       </div>
+
+      <CharacterShowcaseCard
+        collection={collection}
+        loading={isLoadingCharacters}
+      />
 
       {/* Continue Learning */}
       <div className="mt-12">
