@@ -35,6 +35,14 @@ describe('character avatar usage', () => {
     expect(source).toContain('onReactionEnd={() =>')
   })
 
+  it('Characters page preloads the 3D renderer in the background for smoother expanded views', () => {
+    const source = fs.readFileSync(path.join(root, 'src/pages/CharactersPage.tsx'), 'utf8')
+
+    expect(source).toContain('preloadCharacterModelAvatar')
+    expect(source).toContain('requestIdleCallback')
+    expect(source).toContain('setTimeout(preloadCharacterModelAvatar')
+  })
+
   it('Characters page triggers evolve reaction only after evolution succeeds', () => {
     const source = fs.readFileSync(path.join(root, 'src/pages/CharactersPage.tsx'), 'utf8')
 

@@ -1,10 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import CharacterAvatar from '../components/characters/CharacterAvatar'
+import CharacterAvatar, { preloadCharacterModelAvatar } from '../components/characters/CharacterAvatar'
 import CharacterExpandedViewer from '../components/characters/CharacterExpandedViewer'
 import { useAuth } from '../contexts/AuthContext'
 import { useCharacterCollection } from '../hooks/useCharacterCollection'
+
+type IdleWindow = Window & typeof globalThis & {
+  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
+  cancelIdleCallback?: (handle: number) => void
+}
 
 export default function CharactersPage() {
   const { t } = useTranslation()
@@ -21,6 +26,19 @@ export default function CharactersPage() {
     evolveCharacter,
   } = useCharacterCollection(user?.id)
   const expandedItem = collection?.items.find(item => item.character.id === expandedCharacterId) ?? null
+
+  useEffect(() => {
+    if (!collection?.items.length || typeof window === 'undefined') return
+
+    const idleWindow = window as IdleWindow
+    if (idleWindow.requestIdleCallback) {
+      const idleId = idleWindow.requestIdleCallback(preloadCharacterModelAvatar, { timeout: 1400 })
+      return () => idleWindow.cancelIdleCallback?.(idleId)
+    }
+
+    const timeoutId = window.setTimeout(preloadCharacterModelAvatar, 650)
+    return () => window.clearTimeout(timeoutId)
+  }, [collection?.items])
 
   if (isLoadingCharacters && !collection) {
     return <div className="p-12 animate-pulse text-on-surface-variant font-medium">{t('common.loading')}</div>

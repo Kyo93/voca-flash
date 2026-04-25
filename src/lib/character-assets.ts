@@ -123,113 +123,38 @@ const animatedGlbModelAsset: CharacterModelAssetAvailability = {
   embeddedAnimationStates: CHARACTER_ANIMATION_STATES,
 }
 
+const staticGlbModelAsset: CharacterModelAssetAvailability = {
+  glbModel: true,
+  thumbnail: true,
+}
+
+const pbrObjModelAsset: CharacterModelAssetAvailability = {
+  model: true,
+  thumbnail: true,
+  diffuseTexture: true,
+  normalTexture: true,
+  roughnessTexture: true,
+  metallicTexture: true,
+  pbrTexture: true,
+}
+
+function fourStageModelAssets(
+  stageAsset: CharacterModelAssetAvailability,
+): Partial<Record<number, CharacterModelAssetAvailability>> {
+  return {
+    1: { ...stageAsset },
+    2: { ...stageAsset },
+    3: { ...stageAsset },
+    4: { ...stageAsset },
+  }
+}
+
 export const CHARACTER_MODEL_ASSET_MANIFEST: CharacterModelAssetManifest = {
-  arcane_brawler: {
-    1: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-    2: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-    3: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-    4: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-  },
-  sunlit_scholar: {
-    1: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-    2: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-    3: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-    4: {
-      model: true,
-      thumbnail: true,
-      diffuseTexture: true,
-      normalTexture: true,
-      roughnessTexture: true,
-      metallicTexture: true,
-      pbrTexture: true,
-    },
-  },
-  falling_leaf_tree: {
-    1: {
-      glbModel: true,
-      thumbnail: true,
-    },
-    2: {
-      glbModel: true,
-      thumbnail: true,
-    },
-    3: {
-      glbModel: true,
-      thumbnail: true,
-    },
-    4: {
-      glbModel: true,
-      thumbnail: true,
-    },
-  },
-  playful_dog: {
-    1: animatedGlbModelAsset,
-    2: animatedGlbModelAsset,
-    3: animatedGlbModelAsset,
-    4: animatedGlbModelAsset,
-  },
-  rampaging_t_rex: {
-    1: animatedGlbModelAsset,
-    2: animatedGlbModelAsset,
-    3: animatedGlbModelAsset,
-    4: animatedGlbModelAsset,
-  },
+  arcane_brawler: fourStageModelAssets(pbrObjModelAsset),
+  sunlit_scholar: fourStageModelAssets(pbrObjModelAsset),
+  falling_leaf_tree: fourStageModelAssets(staticGlbModelAsset),
+  playful_dog: fourStageModelAssets(animatedGlbModelAsset),
+  rampaging_t_rex: fourStageModelAssets(animatedGlbModelAsset),
 }
 
 function normalizeStage(stage: number | null | undefined): number {

@@ -2,10 +2,19 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
-const source = fs.readFileSync(
+const modelAvatarSource = fs.readFileSync(
   path.join(process.cwd(), 'src', 'components', 'characters', 'CharacterModelAvatar.tsx'),
   'utf-8',
 )
+const modelRuntimeSource = fs.readFileSync(
+  path.join(process.cwd(), 'src', 'components', 'characters', 'character-model-avatar-runtime.ts'),
+  'utf-8',
+)
+const modelLoaderSource = fs.readFileSync(
+  path.join(process.cwd(), 'src', 'components', 'characters', 'character-model-avatar-loader.ts'),
+  'utf-8',
+)
+const source = `${modelAvatarSource}\n${modelRuntimeSource}\n${modelLoaderSource}`
 
 describe('CharacterModelAvatar interaction contract', () => {
   it('uses OrbitControls so OBJ characters can be inspected from multiple angles', () => {
@@ -113,5 +122,17 @@ describe('CharacterModelAvatar interaction contract', () => {
     expect(source).toContain("powerPreference: 'high-performance'")
     expect(source).toContain('performancePixelRatioCap')
     expect(source).toContain('renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, performancePixelRatioCap))')
+  })
+
+  it('keeps the WebGL model mounted when parent callback props refresh', () => {
+    expect(source).toContain('onErrorRef')
+    expect(source).toContain('onErrorRef.current = onError')
+    expect(source).toContain('onErrorRef.current()')
+  })
+
+  it('shows a static thumbnail while the 3D model is still loading', () => {
+    expect(source).toContain('thumbnailSrc')
+    expect(source).toContain('isModelReady')
+    expect(source).toContain('data-character-model-loading-thumbnail')
   })
 })

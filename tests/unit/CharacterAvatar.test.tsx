@@ -42,10 +42,14 @@ describe('CharacterAvatar media renderer', () => {
 
   it('uses static model thumbnails for non-display avatars before loading WebGL', () => {
     expect(characterAvatarSource).toContain('useModelThumbnail?: boolean')
+    expect(characterAvatarSource).toContain('deferModelLoad?: boolean')
     expect(characterAvatarSource).toContain('shouldUseModelThumbnail')
+    expect(characterAvatarSource).toContain('shouldDeferModelLoad')
     expect(characterAvatarSource).toContain('useModelThumbnail &&')
     expect(characterAvatarSource).toContain('modelAsset.thumbnailSrc')
     expect(characterAvatarSource).toContain('data-character-avatar-model-thumbnail="true"')
+    expect(characterAvatarSource).toContain('data-character-avatar-model-placeholder="true"')
+    expect(characterAvatarSource).toContain('requestIdleCallback')
     expect(characterAvatarSource).toContain("size !== 'display'")
   })
 

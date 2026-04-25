@@ -3,6 +3,12 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
+- Active Goal: Optimize 3D character loading smoothness.
+- Just Completed: deferred non-display WebGL model mounting behind static thumbnails using `requestIdleCallback`/timeout fallback, while keeping display/expanded viewer immediate.
+- Just Completed: added loading thumbnails inside `CharacterModelAvatar` until the real OBJ/GLB model is ready, so users do not see a blank frame during first load.
+- Just Completed: prevented Dashboard 3D mascot reloads on each reaction by removing `animationState` from its React key and keeping renderer callback props out of the WebGL setup effect dependency chain.
+- Just Completed: gated Dashboard mascot mounting with the same 2xl breakpoint as its CSS visibility and background-preloaded the 3D renderer on `/characters` for smoother expanded-view opening.
+- Just Completed: verification passed for 3D loading optimization: focused avatar/dashboard/model tests passed, `npm run build` passed, and `npm run test:gate` passed with 489 tests.
 - Active Goal: Add expanded-view animation controls for GLB characters and reduce large-view render lag.
 - Working Context: expanded viewer should keep Dashboard behavior disabled, expose animation choices only for model assets that declare embedded animation states, and keep lighting controls for model-backed characters.
 - Current Plan: `openspec/changes/add-expanded-glb-animation-controls/`.

@@ -13,7 +13,12 @@ import {
 import type { CharacterDefinition, CharacterEvolutionStage } from '../../lib/characters'
 import CharacterFallbackAvatar from './CharacterFallbackAvatar'
 
-const CharacterModelAvatar = lazy(() => import('./CharacterModelAvatar'))
+const loadCharacterModelAvatar = () => import('./CharacterModelAvatar')
+const CharacterModelAvatar = lazy(loadCharacterModelAvatar)
+
+export function preloadCharacterModelAvatar() {
+  void loadCharacterModelAvatar()
+}
 
 interface CharacterAvatarProps {
   character: CharacterDefinition
@@ -22,6 +27,7 @@ interface CharacterAvatarProps {
   animated?: boolean
   animationState?: CharacterAnimationState
   useModelThumbnail?: boolean
+  deferModelLoad?: boolean
   disableProceduralAnimation?: boolean
   materialQuality?: CharacterModelMaterialQuality
   modelViewerSettings?: CharacterModelViewerSettings
@@ -68,6 +74,11 @@ function usePrefersReducedMotion() {
   return prefersReducedMotion
 }
 
+type IdleWindow = Window & typeof globalThis & {
+  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
+  cancelIdleCallback?: (handle: number) => void
+}
+
 export default function CharacterAvatar({
   character,
   stageDefinition,
@@ -75,6 +86,7 @@ export default function CharacterAvatar({
   animated = false,
   animationState = 'idle',
   useModelThumbnail = true,
+  deferModelLoad = size !== 'display',
   disableProceduralAnimation = false,
   materialQuality = 'standard',
   modelViewerSettings,
@@ -87,6 +99,7 @@ export default function CharacterAvatar({
   const prefersReducedMotion = usePrefersReducedMotion()
   const [mediaFailed, setMediaFailed] = useState(false)
   const [modelFailed, setModelFailed] = useState(false)
+  const [deferredModelReady, setDeferredModelReady] = useState(false)
   const allowAnimation = animated && !prefersReducedMotion
   const mediaAsset = resolveCharacterMediaAsset({
     characterId: character.id,
@@ -103,11 +116,54 @@ export default function CharacterAvatar({
   const hasEmbeddedModelAnimation = (modelAsset?.embeddedAnimationStates?.length ?? 0) > 0
   const disableModelProceduralAnimation = disableProceduralAnimation || hasEmbeddedModelAnimation
   const shouldUseModelThumbnail = useModelThumbnail && !!modelAsset?.thumbnailSrc && size !== 'display' && !modelFailed
+  const shouldDeferModelLoad = deferModelLoad && !!modelAsset?.thumbnailSrc && size !== 'display' && !modelFailed
 
   useEffect(() => {
     setMediaFailed(false)
     setModelFailed(false)
   }, [character.id, visual.stage, animationState, allowAnimation])
+
+  useEffect(() => {
+    if (!shouldDeferModelLoad) {
+      setDeferredModelReady(true)
+      return
+    }
+
+    setDeferredModelReady(false)
+    if (typeof window === 'undefined') {
+      setDeferredModelReady(true)
+      return
+    }
+
+    const idleWindow = window as IdleWindow
+    const startModelLoad = () => setDeferredModelReady(true)
+    if (idleWindow.requestIdleCallback) {
+      const idleId = idleWindow.requestIdleCallback(startModelLoad, { timeout: 900 })
+      return () => idleWindow.cancelIdleCallback?.(idleId)
+    }
+
+    const timeoutId = window.setTimeout(startModelLoad, 240)
+    return () => window.clearTimeout(timeoutId)
+  }, [character.id, modelAsset?.modelSrc, shouldDeferModelLoad, visual.stage])
+
+  const modelPlaceholder = modelAsset?.thumbnailSrc ? (
+    <div
+      className={`${classes.frame} relative shrink-0 flex items-center justify-center`}
+      data-character-avatar-model-placeholder="true"
+      data-character-material-quality={materialQuality}
+    >
+      <img
+        className="h-full w-full object-contain"
+        src={modelAsset.thumbnailSrc}
+        alt=""
+        role="presentation"
+        loading={size === 'display' ? 'eager' : 'lazy'}
+        onError={() => setModelFailed(true)}
+      />
+    </div>
+  ) : (
+    <CharacterFallbackAvatar character={character} stageDefinition={visual} size={size} />
+  )
 
   if (mediaAsset?.videoSrc && !mediaFailed) {
     const isIdle = mediaAsset.state === 'idle'
@@ -173,8 +229,12 @@ export default function CharacterAvatar({
   }
 
   if (modelAsset && !modelFailed) {
+    if (shouldDeferModelLoad && !deferredModelReady) {
+      return modelPlaceholder
+    }
+
     return (
-      <Suspense fallback={<CharacterFallbackAvatar character={character} stageDefinition={visual} size={size} />}>
+      <Suspense fallback={modelPlaceholder}>
         <CharacterModelAvatar
           asset={modelAsset}
           className={classes.frame}
@@ -183,6 +243,7 @@ export default function CharacterAvatar({
           disableProceduralAnimation={disableModelProceduralAnimation}
           materialQuality={materialQuality}
           modelViewerSettings={modelViewerSettings}
+          thumbnailSrc={modelAsset.thumbnailSrc}
           onError={() => setModelFailed(true)}
           onReactionEnd={onReactionEnd}
         />

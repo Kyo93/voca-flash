@@ -50,6 +50,13 @@ describe('DashboardMascotDock', () => {
 
   it('opts out of static model thumbnails so the Dashboard showcase can stay 3D', () => {
     expect(dashboardMascotSource).toContain('useModelThumbnail={false}')
+    expect(dashboardMascotSource).toContain('deferModelLoad')
+    expect(dashboardMascotSource).toContain('useDashboardMascotViewportEnabled')
+  })
+
+  it('does not remount the 3D mascot every time a reaction changes', () => {
+    expect(dashboardMascotSource).toContain('key={`${selectedCharacter.id}-${selectedItem.currentStage}`}')
+    expect(dashboardMascotSource).not.toContain('key={`${selectedCharacter.id}-${selectedItem.currentStage}-${animationState}`}')
   })
 
   it('cycles click reactions and returns to idle when the clip ends', () => {
