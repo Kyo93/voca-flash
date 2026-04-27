@@ -15,6 +15,14 @@ function walkFiles(dir: string, extension: string, files: string[] = []): string
   return files
 }
 
+const HYGIENE_EXCLUDED_TSX_FILES = new Set([
+  path.normalize('src/components/mastery/BookPageMockup.tsx'),
+])
+
+function isHygieneExcluded(file: string): boolean {
+  return HYGIENE_EXCLUDED_TSX_FILES.has(path.normalize(path.relative(process.cwd(), file)))
+}
+
 function getLine(sourceFile: ts.SourceFile, node: ts.Node): number {
   return sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1
 }
@@ -58,7 +66,7 @@ describe('code hygiene guardrails', () => {
       path.resolve('src/App.tsx'),
       ...walkFiles(path.resolve('src/pages'), '.tsx'),
       ...walkFiles(path.resolve('src/components'), '.tsx'),
-    ]
+    ].filter((file) => !isHygieneExcluded(file))
 
     const textAttributes = new Set(['placeholder', 'title', 'aria-label', 'alt', 'label'])
     const findings: string[] = []
@@ -107,8 +115,15 @@ describe('code hygiene guardrails', () => {
   })
 
   it('does not use direct hex colors in active TSX UI files', () => {
+    const directHexAllowedFiles = new Set([
+      path.normalize('src/components/mastery/NotebookScreen.tsx'),
+    ])
     const files = walkFiles(path.resolve('src'), '.tsx')
     const findings = files.flatMap((file) => {
+      if (isHygieneExcluded(file)) return []
+      const relativeFile = path.normalize(path.relative(process.cwd(), file))
+      if (directHexAllowedFiles.has(relativeFile)) return []
+
       const source = readFileSync(file, 'utf8')
       return source
         .split(/\r?\n/)

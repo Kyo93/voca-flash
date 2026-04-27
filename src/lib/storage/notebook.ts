@@ -1,4 +1,5 @@
 import { supabase } from '../supabase'
+import type { Word } from '../types'
 
 export interface NotebookEntry {
   id: string
@@ -7,6 +8,40 @@ export interface NotebookEntry {
   personal_note: string | null
   created_at: string
   updated_at: string
+}
+
+export type NotebookWord = Pick<
+  Word,
+  | 'id'
+  | 'word'
+  | 'definition'
+  | 'phonetic'
+  | 'pos'
+  | 'difficulty'
+  | 'synonyms'
+  | 'antonyms'
+  | 'word_family'
+  | 'image_url'
+  | 'example'
+  | 'example_vi'
+  | 'created_at'
+  | 'updated_at'
+>
+
+export interface NotebookWordEntry extends NotebookEntry {
+  word: NotebookWord | null
+}
+
+type NotebookWordEntryRow = Omit<NotebookWordEntry, 'word'> & {
+  word?: NotebookWord | NotebookWord[] | null
+}
+
+function normalizeNotebookWordEntry(row: NotebookWordEntryRow): NotebookWordEntry {
+  const joinedWord = Array.isArray(row.word) ? row.word[0] ?? null : row.word ?? null
+  return {
+    ...row,
+    word: joinedWord,
+  }
 }
 
 export async function fetchNotebookEntries(userId: string): Promise<NotebookEntry[]> {
@@ -20,6 +55,44 @@ export async function fetchNotebookEntries(userId: string): Promise<NotebookEntr
     return []
   }
   return data || []
+}
+
+export async function fetchNotebookWordEntries(userId: string): Promise<NotebookWordEntry[]> {
+  const { data, error } = await supabase
+    .from('user_notebook_entries')
+    .select(`
+      id,
+      user_id,
+      word_id,
+      personal_note,
+      created_at,
+      updated_at,
+      word:words (
+        id,
+        word,
+        definition,
+        phonetic,
+        pos,
+        difficulty,
+        synonyms,
+        antonyms,
+        word_family,
+        image_url,
+        example,
+        example_vi,
+        created_at,
+        updated_at
+      )
+    `)
+    .eq('user_id', userId)
+    .order('updated_at', { ascending: false })
+
+  if (error) {
+    console.error('[Storage] fetchNotebookWordEntries error:', error)
+    return []
+  }
+
+  return ((data || []) as NotebookWordEntryRow[]).map(normalizeNotebookWordEntry)
 }
 
 export async function toggleNotebookEntry(userId: string, wordId: string): Promise<{ added: boolean; entry?: NotebookEntry }> {

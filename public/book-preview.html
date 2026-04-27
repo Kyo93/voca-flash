@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <style>
+        :root {
+            /* Màu giấy cũ (Parchment) */
+            --paper-base: #e8dfc4;
+            --paper-darker: #d3c8a9;
+            --text-engraved: rgba(45, 35, 20, 0.8);
+            --spine-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #1a1a1a;
+            margin: 0;
+            perspective: 2000px;
+        }
+
+        /* Khối tổng thể tạo độ dày trang giấy */
+        .book-container {
+            position: relative;
+            width: 450px;
+            height: 600px;
+            background: var(--paper-base);
+            transform: rotateX(25deg) rotateY(-15deg) rotateZ(-2deg);
+            transform-style: preserve-3d;
+
+            /* Tạo độ dày trang giấy bằng nhiều lớp Shadow */
+            box-shadow:
+                0 1px 0 var(--paper-darker),
+                1px 2px 0 var(--paper-darker),
+                2px 3px 0 var(--paper-darker),
+                3px 4px 0 var(--paper-darker),
+                4px 5px 0 var(--paper-darker),
+                5px 10px 30px rgba(0, 0, 0, 0.5);
+
+            border-radius: 2px 8px 8px 2px;
+            padding: 50px;
+            transition: transform 0.5s ease;
+        }
+
+        /* Hiệu ứng Texture hạt (Noise) */
+        .book-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        /* Ánh sáng đổ từ góc trên bên trái */
+        .lighting-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.4) 0%,
+                    transparent 50%,
+                    rgba(0, 0, 0, 0.15) 100%);
+            pointer-events: none;
+            border-radius: inherit;
+            z-index: 5;
+        }
+
+        /* Đường rãnh gáy sách */
+        .spine-line {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            box-shadow: -1px 0 2px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Vùng nhập văn bản */
+        .engraved-text {
+            position: relative;
+            z-index: 2;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            text-align: justify;
+            outline: none;
+
+            /* Hiệu ứng chìm sâu */
+            color: var(--text-engraved);
+            text-shadow:
+                -1px -1px 1px rgba(0, 0, 0, 0.2),
+                1px 1px 1px rgba(255, 255, 255, 0.5);
+
+            /* Giả lập mực thấm vào giấy */
+            mix-blend-mode: multiply;
+        }
+
+        .book-container:hover {
+            transform: rotateX(20deg) rotateY(-10deg) rotateZ(0deg) scale(1.02);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="book-container">
+        <div class="lighting-overlay"></div>
+        <div class="spine-line"></div>
+
+        <div class="engraved-text" contenteditable="true">
+            Gửi người bạn phương xa...<br><br>
+            Bạn đang nhìn thấy một "quyển sách" được xây dựng hoàn toàn bằng ngôn ngữ của trình duyệt. <br><br>
+            Mỗi dòng chữ bạn đang đọc không chỉ nằm trên bề mặt, mà dường như được ép sâu xuống lớp sợi gỗ của giấy bằng
+            kỹ thuật text-shadow đảo ngược. Độ dày mà bạn thấy ở cạnh phải thực chất là sự chồng chéo của 5 lớp bóng đổ
+            (box-shadow) cách nhau chỉ 1 pixel. <br><br>
+            Hãy thử xóa đoạn này và viết tâm tư của bạn vào đây...
+        </div>
+    </div>
+
+</body>
+
+</html>

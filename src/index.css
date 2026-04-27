@@ -68,6 +68,8 @@
   --font-headline: "Be Vietnam Pro", system-ui, sans-serif;
   --font-body: "Be Vietnam Pro", system-ui, sans-serif;
   --font-label: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-serif: "Newsreader", "Playfair Display", Georgia, serif;
+  --font-handwriting: "Caveat", cursive;
 
   /* Arena Specific (Review Mode) */
   --color-arena-bg: #060608;
@@ -149,6 +151,78 @@ body {
 }
 
 /* === Design Utilities === */
+
+.notebook-ruled-page {
+  --notebook-rule-size: 32px;
+  --notebook-rule-offset: 8px;
+  --notebook-rule-baseline-shift: 12px;
+  --notebook-paper-base: #f7f3e8;
+  --notebook-paper-light: #fffdf4;
+  --notebook-paper-darker: #e3ddcc;
+  isolation: isolate;
+  background-color: var(--notebook-paper-base);
+  background-image:
+    repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      rgba(96, 72, 43, 0.025) 31px,
+      rgba(96, 72, 43, 0.025) 32px
+    ),
+    radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.56), transparent 30%),
+    linear-gradient(135deg, var(--notebook-paper-light), var(--notebook-paper-base) 58%, var(--notebook-paper-darker));
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: 100% var(--notebook-rule-size), 100% 100%, 100% 100%;
+  background-position-y: var(--notebook-rule-offset);
+}
+
+.notebook-ruled-page::before,
+.notebook-ruled-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.notebook-ruled-page::before {
+  z-index: 0;
+  background: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+}
+
+.notebook-ruled-page::after {
+  z-index: 1;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.045) 100%);
+}
+
+.notebook-ruled-page > * {
+  position: relative;
+  z-index: 2;
+}
+
+.notebook-baseline-page {
+  background-position-y: var(--notebook-rule-offset);
+}
+
+.notebook-line-text {
+  line-height: var(--notebook-rule-size, 32px) !important;
+}
+
+.notebook-on-rule-text {
+  transform: translateY(var(--notebook-rule-baseline-shift, 12px));
+}
+
+.notebook-engraved-text {
+  color: rgba(45, 35, 20, 0.78);
+  text-shadow:
+    -1px -1px 1px rgba(0, 0, 0, 0.18),
+    1px 1px 1px rgba(255, 255, 255, 0.48);
+  mix-blend-mode: multiply;
+}
 
 @utility editorial-asymmetry {
   letter-spacing: -0.02em;

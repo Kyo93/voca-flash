@@ -7,6 +7,8 @@ interface MasteryHeaderProps {
   setSearchQuery: (query: string) => void
   selectedIdsSize: number
   onStartFreeStudy: () => void
+  notebookCount: number
+  onOpenNotebook: () => void
 }
 
 export default function MasteryHeader({
@@ -15,12 +17,14 @@ export default function MasteryHeader({
   searchQuery,
   setSearchQuery,
   selectedIdsSize,
-  onStartFreeStudy
+  onStartFreeStudy,
+  notebookCount,
+  onOpenNotebook
 }: MasteryHeaderProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 mb-12">
+    <div className="mb-12 flex flex-col justify-between gap-8 md:flex-row md:items-start">
       <div className="space-y-4">
         <div className="flex flex-col">
           <span className="label-md uppercase tracking-[0.3em] text-secondary font-bold mb-2">{t('mastery.filters.lexicalArchive')}</span>
@@ -34,9 +38,11 @@ export default function MasteryHeader({
           )}
         </p>
       </div>
-      
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
-        <div className="relative group flex-1 sm:flex-none">
+      <div
+        data-testid="mastery-header-actions"
+        className="flex w-full flex-col items-stretch gap-3 sm:flex-row md:w-auto md:items-center md:pt-7"
+      >
+        <div className="group relative flex-1 sm:flex-none">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors">search</span>
             <input 
               type="text"
@@ -47,14 +53,30 @@ export default function MasteryHeader({
             />
         </div>
         
+        <button
+          type="button"
+          onClick={onOpenNotebook}
+          aria-label={t('mastery.notebook.open')}
+          title={t('mastery.notebook.open')}
+          className="group flex h-14 min-w-[10rem] items-center justify-center gap-2 rounded-2xl bg-surface-container-lowest px-5 text-sm font-black text-secondary shadow-sun-drenched transition-all hover:-translate-y-0.5 hover:bg-secondary hover:text-on-secondary active:scale-95"
+        >
+          <span className="material-symbols-outlined text-[22px] group-hover:rotate-6 transition-transform">menu_book</span>
+          <span className="hidden sm:inline">{t('mastery.table.notebook')}</span>
+          <span className="min-w-6 h-6 px-2 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center group-hover:bg-on-secondary/20 group-hover:text-on-secondary">
+            {notebookCount}
+          </span>
+        </button>
+
         <button 
+          type="button"
           onClick={onStartFreeStudy}
-          className="px-10 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all active:scale-95 primary-gradient text-on-primary shadow-sun-drenched group"
+          aria-label={selectedIdsSize > 0 ? t('mastery.freeStudy', { count: selectedIdsSize }) : t('mastery.filters.flashReview')}
+          className="group flex h-14 min-w-[10rem] items-center justify-center gap-3 whitespace-nowrap rounded-2xl px-6 text-sm font-black text-on-primary shadow-sun-drenched transition-all primary-gradient hover:-translate-y-0.5 active:scale-95"
         >
           <span className="material-symbols-outlined font-variation-fill group-hover:rotate-12 transition-transform">bolt</span>
           <span>{selectedIdsSize > 0 ? t('mastery.freeStudy', { count: selectedIdsSize }) : t('mastery.filters.flashReview')}</span>
         </button>
       </div>
     </div>
-  )
+  );
 }

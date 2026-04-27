@@ -3,6 +3,206 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
+- Active Goal: Fix Mastery page notebook and Flash Review header buttons.
+- Current Plan: keep the existing Mastery header structure, remove hardcoded oversized widths/translates, and make both action buttons compact aligned pills.
+- Current Phase: verified.
+- Working Context: `MasteryHeader` action row should use natural button widths; avoid `w-[953px]`, fixed wrapper heights, and manual translate offsets that distort the search/action layout.
+- Just Completed: changed the action row to a responsive compact flex group, turned `Sổ tay` into a secondary pill with notebook count badge, and made `Flash Review` a same-height primary pill with a stable accessible label.
+- Just Completed: added `tests/unit/MasteryHeader.test.tsx` to prevent the oversized button regression.
+- Verification: focused MasteryHeader test passed, `npm run build` passed, `npm run test:gate` passed with 513 tests, and `/mastery` returned HTTP 200 on `127.0.0.1:5173`.
+- Next Actions: visually refresh `/mastery`; if the row still feels too far right on the target viewport, tune only `md:pt-7` or the search input width.
+
+## Current Session Override
+- Active Goal: Polish Mastery Notebook sticky note paper treatment from design option #2.
+- Current Plan: keep the Windows-style sticky note features but make the note feel physically stuck on the paper: softer paper shadow, subtle top edge, lifted corner, calmer toolbar, and subdued idle actions.
+- Current Phase: verified.
+- Working Context: `NotebookScreen` sticky note should remain readable and editable; the polish is visual only and must preserve existing note edit/copy/clear/color behavior.
+- Just Completed: updated the sticky note shell with a slight paper rotation, layered paper-like shadow, top paper edge, folded-corner highlight, toned-down toolbar color, and hover-revealed idle actions.
+- Just Completed: stabilized `tests/unit/streak.test.ts` with Vitest fake timers and `getTodayBoundary()` offsets after the full gate exposed a date-sensitive failure on 2026-04-27.
+- Verification: focused notebook test passed with 20 tests, focused streak test passed with 5 tests, `npm run test:gate` passed with 512 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery`; if the sticky note still feels too digital, tune only shadow opacity, toolbar color, or corner-lift opacity.
+
+## Current Session Override
+- Active Goal: Add Windows 10 Sticky Notes style capabilities to vocabulary notes.
+- Current Plan: L1 `/cm-start`; keep schema unchanged and enhance the existing per-word sticky note UI in `NotebookScreen`.
+- Current Phase: verified.
+- Working Context: RichNoteEditor already provides formatting/link/list/color tools; notebook sticky note needs Windows-like shell features around it: expanded edit surface, color swatches, menu actions, copy/clear, and note stats.
+- Just Completed: added six sticky note color themes, a three-dot menu with color swatches/copy/clear, note word/character stats, clear-note persistence via existing `onSaveNote`, and expanded edit mode (`aspect-[4/3]`, max 34rem) so the existing rich editor toolbar can be used.
+- Just Completed: added i18n keys for note menu/actions/stats/colors and regression coverage for color changes, clear action, status counts, and expanded edit frame.
+- Just Completed: verification passed: focused notebook test passed with 20 tests, `npm run test:gate` passed with 512 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery`; if the editor is too tight inside the book page, tune only expanded sticky width/height.
+
+## Current Session Override
+- Active Goal: Fix Mastery Notebook archive entry click not loading the right page.
+- Current Plan: Bugfix with root-cause test around pointer drag vs archive entry buttons.
+- Current Phase: verified.
+- Working Context: page-drag should start only from non-interactive book surface; buttons inside the book must keep normal click behavior.
+- Just Completed: added `shouldIgnoreBookDrag()` and made `handleBookPointerDown` ignore buttons/links/inputs/contenteditable elements so clicking an archive word updates the right page instead of being captured as a page drag.
+- Just Completed: regression coverage now simulates pointer activity on an archive button, verifies the page does not flip, then verifies the right page loads the clicked word and definition.
+- Just Completed: verification passed: focused notebook test passed with 19 tests, `npm run test:gate` passed with 511 tests, and `npm run build` passed.
+- Next Actions: visually verify `/mastery` by clicking Capital/Airport/Knowledge on the left page.
+
+## Current Session Override
+- Active Goal: Remove duplicate Mastery Notebook page label and move navigation to bottom-left of left page.
+- Current Plan: L0 UI layout fix in `src/components/mastery/NotebookScreen.tsx` with focused regression coverage.
+- Current Phase: verified.
+- Working Context: page status should appear once only; page controls belong at the physical page footer, not under the archive title.
+- Just Completed: removed duplicate `pageOf` from the archive header and positioned `notebook-page-controls` as `absolute bottom-10 left-10` on the left page.
+- Just Completed: verification passed: focused notebook test passed with 18 tests, `npm run test:gate` passed with 510 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery`; if controls overlap the polaroid on narrow desktops, tune only bottom/left spacing or photo width.
+
+## Current Session Override
+- Active Goal: Make Mastery Notebook sticky note match Windows 10 Sticky Notes and keep edit controls inside it.
+- Current Plan: L0 UI behavior change in `src/components/mastery/NotebookScreen.tsx` with focused regression coverage.
+- Current Phase: verified.
+- Working Context: sticky note should own its note actions; do not keep the note edit button in the word title header.
+- Just Completed: converted the note into a Win10-like sticky note with a yellow toolbar, moved edit into that toolbar, moved save/cancel into the same sticky toolbar during editing, and removed the title-line edit button.
+- Just Completed: verification passed: focused notebook test passed with 18 tests, `npm run test:gate` passed with 510 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery`; tune sticky toolbar color/height if it needs to look closer to the native Windows app.
+
+## Current Session Override
+- Active Goal: Fix Mastery Notebook sticky note proportions and add archive page navigation.
+- Current Plan: L0 UI behavior change in `src/components/mastery/NotebookScreen.tsx` with focused regression coverage.
+- Current Phase: verified.
+- Working Context: keep the notebook physical-book metaphor; archive pages show 4 words at a time, next/previous navigation should select the first word on the new page, and horizontal drag over the book spread should flip archive pages.
+- Just Completed: changed sticky note to a square Post-it ratio (`aspect-[1/1]`, max 15rem), added archive page controls, added pointer-drag page flipping with a subtle curl overlay, and added i18n labels for previous/next page.
+- Just Completed: regression coverage now checks sticky-note ratio, page controls, page 1/2 content changes, selected headword changes, and drag-right previous-page behavior.
+- Just Completed: verification passed: focused notebook test passed with 17 tests, `npm run test:gate` passed with 509 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery` notebook and tune only sticky note width or drag threshold if the physical feel is off.
+
+## Current Session Override
+- Active Goal: Reduce Mastery Notebook yellow cast, improve ruled-line alignment, and tighten right-page spacing.
+- Current Plan: L0 `/cm-start` change; adjust notebook CSS tokens and right-page spacing classes only.
+- Current Phase: verified.
+- Working Context: page CSS must own the ruled background; `RULED_PAPER_STYLE` should not inline-override `background-image`. Current paper target is lighter ivory `#f7f3e8`, baseline shift is `12px`, right page uses `space-y-4/pt-4` instead of `space-y-8/pt-8`.
+- Just Completed: removed inline ruled background override from `RULED_PAPER_STYLE`, made the paper less yellow, increased `notebook-on-rule-text` shift, added aligned metadata row, and reduced right-page block gaps.
+- Just Completed: updated NotebookScreen regression tests for lighter paper, baseline shift, metadata alignment, and tighter right-page spacing.
+- Just Completed: verification passed: focused notebook test passed with 16 tests, `npm run test:gate` passed with 508 tests, `npm run build` passed, and `/mastery` returned HTTP 200.
+- Next Actions: visually review `/mastery`; if body text still sits off the rule, tune only `--notebook-rule-baseline-shift` in 1-2px increments.
+- Active Goal: Make Mastery Notebook paper less yellow/dark and show visible grain like `public/book-preview.html`.
+- Current Plan: split paper styling into base color, visible `::before` stardust grain, and `::after` lighting overlay, mirroring the preview structure.
+- Current Phase: verified.
+- Working Context: previous layered background blended the texture away; texture must be an overlay with `opacity: 0.3`. Paper uses less-yellow base `#f3edd9`, line opacity `0.035`, and weaker dark overlay `0.06`.
+- Just Completed: rebuilt `.notebook-ruled-page` with `isolation: isolate`, `::before` grain using `stardust.png`, `::after` diagonal lighting, and content z-index protection.
+- Just Completed: updated notebook regression coverage for the visible-grain paper contract.
+- Just Completed: verification passed: focused notebook test passed with 16 tests, `npm run test:gate` passed with 508 tests, `npm run build` passed, and `/mastery` returned HTTP 200.
+- Next Actions: visually review the page; if grain is too strong/weak, tune only `opacity` on `.notebook-ruled-page::before`.
+- Active Goal: Correct Mastery Notebook paper color to match the lighter static reference.
+- Current Plan: tune only `.notebook-ruled-page` paper tokens and shadow strength; keep layout, texture, ruled lines, and text effect unchanged.
+- Current Phase: verified.
+- Working Context: previous paper color `#e8dfc4` rendered too yellow/dark in the full notebook; new target is lighter ivory parchment `#efe8d0` with weaker line/shadow opacity.
+- Just Completed: changed paper base/light/darker tokens to `#efe8d0`, `#fbf6e4`, `#d8cfb3`; reduced ruled-line opacity from `0.08` to `0.045`; reduced diagonal dark overlay from `0.15` to `0.08`.
+- Just Completed: updated notebook regression coverage for the lighter paper color contract.
+- Just Completed: verification passed: focused notebook test passed with 16 tests, `npm run test:gate` passed with 508 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery`; if still off, tune toward less yellow by lowering saturation further rather than changing layout.
+- Active Goal: Make Mastery Notebook paper background match the user's static parchment reference.
+- Current Plan: change only the notebook ruled paper CSS, preserving current notebook layout and text rhythm.
+- Current Phase: verified.
+- Working Context: paper should use the reference's parchment colors `#e8dfc4` / `#d3c8a9`, `stardust.png` grain, diagonal lighting, and existing 32px ruled lines as the top layer.
+- Just Completed: updated `.notebook-ruled-page` with parchment variables, layered paper gradients, external stardust texture, blend modes, and retained the ruled-line layer.
+- Just Completed: added notebook CSS regression coverage for the parchment background contract.
+- Just Completed: verification passed: focused notebook test passed with 16 tests, `npm run test:gate` passed with 508 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery` notebook and tune grain opacity or paper warmth if it looks too aged on the target monitor.
+- Active Goal: Make Mastery Notebook characters look like lightly pressed ink on paper.
+- Current Plan: follow the user's `book-preview.html` reference style without changing notebook layout.
+- Current Phase: verified.
+- Working Context: use a subtle `notebook-engraved-text` class with brown ink color, reversed `text-shadow`, and `mix-blend-mode: multiply`; avoid the deeper gradient/drop-shadow version from the aborted preview.
+- Just Completed: applied the effect to archive words/definitions/examples, right-page headword, phonetic/POS, meaning, Vietnamese line, example quote, and no-data copy.
+- Just Completed: removed the temporary book-preview regression test from the aborted prototype path.
+- Just Completed: verification passed: focused notebook test passed with 15 tests, `npm run test:gate` passed with 507 tests, and `npm run build` passed.
+- Next Actions: visually review `/mastery` notebook and tune only the shadow opacity if the ink feels too raised or too faint.
+- Active Goal: Align Mastery Notebook text rhythm to the ruled paper grid.
+- Current Plan: micro-change via `cm-start`; keep body copy sitting on 32px notebook rules in `src/components/mastery/NotebookScreen.tsx`.
+- Current Phase: verified.
+- Working Context: ruled paper uses `--notebook-rule-size: 32px`; avoid half-line `mt-1`, `space-y-3/4/6`, and compact padding that puts copy between lines.
+- Just Completed: moved archive entries, primary fields, quote card, related-word rows, and empty-state copy onto the ruled grid with `space-y-8`, `mb-8`, `pt-8`, `py-0`, and `notebook-line-text` where needed.
+- Just Completed: verification passed after text rhythm alignment: focused notebook test passed with 15 tests, `npm run test:gate` passed with 507 tests, and `npm run build` passed.
+- Next Actions: visually review the open notebook at desktop size and tune only if a specific long text case still drifts between rules.
+- Active Goal: Reduce the Mastery Notebook polaroid so it stays inside the left book page.
+- Current Plan: iterative Mastery Notebook UI refinement in `src/components/mastery/NotebookScreen.tsx`.
+- Current Phase: verified.
+- Working Context: book uses `py-15 md:py-18`; visual mnemonic should read like a clipped polaroid on the bottom-right of the left page near the center binding, with an image frame ratio of `4:3`.
+- Just Completed: increased notebook main vertical padding to `py-15 md:py-18` and updated notebook regression coverage to prevent returning to edge-to-edge `py-0`.
+- Just Completed: reduced the bottom-right polaroid from `w-[min(32rem,78%)] max-w-[32rem]` to `w-[min(28rem,70%)] max-w-[28rem]` to avoid spilling outside the book page while keeping the 4:3 frame and 3D shadow.
+- Just Completed: verification passed after polaroid size reduction: focused notebook test passed with 15 tests, `npm run test:gate` passed with 507 tests, and `npm run build` passed.
+- Next Actions: refresh `http://127.0.0.1:5173/mastery`, open the notebook, and visually judge whether 70% is the right balance.
+- Active Goal: Match Mastery Notebook to the downloaded vintage Stitch book with hardcoded notebook colors and a wood/ink desk background.
+- Current Plan: `openspec/changes/mastery-notebook-vintage-stitch-2026-04-26/`.
+- Current Phase: verified.
+- Working Context: `NotebookScreen.tsx` is intentionally allowed to use direct hex colors for the vintage book treatment; other TSX files remain under the direct-hex hygiene guard, except the unimported/preview mockup exclusion.
+- Just Completed: added `public/notebook-assets/wood-ink-desk.svg`, wired it as the full-screen notebook background, restored hardcoded wood/parchment colors in `NotebookScreen`, and kept the open-book layout at the downloaded `1.833333333 / 1` ratio.
+- Just Completed: replaced the fake SVG background with a real raster photo at `public/notebook-assets/wood-ink-desk.jpg`, removed the SVG asset, and made the notebook wrapper transparent so the full-screen photo reads through behind the book.
+- Just Completed: focused notebook/storage/code-hygiene tests passed, `npm run test:gate` passed with 504 tests, and `npm run build` passed.
+- Next Actions: visually review `http://127.0.0.1:5173/mastery` or `http://127.0.0.1:5174/mastery`, open the notebook, and tune object placement/shadows if needed.
+- Active Goal: Add bullet markers and red/orange accent rules to the Mastery Notebook ruled-note page.
+- Current Plan: `openspec/changes/mastery-notebook-screen-2026-04-25/`.
+- Current Phase: verified.
+- Working Context: preserve the ruled-paper note layout while matching the reference's bullet markers and red/orange accent rules.
+- Just Completed: added RED coverage for row bullets and accent rules, then added bullet markers to ruled-note fields and red/orange left rules to title, Vietnamese, and example rows.
+- Just Completed: verification passed after bullet/accent update: focused notebook tests passed, `npm run test:gate` passed with 503 tests, and `npm run build` passed.
+- Next Actions: visually review bullet density and accent color strength against the supplied reference screenshot.
+- Active Goal: Remove the green container from Mastery Notebook expansion fields.
+- Current Phase: verified.
+- Working Context: preserve the ruled-paper note layout and required field labels without wrapping expansion fields in one green panel.
+- Just Completed: added RED coverage to prevent `notebook-related-words` from using `bg-secondary-container`, then made the related vocabulary section transparent while keeping word family/synonyms/antonyms/collocations as individual rows.
+- Just Completed: verification passed after removing the green block: focused notebook tests passed, `npm run test:gate` passed with 502 tests, and `npm run build` passed.
+- Next Actions: visually verify the right page reads as continuous notebook paper, with only small chips for terms and no large colored field container.
+- Active Goal: Restore required vocabulary fields in the Mastery Notebook ruled-note page.
+- Current Phase: verified.
+- Working Context: preserve the ruled-paper note layout and avoid grid/cards, while making each required vocabulary field explicit and labeled.
+- Just Completed: added RED coverage for required vocabulary fields as labeled ruled-note rows.
+- Just Completed: rendered meaning, Vietnamese, example, word family, synonyms, antonyms, collocations, and personal note as distinct rows with small labels; retained the title line for word + IPA + POS.
+- Just Completed: verification passed after restoring field rows: focused notebook tests passed, `npm run test:gate` passed with 501 tests, and `npm run build` passed.
+- Next Actions: visually review whether the required rows still fit naturally on the right page without feeling like a dashboard.
+- Active Goal: Simplify the Mastery Notebook right page into a ruled-note entry.
+- Current Phase: verified.
+- Working Context: preserve the two-page dictionary metaphor while replacing the right-page card/grid layout with a minimal ruled-paper note layout matching the user's reference.
+- Just Completed: added RED coverage for a minimal ruled-note page with no `notebook-learning-grid`, then replaced the right-page grid/cards with a title line, lined paper background, natural definition/VN/example lines, related-words panel, and personal note area.
+- Just Completed: moved `VN` and `Smart Vocabulary` labels into i18n to satisfy code-hygiene guardrails.
+- Just Completed: verification passed after ruled-note update: focused notebook tests passed, `npm run test:gate` passed with 500 tests, and `npm run build` passed.
+- Next Actions: visually review desktop notebook page for line spacing and title-line balance against the supplied reference screenshot.
+- Active Goal: Align Mastery Notebook pronunciation/POS facts with the selected word title.
+- Current Phase: verified.
+- Working Context: preserve the two-page dictionary metaphor and no-scroll compact profile while moving pronunciation/stress and POS into the word-title row.
+- Just Completed: added RED coverage for headline-aligned pronunciation/POS facts, moved both facts into compact cards beside the selected word title, and removed them from the lower learning grid.
+- Just Completed: verification passed after headline facts update: focused notebook tests passed, `npm run test:gate` passed with 500 tests, and `npm run build` passed.
+- Next Actions: visually review a long selected word to ensure the title row still balances with the two compact fact cards and edit button.
+- Active Goal: Make the Mastery Notebook profile fit without right-page scrolling.
+- Current Phase: verified.
+- Working Context: preserve the two-page dictionary metaphor, left saved-word index, right-side vertical personalization rail, search, and rich note editing while making the right page compact enough to show all key learning fields without its own scrollbar.
+- Just Completed: added RED coverage for larger book sizing, no right-page scroll, compact learning grid, and removal of duplicate IPA/POS metadata.
+- Just Completed: increased book stage to `max-w-[92rem]`, changed the right page to `overflow-hidden`, removed IPA/POS from the page header, and compacted learning blocks into a two-column grid with a combined meaning/example row.
+- Just Completed: verification passed after the no-scroll compact profile update: focused notebook tests passed, `npm run test:gate` passed with 499 tests, and `npm run build` passed.
+- Next Actions: visually review a saved word with image + long note to confirm the compact page still looks balanced at desktop sizes.
+- Active Goal: Expand the Mastery Notebook right page into a complete vocabulary learning profile.
+- Current Phase: verified.
+- Working Context: preserve the two-page dictionary metaphor, left saved-word index, right-side vertical personalization rail, search, and rich note editing while adding the seven learning fields requested by the user.
+- Just Completed: added RED coverage for a complete learning profile and larger book stage, then expanded `fetchNotebookWordEntries` to include `synonyms`, `antonyms`, and `word_family`.
+- Just Completed: reworked the right page into pronunciation/stress, POS, meaning, contextual example, word family, synonyms, antonyms, derived collocations, visual mnemonic, and personal note sections; book stage is now `max-w-[82rem]`.
+- Just Completed: verification passed after the complete learning profile update: focused notebook/storage tests passed, `npm run test:gate` passed with 498 tests, and `npm run build` passed.
+- Next Actions: visually review the notebook at the running dev server, open a saved word with rich metadata, and confirm the expanded page still feels like a physical book rather than a dashboard.
+- Active Goal: Refine Mastery Notebook Screen into a dimensional Lexical Archive-style English dictionary.
+- Current Phase: verified.
+- Working Context: preserve saved-word storage, search, personalization, and rich note editing while aligning the notebook book to the supplied Stitch source ratio `aspect-[1.4/1]`.
+- Just Completed: added RED coverage for cover edges and a word-investigation panel, then rebuilt the spread as a 3D book frame with a left recent-additions archive and a raised right-side detail panel.
+- Just Completed: verification passed for the 3D lexical archive refinement: focused notebook/storage tests passed, `npm run build` passed, and `npm run test:gate` passed with 496 tests.
+- Just Completed: used `cm-design-system` on `C:\Users\Ocean\Downloads\stitch_l_t_m_anh_ng`, extracted the `1.4:1` book ratio and Tactile Scholar tokens into `.stitch/DESIGN.md`, and saved the `cm-ui-preview` prompt-only blueprint to `.stitch/next-prompt.md`.
+- Just Completed: implemented the confirmed Stitch ratio alignment in `NotebookScreen`: the book stage is now max 72rem, the spread uses inline `aspectRatio: 1.4 / 1`, the thick cover edges were replaced by subtle source-style binding, and pages now use low-radius white paper surfaces.
+- Just Completed: verification passed after implementation: focused notebook/storage tests passed, `npm run build` passed, and `npm run test:gate` passed with 496 tests.
+- Next Actions: open `http://127.0.0.1:5173/mastery`, click the notebook icon, and visually compare the book proportions with `C:\Users\Ocean\Downloads\stitch_l_t_m_anh_ng\screen.png`.
+- Active Goal: Remove the rejected WebP/WebM ninja scholar character from VocaFlash.
+- Current Phase: verified.
+- Working Context: remove the character registration, i18n copy, generated media assets, generator script, and OpenSpec plan while keeping Mastery notebook changes untouched.
+- Just Completed: removed the rejected WebP/WebM ninja scholar character from catalog, media manifest, vi/en i18n, generated public assets, generator script, and obsolete OpenSpec change folder.
+- Just Completed: added regression coverage that keeps the removed character absent from both `CHARACTER_CATALOG` and `CHARACTER_ASSET_MANIFEST`.
+- Just Completed: verification passed after removal: focused character/i18n tests passed (41 tests), `npm run build` passed, and `npm run test:gate` passed with 495 tests.
+- Active Goal: Build the Mastery Notebook Screen from `openspec/changes/mastery-notebook-screen-2026-04-25/`.
+- Current Plan: add a Mastery header notebook button, full-screen saved-word notebook overlay, joined notebook word query, and personalization preferences.
+- Current Phase: implemented; full gate passes after character removal.
+- Just Completed: added Mastery notebook icon/button, full-screen saved-word notebook overlay with journal/study/dictionary styles, compact/cozy density, image visibility toggle, joined notebook word query, inline note editing, and vi/en i18n.
+- Just Completed: verification for Mastery notebook scope passed: focused notebook tests passed (4 tests) and `npm run build` passed.
+- Active Blocker: none for the combined workspace gate; `npm run test:gate` passed with 495 tests.
+- Next Actions: open `http://127.0.0.1:5173/mastery` and manually review journal/study/dictionary layouts.
 - Active Goal: Optimize 3D character loading smoothness.
 - Just Completed: deferred non-display WebGL model mounting behind static thumbnails using `requestIdleCallback`/timeout fallback, while keeping display/expanded viewer immediate.
 - Just Completed: added loading thumbnails inside `CharacterModelAvatar` until the real OBJ/GLB model is ready, so users do not see a blank frame during first load.
@@ -112,6 +312,18 @@
 - Just Completed: Quality gate passed after starter evolution fix: `npm run test:gate` passed with 422 tests and 0 failures.
 - Just Completed: added `CharacterReactionAvatar` and wired Study/Review mascot states: correct/wrong reactions on answers, celebrate on completion, and idle fallback after reaction end. Mascot rendering is isolated from SRS, reward sync, and navigation callbacks.
 - Just Completed: Quality gate passed after Study/Review reaction wiring: `npm run test:gate` passed with 421 tests and 0 failures.
+- Just Completed: replaced the Mastery notebook background with a real Pexels photo asset at `public/notebook-assets/wood-ink-desk.jpg` showing a vintage wooden writing desk with books, quill/pen, and ink props; pinned background position to `center top` so the desk objects remain visible behind the book UI. Focused notebook/hygiene tests passed (15 tests), `npm run test:gate` passed (504 tests), and `npm run build` passed with only existing Vite chunk/plugin timing warnings.
+- Active Goal: Return the Mastery notebook to the supplied bright open-dictionary HTML design.
+- Current Plan: `openspec/changes/mastery-notebook-open-dictionary-2026-04-26/`.
+- Current Phase: verified.
+- Working Context: user supplied the confirmed HTML design, so no Stitch MCP generation is needed; implement its layout markers directly in `NotebookScreen` while preserving notebook data/search/preferences/note editing.
+- Just Completed: returned `NotebookScreen` to the supplied bright open-dictionary design: light paper shell, `max-w-[1720px]` two-column spread, ruled paper pages, left recent additions + visual mnemonic, right academic vocabulary detail + handwritten sticky note.
+- Just Completed: removed the now-unused `public/notebook-assets/wood-ink-desk.jpg` asset because the open-dictionary screen no longer uses a wood photo background.
+- Just Completed: focused notebook/hygiene tests passed (15 tests), final `npm run test:gate` passed (504 tests), final `npm run build` passed, and `/mastery` returned HTTP 200 on ports 5173 and 5174.
+- Just Completed: replaced the Mastery notebook background layer with the user-provided local image copied to `public/notebook-assets/notebook-flat-lay-desk.jpg`; `NotebookScreen` now uses it through `PAPER_BACKGROUND_STYLE` and keeps the shell transparent so the desk image shows behind the open book. Focused notebook/hygiene tests passed (15 tests), `npm run test:gate` passed (504 tests), `npm run build` passed, and `/mastery` returned HTTP 200 on ports 5173 and 5174. Image optimization via `System.Drawing` failed, so the original JPG was retained.
+- Just Completed: reduced Mastery notebook book height to fit the viewport without page scrolling: main region is now `overflow-hidden`, spread uses `h-[min(760px,calc(100vh-8rem))]` instead of `min-h-[900px]`, the right page is no-scroll/compact, and the left recent-additions list renders only the first 4 saved words. Focused notebook/hygiene tests passed (16 tests), `npm run test:gate` passed (505 tests), `npm run build` passed, and `/mastery` returned HTTP 200 on ports 5173 and 5174.
+- Just Completed: increased Mastery notebook book height again to better fill the screen while preserving no-page-scroll: spread now uses `h-[min(900px,calc(100vh-6rem))]`, main vertical padding is tighter, pages use `notebook-baseline-page`, and primary body text uses `notebook-line-text` so content follows the ruled paper rhythm. Focused notebook/hygiene tests passed (17 tests), `npm run test:gate` passed (506 tests), `npm run build` passed, and `/mastery` returned HTTP 200 on ports 5173 and 5174.
+- Next Actions: visually review `http://127.0.0.1:5173/mastery`, open the notebook, and adjust spacing if the large spread feels too tall on the target viewport.
 - Just Completed: added first `seedling_scholar` placeholder asset batch under `public/character-assets/` with stage 1-3 idle WebP/WebM and stage 1 correct/wrong/celebrate/evolve WebP/WebM; registered assets in `CHARACTER_ASSET_MANIFEST`; `/characters` now plays the `evolve` reaction after successful evolution.
 - Just Completed: Quality gate passed for character media foundation: `npm run test:gate` passed with 416 tests and 0 failures.
 - Just Completed: implemented pre-rendered character media foundation: `character-assets` resolver, CSS fallback avatar, media-capable `CharacterAvatar`, Dashboard animated selected mascot, static `/characters` grid previews, and focused tests. `npm run build` and `npm run test:gate` passed (413 tests).
@@ -215,6 +427,14 @@
 - [x] Admin Module Refactoring (Clean Code SRP) — COMPLETED
 
 ## Mistakes & Learnings (Latest)
+- **Notebook Bullet And Accent Details**: The reference style uses small bullet markers and red/orange rules, not heavy cards. Implement bullets inside each ruled row and reserve the accent rule for the title/VN/example rows. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
+- **Notebook Green Container Regression**: Do not put all expansion fields into one green panel. The user wants the page to look like continuous notebook paper; use transparent containers and ruled rows, with only small term chips if needed. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
+- **Notebook Required Fields vs Minimalism**: Minimal ruled-note styling must not collapse required learning fields into an unlabeled chip pile. Keep the notebook feel, but label meaning, Vietnamese, example, word family, synonyms, antonyms, collocations, and personal note as separate rows. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
+- **Notebook Ruled-Note Direction**: User prefers the right page to feel like writing on ruled notebook paper, not a grid of UI cards. Keep word + IPA + POS in one natural title line, render learning details as flowing text/bullets, and merge expansion metadata into one related-words panel. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
+- **Notebook Headline Facts**: Pronunciation/stress and POS read better as compact facts beside the selected word title than as the first row of the learning grid. Keep the lower grid reserved for meaning/example and vocabulary expansion details. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
+- **Notebook Profile Density**: When the notebook right page contains seven learning fields, avoid duplicating IPA/POS in both the title header and detail blocks. Use a larger book stage plus a compact two-column grid, keep the right page `overflow-hidden`, and cap long notes/images inside their own blocks. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
+- **Notebook Collocations Without Schema Support**: VocaFlash currently has `synonyms`, `antonyms`, and `word_family` columns, but no `collocations` column. For the notebook profile, derive lightweight collocation candidates from the example sentence and document this as a temporary UI strategy until storage gains a dedicated field. Verification: focused notebook/storage tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
+- **Mastery Notebook Focus Shell**: For the saved-word notebook, keep the surrounding UI intentionally quiet so the `aspect-ratio: 1.4 / 1` book remains the focal point. Personalization controls work better as a right-side vertical rail than as a horizontal header menu. Verification: `npx vitest run tests/unit/NotebookScreen.test.tsx`, `npm run test:gate`, and `npm run build`. (2026-04-25)
 - **Animated GLB Framing And Drag Surface**: Long skinned GLB characters can clip when fitted with compact OBJ padding, and a capped display canvas means mouse drag only works inside that smaller frame. Fix: make expanded `display` avatars fill the stage (`h-full w-full`), explicitly keep OrbitControls rotation enabled, and use larger camera-fit padding for animated/skinned GLB models. Scope: `module:characters` / `CharacterAvatar` + `CharacterModelAvatar`. (2026-04-25)
 - **GLB Embedded Animations Not Playing**: Loading `gltf.scene` only renders the pose; embedded GLB clips do nothing until a `THREE.AnimationMixer` is created and updated each frame. Fix: store `gltf.animations`, create `new THREE.AnimationMixer(model)`, select a clip by `CharacterAnimationState`, call `clipAction(nextClip).play()`, and run `animationMixer.update(delta)` in the render loop. Scope: `module:characters` / `CharacterModelAvatar`. (2026-04-25)
 - **GLB Legacy Material Color Loss**: Some Microsoft-exported GLB files use `KHR_materials_pbrSpecularGlossiness`. Windows 3D Viewer renders it, but current Three.js GLTFLoader may leave materials white because the diffuse texture lives under the legacy extension instead of core `pbrMetallicRoughness`. Fix: inspect `gltf.parser.json.materials[*].extensions.KHR_materials_pbrSpecularGlossiness.diffuseTexture`, load it through `gltf.parser.getDependency('texture', index)`, set `texture.colorSpace = THREE.SRGBColorSpace`, and attach it to the `MeshStandardMaterial`. Scope: `module:characters` / `CharacterModelAvatar`. (2026-04-25)

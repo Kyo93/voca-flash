@@ -25,6 +25,7 @@ const MethodologyPage = lazy(() => import('./pages/MethodologyPage'))
 const MasteryPage = lazy(() => import('./pages/MasteryPage'))
 const FreeStudyPage = lazy(() => import('./pages/FreeStudyPage'))
 const RoadmapTopicsPage = lazy(() => import('./pages/RoadmapTopicsPage'))
+const BookPageMockup = lazy(() => import('./components/mastery/BookPageMockup'))
 
 // Protected route: requires authentication
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -63,6 +64,7 @@ function App() {
           {/* Public */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/mockup" element={<BookPageMockup />} />
 
           {/* Auth required — Standard App Layout */}
           <Route element={<RequireAuth><AppLayout /></RequireAuth>}>

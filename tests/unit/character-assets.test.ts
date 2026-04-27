@@ -154,6 +154,7 @@ describe('character asset resolver', () => {
     expect(CHARACTER_ASSET_MANIFEST.flashcard_fighter).toBeUndefined()
     expect(CHARACTER_ASSET_MANIFEST.lexical_invoker).toBeUndefined()
     expect(CHARACTER_ASSET_MANIFEST.quiz_alchemist).toBeUndefined()
+    expect(CHARACTER_ASSET_MANIFEST.storm_ninja_scholar).toBeUndefined()
   })
 
   it('resolves OBJ source paths for model-backed characters', () => {

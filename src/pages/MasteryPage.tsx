@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
 import { useMasteryWords } from '../hooks/useMasteryWords'
 import WordDetailPanel from '../components/WordDetailPanel'
+import NotebookScreen from '../components/mastery/NotebookScreen'
 
 import CardRow from '../components/mastery/CardRow'
 import MasteryHeader from '../components/mastery/MasteryHeader'
@@ -42,13 +43,14 @@ export default function MasteryPage() {
   } = useMasteryWords({ userId: user?.id })
 
   // Interaction State
-  const { isSaved, toggle, updateNote, getNote } = useNotebook()
+  const { entries: notebookEntries, isSaved, toggle, updateNote, getNote } = useNotebook()
   
   // Master-Detail State
   const [selectedWord, setSelectedWord] = useState<MasteryWord | null>(null)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
   const [panelTab, setPanelTab] = useState<'overview' | 'notes'>('overview')
   const [isNoteEditMode, setIsNoteEditMode] = useState(false)
+  const [isNotebookOpen, setIsNotebookOpen] = useState(false)
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
 
@@ -93,6 +95,8 @@ export default function MasteryPage() {
           setSearchQuery={setSearchQuery}
           selectedIdsSize={selectedIds.size}
           onStartFreeStudy={handleStartFreeStudy}
+          notebookCount={notebookEntries.size}
+          onOpenNotebook={() => setIsNotebookOpen(true)}
         />
 
         {/* Stats Quick Grid */}
@@ -201,6 +205,13 @@ export default function MasteryPage() {
           onSaveNote={handleSaveNote}
           initialTab={panelTab}
           forceEdit={isNoteEditMode}
+        />
+
+        <NotebookScreen
+          isOpen={isNotebookOpen}
+          onClose={() => setIsNotebookOpen(false)}
+          userId={user?.id}
+          onSaveNote={updateNote}
         />
 
       </div>

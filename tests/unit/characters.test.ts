@@ -103,13 +103,15 @@ describe('character collection domain', () => {
     expect(character?.nameKey).toBe('characters.items.rampaging_t_rex.name')
   })
 
-  it('does not include removed flashcard fighter, lexical invoker, or quiz alchemist characters', () => {
+  it('does not include removed flashcard fighter, lexical invoker, quiz alchemist, or storm ninja scholar characters', () => {
     expect(getCharacterById('flashcard_fighter')).toBeNull()
     expect(getCharacterById('lexical_invoker')).toBeNull()
     expect(getCharacterById('quiz_alchemist')).toBeNull()
+    expect(getCharacterById('storm_ninja_scholar')).toBeNull()
     expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('flashcard_fighter')
     expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('lexical_invoker')
     expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('quiz_alchemist')
+    expect(CHARACTER_CATALOG.map(character => character.id)).not.toContain('storm_ninja_scholar')
   })
 
   it('falls back to the default character when selected id is unavailable', () => {

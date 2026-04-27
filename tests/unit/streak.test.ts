@@ -1,9 +1,24 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { saveStreak, recordStudy, loadStreak, getStreakDisplay } from '../../src/lib/streak'
+import { getTodayBoundary } from '../../src/lib/utils'
+
+const FIXED_STUDY_TIME = new Date('2026-04-27T10:00:00+07:00')
+
+function studyBoundaryDateOffset(days: number): string {
+  const boundary = new Date(getTodayBoundary())
+  boundary.setDate(boundary.getDate() + days)
+  return boundary.toISOString().split('T')[0]
+}
 
 describe('Streak System', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(FIXED_STUDY_TIME)
     localStorage.removeItem('vocamaster-streak')
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('loadStreak returns default when empty', () => {
@@ -19,16 +34,9 @@ describe('Streak System', () => {
   })
 
   it('recordStudy increments streak on consecutive days', () => {
-    // Use todayBoundaryStr to match what recordStudy() uses internally.
-    // This ensures lastStudyDate is always "1 day behind" relative to 4 AM boundary.
-    const today = new Date()
-    today.setHours(4, 0, 0, 0)
-    if (today.getHours() > 12) today.setDate(today.getDate() - 1)
-    const yesterdayStr = new Date(today.getTime() - 86400000).toISOString().split('T')[0]
-
     saveStreak({
       currentStreak: 3,
-      lastStudyDate: yesterdayStr,
+      lastStudyDate: studyBoundaryDateOffset(-1),
       longestStreak: 3,
     })
 
@@ -38,15 +46,9 @@ describe('Streak System', () => {
   })
 
   it('recordStudy resets streak when missed > 1 day', () => {
-    // 4 AM boundary minus 3 days
-    const today = new Date()
-    today.setHours(4, 0, 0, 0)
-    if (today.getHours() > 12) today.setDate(today.getDate() - 1)
-    const threeDaysAgoStr = new Date(today.getTime() - 3 * 86400000).toISOString().split('T')[0]
-
     saveStreak({
       currentStreak: 10,
-      lastStudyDate: threeDaysAgoStr,
+      lastStudyDate: studyBoundaryDateOffset(-3),
       longestStreak: 10,
     })
 
