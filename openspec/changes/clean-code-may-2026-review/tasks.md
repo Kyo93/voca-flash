@@ -25,10 +25,10 @@
 - [x] 5.3 Add reward fallback storage tests.
 - [x] 5.4 Run reward storage tests and related reward progress tests.
 
-- [ ] 6.1 Design a dynamic import boundary for character model scene runtime.
-- [ ] 6.2 Move Three.js runtime imports out of the React hook boundary.
-- [ ] 6.3 Keep `CharacterModelAvatar` render shell unchanged from the outside.
-- [ ] 6.4 Run focused character model tests and inspect build chunk sizes.
+- [x] 6.1 Design a dynamic import boundary for character model scene runtime.
+- [x] 6.2 Move Three.js runtime imports out of the React hook boundary.
+- [x] 6.3 Keep `CharacterModelAvatar` render shell unchanged from the outside.
+- [x] 6.4 Run focused character model tests and inspect build chunk sizes.
 
 - [ ] 7.1 Split sticky note rendering from `NotebookInvestigationPage`.
 - [ ] 7.2 Split word facts and related terms from `NotebookInvestigationPage`.
