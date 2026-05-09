@@ -5,8 +5,8 @@
 ## Current Session Override
 - Active Goal: Execute May 2026 clean-code review plan.
 - Current Plan: `openspec/changes/clean-code-may-2026-review/design.md` and `tasks.md`.
-- Current Phase: planning.
-- Working Context: follow-up `cm-clean-code` scan found build passing, focused hygiene tests passing, a large dirty clean-code baseline still uncommitted, raw markdown HTML rendering in notebook notes, Tailwind runtime class construction in `ArenaLoading`, hook-level hardcoded UI copy in `useDashboard`/`useWordForm`, reward fallback storage still cast-through, and `CharacterModelAvatar` still emitted as a 648.10 kB lazy chunk.
+- Current Phase: execution; tasks 1-5 complete.
+- Working Context: clean-code baseline is committed; notebook personal notes no longer render raw HTML; `ArenaLoading` uses typed static variants; dashboard quotes/growth labels and word-form validation copy moved to i18n; reward fallback storage now normalizes malformed localStorage fail-closed. Remaining plan work starts at Three.js runtime split; `CharacterModelAvatar` still emits a 648.10 kB lazy chunk.
 - Just Completed: split `CharacterModelAvatar.tsx` from a 340-line WebGL lifecycle component into a 71-line render shell plus `useCharacterModelScene.ts`.
 - Just Completed: moved character procedural animation transforms into `applyCharacterModelProceduralAnimation()` in `character-model-avatar-runtime.ts`.
 - Just Completed: split the left notebook archive page and mnemonic photo into `src/components/mastery/NotebookArchivePage.tsx`.
@@ -16,8 +16,8 @@
 - Just Completed: hardened notebook preference storage parsing in `notebook-utils` so malformed localStorage values fall back to typed defaults instead of being cast through.
 - Just Completed: added fail-closed `source-reader` helpers and converted import/parser/admin word-count/topic-count source assertions away from empty-string fallbacks.
 - Just Completed: tightened `useAdminResource.fetchItems` by capturing the active loader once per async fetch.
-- Verification: `npm.cmd run build` passed; focused `code-hygiene` and `frontend-safety` tests passed with 4 tests during planning scan.
-- Next Actions: 1) review current dirty tree and confirm intentional file adds/deletes; 2) run `npm.cmd run test:gate` on the current baseline; 3) commit the current completed clean-code baseline if the gate passes.
+- Verification: baseline `npm.cmd run test:gate` passed with 84 files / 521 tests; focused note/notebook tests passed with 24 tests; frontend-safety passed with 2 tests; i18n/code-hygiene passed with 5 tests; reward fallback/related tests passed with 16 tests; builds passed after each batch.
+- Next Actions: 1) design a dynamic import boundary for character model scene runtime; 2) move Three.js runtime imports out of the React hook boundary; 3) run focused character model tests and inspect build chunk sizes.
 
 ## Previous Session Override
 - Active Goal: cm-clean-code review across the full app.
