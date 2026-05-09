@@ -61,27 +61,27 @@ export interface IntervalPreview {
  */
 const SRS_LEVEL_STYLES = {
   ROOTED: {
-    text: 'text-[#F5D76E]',
-    bg: 'bg-[#F5D76E]/10',
-    color: 'bg-[#F5D76E]',
-    glow: 'shadow-[0_0_12px_rgba(245,215,110,0.3)]',
+    text: 'text-warm-accent',
+    bg: 'bg-warm-accent-container/25',
+    color: 'bg-warm-accent',
+    glow: 'shadow-[0_0_12px_var(--color-warm-accent-container)]',
   },
   MASTERED: {
-    text: 'text-[#4ade80]',
-    bg: 'bg-[#4ade80]/10',
-    color: 'bg-[#4ade80]',
+    text: 'text-success',
+    bg: 'bg-success-container',
+    color: 'bg-success',
     glow: '',
   },
   STABLE: {
-    text: 'text-[#60a5fa]',
-    bg: 'bg-[#60a5fa]/10',
-    color: 'bg-[#60a5fa]',
+    text: 'text-tertiary',
+    bg: 'bg-tertiary-container/15',
+    color: 'bg-tertiary',
     glow: '',
   },
   FRESH: {
-    text: 'text-[#94a3b8]',
-    bg: 'bg-[#94a3b8]/10',
-    color: 'bg-[#94a3b8]',
+    text: 'text-on-surface-variant',
+    bg: 'bg-surface-container-highest',
+    color: 'bg-outline',
     glow: '',
   },
 } as const

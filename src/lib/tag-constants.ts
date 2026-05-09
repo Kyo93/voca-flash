@@ -2,6 +2,8 @@
  * Tag Constants — Metadata and Keywords for VocaFlash Tag Engine
  */
 
+export const TAG_FALLBACK_COLOR = '#9CA3AF'
+
 export const TAG_META: Record<string, { label: string; color: string }> = {
   'work':           { label: 'Công việc',        color: '#F97316' },
   'food':           { label: 'Ẩm thực',          color: '#EF4444' },

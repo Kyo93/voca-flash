@@ -7,7 +7,7 @@
  */
 
 import { stripDiacritics } from './utils'
-import { TAG_META, TAG_KEYWORDS } from './tag-constants'
+import { TAG_FALLBACK_COLOR, TAG_META, TAG_KEYWORDS } from './tag-constants'
 
 // ─── Normalize text for matching ──────────────────────────────
 function normalize(text: string): string {
@@ -55,7 +55,7 @@ export function suggestTopicFromTags(
 
 // ─── Tag colors helper ─────────────────────────────────────────
 export function getTagColor(tag: string): string {
-  return TAG_META[tag]?.color ?? '#9CA3AF'
+  return TAG_META[tag]?.color ?? TAG_FALLBACK_COLOR
 }
 
 export function getTagLabel(tag: string): string {

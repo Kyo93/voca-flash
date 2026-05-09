@@ -125,7 +125,7 @@ export function darkenColor(hex: string, percent: number): string {
 }
 
 /** Default brand orange dùng làm fallback khi topic chưa cấu hình màu. */
-export const DEFAULT_TOPIC_COLOR = '#f97316';
+export const DEFAULT_TOPIC_COLOR = '#F97316';
 
 /**
  * Trả về `style` cho topic chip/badge: nền pastel (~12% alpha) + chữ theo màu topic.

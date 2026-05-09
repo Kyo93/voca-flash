@@ -34,6 +34,6 @@
 - [x] 7.2 Split word facts and related terms from `NotebookInvestigationPage`.
 - [x] 7.3 Re-run notebook tests after each split.
 
-- [ ] 8.1 Audit data colors versus UI styling colors.
-- [ ] 8.2 Add targeted color-token guardrails or allowlists.
-- [ ] 8.3 Run code hygiene tests and final `npm.cmd run test:gate`.
+- [x] 8.1 Audit data colors versus UI styling colors.
+- [x] 8.2 Add targeted color-token guardrails or allowlists.
+- [x] 8.3 Run code hygiene tests and final `npm.cmd run test:gate`.

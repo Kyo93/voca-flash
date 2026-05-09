@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import type { Topic, Roadmap } from '../../lib/types'
-import { slugify } from '../../lib/utils'
+import { DEFAULT_TOPIC_COLOR, slugify } from '../../lib/utils'
 import { suggestIcon, suggestColor, suggestImageUrl, ICON_OPTIONS } from '../../lib/topic-suggestions'
 
 interface UseTopicFormProps {
@@ -17,7 +17,7 @@ export function useTopicForm({ topic, roadmaps, initialRoadmapId, initialRoadmap
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [icon, setIcon] = useState('label')
-  const [color, setColor] = useState('#F97316')
+  const [color, setColor] = useState(DEFAULT_TOPIC_COLOR)
   const [roadmapId, setRoadmapId] = useState('')
   const [roadmapSlug, setRoadmapSlug] = useState('')
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
@@ -40,7 +40,7 @@ export function useTopicForm({ topic, roadmaps, initialRoadmapId, initialRoadmap
       setDescription(topic.description ?? '')
       setImageUrl(topic.image_url ?? '')
       setIcon(topic.icon ?? 'label')
-      setColor(topic.color ?? '#F97316')
+      setColor(topic.color ?? DEFAULT_TOPIC_COLOR)
       setRoadmapId(topic.roadmap_id ?? '')
       setRoadmapSlug('')
       setSlugManuallyEdited(true)
@@ -50,7 +50,7 @@ export function useTopicForm({ topic, roadmaps, initialRoadmapId, initialRoadmap
       setDescription('')
       setImageUrl('')
       setIcon('label')
-      setColor('#F97316')
+      setColor(DEFAULT_TOPIC_COLOR)
       setRoadmapId(initialRoadmapId ?? '')
       setRoadmapSlug(initialRoadmapSlug ?? '')
       setSlugManuallyEdited(false)
@@ -79,7 +79,7 @@ export function useTopicForm({ topic, roadmaps, initialRoadmapId, initialRoadmap
   useEffect(() => {
     if (!name.trim() || !!topic) return
     if (icon === 'label' || !icon) setIcon(suggestIcon(name))
-    if (color === '#F97316') setColor(suggestColor(name))
+    if (color === DEFAULT_TOPIC_COLOR) setColor(suggestColor(name))
     if (!imageUrl) setImageUrl(suggestImageUrl(name))
   }, [name, topic])
 

@@ -120,6 +120,34 @@ describe('code hygiene guardrails', () => {
     expect(findings).toEqual([])
   })
 
+  it('keeps hardcoded TypeScript color literals isolated to token and data-color modules', () => {
+    const allowedColorDataFiles = new Set([
+      path.normalize('src/lib/tag-constants.ts'),
+      path.normalize('src/lib/theme.ts'),
+      path.normalize('src/lib/tokens.ts'),
+      path.normalize('src/lib/topic-suggestions.ts'),
+      path.normalize('src/lib/utils.ts'),
+    ])
+    const files = [
+      ...walkFiles(path.resolve('src'), '.ts'),
+      ...walkFiles(path.resolve('src'), '.tsx'),
+    ]
+
+    const findings = files.flatMap((file) => {
+      const relativePath = path.normalize(path.relative(process.cwd(), file))
+      if (allowedColorDataFiles.has(relativePath)) return []
+
+      const source = readFileSync(file, 'utf8')
+      return source
+        .split(/\r?\n/)
+        .map((line, index) => ({ line, number: index + 1 }))
+        .filter(({ line }) => /#[0-9A-Fa-f]{3,8}/.test(line))
+        .map(({ line, number }) => `${path.relative(process.cwd(), file)}:${number} ${line.trim()}`)
+    })
+
+    expect(findings).toEqual([])
+  })
+
   it('keeps selected hook-level UI copy in i18n instead of hardcoded strings', () => {
     const files = [
       path.resolve('src/hooks/useDashboard.ts'),

@@ -6,7 +6,7 @@
 - Active Goal: Execute May 2026 clean-code review plan.
 - Current Plan: `openspec/changes/clean-code-may-2026-review/design.md` and `tasks.md`.
 - Current Phase: verified.
-- Working Context: clean-code baseline is committed; notebook personal notes no longer render raw HTML; `ArenaLoading` uses typed static variants; dashboard quotes/growth labels and word-form validation copy moved to i18n; reward fallback storage now normalizes malformed localStorage fail-closed. Three.js runtime imports now live behind dynamic `character-model-scene-runner`; `CharacterModelAvatar` shell chunk dropped from 648.10 kB to 2.46 kB while the runner remains a separate 646.37 kB lazy chunk. `NotebookInvestigationPage` now delegates sticky note behavior to `NotebookStickyNote` and learning fields/related terms to `NotebookInvestigationFields`.
+- Working Context: clean-code baseline is committed; notebook personal notes no longer render raw HTML; `ArenaLoading` uses typed static variants; dashboard quotes/growth labels and word-form validation copy moved to i18n; reward fallback storage now normalizes malformed localStorage fail-closed. Three.js runtime imports now live behind dynamic `character-model-scene-runner`; `CharacterModelAvatar` shell chunk dropped from 648.10 kB to 2.46 kB while the runner remains a separate 646.37 kB lazy chunk. `NotebookInvestigationPage` now delegates sticky note behavior to `NotebookStickyNote` and learning fields/related terms to `NotebookInvestigationFields`. TypeScript hardcoded color literals are now isolated to token/data-color modules by `code-hygiene.test.ts`.
 - Just Completed: split `CharacterModelAvatar.tsx` from a 340-line WebGL lifecycle component into a 71-line render shell plus `useCharacterModelScene.ts`.
 - Just Completed: moved character procedural animation transforms into `applyCharacterModelProceduralAnimation()` in `character-model-avatar-runtime.ts`.
 - Just Completed: split the left notebook archive page and mnemonic photo into `src/components/mastery/NotebookArchivePage.tsx`.
@@ -18,8 +18,9 @@
 - Just Completed: tightened `useAdminResource.fetchItems` by capturing the active loader once per async fetch.
 - Just Completed: extracted sticky note UI/state/actions into `src/components/mastery/NotebookStickyNote.tsx`, leaving `NotebookInvestigationPage` focused on the word investigation layout.
 - Just Completed: extracted meaning/example/word-family/synonym/antonym/collocation sections into `src/components/mastery/NotebookInvestigationFields.tsx`.
-- Verification: focused notebook test passed with 20 tests after each split; `npm.cmd run build` passed. Previous final `npm.cmd run test:gate` passed with 85 files / 526 tests; `git diff --check` passed; build shows `CharacterModelAvatar` shell at 2.46 kB and `character-model-scene-runner` at 646.37 kB.
-- Next Actions: continue optional plan task 8: audit data colors versus UI styling colors, then add targeted guardrails if needed.
+- Just Completed: audited hardcoded TypeScript color literals; data colors remain in tag/topic/theme/token utilities, while SRS badge colors now use design tokens and topic/tag fallbacks use shared constants.
+- Verification: focused code hygiene test passed with 5 tests; `npm.cmd run build` passed; final `npm.cmd run test:gate` passed with 85 files / 529 tests.
+- Next Actions: commit and push the task 8 cleanup; optional follow-up is a visual smoke review of SRS badge colors after the token swap.
 
 ## Previous Session Override
 - Active Goal: cm-clean-code review across the full app.
