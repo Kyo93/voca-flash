@@ -8,7 +8,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
 import type { NotebookWordEntry } from '../../lib/storage/notebook'
 import {
   classes,
@@ -460,7 +459,7 @@ export function NotebookInvestigationPage({
                     ) : (
                       <div className={classes('prose prose-sm notebook-line-text max-w-none overflow-hidden text-xl leading-snug text-current', !entry.personal_note && 'opacity-55')}>
                         {entry.personal_note ? (
-                          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {entry.personal_note}
                           </ReactMarkdown>
                         ) : (

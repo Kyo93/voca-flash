@@ -3,7 +3,6 @@ import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import rehypeRaw from 'rehype-raw'
 
 const RichNoteEditor = lazy(() => import('../../common/RichNoteEditor'))
 
@@ -84,7 +83,6 @@ export function NoteTab({
             {personalNote ? (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
                 components={{
                   p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
                   ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-1">{children}</ul>,

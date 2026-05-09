@@ -91,24 +91,25 @@ describe('WordDetailPanel Rich Text Support', () => {
     expect(listItems.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('renders colored text using span tags', async () => {
-    const coloredNote = 'This is <span style="color: red">red text</span>';
-    render(
+  it('escapes raw HTML from personal notes instead of rendering it', async () => {
+    const unsafeNote = 'This is <span style="color: red">red text</span><script>alert("x")</script>';
+    const { container } = render(
       <WordDetailPanel 
         word={mockWord} 
         isOpen={true} 
         onClose={() => {}} 
         onToggleNotebook={async () => {}}
         isNotebookSaved={true}
-        personalNote={coloredNote}
+        personalNote={unsafeNote}
         onSaveNote={async () => {}}
         initialTab="notes"
       />
     );
 
-    const redText = await screen.findByText('red text');
-    expect(redText.tagName.toLowerCase()).toBe('span');
-    expect(redText.getAttribute('style')).toContain('color: red');
+    expect(await screen.findByText(/This is/)).toBeDefined();
+    expect(container.querySelector('script')).toBeNull();
+    expect(container.querySelector('span[style*="color"]')).toBeNull();
+    expect(container.textContent).toContain('<span style="color: red">red text</span>');
   });
 
   it('shows formatting toolbar when in edit mode', async () => {
