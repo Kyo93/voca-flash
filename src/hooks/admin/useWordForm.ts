@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Word } from '../../lib/types'
 
 export function useWordForm(
@@ -6,6 +7,7 @@ export function useWordForm(
   initialWrongChoices: string[] | undefined,
   open: boolean
 ) {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -87,7 +89,7 @@ export function useWordForm(
 
   function buildPayload() {
     if (!wordText.trim() || !definition.trim()) {
-      setError('Word và Definition không được trống')
+      setError(t('admin.wordForm.requiredFields'))
       return null
     }
     

@@ -165,7 +165,21 @@
     "maintenanceDesc": "Focus on global review to anchor memories forever.",
     "wordsDue": "{{count}} words due",
     "reviewNow": "Review Now",
-    "learnedToday": "Learned {{count}} new words"
+    "learnedToday": "Learned {{count}} new words",
+    "quotes": {
+      "longJourney": "A journey of a thousand miles begins with a single step.",
+      "newWindow": "Learning another language adds a new window onto the world.",
+      "persistence": "Persistence is the key to lasting progress.",
+      "dailyGrowth": "A little each day turns into deep knowledge.",
+      "pride": "Do not stop until you are proud of your progress.",
+      "cultureMap": "Language skill is a map into another culture.",
+      "treasure": "Learning is a treasure that follows its owner everywhere."
+    },
+    "growth": {
+      "seedling": "Seedling",
+      "growing": "Growing",
+      "rooted": "Rooted"
+    }
   },
   "sidebar": {
     "collapse": "Collapse Sidebar",
@@ -1361,7 +1375,8 @@
       "wrong1Placeholder": "Wrong 1",
       "wrong2Placeholder": "Wrong 2",
       "wrong3Placeholder": "Wrong 3",
-      "wrongChoicesDesc": "Distractor answers for multiple choice exercises."
+      "wrongChoicesDesc": "Distractor answers for multiple choice exercises.",
+      "requiredFields": "Word and Definition are required"
     },
     "roadmapForm": {
       "titleEdit": "Edit Roadmap",

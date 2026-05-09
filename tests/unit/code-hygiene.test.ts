@@ -119,4 +119,21 @@ describe('code hygiene guardrails', () => {
 
     expect(findings).toEqual([])
   })
+
+  it('keeps selected hook-level UI copy in i18n instead of hardcoded strings', () => {
+    const files = [
+      path.resolve('src/hooks/useDashboard.ts'),
+      path.resolve('src/hooks/admin/useWordForm.ts'),
+    ]
+    const findings = files.flatMap((file) => {
+      const source = readFileSync(file, 'utf8')
+      return source
+        .split(/\r?\n/)
+        .map((line, index) => ({ line, number: index + 1 }))
+        .filter(({ line }) => /['"`][^'"`]*[À-ỹ][^'"`]*['"`]/.test(line))
+        .map(({ line, number }) => `${path.relative(process.cwd(), file)}:${number} ${line.trim()}`)
+    })
+
+    expect(findings).toEqual([])
+  })
 })

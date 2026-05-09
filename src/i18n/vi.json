@@ -165,7 +165,21 @@
     "maintenanceDesc": "Ôn tập tập trung không phân biệt chủ đề để ghi nhớ vĩnh viễn.",
     "wordsDue": "{{count}} từ cần ôn tập",
     "reviewNow": "Ôn tập ngay",
-    "learnedToday": "Đã học {{count}} từ mới"
+    "learnedToday": "Đã học {{count}} từ mới",
+    "quotes": {
+      "longJourney": "Hành trình vạn dặm bắt đầu từ một bước chân.",
+      "newWindow": "Học một ngoại ngữ là có thêm một cửa sổ để nhìn ra thế giới.",
+      "persistence": "Sự kiên trì là chìa khóa của thành công.",
+      "dailyGrowth": "Mỗi ngày một chút, kiến thức sẽ đong đầy.",
+      "pride": "Đừng dừng lại cho đến khi bạn tự hào về bản thân.",
+      "cultureMap": "Kỹ năng ngôn ngữ là bản đồ của một nền văn hóa.",
+      "treasure": "Học tập là kho báu sẽ đi theo chủ nhân của nó khắp mọi nơi."
+    },
+    "growth": {
+      "seedling": "Hạt mầm",
+      "growing": "Đang lớn",
+      "rooted": "Cây cổ thụ"
+    }
   },
   "sidebar": {
     "collapse": "Thu nhỏ menu",
@@ -1361,7 +1375,8 @@
       "wrong1Placeholder": "Sai 1",
       "wrong2Placeholder": "Sai 2",
       "wrong3Placeholder": "Sai 3",
-      "wrongChoicesDesc": "Các đáp án gây nhiễu cho bài tập trắc nghiệm."
+      "wrongChoicesDesc": "Các đáp án gây nhiễu cho bài tập trắc nghiệm.",
+      "requiredFields": "Word và Definition không được trống"
     },
     "roadmapForm": {
       "titleEdit": "Sửa lộ trình",
