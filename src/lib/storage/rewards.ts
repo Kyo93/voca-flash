@@ -44,12 +44,55 @@ function canUseLocalStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function readNonNegativeInteger(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 0
+  return Math.max(0, Math.floor(value))
+}
+
+function readNullableString(value: unknown): string | null {
+  return typeof value === 'string' && value.length > 0 ? value : null
+}
+
+function normalizeFallbackStoredRewardProgress(
+  value: unknown,
+  userId: string
+): StoredRewardProgress | null {
+  if (!isRecord(value)) return null
+
+  const hasKnownShape = 'userId' in value
+    || 'totalXp' in value
+    || 'studyXp' in value
+    || 'reviewXp' in value
+    || 'spentXp' in value
+    || 'arenaSessions' in value
+    || 'selectedCharacterId' in value
+    || 'updatedAt' in value
+  if (!hasKnownShape) return null
+
+  return {
+    userId,
+    totalXp: readNonNegativeInteger(value.totalXp),
+    studyXp: readNonNegativeInteger(value.studyXp),
+    reviewXp: readNonNegativeInteger(value.reviewXp),
+    spentXp: readNonNegativeInteger(value.spentXp),
+    arenaSessions: readNonNegativeInteger(value.arenaSessions),
+    selectedCharacterId: readNullableString(value.selectedCharacterId),
+    updatedAt: readNullableString(value.updatedAt),
+  }
+}
+
 function loadFallbackStoredRewardProgress(userId: string): StoredRewardProgress {
   if (canUseLocalStorage()) {
     const raw = window.localStorage.getItem(getFallbackKey(userId))
     if (raw) {
       try {
-        return JSON.parse(raw) as StoredRewardProgress
+        const parsed = normalizeFallbackStoredRewardProgress(JSON.parse(raw), userId)
+        if (parsed) return parsed
+        window.localStorage.removeItem(getFallbackKey(userId))
       } catch {
         window.localStorage.removeItem(getFallbackKey(userId))
       }
@@ -60,10 +103,12 @@ function loadFallbackStoredRewardProgress(userId: string): StoredRewardProgress 
 }
 
 function saveFallbackStoredRewardProgress(progress: StoredRewardProgress): void {
-  memoryFallback.set(progress.userId, progress)
+  const normalizedProgress = normalizeFallbackStoredRewardProgress(progress, progress.userId)
+    ?? createEmptyRewardProgress(progress.userId)
+  memoryFallback.set(progress.userId, normalizedProgress)
 
   if (canUseLocalStorage()) {
-    window.localStorage.setItem(getFallbackKey(progress.userId), JSON.stringify(progress))
+    window.localStorage.setItem(getFallbackKey(progress.userId), JSON.stringify(normalizedProgress))
   }
 }
 
