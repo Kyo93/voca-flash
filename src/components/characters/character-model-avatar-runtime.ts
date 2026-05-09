@@ -298,6 +298,45 @@ export function applyCharacterModelLightProfile(
   })
 }
 
+export function applyCharacterModelProceduralAnimation({
+  group,
+  elapsed,
+  state,
+  animated,
+  disableProceduralAnimation,
+}: {
+  group: THREE.Group
+  elapsed: number
+  state: CharacterAnimationState
+  animated: boolean
+  disableProceduralAnimation: boolean
+}) {
+  const pulse = Math.sin(elapsed * Math.PI * 2)
+  const fastPulse = Math.sin(elapsed * Math.PI * 6)
+  const shouldRunProceduralAnimation = animated && !disableProceduralAnimation
+
+  group.rotation.y = 0
+  group.position.y = shouldRunProceduralAnimation ? pulse * 0.025 : 0
+  group.scale.setScalar(1)
+
+  if (shouldRunProceduralAnimation && state === 'correct') {
+    group.rotation.z = Math.max(0, pulse) * 0.04
+    group.position.y += Math.max(0, pulse) * 0.08
+  } else if (shouldRunProceduralAnimation && state === 'wrong') {
+    group.rotation.z = fastPulse * 0.035
+    group.position.x = fastPulse * 0.035
+  } else if (shouldRunProceduralAnimation && state === 'celebrate') {
+    group.rotation.z = pulse * 0.06
+    group.position.y += 0.08 + Math.max(0, pulse) * 0.08
+  } else if (shouldRunProceduralAnimation && state === 'evolve') {
+    group.rotation.y += elapsed * 0.9
+    group.scale.setScalar(1 + Math.max(0, pulse) * 0.08)
+  } else {
+    group.rotation.z = 0
+    group.position.x = 0
+  }
+}
+
 export async function loadOptionalTexture(
   loader: THREE.TextureLoader,
   src: string | undefined,

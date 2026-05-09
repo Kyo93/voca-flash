@@ -38,11 +38,19 @@ interface CharacterSelectResponse {
 }
 
 const FALLBACK_STORAGE_PREFIX = 'voca-flash-characters:'
-const fallbackCollections = new Map<string, {
+interface FallbackCharacterCollection {
   unlockedCharacterIds: string[]
-  unlockedCharacterStates?: CharacterUnlockState[]
+  unlockedCharacterStates: CharacterUnlockState[]
   selectedCharacterId: string | null
-}>()
+}
+
+interface StoredFallbackCharacterCollection {
+  unlockedCharacterIds?: unknown
+  unlockedCharacterStates?: unknown
+  selectedCharacterId?: unknown
+}
+
+const fallbackCollections = new Map<string, FallbackCharacterCollection>()
 
 function rowToStored(row: RewardProgressRow): StoredRewardProgress {
   return {
@@ -65,37 +73,107 @@ function getFallbackKey(userId: string): string {
   return `${FALLBACK_STORAGE_PREFIX}${userId}`
 }
 
-function getFallbackCollection(userId: string) {
-  if (canUseLocalStorage()) {
-    const raw = window.localStorage.getItem(getFallbackKey(userId))
-    if (raw) {
-      try {
-        return JSON.parse(raw) as {
-          unlockedCharacterIds: string[]
-          unlockedCharacterStates?: CharacterUnlockState[]
-          selectedCharacterId: string | null
-        }
-      } catch {
-        window.localStorage.removeItem(getFallbackKey(userId))
-      }
-    }
-  }
-
-  return fallbackCollections.get(userId) ?? {
+function getDefaultFallbackCollection(): FallbackCharacterCollection {
+  return {
     unlockedCharacterIds: [DEFAULT_CHARACTER_ID],
     unlockedCharacterStates: [{ characterId: DEFAULT_CHARACTER_ID, currentStage: 1, evolutionSpentXp: 0 }],
     selectedCharacterId: DEFAULT_CHARACTER_ID,
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function readStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+
+  return value.filter((item): item is string => typeof item === 'string' && item.length > 0)
+}
+
+function readPositiveInteger(value: unknown, fallback: number): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback
+  return Math.max(0, Math.floor(value))
+}
+
+function readFallbackCharacterStates(value: unknown): CharacterUnlockState[] {
+  if (!Array.isArray(value)) return []
+
+  return value.flatMap((item) => {
+    if (!isRecord(item) || typeof item.characterId !== 'string' || item.characterId.length === 0) {
+      return []
+    }
+
+    return [{
+      characterId: item.characterId,
+      currentStage: Math.max(1, readPositiveInteger(item.currentStage, 1)),
+      evolutionSpentXp: readPositiveInteger(item.evolutionSpentXp, 0),
+    }]
+  })
+}
+
+function normalizeFallbackCollection(value: unknown): FallbackCharacterCollection | null {
+  if (!isRecord(value)) return null
+
+  const stored = value as StoredFallbackCharacterCollection
+  const hasKnownShape = 'unlockedCharacterIds' in stored
+    || 'unlockedCharacterStates' in stored
+    || 'selectedCharacterId' in stored
+  if (!hasKnownShape) return null
+
+  const storedIds = readStringArray(stored.unlockedCharacterIds)
+  const storedStates = readFallbackCharacterStates(stored.unlockedCharacterStates)
+  const migratedStates = storedStates.length > 0
+    ? storedStates
+    : storedIds.map((characterId) => ({
+      characterId,
+      currentStage: 1,
+      evolutionSpentXp: 0,
+    }))
+  const unlockedCharacterStates = uniqueCharacterStates(migratedStates)
+  const unlockedCharacterIds = uniqueCharacterIds([
+    ...storedIds,
+    ...unlockedCharacterStates.map(state => state.characterId),
+  ])
+  const rawSelectedCharacterId = stored.selectedCharacterId
+  const selectedCharacterId = typeof rawSelectedCharacterId === 'string'
+    && unlockedCharacterIds.includes(rawSelectedCharacterId)
+    ? rawSelectedCharacterId
+    : DEFAULT_CHARACTER_ID
+
+  return {
+    unlockedCharacterIds,
+    unlockedCharacterStates,
+    selectedCharacterId,
+  }
+}
+
+function getFallbackCollection(userId: string): FallbackCharacterCollection {
+  if (canUseLocalStorage()) {
+    const raw = window.localStorage.getItem(getFallbackKey(userId))
+    if (raw) {
+      try {
+        const parsed = normalizeFallbackCollection(JSON.parse(raw))
+        if (parsed) return parsed
+        window.localStorage.removeItem(getFallbackKey(userId))
+      } catch {
+        window.localStorage.removeItem(getFallbackKey(userId))
+      }
+    }
+  }
+
+  return fallbackCollections.get(userId) ?? getDefaultFallbackCollection()
+}
+
 function saveFallbackCollection(userId: string, collection: {
   unlockedCharacterIds: string[]
-  unlockedCharacterStates?: CharacterUnlockState[]
+  unlockedCharacterStates: CharacterUnlockState[]
   selectedCharacterId: string | null
 }) {
-  fallbackCollections.set(userId, collection)
+  const normalizedCollection = normalizeFallbackCollection(collection) ?? getDefaultFallbackCollection()
+  fallbackCollections.set(userId, normalizedCollection)
   if (canUseLocalStorage()) {
-    window.localStorage.setItem(getFallbackKey(userId), JSON.stringify(collection))
+    window.localStorage.setItem(getFallbackKey(userId), JSON.stringify(normalizedCollection))
   }
 }
 
@@ -229,32 +307,7 @@ export async function unlockUserCharacter(
     warnCharacterStorageFallback(error)
   }
 
-  const current = await fetchCharacterCollection(userId)
-  if (current.rewardProgress.availableXp < costXp) {
-    return current
-  }
-
-  const rewardProgress = toRewardProgressView({
-    ...current.rewardProgress,
-    spentXp: current.rewardProgress.spentXp + costXp,
-    selectedCharacterId: current.selectedCharacterId ?? characterId,
-  })
-  const unlockedCharacterIds = uniqueCharacterIds([...current.unlockedCharacterIds, characterId])
-  const unlockedCharacterStates = uniqueCharacterStates([
-    ...current.unlockedCharacterStates,
-    { characterId, currentStage: 1, evolutionSpentXp: 0 },
-  ])
-  const selectedCharacterId = rewardProgress.selectedCharacterId ?? characterId
-
-  saveFallbackCollection(userId, { unlockedCharacterIds, unlockedCharacterStates, selectedCharacterId })
-  notifyRewardProgressUpdated(rewardProgress)
-
-  return {
-    rewardProgress,
-    unlockedCharacterIds,
-    unlockedCharacterStates,
-    selectedCharacterId,
-  }
+  return fetchCharacterCollection(userId)
 }
 
 export async function evolveUserCharacter(
@@ -294,39 +347,7 @@ export async function evolveUserCharacter(
     warnCharacterStorageFallback(error)
   }
 
-  const current = await fetchCharacterCollection(userId)
-  if (!current.unlockedCharacterIds.includes(characterId) || current.rewardProgress.availableXp < costXp) {
-    return current
-  }
-
-  const currentStates = current.unlockedCharacterStates.filter(state => state.characterId !== characterId)
-  const previous = current.unlockedCharacterStates.find(state => state.characterId === characterId)
-  const unlockedCharacterStates = uniqueCharacterStates([
-    ...currentStates,
-    {
-      characterId,
-      currentStage: Math.max(targetStage, previous?.currentStage ?? 1),
-      evolutionSpentXp: (previous?.evolutionSpentXp ?? 0) + costXp,
-    },
-  ])
-  const rewardProgress = toRewardProgressView({
-    ...current.rewardProgress,
-    spentXp: current.rewardProgress.spentXp + costXp,
-  })
-
-  saveFallbackCollection(userId, {
-    unlockedCharacterIds: current.unlockedCharacterIds,
-    unlockedCharacterStates,
-    selectedCharacterId: current.selectedCharacterId,
-  })
-  notifyRewardProgressUpdated(rewardProgress)
-
-  return {
-    rewardProgress,
-    unlockedCharacterIds: current.unlockedCharacterIds,
-    unlockedCharacterStates,
-    selectedCharacterId: current.selectedCharacterId,
-  }
+  return fetchCharacterCollection(userId)
 }
 
 export async function selectUserCharacter(
@@ -338,9 +359,14 @@ export async function selectUserCharacter(
     p_character_id: characterId,
   })
 
+  if (error) {
+    warnCharacterStorageFallback(error)
+    return fetchCharacterCollection(userId)
+  }
+
   const current = await fetchCharacterCollection(userId)
 
-  if (!error && data) {
+  if (data) {
     const response = data as CharacterSelectResponse
     const rewardProgress = response.reward_progress
       ? toRewardProgressView(rowToStored(response.reward_progress))
@@ -364,30 +390,5 @@ export async function selectUserCharacter(
     }
   }
 
-  if (error) {
-    warnCharacterStorageFallback(error)
-  }
-
-  if (!current.unlockedCharacterIds.includes(characterId)) {
-    return current
-  }
-
-  const rewardProgress = toRewardProgressView({
-    ...current.rewardProgress,
-    selectedCharacterId: characterId,
-  })
-
-  saveFallbackCollection(userId, {
-    unlockedCharacterIds: current.unlockedCharacterIds,
-    unlockedCharacterStates: current.unlockedCharacterStates,
-    selectedCharacterId: characterId,
-  })
-  notifyRewardProgressUpdated(rewardProgress)
-
-  return {
-    rewardProgress,
-    unlockedCharacterIds: current.unlockedCharacterIds,
-    unlockedCharacterStates: current.unlockedCharacterStates,
-    selectedCharacterId: characterId,
-  }
+  return current
 }

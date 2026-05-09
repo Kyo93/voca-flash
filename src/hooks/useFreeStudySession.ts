@@ -81,7 +81,7 @@ export function useFreeStudySession(deckId: string = 'all', wordsOverride?: Mast
           id: w.word_id,
           word: wordObj,
           progress: progress,
-          choices: [], // We'll skip recognition for now in Free Study for simplicity
+          choices: [],
           quadrant: selectQuadrant(w.fsrs_stability ?? 0, !!w.example)
         }
       })

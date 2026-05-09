@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
  * Generic admin CRUD state container.
@@ -27,28 +27,30 @@ export interface AdminResourceLoader<T, Args extends unknown[]> {
 export function useAdminResource<T, Args extends unknown[] = []>(
   loader: AdminResourceLoader<T, Args>,
 ) {
+  const loaderRef = useRef(loader)
   const [items, setItems] = useState<T[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    loaderRef.current = loader
+  }, [loader])
 
   const fetchItems = useCallback(
     async (...args: Args) => {
       setLoading(true)
       setError(null)
-      const { data, error: err } = await loader.load(...args)
+      const activeLoader = loaderRef.current
+      const { data, error: err } = await activeLoader.load(...args)
       if (err) {
         setError(err.message)
         setLoading(false)
         return
       }
-      const mapped = loader.mapData ? loader.mapData(data) : ((data as T[]) ?? [])
+      const mapped = activeLoader.mapData ? activeLoader.mapData(data) : ((data as T[]) ?? [])
       setItems(mapped)
       setLoading(false)
     },
-    // The loader is supplied by the caller and typically stable across renders
-    // (module-level query functions). We intentionally omit it from deps to
-    // match the prior per-hook `fetch` behavior (callers called it manually).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
 

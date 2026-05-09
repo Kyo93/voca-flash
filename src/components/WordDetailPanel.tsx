@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { lazy, Suspense, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { MasteryWord } from '../lib/types'
@@ -9,8 +9,8 @@ import { SrsLevelBadge } from './mastery/SrsLevelBadge'
 import { WordDetailOverview } from './mastery/detail/WordDetailOverview'
 import { WordDetailLinguistic } from './mastery/detail/WordDetailLinguistic'
 import { WordDetailStats } from './mastery/detail/WordDetailStats'
-import { NoteTab } from './mastery/detail/NoteTab'
 
+const NoteTab = lazy(() => import('./mastery/detail/NoteTab').then(module => ({ default: module.NoteTab })))
 
 interface WordDetailPanelProps {
   word: MasteryWord | null
@@ -167,21 +167,23 @@ export default function WordDetailPanel({
               {activeTab === 'linguistic' && <WordDetailLinguistic word={word} />}
 
               {activeTab === 'notes' && (
-                <NoteTab
-                  isEditing={isEditingNote}
-                  onStartEdit={() => setIsEditingNote(true)}
-                  draftNote={draftNote}
-                  onDraftChange={setDraftNote}
-                  personalNote={personalNote}
-                  onCancel={() => {
-                    setIsEditingNote(false)
-                    setDraftNote(personalNote || '')
-                  }}
-                  onSave={async () => {
-                    await onSaveNote(draftNote)
-                    setIsEditingNote(false)
-                  }}
-                />
+                <Suspense fallback={<div className="p-8 text-sm text-on-surface-variant">{t('common.loading')}</div>}>
+                  <NoteTab
+                    isEditing={isEditingNote}
+                    onStartEdit={() => setIsEditingNote(true)}
+                    draftNote={draftNote}
+                    onDraftChange={setDraftNote}
+                    personalNote={personalNote}
+                    onCancel={() => {
+                      setIsEditingNote(false)
+                      setDraftNote(personalNote || '')
+                    }}
+                    onSave={async () => {
+                      await onSaveNote(draftNote)
+                      setIsEditingNote(false)
+                    }}
+                  />
+                </Suspense>
               )}
 
               {activeTab === 'stats' && <WordDetailStats word={word} locale={locale} />}

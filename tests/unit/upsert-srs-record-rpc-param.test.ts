@@ -8,24 +8,20 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'fs'
-import { resolve } from 'path'
+import { readSourceFile } from './source-reader'
 
-const SESSION_TS_PATH = resolve(
-  'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash',
-  'src/lib/storage/session.ts'
-)
+const SESSION_TS_PATH = 'lib/storage/session.ts'
 
 describe('upsertSrsRecord — V2 RPC strategy', () => {
 
   it('calls upsert_srs_record_v2 RPC for all updates', async () => {
-    const ts = readFileSync(SESSION_TS_PATH, 'utf-8')
+    const ts = readSourceFile(SESSION_TS_PATH)
     expect(ts).toMatch(/supabase\.rpc\('upsert_srs_record_v2'/)
     expect(ts).not.toMatch(/insert_srs_record/)
   })
 
   it('RPC payload has correct parameter names for upsert_srs_record_v2', async () => {
-    const ts = readFileSync(SESSION_TS_PATH, 'utf-8')
+    const ts = readSourceFile(SESSION_TS_PATH)
     expect(ts).toMatch(/p_user_id/)
     expect(ts).toMatch(/p_word_id/)
     expect(ts).toMatch(/p_stability/)
@@ -38,7 +34,7 @@ describe('upsertSrsRecord — V2 RPC strategy', () => {
   })
 
   it('skips upsert when stability or difficulty is NaN', async () => {
-    const ts = readFileSync(SESSION_TS_PATH, 'utf-8')
+    const ts = readSourceFile(SESSION_TS_PATH)
     expect(ts).toMatch(/isNaN\(update\.stability\)/)
     expect(ts).toMatch(/isNaN\(update\.difficulty\)/)
   })

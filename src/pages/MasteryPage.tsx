@@ -1,12 +1,10 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { MasteryWord } from '../lib/types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
 import { useMasteryWords } from '../hooks/useMasteryWords'
-import WordDetailPanel from '../components/WordDetailPanel'
-import NotebookScreen from '../components/mastery/NotebookScreen'
 
 import CardRow from '../components/mastery/CardRow'
 import MasteryHeader from '../components/mastery/MasteryHeader'
@@ -15,6 +13,17 @@ import ScholarlyFilterBar from '../components/mastery/ScholarlyFilterBar'
 import ScholarlyABCFilter from '../components/mastery/ScholarlyABCFilter'
 
 import { vi, enUS } from 'date-fns/locale'
+
+const WordDetailPanel = lazy(() => import('../components/WordDetailPanel'))
+const NotebookScreen = lazy(() => import('../components/mastery/NotebookScreen'))
+
+function DeferredOverlayFallback() {
+  return (
+    <div className="fixed inset-0 z-70 flex items-center justify-center bg-surface/40">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+    </div>
+  )
+}
 
 export default function MasteryPage() {
   const { user } = useAuth()
@@ -51,6 +60,8 @@ export default function MasteryPage() {
   const [panelTab, setPanelTab] = useState<'overview' | 'notes'>('overview')
   const [isNoteEditMode, setIsNoteEditMode] = useState(false)
   const [isNotebookOpen, setIsNotebookOpen] = useState(false)
+  const [hasOpenedPanel, setHasOpenedPanel] = useState(false)
+  const [hasOpenedNotebook, setHasOpenedNotebook] = useState(false)
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
 
@@ -64,6 +75,7 @@ export default function MasteryPage() {
     setSelectedWord(word)
     setPanelTab('notes')
     setIsNoteEditMode(true)
+    setHasOpenedPanel(true)
     setIsPanelOpen(true)
   }
 
@@ -76,6 +88,7 @@ export default function MasteryPage() {
     setSelectedWord(word)
     setPanelTab('overview')
     setIsNoteEditMode(false)
+    setHasOpenedPanel(true)
     setIsPanelOpen(true)
   }
 
@@ -96,7 +109,10 @@ export default function MasteryPage() {
           selectedIdsSize={selectedIds.size}
           onStartFreeStudy={handleStartFreeStudy}
           notebookCount={notebookEntries.size}
-          onOpenNotebook={() => setIsNotebookOpen(true)}
+          onOpenNotebook={() => {
+            setHasOpenedNotebook(true)
+            setIsNotebookOpen(true)
+          }}
         />
 
         {/* Stats Quick Grid */}
@@ -194,25 +210,32 @@ export default function MasteryPage() {
           )}
         </div>
 
-        {/* Word Detail Side Panel */}
-        <WordDetailPanel
-          isOpen={isPanelOpen}
-          onClose={() => setIsPanelOpen(false)}
-          word={selectedWord}
-          isNotebookSaved={selectedWord ? isSaved(selectedWord.word_id) : false}
-          onToggleNotebook={handleToggleNotebook}
-          personalNote={selectedWord ? getNote(selectedWord.word_id) : null}
-          onSaveNote={handleSaveNote}
-          initialTab={panelTab}
-          forceEdit={isNoteEditMode}
-        />
+        {hasOpenedPanel && (
+          <Suspense fallback={<DeferredOverlayFallback />}>
+            <WordDetailPanel
+              isOpen={isPanelOpen}
+              onClose={() => setIsPanelOpen(false)}
+              word={selectedWord}
+              isNotebookSaved={selectedWord ? isSaved(selectedWord.word_id) : false}
+              onToggleNotebook={handleToggleNotebook}
+              personalNote={selectedWord ? getNote(selectedWord.word_id) : null}
+              onSaveNote={handleSaveNote}
+              initialTab={panelTab}
+              forceEdit={isNoteEditMode}
+            />
+          </Suspense>
+        )}
 
-        <NotebookScreen
-          isOpen={isNotebookOpen}
-          onClose={() => setIsNotebookOpen(false)}
-          userId={user?.id}
-          onSaveNote={updateNote}
-        />
+        {hasOpenedNotebook && (
+          <Suspense fallback={<DeferredOverlayFallback />}>
+            <NotebookScreen
+              isOpen={isNotebookOpen}
+              onClose={() => setIsNotebookOpen(false)}
+              userId={user?.id}
+              onSaveNote={updateNote}
+            />
+          </Suspense>
+        )}
 
       </div>
     </div>

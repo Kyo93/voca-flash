@@ -6,6 +6,10 @@ const modelAvatarSource = fs.readFileSync(
   path.join(process.cwd(), 'src', 'components', 'characters', 'CharacterModelAvatar.tsx'),
   'utf-8',
 )
+const modelSceneHookSource = fs.readFileSync(
+  path.join(process.cwd(), 'src', 'components', 'characters', 'useCharacterModelScene.ts'),
+  'utf-8',
+)
 const modelRuntimeSource = fs.readFileSync(
   path.join(process.cwd(), 'src', 'components', 'characters', 'character-model-avatar-runtime.ts'),
   'utf-8',
@@ -14,7 +18,7 @@ const modelLoaderSource = fs.readFileSync(
   path.join(process.cwd(), 'src', 'components', 'characters', 'character-model-avatar-loader.ts'),
   'utf-8',
 )
-const source = `${modelAvatarSource}\n${modelRuntimeSource}\n${modelLoaderSource}`
+const source = `${modelAvatarSource}\n${modelSceneHookSource}\n${modelRuntimeSource}\n${modelLoaderSource}`
 
 describe('CharacterModelAvatar interaction contract', () => {
   it('uses OrbitControls so OBJ characters can be inspected from multiple angles', () => {

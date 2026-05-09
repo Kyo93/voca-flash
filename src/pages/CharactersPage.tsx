@@ -1,15 +1,11 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import CharacterAvatar, { preloadCharacterModelAvatar } from '../components/characters/CharacterAvatar'
-import CharacterExpandedViewer from '../components/characters/CharacterExpandedViewer'
 import { useAuth } from '../contexts/AuthContext'
 import { useCharacterCollection } from '../hooks/useCharacterCollection'
 
-type IdleWindow = Window & typeof globalThis & {
-  requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
-  cancelIdleCallback?: (handle: number) => void
-}
+const CharacterExpandedViewer = lazy(() => import('../components/characters/CharacterExpandedViewer'))
 
 export default function CharactersPage() {
   const { t } = useTranslation()
@@ -27,18 +23,14 @@ export default function CharactersPage() {
   } = useCharacterCollection(user?.id)
   const expandedItem = collection?.items.find(item => item.character.id === expandedCharacterId) ?? null
 
-  useEffect(() => {
-    if (!collection?.items.length || typeof window === 'undefined') return
+  const handleExpandedViewerIntent = () => {
+    preloadCharacterModelAvatar()
+  }
 
-    const idleWindow = window as IdleWindow
-    if (idleWindow.requestIdleCallback) {
-      const idleId = idleWindow.requestIdleCallback(preloadCharacterModelAvatar, { timeout: 1400 })
-      return () => idleWindow.cancelIdleCallback?.(idleId)
-    }
-
-    const timeoutId = window.setTimeout(preloadCharacterModelAvatar, 650)
-    return () => window.clearTimeout(timeoutId)
-  }, [collection?.items])
+  const handleOpenExpandedViewer = (characterId: string) => {
+    preloadCharacterModelAvatar()
+    setExpandedCharacterId(characterId)
+  }
 
   if (isLoadingCharacters && !collection) {
     return <div className="p-12 animate-pulse text-on-surface-variant font-medium">{t('common.loading')}</div>
@@ -119,8 +111,10 @@ export default function CharactersPage() {
                     className="group relative flex h-20 w-20 shrink-0 items-center justify-center rounded-xl outline-none transition-transform hover:scale-105 focus-visible:ring-4 focus-visible:ring-primary/20 active:scale-95"
                     aria-label={t('characters.actions.expandedView')}
                     title={t('characters.actions.expandedView')}
-                    onClick={() => setExpandedCharacterId(character.id)}
-                    onDoubleClick={() => setExpandedCharacterId(character.id)}
+                    onPointerEnter={handleExpandedViewerIntent}
+                    onFocus={handleExpandedViewerIntent}
+                    onClick={() => handleOpenExpandedViewer(character.id)}
+                    onDoubleClick={() => handleOpenExpandedViewer(character.id)}
                   >
                     <CharacterAvatar
                       character={character}
@@ -230,11 +224,22 @@ export default function CharactersPage() {
         </section>
       </main>
       {expandedItem && (
-        <CharacterExpandedViewer
-          character={expandedItem.character}
-          stageDefinition={expandedItem.currentStageDefinition}
-          onClose={() => setExpandedCharacterId(null)}
-        />
+        <Suspense
+          fallback={
+            <div
+              className="fixed inset-0 z-[1000] flex items-center justify-center bg-on-surface/85 text-surface backdrop-blur-md"
+              aria-hidden="true"
+            >
+              <div className="h-10 w-10 animate-spin rounded-full border-2 border-surface/25 border-t-surface" />
+            </div>
+          }
+        >
+          <CharacterExpandedViewer
+            character={expandedItem.character}
+            stageDefinition={expandedItem.currentStageDefinition}
+            onClose={() => setExpandedCharacterId(null)}
+          />
+        </Suspense>
       )}
     </div>
   )

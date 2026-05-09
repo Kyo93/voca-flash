@@ -1,7 +1,27 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import WordDetailPanel from '../../src/components/WordDetailPanel';
-import { ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { MasteryWord } from '../../src/lib/types';
+
+type MotionOnlyProps = {
+  initial?: unknown;
+  animate?: unknown;
+  exit?: unknown;
+  transition?: unknown;
+  layoutId?: string;
+  layout?: boolean | string;
+  whileHover?: unknown;
+  whileTap?: unknown;
+};
+
+type MotionDivProps = ComponentPropsWithoutRef<'div'> & MotionOnlyProps;
+type MotionButtonProps = ComponentPropsWithoutRef<'button'> & MotionOnlyProps;
+
+function omitMotionProps<T extends MotionOnlyProps>(props: T) {
+  const { initial, animate, exit, transition, layoutId, layout, whileHover, whileTap, ...domProps } = props;
+  return domProps;
+}
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -18,14 +38,14 @@ vi.mock('react-i18next', () => ({
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, className, ...props }: any) => <div className={className} {...props}>{children}</div>,
-    button: ({ children, className, ...props }: any) => <button className={className} {...props}>{children}</button>,
+    div: ({ children, ...props }: MotionDivProps) => <div {...omitMotionProps(props)}>{children}</div>,
+    button: ({ children, ...props }: MotionButtonProps) => <button {...omitMotionProps(props)}>{children}</button>,
   },
   AnimatePresence: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 
 describe('WordDetailPanel Rich Text Support', () => {
-  const mockWord: any = {
+  const mockWord: MasteryWord = {
     word_id: '1',
     word: 'test',
     definition: 'test definition',
@@ -60,7 +80,7 @@ describe('WordDetailPanel Rich Text Support', () => {
     );
 
     // Should find a strong/b tag for bold text
-    const boldElement = screen.queryByText('Bold Note');
+    const boldElement = await screen.findByText('Bold Note');
     // In current implementation, this will just be a p tag with the raw text including **
     // If it's correctly rendered, it should be an element with bold style or a <strong> tag.
     
@@ -86,7 +106,7 @@ describe('WordDetailPanel Rich Text Support', () => {
       />
     );
 
-    const redText = screen.getByText('red text');
+    const redText = await screen.findByText('red text');
     expect(redText.tagName.toLowerCase()).toBe('span');
     expect(redText.getAttribute('style')).toContain('color: red');
   });
@@ -132,7 +152,7 @@ describe('WordDetailPanel Rich Text Support', () => {
       />
     );
 
-    expect(screen.getByText('Initial Note')).toBeDefined();
+    expect(await screen.findByText('Initial Note')).toBeDefined();
 
     // Rerender with new note (simulating save update)
     rerender(
@@ -148,7 +168,7 @@ describe('WordDetailPanel Rich Text Support', () => {
       />
     );
 
-    expect(screen.getByText('Updated Note')).toBeDefined();
+    expect(await screen.findByText('Updated Note')).toBeDefined();
     expect(screen.queryByText('Initial Note')).toBeNull();
   });
 });

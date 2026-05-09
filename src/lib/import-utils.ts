@@ -23,11 +23,11 @@ export function parseRawValue(val: unknown): string {
 
 export function normalizeParsedRows(parsedData: Record<string, unknown>[]): RawRow[] {
   return parsedData.map(row => {
-    const normalized: Record<string, string> = {}
+    const normalized: RawRow = {}
     for (const [key, val] of Object.entries(row)) {
       normalized[key] = parseRawValue(val)
     }
-    return normalized as unknown as RawRow
+    return normalized
   })
 }
 

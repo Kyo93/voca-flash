@@ -4,18 +4,18 @@ import path from 'path'
 
 test('Build output does not contain catastrophic syntax corruption', () => {
   const assetsDir = path.resolve(__dirname, '../../dist/assets')
-  
-  if (!fs.existsSync(assetsDir)) {
-    console.warn('dist/assets not found. Skipping frontend safety check. Run npm run build first.')
-    return
-  }
+
+  expect(
+    fs.existsSync(assetsDir),
+    'dist/assets is required for frontend safety checks; run npm run build before this test',
+  ).toBe(true)
 
   const files = fs.readdirSync(assetsDir)
   const indexFile = files.find(f => f.startsWith('index-') && f.endsWith('.js'))
 
+  expect(indexFile, 'index-*.js is required for frontend safety checks').toBeDefined()
   if (!indexFile) {
-    console.warn('index-*.js not found in dist/assets. Skipping check.')
-    return
+    throw new Error('index-*.js is required for frontend safety checks')
   }
 
   const content = fs.readFileSync(path.join(assetsDir, indexFile), 'utf-8')

@@ -35,12 +35,15 @@ describe('character avatar usage', () => {
     expect(source).toContain('onReactionEnd={() =>')
   })
 
-  it('Characters page preloads the 3D renderer in the background for smoother expanded views', () => {
+  it('Characters page preloads the 3D renderer only after expanded-view intent', () => {
     const source = fs.readFileSync(path.join(root, 'src/pages/CharactersPage.tsx'), 'utf8')
 
     expect(source).toContain('preloadCharacterModelAvatar')
-    expect(source).toContain('requestIdleCallback')
-    expect(source).toContain('setTimeout(preloadCharacterModelAvatar')
+    expect(source).toContain('onPointerEnter={handleExpandedViewerIntent}')
+    expect(source).toContain('onFocus={handleExpandedViewerIntent}')
+    expect(source).toContain('handleOpenExpandedViewer(character.id)')
+    expect(source).not.toContain('requestIdleCallback')
+    expect(source).not.toContain('setTimeout(preloadCharacterModelAvatar')
   })
 
   it('Characters page triggers evolve reaction only after evolution succeeds', () => {

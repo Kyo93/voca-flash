@@ -683,7 +683,7 @@ describe('NotebookScreenContent', () => {
     expect(stickyNote.className).toContain('aspect-[1/1]')
     expect(stickyNote.className).toContain('max-w-[15rem]')
     expect(stickyNote.className).not.toContain('w-full')
-    expect(stickyToolbar.className).toContain('bg-[#F6EFA3]')
+    expect(stickyToolbar.className).toContain('notebook-sticky-toolbar-yellow')
     expect(stickyToolbar.className).not.toContain('bg-[#FFF176]')
     expect(screen.getByTestId('notebook-sticky-note-paper-edge')).toBeTruthy()
     expect(screen.getByTestId('notebook-sticky-note-corner-lift')).toBeTruthy()
@@ -764,7 +764,7 @@ describe('NotebookScreenContent', () => {
 
     fireEvent.click(screen.getByTestId('notebook-sticky-color-blue'))
 
-    expect(stickyNote.className).toContain('bg-[#D7E8FF]')
+    expect(stickyNote.className).toContain('notebook-sticky-note-blue')
     expect(screen.queryByTestId('notebook-sticky-menu')).toBeNull()
 
     fireEvent.click(screen.getByTestId('notebook-sticky-menu-button'))

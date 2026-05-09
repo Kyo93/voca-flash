@@ -224,6 +224,33 @@ body {
   mix-blend-mode: multiply;
 }
 
+.notebook-overlay-surface { background-color: #F8F5F1; }
+.notebook-search-icon { color: rgba(106, 74, 45, 0.55); }
+
+.notebook-sticky-note-yellow { background-color: #FFF7BA; }
+.notebook-sticky-toolbar-yellow,
+.notebook-sticky-swatch-yellow { background-color: #F6EFA3; }
+
+.notebook-sticky-note-green { background-color: #DFF6C8; }
+.notebook-sticky-toolbar-green,
+.notebook-sticky-swatch-green { background-color: #C7EC9E; }
+
+.notebook-sticky-note-blue { background-color: #D7E8FF; }
+.notebook-sticky-toolbar-blue,
+.notebook-sticky-swatch-blue { background-color: #BFD7FF; }
+
+.notebook-sticky-note-pink { background-color: #FFD6E7; }
+.notebook-sticky-toolbar-pink,
+.notebook-sticky-swatch-pink { background-color: #FFB8D3; }
+
+.notebook-sticky-note-purple { background-color: #E7DBFF; }
+.notebook-sticky-toolbar-purple,
+.notebook-sticky-swatch-purple { background-color: #D7C2FF; }
+
+.notebook-sticky-note-charcoal,
+.notebook-sticky-swatch-charcoal { background-color: #3F3A34; }
+.notebook-sticky-toolbar-charcoal { background-color: #2F2B27; }
+
 @utility editorial-asymmetry {
   letter-spacing: -0.02em;
 }

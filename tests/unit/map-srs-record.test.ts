@@ -1,12 +1,6 @@
-/**
- * tests/unit/map-srs-record.test.ts
- *
- * RED phase: srs.ts phải export hàm mapSrsRecordToCardProgress
- * để session.ts khỏi duplicate mapping logic.
- */
-
 import { describe, it, expect, vi } from 'vitest'
 import type { SrsRecord } from '../../src/lib/types'
+import { readSourceFile } from './source-reader'
 
 function makeSrsRecord(overrides: Partial<SrsRecord> = {}): SrsRecord {
   return {
@@ -32,8 +26,8 @@ function makeSrsRecord(overrides: Partial<SrsRecord> = {}): SrsRecord {
   }
 }
 
-describe('mapSrsRecordToCardProgress — RED', () => {
-  it('srs.ts must export mapSrsRecordToCardProgress', async () => {
+describe('mapSrsRecordToCardProgress', () => {
+  it('srs.ts exports mapSrsRecordToCardProgress', async () => {
     const mod = await import('../../src/lib/srs')
     expect(typeof mod.mapSrsRecordToCardProgress).toBe('function')
   })
@@ -69,41 +63,31 @@ describe('mapSrsRecordToCardProgress — RED', () => {
     vi.useFakeTimers()
     const now = new Date('2026-04-20T12:00:00Z')
     vi.setSystemTime(now)
-    
+
     const mod = await import('../../src/lib/srs')
-    const record = makeSrsRecord({
+    const result = mod.mapSrsRecordToCardProgress(makeSrsRecord({
       next_review_at: null,
       last_reviewed: null,
-    })
+    }))
 
-    const result = mod.mapSrsRecordToCardProgress(record)
+    expect(result.due).toBe(now.getTime())
+    expect(result.lastReview).toBe(0)
 
-    expect(result.due).toBe(now.getTime()) // fallback to now
-    expect(result.lastReview).toBe(0)   // fallback to 0
-    
     vi.useRealTimers()
   })
 
   it('applies defaults for missing FSRS fields', async () => {
     const mod = await import('../../src/lib/srs')
-    const record = makeSrsRecord({
-      fsrs_stability: undefined as any,
-      fsrs_difficulty: undefined as any,
-    })
-
-    const result = mod.mapSrsRecordToCardProgress(record)
+    const result = mod.mapSrsRecordToCardProgress(makeSrsRecord({
+      fsrs_stability: undefined,
+      fsrs_difficulty: undefined,
+    }))
 
     expect(result.stability).toBe(0)
-    expect(result.difficulty).toBe(5.0) // default fallback (1-10 scale)
+    expect(result.difficulty).toBe(5.0)
   })
 
-  it('session.ts fetchSrsStates and fetchReviewWords must use the shared function', async () => {
-    const fs = await import('fs')
-    const source = fs.readFileSync(
-      'c:/Users/Ocean/Documents/VibeCode/English/voca-flash/src/lib/storage/session.ts',
-      'utf-8'
-    )
-    // Both functions should call mapSrsRecordToCardProgress
-    expect(source).toMatch(/mapSrsRecordToCardProgress/)
+  it('session.ts fetchSrsStates and fetchReviewWords use the shared function', () => {
+    expect(readSourceFile('lib/storage/session.ts')).toMatch(/mapSrsRecordToCardProgress/)
   })
 })

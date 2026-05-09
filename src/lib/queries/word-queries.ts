@@ -14,6 +14,12 @@ interface TopicWordJoin {
   topics: { id: string; name: string; slug: string; color: string | null } | null
 }
 
+type JoinedTopic = NonNullable<TopicWordJoin['topics']>
+
+function normalizeJoinedTopic(topic: JoinedTopic | JoinedTopic[] | null): JoinedTopic | null {
+  return Array.isArray(topic) ? topic[0] ?? null : topic
+}
+
 /**
  * Replace tất cả topic associations của một word.
  * Pattern: delete-then-insert qua bảng junction `topic_words`.
@@ -81,8 +87,8 @@ export async function getAllWords(topicFilter?: string, search?: string) {
     .in('word_id', wordIds)
 
   const topicNameMap = new Map<string, { id: string; name: string; slug: string; color: string }>()
-  for (const junction of (junctions ?? []) as unknown as TopicWordJoin[]) {
-    const topic = junction.topics
+  for (const junction of junctions ?? []) {
+    const topic = normalizeJoinedTopic(junction.topics)
     if (topic) {
       topicNameMap.set(junction.word_id, {
         id: topic.id,

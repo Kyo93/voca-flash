@@ -1,32 +1,14 @@
-/**
- * tests/unit/parse-sheets-alias.test.ts
- *
- * RED phase: Xóa alias parseSheetsUrlIntoRows, dùng parseSheetsUrl trực tiếp.
- */
-
 import { describe, it, expect } from 'vitest'
+import { readSourceFile } from './source-reader'
 
-describe('parseSheetsUrlIntoRows alias — RED', () => {
-  it('import-parser.ts must NOT export parseSheetsUrlIntoRows alias', async () => {
-    const fs = await import('fs')
-    const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/lib/import-parser.ts',
-      'utf-8'
-    )
-    // After fix: no more "export { parseSheetsUrl as parseSheetsUrlIntoRows }"
-    expect(source).not.toMatch(/export.*parseSheetsUrlIntoRows/)
+describe('parseSheetsUrlIntoRows alias removal', () => {
+  it('import-parser.ts does not export parseSheetsUrlIntoRows alias', () => {
+    expect(readSourceFile('lib/import-parser.ts')).not.toMatch(/export.*parseSheetsUrlIntoRows/)
   })
 
-  it('useImportFlow.ts must use parseSheetsUrl (not parseSheetsUrlIntoRows)', async () => {
-    const fs = await import('fs')
-    const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/Voca-flash/src/hooks/admin/useImportFlow.ts',
-      'utf-8'
-    )
-    // After fix: no reference to parseSheetsUrlIntoRows
+  it('useImportFlow.ts uses parseSheetsUrl directly', () => {
+    const source = readSourceFile('hooks/admin/useImportFlow.ts')
     expect(source).not.toMatch(/parseSheetsUrlIntoRows/)
-    // And should have parseSheetsUrl in the import block
     expect(source).toMatch(/parseSheetsUrl/)
-    expect(source).not.toMatch(/parseSheetsUrlIntoRows/)
   })
 })

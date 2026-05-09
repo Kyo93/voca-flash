@@ -73,8 +73,7 @@ describe('ConstructionChallenge', () => {
 
   it('renders a "Give Up" button that calls onSubmit(false)', async () => {
     render(<ConstructionChallenge word={mockWord} onSubmit={mockOnSubmit} />)
-    
-    // We expect a "Give Up" button to exist (using i18n key for now)
+
     const giveUpBtn = screen.getByText('review.construction.give_up')
     fireEvent.click(giveUpBtn)
     

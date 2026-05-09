@@ -19,9 +19,12 @@ export default function MasteryHeader({
   selectedIdsSize,
   onStartFreeStudy,
   notebookCount,
-  onOpenNotebook
+  onOpenNotebook,
 }: MasteryHeaderProps) {
   const { t } = useTranslation()
+  const freeStudyLabel = selectedIdsSize > 0
+    ? t('mastery.freeStudy', { count: selectedIdsSize })
+    : t('mastery.filters.flashReview')
 
   return (
     <div className="mb-12 flex flex-col justify-between gap-8 md:flex-row md:items-start">
@@ -44,15 +47,15 @@ export default function MasteryHeader({
       >
         <div className="group relative flex-1 sm:flex-none">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors">search</span>
-            <input 
-              type="text"
-              placeholder={t('nav.searchPlaceholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-4 bg-surface-container-lowest border-none rounded-2xl shadow-sun-drenched input-tactile-focus transition-all w-full md:w-80 font-bold text-sm"
-            />
+          <input
+            type="text"
+            placeholder={t('nav.searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 pr-6 py-4 bg-surface-container-lowest border-none rounded-2xl shadow-sun-drenched input-tactile-focus transition-all w-full md:w-80 font-bold text-sm"
+          />
         </div>
-        
+
         <button
           type="button"
           onClick={onOpenNotebook}
@@ -67,16 +70,16 @@ export default function MasteryHeader({
           </span>
         </button>
 
-        <button 
+        <button
           type="button"
           onClick={onStartFreeStudy}
-          aria-label={selectedIdsSize > 0 ? t('mastery.freeStudy', { count: selectedIdsSize }) : t('mastery.filters.flashReview')}
+          aria-label={freeStudyLabel}
           className="group flex h-14 min-w-[10rem] items-center justify-center gap-3 whitespace-nowrap rounded-2xl px-6 text-sm font-black text-on-primary shadow-sun-drenched transition-all primary-gradient hover:-translate-y-0.5 active:scale-95"
         >
           <span className="material-symbols-outlined font-variation-fill group-hover:rotate-12 transition-transform">bolt</span>
-          <span>{selectedIdsSize > 0 ? t('mastery.freeStudy', { count: selectedIdsSize }) : t('mastery.filters.flashReview')}</span>
+          <span>{freeStudyLabel}</span>
         </button>
       </div>
     </div>
-  );
+  )
 }

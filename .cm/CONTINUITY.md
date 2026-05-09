@@ -3,14 +3,55 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
-- Active Goal: Fix Mastery page notebook and Flash Review header buttons.
-- Current Plan: keep the existing Mastery header structure, remove hardcoded oversized widths/translates, and make both action buttons compact aligned pills.
+- Active Goal: Execute May 2026 clean-code review plan.
+- Current Plan: `openspec/changes/clean-code-may-2026-review/design.md` and `tasks.md`.
+- Current Phase: planning.
+- Working Context: follow-up `cm-clean-code` scan found build passing, focused hygiene tests passing, a large dirty clean-code baseline still uncommitted, raw markdown HTML rendering in notebook notes, Tailwind runtime class construction in `ArenaLoading`, hook-level hardcoded UI copy in `useDashboard`/`useWordForm`, reward fallback storage still cast-through, and `CharacterModelAvatar` still emitted as a 648.10 kB lazy chunk.
+- Just Completed: split `CharacterModelAvatar.tsx` from a 340-line WebGL lifecycle component into a 71-line render shell plus `useCharacterModelScene.ts`.
+- Just Completed: moved character procedural animation transforms into `applyCharacterModelProceduralAnimation()` in `character-model-avatar-runtime.ts`.
+- Just Completed: split the left notebook archive page and mnemonic photo into `src/components/mastery/NotebookArchivePage.tsx`.
+- Just Completed: split the right notebook investigation/sticky-note presentation into `src/components/mastery/NotebookInvestigationPage.tsx`.
+- Just Completed: moved notebook paper/sticky-note direct color classes into CSS and removed the stale direct-hex exemption from `tests/unit/code-hygiene.test.ts`.
+- Just Completed: extracted the notebook personalization rail into `src/components/mastery/NotebookControlRail.tsx` and removed unused book-spread props from `NotebookScreen`.
+- Just Completed: hardened notebook preference storage parsing in `notebook-utils` so malformed localStorage values fall back to typed defaults instead of being cast through.
+- Just Completed: added fail-closed `source-reader` helpers and converted import/parser/admin word-count/topic-count source assertions away from empty-string fallbacks.
+- Just Completed: tightened `useAdminResource.fetchItems` by capturing the active loader once per async fetch.
+- Verification: `npm.cmd run build` passed; focused `code-hygiene` and `frontend-safety` tests passed with 4 tests during planning scan.
+- Next Actions: 1) review current dirty tree and confirm intentional file adds/deletes; 2) run `npm.cmd run test:gate` on the current baseline; 3) commit the current completed clean-code baseline if the gate passes.
+
+## Previous Session Override
+- Active Goal: cm-clean-code review across the full app.
+- Current Plan: scan code hygiene, large files, test/build gates, fallback storage safety, bundle warnings, and report findings without source edits.
+- Current Phase: review complete.
+- Working Context: `/mockup`, `BookPageMockup`, and `public/book-preview.html` were prototype-only and are now removed from product/public surface. `NotebookScreen` delegates state/helpers to `useNotebookScreenState` and `notebook-utils`.
+- Just Completed: reviewed full app hygiene after the cleanup/performance pass; no source code edits were made in this review turn.
+- Just Completed: `npm run test:gate` passed with 512 tests and `npm run build` passed; build still reports the lazy `CharacterModelAvatar` chunk at 647.58 kB.
+- Just Completed: top findings are stale/missing `dist` safety test skip, unvalidated localStorage fallback shapes, oversized `NotebookScreen`, and remaining 3D bundle weight.
+- Next Actions: fix the frontend-safety gate first, then add runtime validation for fallback storage, then continue splitting `NotebookScreen` and the 3D renderer.
+
+## Previous Session Override
+- Active Goal: Clean Code + performance pass across the app.
+- Current Plan: remove dead prototype app surface, isolate large Mastery notebook state/helpers, clean type/test smells, defer heavy Mastery overlays, and lazy-load character/markdown surfaces on user intent.
 - Current Phase: verified.
-- Working Context: `MasteryHeader` action row should use natural button widths; avoid `w-[953px]`, fixed wrapper heights, and manual translate offsets that distort the search/action layout.
-- Just Completed: changed the action row to a responsive compact flex group, turned `Sổ tay` into a secondary pill with notebook count badge, and made `Flash Review` a same-height primary pill with a stable accessible label.
-- Just Completed: added `tests/unit/MasteryHeader.test.tsx` to prevent the oversized button regression.
-- Verification: focused MasteryHeader test passed, `npm run build` passed, `npm run test:gate` passed with 513 tests, and `/mastery` returned HTTP 200 on `127.0.0.1:5173`.
-- Next Actions: visually refresh `/mastery`; if the row still feels too far right on the target viewport, tune only `md:pt-7` or the search input width.
+- Working Context: `/mockup`, `BookPageMockup`, and `public/book-preview.html` were prototype-only and are now removed from product/public surface. `NotebookScreen` delegates state/helpers to `useNotebookScreenState` and `notebook-utils`.
+- Just Completed: removed the prototype mockup route/files, removed the hygiene exclusion, and reduced `NotebookScreen.tsx` from 1641 to 1444 lines.
+- Just Completed: added `tests/unit/source-reader.ts` and converted source-reading tests away from absolute `C:/Users/Ocean/...` paths.
+- Just Completed: removed debug logs, stale `@ts-ignore`, `eslint-disable`, source `any`/`unknown as` scan hits, and stale commented code in cleaned files.
+- Just Completed: lazy-loaded `WordDetailPanel` and `NotebookScreen` from `MasteryPage`; production build now emits `MasteryPage` at 22.36 kB / 5.98 kB gzip instead of the earlier 68.90 kB / 16.44 kB gzip page chunk.
+- Just Completed: disabled duplicate `Underline` registration in `RichNoteEditor` and cleaned the rich-note test motion mock so it does not leak animation props to DOM.
+- Just Completed: lazy-loaded `CharacterExpandedViewer`, changed 3D model preload from background idle load to hover/focus/click intent, and lazy-loaded `NoteTab` so markdown is not pulled into the default word overview panel.
+- Just Completed: production build now emits `CharactersPage` at 7.30 kB / 2.36 kB gzip instead of 11.56 kB / 3.35 kB gzip, and `WordDetailPanel` at 9.17 kB / 2.74 kB gzip instead of 12.11 kB / 3.41 kB gzip.
+- Verification: `npm run test:gate` passed with 512 tests; `npm run build` passed; `git diff --check` passed.
+- Next Actions: optionally split the internal Three.js renderer/runtime if the expanded character viewer must avoid the remaining 647.58 kB lazy chunk; editor chunks remain deferred to actual note editing.
+
+## Current Session Override
+- Active Goal: Push Mastery and UI polish changes to production.
+- Current Plan: Verify stability with test gate, commit with Conventional Commits, and push to GitHub.
+- Current Phase: complete.
+- Working Context: Codebase is stable with 513 tests passing. Identity verified as Kyo93.
+- Just Completed: Pushed `5d6d5ac` to `production` branch on GitHub.
+- Just Completed: Verified all 513 tests pass with `npm run test:gate`.
+- Next Actions: Continue with any new feature requests or further UI refinements.
 
 ## Current Session Override
 - Active Goal: Polish Mastery Notebook sticky note paper treatment from design option #2.
@@ -427,6 +468,8 @@
 - [x] Admin Module Refactoring (Clean Code SRP) — COMPLETED
 
 ## Mistakes & Learnings (Latest)
+- **Character Model SRP vs Bundle Size**: Extracting `CharacterModelAvatar` lifecycle logic into a hook improves maintainability but does not reduce the lazy chunk while Three.js/runtime/loader imports remain static under the same lazy boundary. For actual chunk reduction, move heavy Three.js runtime imports behind an additional dynamic import boundary. Scope: `module:characters`. Verification: focused character model tests plus `npm run test:gate`. (2026-04-27)
+- **Notebook Hex Guard After Extraction**: Moving notebook UI into new TSX files can surface direct-hex classes that were previously hidden by a file-specific hygiene exception. Fix: move palette-specific values to CSS utility classes and keep `tests/unit/code-hygiene.test.ts` enforcing no direct hex in active TSX files. Scope: `module:mastery-notebook`. Verification: focused notebook/code-hygiene tests plus `npm run test:gate`. (2026-04-27)
 - **Notebook Bullet And Accent Details**: The reference style uses small bullet markers and red/orange rules, not heavy cards. Implement bullets inside each ruled row and reserve the accent rule for the title/VN/example rows. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
 - **Notebook Green Container Regression**: Do not put all expansion fields into one green panel. The user wants the page to look like continuous notebook paper; use transparent containers and ruled rows, with only small term chips if needed. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)
 - **Notebook Required Fields vs Minimalism**: Minimal ruled-note styling must not collapse required learning fields into an unlabeled chip pile. Keep the notebook feel, but label meaning, Vietnamese, example, word family, synonyms, antonyms, collocations, and personal note as separate rows. Verification: focused notebook tests plus `npm run test:gate` and `npm run build`. (2026-04-25)

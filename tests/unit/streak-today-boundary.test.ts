@@ -1,49 +1,28 @@
-/**
- * tests/unit/streak-today-boundary.test.ts
- *
- * RED phase: streak.ts recordStudy() phải dùng 4 AM boundary
- * như getTodayBoundary() trong storage/session.ts
- */
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { readSourceFile } from './source-reader'
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-
-// Mocks localStorage
 const store: Record<string, string> = {}
 vi.stubGlobal('localStorage', {
-  getItem: (k: string) => store[k] ?? null,
-  setItem: (k: string, v: string) => { store[k] = v },
-  removeItem: (k: string) => { delete store[k] },
-  clear: () => { Object.keys(store).forEach(k => delete store[k]) },
+  getItem: (key: string) => store[key] ?? null,
+  setItem: (key: string, value: string) => { store[key] = value },
+  removeItem: (key: string) => { delete store[key] },
+  clear: () => { Object.keys(store).forEach((key) => delete store[key]) },
 })
 
-describe('streak today boundary — RED', () => {
-  beforeEach(() => { Object.keys(store).forEach(k => delete store[k]) })
+describe('streak today boundary', () => {
+  beforeEach(() => { Object.keys(store).forEach((key) => delete store[key]) })
 
-  it('streak.ts must import and use getTodayBoundary instead of todayStr', async () => {
-    // streak.ts phải import getTodayBoundary từ supabase-storage
-    // chứ không tự định nghĩa todayStr() với UTC
-    const fs = await import('fs')
-    const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/voca-flash/src/lib/streak.ts',
-      'utf-8'
-    )
-    // Phải có getTodayBoundary, KHÔNG có function todayStr() riêng
+  it('streak.ts imports and uses getTodayBoundary instead of a local todayStr', () => {
+    const source = readSourceFile('lib/streak.ts')
     expect(source).toMatch(/import.*getTodayBoundary.*from/s)
     expect(source).not.toMatch(/function todayStr\(\)/)
   })
 
-  it('streak module must NOT define todayStr with UTC date', async () => {
-    const fs = await import('fs')
-    const source = fs.readFileSync(
-      'C:/Users/Ocean/Documents/VibeCode/English/voca-flash/src/lib/streak.ts',
-      'utf-8'
-    )
-    // todayStr = () => new Date().toISOString().split('T')[0] là BUG
-    // Nó dùng UTC date thay vì 4 AM local boundary
-    expect(source).not.toMatch(/todayStr.*=.*toISOString/)
+  it('streak module does not define todayStr with UTC date', () => {
+    expect(readSourceFile('lib/streak.ts')).not.toMatch(/todayStr.*=.*toISOString/)
   })
 
-  it('loadStreak/saveStreak still work after refactor (interface unchanged)', async () => {
+  it('loadStreak/saveStreak keep the same interface', async () => {
     const { loadStreak, saveStreak } = await import('../../src/lib/streak')
     const data = { currentStreak: 5, lastStudyDate: '2026-04-15', longestStreak: 10 }
     saveStreak(data)

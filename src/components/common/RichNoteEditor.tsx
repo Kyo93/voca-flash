@@ -16,7 +16,8 @@ interface MarkdownStorage {
 }
 
 function getMarkdown(editor: Editor): string {
-  return (editor.storage as unknown as MarkdownStorage).markdown.getMarkdown()
+  const storage = editor.storage as Partial<MarkdownStorage>
+  return storage.markdown?.getMarkdown() ?? editor.getText()
 }
 
 interface RichNoteEditorProps {
@@ -61,7 +62,9 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
   const { t } = useTranslation()
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        underline: false,
+      }),
       Underline,
       TextStyle,
       Color,

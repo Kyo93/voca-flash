@@ -49,8 +49,15 @@ vi.mock('../../src/hooks/useCharacterCollection', () => ({
   }),
 }))
 
+vi.mock('../../src/components/characters/CharacterAvatar', () => ({
+  default: ({ materialQuality = 'standard' }: { materialQuality?: string }) => (
+    <div data-character-material-quality={materialQuality} />
+  ),
+  preloadCharacterModelAvatar: vi.fn(),
+}))
+
 describe('CharactersPage expanded viewer', () => {
-  it('opens a full-screen PBR character viewer from the collection page', () => {
+  it('opens a full-screen PBR character viewer from the collection page', async () => {
     render(
       <MemoryRouter>
         <CharactersPage />
@@ -59,7 +66,7 @@ describe('CharactersPage expanded viewer', () => {
 
     fireEvent.doubleClick(screen.getAllByRole('button', { name: 'characters.actions.expandedView' })[0])
 
-    const dialog = screen.getByRole('dialog', { name: 'characters.actions.expandedView' })
+    const dialog = await screen.findByRole('dialog', { name: 'characters.actions.expandedView' })
     const overlay = document.querySelector('[data-character-expanded-view="true"]')
     const stage = document.querySelector('[data-character-expanded-stage="true"]')
 
@@ -71,7 +78,7 @@ describe('CharactersPage expanded viewer', () => {
     expect(document.querySelector('[data-character-material-quality="pbr"]')).toBeTruthy()
   })
 
-  it('closes the character viewer with Escape', () => {
+  it('closes the character viewer with Escape', async () => {
     render(
       <MemoryRouter>
         <CharactersPage />
@@ -79,6 +86,7 @@ describe('CharactersPage expanded viewer', () => {
     )
 
     fireEvent.doubleClick(screen.getAllByRole('button', { name: 'characters.actions.expandedView' })[0])
+    await screen.findByRole('dialog', { name: 'characters.actions.expandedView' })
     fireEvent.keyDown(window, { key: 'Escape' })
 
     expect(screen.queryByRole('dialog', { name: 'characters.actions.expandedView' })).toBeNull()
@@ -90,7 +98,7 @@ describe('CharactersPage expanded viewer', () => {
     expect(expandedViewerSource).toContain('className="absolute right-6 top-6 z-[1010]')
   })
 
-  it('shows adjustable light controls for model-backed characters in the expanded viewer', () => {
+  it('shows adjustable light controls for model-backed characters in the expanded viewer', async () => {
     render(
       <MemoryRouter>
         <CharactersPage />
@@ -100,8 +108,9 @@ describe('CharactersPage expanded viewer', () => {
     const arcaneBrawlerIndex = collection.items.findIndex(item => item.character.id === 'arcane_brawler')
     fireEvent.click(screen.getAllByRole('button', { name: 'characters.actions.expandedView' })[arcaneBrawlerIndex])
 
+    await screen.findByRole('dialog', { name: 'characters.actions.expandedView' })
     const overlay = document.querySelector('[data-character-expanded-view="true"]')
-    const exposureSlider = screen.getByRole('slider', { name: 'characters.viewer.exposure' })
+    const exposureSlider = await screen.findByRole('slider', { name: 'characters.viewer.exposure' })
 
     expect(document.querySelector('[data-character-viewer-controls="true"]')).toBeTruthy()
     expect(overlay?.getAttribute('data-character-viewer-exposure')).toBe('0.58')
@@ -116,7 +125,7 @@ describe('CharactersPage expanded viewer', () => {
     expect(overlay?.getAttribute('data-character-viewer-light')).toBe('vivid')
   })
 
-  it('shows animation controls for GLB characters with embedded animation states', () => {
+  it('shows animation controls for GLB characters with embedded animation states', async () => {
     render(
       <MemoryRouter>
         <CharactersPage />
@@ -126,6 +135,7 @@ describe('CharactersPage expanded viewer', () => {
     const playfulDogIndex = collection.items.findIndex(item => item.character.id === 'playful_dog')
     fireEvent.click(screen.getAllByRole('button', { name: 'characters.actions.expandedView' })[playfulDogIndex])
 
+    await screen.findByRole('dialog', { name: 'characters.actions.expandedView' })
     const overlay = document.querySelector('[data-character-expanded-view="true"]')
 
     expect(document.querySelector('[data-character-viewer-animation-controls="true"]')).toBeTruthy()
@@ -141,7 +151,7 @@ describe('CharactersPage expanded viewer', () => {
     expect(expandedViewerSource).toContain('disableProceduralAnimation={hasAnimationControls}')
   })
 
-  it('does not show animation controls for GLB characters without embedded animation states', () => {
+  it('does not show animation controls for GLB characters without embedded animation states', async () => {
     render(
       <MemoryRouter>
         <CharactersPage />
@@ -150,13 +160,14 @@ describe('CharactersPage expanded viewer', () => {
 
     const fallingTreeIndex = collection.items.findIndex(item => item.character.id === 'falling_leaf_tree')
     fireEvent.click(screen.getAllByRole('button', { name: 'characters.actions.expandedView' })[fallingTreeIndex])
+    await screen.findByRole('dialog', { name: 'characters.actions.expandedView' })
 
     expect(document.querySelector('[data-character-viewer-controls="true"]')).toBeTruthy()
     expect(document.querySelector('[data-character-viewer-animation-controls="true"]')).toBeNull()
     expect(screen.queryByRole('button', { name: 'characters.viewer.animation.celebrate' })).toBeNull()
   })
 
-  it('does not show model light controls for static media characters', () => {
+  it('does not show model light controls for static media characters', async () => {
     render(
       <MemoryRouter>
         <CharactersPage />
@@ -164,6 +175,7 @@ describe('CharactersPage expanded viewer', () => {
     )
 
     fireEvent.click(screen.getAllByRole('button', { name: 'characters.actions.expandedView' })[0])
+    await screen.findByRole('dialog', { name: 'characters.actions.expandedView' })
 
     expect(document.querySelector('[data-character-viewer-controls="true"]')).toBeNull()
     expect(screen.queryByRole('slider', { name: 'characters.viewer.exposure' })).toBeNull()
