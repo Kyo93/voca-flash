@@ -2,6 +2,18 @@ import { test, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
 
+function walkFiles(dir: string, extension: string, files: string[] = []): string[] {
+  for (const entry of fs.readdirSync(dir)) {
+    const filePath = path.join(dir, entry)
+    if (fs.statSync(filePath).isDirectory()) {
+      walkFiles(filePath, extension, files)
+    } else if (filePath.endsWith(extension)) {
+      files.push(filePath)
+    }
+  }
+  return files
+}
+
 test('Build output does not contain catastrophic syntax corruption', () => {
   const assetsDir = path.resolve(__dirname, '../../dist/assets')
 
@@ -34,4 +46,18 @@ test('Build output does not contain catastrophic syntax corruption', () => {
   expect(content).not.toMatch(/<\s+[a-zA-Z]/) // e.g., "< div"
   expect(content).not.toMatch(/<\/\s+[a-zA-Z]/) // e.g., "</ div"
   expect(content).not.toMatch(/--\s+>/) // e.g., "text-- >"
+})
+
+test('Tailwind utility names are not constructed with runtime interpolation', () => {
+  const files = walkFiles(path.resolve(__dirname, '../../src'), '.tsx')
+  const findings = files.flatMap((file) => {
+    const source = fs.readFileSync(file, 'utf-8')
+    return source
+      .split(/\r?\n/)
+      .map((line, index) => ({ line, number: index + 1 }))
+      .filter(({ line }) => /\b(?:bg|text|border|border-t|border-b|from|to|via)-\$\{/.test(line))
+      .map(({ line, number }) => `${path.relative(process.cwd(), file)}:${number} ${line.trim()}`)
+  })
+
+  expect(findings).toEqual([])
 })

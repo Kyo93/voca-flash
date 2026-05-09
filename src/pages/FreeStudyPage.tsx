@@ -26,7 +26,7 @@ export default function FreeStudyPage() {
   }, [deckId])
 
   if (session.isLoading) {
-    return <ArenaLoading message={t('arena.preparingStudy')} colorClass="cyan-500" />
+    return <ArenaLoading message={t('arena.preparingStudy')} variant="cyan" />
   }
 
   if (session.isComplete) {
