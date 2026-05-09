@@ -6,7 +6,7 @@
 - Active Goal: Execute May 2026 clean-code review plan.
 - Current Plan: `openspec/changes/clean-code-may-2026-review/design.md` and `tasks.md`.
 - Current Phase: verified.
-- Working Context: clean-code baseline is committed; notebook personal notes no longer render raw HTML; `ArenaLoading` uses typed static variants; dashboard quotes/growth labels and word-form validation copy moved to i18n; reward fallback storage now normalizes malformed localStorage fail-closed. Three.js runtime imports now live behind dynamic `character-model-scene-runner`; `CharacterModelAvatar` shell chunk dropped from 648.10 kB to 2.46 kB while the runner remains a separate 646.37 kB lazy chunk.
+- Working Context: clean-code baseline is committed; notebook personal notes no longer render raw HTML; `ArenaLoading` uses typed static variants; dashboard quotes/growth labels and word-form validation copy moved to i18n; reward fallback storage now normalizes malformed localStorage fail-closed. Three.js runtime imports now live behind dynamic `character-model-scene-runner`; `CharacterModelAvatar` shell chunk dropped from 648.10 kB to 2.46 kB while the runner remains a separate 646.37 kB lazy chunk. `NotebookInvestigationPage` now delegates sticky note behavior to `NotebookStickyNote` and learning fields/related terms to `NotebookInvestigationFields`.
 - Just Completed: split `CharacterModelAvatar.tsx` from a 340-line WebGL lifecycle component into a 71-line render shell plus `useCharacterModelScene.ts`.
 - Just Completed: moved character procedural animation transforms into `applyCharacterModelProceduralAnimation()` in `character-model-avatar-runtime.ts`.
 - Just Completed: split the left notebook archive page and mnemonic photo into `src/components/mastery/NotebookArchivePage.tsx`.
@@ -16,8 +16,10 @@
 - Just Completed: hardened notebook preference storage parsing in `notebook-utils` so malformed localStorage values fall back to typed defaults instead of being cast through.
 - Just Completed: added fail-closed `source-reader` helpers and converted import/parser/admin word-count/topic-count source assertions away from empty-string fallbacks.
 - Just Completed: tightened `useAdminResource.fetchItems` by capturing the active loader once per async fetch.
-- Verification: final `npm.cmd run test:gate` passed with 85 files / 526 tests; `git diff --check` passed; build shows `CharacterModelAvatar` shell at 2.46 kB and `character-model-scene-runner` at 646.37 kB.
-- Next Actions: continue optional plan tasks 7-8: split `NotebookInvestigationPage` sticky note/facts/related terms, then audit data colors versus UI styling colors.
+- Just Completed: extracted sticky note UI/state/actions into `src/components/mastery/NotebookStickyNote.tsx`, leaving `NotebookInvestigationPage` focused on the word investigation layout.
+- Just Completed: extracted meaning/example/word-family/synonym/antonym/collocation sections into `src/components/mastery/NotebookInvestigationFields.tsx`.
+- Verification: focused notebook test passed with 20 tests after each split; `npm.cmd run build` passed. Previous final `npm.cmd run test:gate` passed with 85 files / 526 tests; `git diff --check` passed; build shows `CharacterModelAvatar` shell at 2.46 kB and `character-model-scene-runner` at 646.37 kB.
+- Next Actions: continue optional plan task 8: audit data colors versus UI styling colors, then add targeted guardrails if needed.
 
 ## Previous Session Override
 - Active Goal: cm-clean-code review across the full app.

@@ -30,9 +30,9 @@
 - [x] 6.3 Keep `CharacterModelAvatar` render shell unchanged from the outside.
 - [x] 6.4 Run focused character model tests and inspect build chunk sizes.
 
-- [ ] 7.1 Split sticky note rendering from `NotebookInvestigationPage`.
-- [ ] 7.2 Split word facts and related terms from `NotebookInvestigationPage`.
-- [ ] 7.3 Re-run notebook tests after each split.
+- [x] 7.1 Split sticky note rendering from `NotebookInvestigationPage`.
+- [x] 7.2 Split word facts and related terms from `NotebookInvestigationPage`.
+- [x] 7.3 Re-run notebook tests after each split.
 
 - [ ] 8.1 Audit data colors versus UI styling colors.
 - [ ] 8.2 Add targeted color-token guardrails or allowlists.
