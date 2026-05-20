@@ -7,7 +7,9 @@ import BadgeGallery from '../components/progress/BadgeGallery'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useRewardProgress } from '../hooks/useRewardProgress'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import MasterySunburst from '../components/progress/MasterySunburst'
+import MobileProgressView from '../components/mobile/MobileProgressView'
 import { PROGRESS_THRESHOLDS } from '../lib/constants'
 import { getUserLevel, getRetentionDisplay, getGreetingKey } from '../lib/progress-utils'
 
@@ -16,6 +18,7 @@ export default function ProgressPage() {
   const { data, isLoading, error } = useAnalytics()
   const { initialData, user } = useAuth()
   const { rewardProgress } = useRewardProgress(user?.id)
+  const isMobileProfile = useMediaQuery('(max-width: 767px)')
   const reviewCount = initialData?.global_review_count ?? 0
   // Source-of-truth for "new words today": health.new_today (count of NEW SRS
   // records created since 4am Asia/Ho_Chi_Minh). Must match Dashboard's
@@ -38,6 +41,21 @@ export default function ProgressPage() {
   if (isLoading) return <div className="p-12 animate-pulse text-stone-400 font-medium">{t('progress.loading')}</div>
   if (error) return <div className="p-12 text-red-500">{t('progress.error')}</div>
   if (!data) return null
+
+  if (isMobileProfile) {
+    return (
+      <MobileProgressView
+        data={data}
+        reviewCount={reviewCount}
+        wordsToday={wordsToday}
+        totalWords={totalWords}
+        retentionInfo={retentionInfo}
+        userLevel={userLevel}
+        greetingKey={greetingKey}
+        rewardProgress={rewardProgress}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-surface">

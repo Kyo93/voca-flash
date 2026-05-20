@@ -1,13 +1,18 @@
 import { useTranslation } from 'react-i18next'
 import { useSettingsForm } from '../hooks/useSettingsForm'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import { useAuth } from '../contexts/AuthContext'
 
 import ProfileSection from '../components/settings/ProfileSection'
 import LearningSection from '../components/settings/LearningSection'
 import AudioSection from '../components/settings/AudioSection'
 import DangerZoneSection from '../components/settings/DangerZoneSection'
+import MobileSettingsView from '../components/mobile/MobileSettingsView'
 
 export default function SettingsPage() {
   const { t } = useTranslation()
+  const { signOut } = useAuth()
+  const isMobileProfile = useMediaQuery('(max-width: 767px)')
   const {
     user,
     formData,
@@ -17,6 +22,21 @@ export default function SettingsPage() {
     handleChange,
     handleSave
   } = useSettingsForm()
+
+  if (isMobileProfile) {
+    return (
+      <MobileSettingsView
+        userEmail={user?.email}
+        formData={formData}
+        saving={saving}
+        saveMessage={saveMessage}
+        error={error}
+        onChange={handleChange}
+        onSave={handleSave}
+        onSignOut={signOut}
+      />
+    )
+  }
 
   return (
     <div className="relative px-6 md:px-10 py-8 overflow-y-auto min-h-full">

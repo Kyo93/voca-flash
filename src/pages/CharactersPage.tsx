@@ -2,14 +2,17 @@ import { lazy, Suspense, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import CharacterAvatar, { preloadCharacterModelAvatar } from '../components/characters/CharacterAvatar'
+import MobileCharactersView from '../components/mobile/MobileCharactersView'
 import { useAuth } from '../contexts/AuthContext'
 import { useCharacterCollection } from '../hooks/useCharacterCollection'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 
 const CharacterExpandedViewer = lazy(() => import('../components/characters/CharacterExpandedViewer'))
 
 export default function CharactersPage() {
   const { t } = useTranslation()
   const { user } = useAuth()
+  const isMobileProfile = useMediaQuery('(max-width: 767px)')
   const [reactionCharacterId, setReactionCharacterId] = useState<string | null>(null)
   const [expandedCharacterId, setExpandedCharacterId] = useState<string | null>(null)
   const {
@@ -34,6 +37,40 @@ export default function CharactersPage() {
 
   if (isLoadingCharacters && !collection) {
     return <div className="p-12 animate-pulse text-on-surface-variant font-medium">{t('common.loading')}</div>
+  }
+
+  if (isMobileProfile) {
+    return (
+      <div className="min-h-screen bg-surface">
+        <MobileCharactersView
+          collection={collection}
+          isMutatingCharacter={isMutatingCharacter}
+          characterError={characterError}
+          reactionCharacterId={reactionCharacterId}
+          onReactionEnd={(characterId) => {
+            setReactionCharacterId(current => current === characterId ? null : current)
+          }}
+          onOpenCharacter={handleOpenExpandedViewer}
+          onUnlockCharacter={unlockCharacter}
+          onSelectCharacter={selectCharacter}
+          onEvolveCharacter={evolveCharacter}
+          onEvolved={setReactionCharacterId}
+        />
+        {expandedItem && (
+          <Suspense fallback={
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-on-surface/85 text-surface backdrop-blur-md">
+              <div className="h-10 w-10 animate-spin rounded-full border-2 border-surface/25 border-t-surface" />
+            </div>
+          }>
+            <CharacterExpandedViewer
+              character={expandedItem.character}
+              stageDefinition={expandedItem.currentStageDefinition}
+              onClose={() => setExpandedCharacterId(null)}
+            />
+          </Suspense>
+        )}
+      </div>
+    )
   }
 
   return (

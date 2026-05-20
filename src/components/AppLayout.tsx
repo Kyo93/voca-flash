@@ -6,12 +6,15 @@ import { useTranslation } from 'react-i18next'
 import { useState, Suspense } from 'react'
 import PageLoader from './PageLoader'
 import { useSidebar, SIDEBAR_WIDTH, SIDEBAR_COLLAPSED_WIDTH, RIGHTBAR_WIDTH, RIGHTBAR_COLLAPSED_WIDTH } from '../contexts/SidebarContext'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import MobileAppLayout from './mobile/MobileAppLayout'
 
 export default function AppLayout() {
   const { t } = useTranslation()
   const location = useLocation()
   const [searchQuery, setSearchQuery] = useState('')
   const { collapsed, rightCollapsed } = useSidebar()
+  const isMobileShell = useMediaQuery('(max-width: 767px)')
 
   const sidebarW = collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_WIDTH
   const rightbarW = rightCollapsed ? RIGHTBAR_COLLAPSED_WIDTH : RIGHTBAR_WIDTH
@@ -30,6 +33,9 @@ export default function AppLayout() {
     return 'VocaFlash'
   }
 
+  if (isMobileShell) {
+    return <MobileAppLayout />
+  }
 
   return (
     <div 

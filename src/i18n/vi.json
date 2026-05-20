@@ -74,6 +74,35 @@
     "achievements": "Huy hiệu",
     "characters": "Nhân vật"
   },
+  "mobileNav": {
+    "label": "Điều hướng chính",
+    "today": "Hôm nay",
+    "learn": "Học",
+    "review": "Ôn tập",
+    "notebook": "Sổ tay",
+    "profile": "Hồ sơ"
+  },
+  "profileMobile": {
+    "hubEyebrow": "Hồ sơ",
+    "hubTitle": "Bảng điều khiển học tập",
+    "hubSubtitle": "Tiến độ, phần thưởng, nhân vật và cài đặt trong một trải nghiệm dễ chạm.",
+    "quickLinks": "Lối tắt",
+    "progressOverview": "Tổng quan tiến độ",
+    "learningPulse": "Nhịp học",
+    "reviewNow": "Ôn ngay",
+    "wordsTotal": "Từ đang theo dõi",
+    "badgesUnlocked": "{{unlocked}}/{{total}} huy hiệu",
+    "nextBadge": "Huy hiệu tiếp theo",
+    "characterRoster": "Bộ sưu tập nhân vật",
+    "activeCharacter": "Nhân vật đang dùng",
+    "settingsHint": "Thay đổi sẽ được giữ lại khi bạn lưu.",
+    "accountActions": "Tài khoản",
+    "saveSettings": "Lưu cài đặt",
+    "noWeakWords": "Hiện chưa có từ yếu",
+    "languageVi": "VI",
+    "languageEn": "EN",
+    "rateValue": "{{rate}}x"
+  },
   "library": {
     "title": "Chọn hành trình của bạn",
     "tagline": "Lộ trình học tập chuyên biệt",
@@ -107,6 +136,17 @@
       "title": "Bạn không biết bắt đầu từ đâu?",
       "subtitle": "Hệ thống AI của chúng tôi sẽ gợi ý lộ trình hoàn hảo dựa trên trình độ và mục tiêu hiện tại của bạn.",
       "cta": "Thử đánh giá trình độ"
+    },
+    "mobile": {
+      "title": "Học",
+      "subtitle": "Chọn một lộ trình, giữ bài tiếp theo thật gần và bắt đầu bằng một phiên ngắn.",
+      "availablePaths": "{{count}} lộ trình",
+      "resumeBadge": "Đang học",
+      "progressLabel": "Tiến độ",
+      "masteredLabel": "đã thuộc",
+      "completedHint": "Lộ trình hoàn thành",
+      "emptyTitle": "Chưa có lộ trình ở đây",
+      "emptyDesc": "Thử đổi bộ lọc để tìm hành trình phù hợp hơn."
     }
   },
   "auth": {
@@ -179,6 +219,24 @@
       "seedling": "Hạt mầm",
       "growing": "Đang lớn",
       "rooted": "Cây cổ thụ"
+    },
+    "mobile": {
+      "todayLabel": "Trọng tâm hôm nay",
+      "greeting": "Sẵn sàng học nhẹ nhàng chưa?",
+      "greetingName": "Chào {{name}}",
+      "reviewTitle": "Đến giờ ôn tập",
+      "reviewDesc": "{{count}} từ đang chờ bạn gọi nhớ chủ động.",
+      "reviewCta": "Ôn tập ngay",
+      "continueTitle": "Học tiếp bài đang dở",
+      "continueDesc": "Tiếp tục nhịp học hôm trước, chỉ cần vài phút là có tiến bộ.",
+      "continueCta": "Học tiếp",
+      "startTitle": "Bắt đầu lộ trình",
+      "startDesc": "Chọn một hành trình nhỏ và tạo chiến thắng đầu tiên trong ngày.",
+      "startCta": "Mở thư viện",
+      "missionHint": "{{count}} từ mới hôm nay",
+      "stabilityHint": "Độ bền {{days}} ngày",
+      "forecastHint": "{{count}} lượt ôn trong 5 ngày tới",
+      "quoteTitle": "Ghi chú học giả"
     }
   },
   "sidebar": {
@@ -274,7 +332,17 @@
     "learned_label": "ĐÃ HỌC",
     "mastered_label": "ĐÃ THUỘC",
     "mastery_label": "NHUẦN NHUYỄN",
-    "scholarAlt": "H?c gi?"
+    "scholarAlt": "H?c gi?",
+    "mobile": {
+      "progressTitle": "Tiến độ lộ trình",
+      "totalLabel": "từ",
+      "learnedLabel": "đã học",
+      "masteredLabel": "đã thuộc",
+      "topicProgress": "Tiến độ chủ đề",
+      "startTopic": "Bắt đầu chủ đề",
+      "emptyTitle": "Không tìm thấy chủ đề",
+      "emptyDesc": "Thử đổi từ khóa tìm kiếm hoặc quay lại thư viện."
+    }
   },
   "topics": {
     "title": "Chủ đề",
@@ -1529,6 +1597,31 @@
     "empty": {
       "title": "Không tìm thấy từ vựng nào.",
       "subtitle": "Dữ liệu không tồn tại hoặc bộ lọc quá hẹp."
+    },
+    "mobile": {
+      "title": "Sổ tay từ vựng",
+      "subtitle": "{{count}} từ đang được theo dõi trong kho học của bạn.",
+      "searchPlaceholder": "Tìm từ, nghĩa hoặc chủ đề...",
+      "openNotebook": "Mở sổ tay",
+      "selectedCount": "{{count}} từ",
+      "studySelected": "Ôn các từ đã chọn",
+      "strength": "Độ bền",
+      "reps": "{{count}} lượt",
+      "lapses": "{{count}} quên",
+      "nextReview": "Lần ôn tiếp",
+      "dueNow": "Đến hạn",
+      "noReview": "Chưa có lịch",
+      "detailTitle": "Chi tiết từ",
+      "selectWord": "Chọn {{word}}",
+      "saveWord": "Lưu {{word}} vào sổ tay",
+      "unsaveWord": "Bỏ lưu {{word}} khỏi sổ tay",
+      "note": "Ghi chú",
+      "noNote": "Chưa có ghi chú",
+      "example": "Ví dụ",
+      "topic": "Chủ đề",
+      "emptyTitle": "Chưa có từ nào",
+      "emptyDesc": "Thử tìm từ khác hoặc nới bộ lọc để xem thêm.",
+      "statsLabel": "Thống kê học từ"
     },
     "notebook": {
       "open": "Mở sổ tay",

@@ -10,11 +10,14 @@ import DashboardMascotDock from '../components/dashboard/DashboardMascotDock'
 import { useAuth } from '../contexts/AuthContext'
 import { LAYOUT_TOKENS, DESIGN_TOKENS } from '../lib/tokens'
 import { useCharacterCollection } from '../hooks/useCharacterCollection'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import MobileDashboardView from '../components/dashboard/MobileDashboardView'
 
 export default function DashboardPage() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const { collection, isLoadingCharacters } = useCharacterCollection(user?.id)
+  const isMobileDashboard = useMediaQuery('(max-width: 767px)')
   const {
     profile,
     initialData,
@@ -38,6 +41,22 @@ export default function DashboardPage() {
       <div className="flex-1 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
       </div>
+    )
+  }
+
+  if (isMobileDashboard) {
+    return (
+      <MobileDashboardView
+        profile={profile}
+        initialData={initialData}
+        reviewCount={reviewCount}
+        newTodayTotal={newTodayTotal}
+        dailyGoal={dailyGoal}
+        primaryTopic={card1 ?? null}
+        isResume={isResume}
+        currentQuote={currentQuote}
+        collection={collection}
+      />
     )
   }
 

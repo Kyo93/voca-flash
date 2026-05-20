@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useLibraryRoadmaps } from '../hooks/useLibraryRoadmaps'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import MobileLibraryView from '../components/mobile/MobileLibraryView'
 
 export default function LibraryPage() {
   const { t } = useTranslation()
+  const isMobileLibrary = useMediaQuery('(max-width: 767px)')
   const {
     roadmaps,
     roadmapStats,
@@ -22,6 +25,19 @@ export default function LibraryPage() {
           <p className="text-on-surface-variant font-bold">{t('library.loading')}</p>
         </div>
       </div>
+    )
+  }
+
+  if (isMobileLibrary) {
+    return (
+      <MobileLibraryView
+        roadmaps={roadmaps}
+        roadmapStats={roadmapStats}
+        learningStates={learningStates}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        getCardSpecs={getCardSpecs}
+      />
     )
   }
 

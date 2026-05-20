@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VocaFlash</string>
+    <string name="title_activity_main">VocaFlash</string>
+    <string name="package_name">com.vocaflash.app</string>
+    <string name="custom_url_scheme">com.vocaflash.app</string>
+</resources>

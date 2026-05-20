@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useAnalytics } from '../hooks/useAnalytics'
 import { useAuth } from '../contexts/AuthContext'
 import { useRewardProgress } from '../hooks/useRewardProgress'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import {
   ACHIEVEMENT_CATEGORIES,
   ACHIEVEMENT_CATEGORY_TITLE_KEYS,
@@ -11,12 +12,14 @@ import {
   getAchievementCounts,
 } from '../lib/achievements'
 import AchievementCard from '../components/progress/AchievementCard'
+import MobileAchievementsView from '../components/mobile/MobileAchievementsView'
 
 export default function AchievementsPage() {
   const { t } = useTranslation()
   const { data, isLoading, error } = useAnalytics()
   const { user } = useAuth()
   const { rewardProgress, isLoadingRewards } = useRewardProgress(user?.id)
+  const isMobileProfile = useMediaQuery('(max-width: 767px)')
 
   const achievements = useMemo(() => {
     if (!data) return []
@@ -40,6 +43,16 @@ export default function AchievementsPage() {
   }
 
   if (!data) return null
+
+  if (isMobileProfile) {
+    return (
+      <MobileAchievementsView
+        achievements={achievements}
+        achievementCounts={achievementCounts}
+        rewardProgress={rewardProgress}
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-surface">

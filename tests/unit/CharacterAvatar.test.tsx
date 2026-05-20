@@ -13,7 +13,7 @@ const stageDefinition = character?.evolutionStages[0]
 const characterAvatarSource = fs.readFileSync(
   path.join(process.cwd(), 'src', 'components', 'characters', 'CharacterAvatar.tsx'),
   'utf-8',
-)
+).replace(/\r\n/g, '\n')
 
 const manifest: CharacterAssetManifest = {
   seedling_scholar: {

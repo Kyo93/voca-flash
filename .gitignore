@@ -24,9 +24,13 @@ playwright-report/
 test-results/
 playwright/.auth/
 
+# QA artifacts
+artifacts/
+
 # Scratch & Temporary
 scratch_*.ts
 scratch_*.js
+.superpowers/
 .agents/
 .cm/
 

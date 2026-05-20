@@ -9,7 +9,7 @@ const migrationPath = path.join(
 
 describe('default character evolution migration', () => {
   it('allows seedling scholar to create its unlock row before evolution', () => {
-    const sql = fs.readFileSync(migrationPath, 'utf8')
+    const sql = fs.readFileSync(migrationPath, 'utf8').replace(/\r\n/g, '\n')
 
     expect(sql).toContain('CREATE OR REPLACE FUNCTION evolve_user_character')
     expect(sql).toContain("p_character_id = 'seedling_scholar'")

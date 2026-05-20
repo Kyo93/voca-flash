@@ -74,6 +74,35 @@
     "achievements": "Achievements",
     "characters": "Characters"
   },
+  "mobileNav": {
+    "label": "Primary navigation",
+    "today": "Today",
+    "learn": "Learn",
+    "review": "Review",
+    "notebook": "Notebook",
+    "profile": "Profile"
+  },
+  "profileMobile": {
+    "hubEyebrow": "Profile",
+    "hubTitle": "Learning cockpit",
+    "hubSubtitle": "Progress, rewards, character, and settings in one thumb-friendly place.",
+    "quickLinks": "Quick links",
+    "progressOverview": "Progress overview",
+    "learningPulse": "Learning pulse",
+    "reviewNow": "Review now",
+    "wordsTotal": "Words tracked",
+    "badgesUnlocked": "{{unlocked}}/{{total}} badges",
+    "nextBadge": "Next badge",
+    "characterRoster": "Character roster",
+    "activeCharacter": "Active character",
+    "settingsHint": "Changes stay local until you save.",
+    "accountActions": "Account actions",
+    "saveSettings": "Save settings",
+    "noWeakWords": "No weak words right now",
+    "languageVi": "VI",
+    "languageEn": "EN",
+    "rateValue": "{{rate}}x"
+  },
   "library": {
     "title": "Choose Your Journey",
     "tagline": "Curated Pathways",
@@ -107,6 +136,17 @@
       "title": "Not sure where to start?",
       "subtitle": "Our AI assessment recommends the perfect path based on your current level and goals.",
       "cta": "Take Assessment"
+    },
+    "mobile": {
+      "title": "Learn",
+      "subtitle": "Choose a roadmap, keep the next lesson close, and start with a short session.",
+      "availablePaths": "{{count}} paths",
+      "resumeBadge": "In progress",
+      "progressLabel": "Progress",
+      "masteredLabel": "mastered",
+      "completedHint": "Path completed",
+      "emptyTitle": "No paths here yet",
+      "emptyDesc": "Try another filter to find a better learning route."
     }
   },
   "auth": {
@@ -179,6 +219,24 @@
       "seedling": "Seedling",
       "growing": "Growing",
       "rooted": "Rooted"
+    },
+    "mobile": {
+      "todayLabel": "Today focus",
+      "greeting": "Ready for a calm study round?",
+      "greetingName": "Hi {{name}}",
+      "reviewTitle": "Review is due",
+      "reviewDesc": "{{count}} words are waiting for active recall.",
+      "reviewCta": "Review now",
+      "continueTitle": "Continue learning",
+      "continueDesc": "Pick up yesterday's rhythm and make a small gain.",
+      "continueCta": "Study next",
+      "startTitle": "Start your roadmap",
+      "startDesc": "Choose a path and create the first small win of the day.",
+      "startCta": "Open library",
+      "missionHint": "{{count}} new words today",
+      "stabilityHint": "{{days}} days stability",
+      "forecastHint": "{{count}} reviews in the next 5 days",
+      "quoteTitle": "Scholar note"
     }
   },
   "sidebar": {
@@ -274,7 +332,17 @@
     "learned_label": "LEARNED",
     "mastered_label": "MASTERED",
     "mastery_label": "MASTERY",
-    "scholarAlt": "Scholar"
+    "scholarAlt": "Scholar",
+    "mobile": {
+      "progressTitle": "Roadmap progress",
+      "totalLabel": "words",
+      "learnedLabel": "learned",
+      "masteredLabel": "mastered",
+      "topicProgress": "Topic progress",
+      "startTopic": "Start topic",
+      "emptyTitle": "No topics found",
+      "emptyDesc": "Try a different search or head back to the library."
+    }
   },
   "topics": {
     "title": "Topics",
@@ -1529,6 +1597,31 @@
     "empty": {
       "title": "No words found.",
       "subtitle": "Try a different search or loosen your filters."
+    },
+    "mobile": {
+      "title": "Vocabulary Notebook",
+      "subtitle": "{{count}} words are being tracked in your learning vault.",
+      "searchPlaceholder": "Search words, meanings, or topics...",
+      "openNotebook": "Open notebook",
+      "selectedCount": "{{count}} words",
+      "studySelected": "Review selected words",
+      "strength": "Strength",
+      "reps": "{{count}} reps",
+      "lapses": "{{count}} lapses",
+      "nextReview": "Next review",
+      "dueNow": "Due now",
+      "noReview": "No schedule",
+      "detailTitle": "Word detail",
+      "selectWord": "Select {{word}}",
+      "saveWord": "Save {{word}} to notebook",
+      "unsaveWord": "Remove {{word}} from notebook",
+      "note": "Note",
+      "noNote": "No note yet",
+      "example": "Example",
+      "topic": "Topic",
+      "emptyTitle": "No words yet",
+      "emptyDesc": "Try another search or loosen the filter.",
+      "statsLabel": "Vocabulary stats"
     },
     "notebook": {
       "open": "Open notebook",

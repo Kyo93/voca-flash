@@ -2,11 +2,14 @@ import { useTranslation } from 'react-i18next'
 import { useParams, Link, useOutletContext } from 'react-router-dom'
 import { useRoadmapTopics } from '../hooks/useRoadmapTopics'
 import TopicCard from '../components/roadmap/TopicCard'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import MobileRoadmapTopicsView from '../components/mobile/MobileRoadmapTopicsView'
 
 export default function RoadmapTopicsPage() {
   const { roadmapSlug } = useParams<{ roadmapSlug: string }>()
   const { searchQuery } = useOutletContext<{ searchQuery: string }>()
   const { t } = useTranslation()
+  const isMobileRoadmap = useMediaQuery('(max-width: 767px)')
 
   const {
     roadmap,
@@ -42,6 +45,20 @@ export default function RoadmapTopicsPage() {
 
   const overallPercent = stats.total > 0 ? Math.round((stats.mastered / stats.total) * 100) : 0
   const learnedPercent = stats.total > 0 ? Math.round((stats.learned / stats.total) * 100) : 0
+
+  if (isMobileRoadmap) {
+    return (
+      <MobileRoadmapTopicsView
+        roadmap={roadmap}
+        topics={filteredTopics}
+        stats={stats}
+        featuredId={featuredId}
+        upNextId={upNextId}
+        searchQuery={searchQuery}
+        getTopicStats={getTopicStats}
+      />
+    )
+  }
 
   return (
     <div className="max-w-[1440px] mx-auto px-12 py-10 space-y-16">

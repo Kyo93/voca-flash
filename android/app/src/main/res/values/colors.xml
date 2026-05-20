@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#C96F3F</color>
+    <color name="colorPrimaryDark">#7A3F2B</color>
+    <color name="colorAccent">#91A56F</color>
+    <color name="vocaflash_splash_background">#F8F3EA</color>
+</resources>

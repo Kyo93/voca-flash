@@ -4,7 +4,108 @@ export default function LandingPage() {
   const { t } = useTranslation()
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-surface">
+    <>
+    <div data-mobile-landing className="min-h-dvh overflow-x-hidden bg-surface text-secondary md:hidden">
+      <header className="sticky top-0 z-30 border-b border-orange-100 bg-white/85 px-5 pb-4 pt-[calc(env(safe-area-inset-top)+1rem)] backdrop-blur-xl">
+        <nav className="flex items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-white">V</span>
+            <span className="truncate text-xl font-bold text-primary">VocaFlash</span>
+          </div>
+          <a
+            href="/login"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border border-primary/30 px-5 text-sm font-bold text-primary"
+          >
+            {t('landing.login')}
+          </a>
+        </nav>
+      </header>
+
+      <main className="space-y-5 px-5 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-5">
+        <section className="overflow-hidden rounded-3xl border border-orange-100 bg-white/80 p-5 shadow-sm">
+          <span className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-2 text-[0.7rem] font-bold uppercase text-primary">
+            <span className="size-2 rounded-full bg-primary" />
+            {t('landing.modernTechnique')}
+          </span>
+          <h1 className="mt-5 text-[2.25rem] font-bold leading-[1.08] text-secondary">
+            {t('landing.heroTitle')}{' '}
+            <span className="text-primary italic">{t('landing.heroTitleAccent')}</span>{' '}
+            {t('landing.withSrs')}
+          </h1>
+          <p className="mt-4 text-base leading-7 text-on-surface-variant">
+            {t('landing.heroSubtitle')}
+          </p>
+
+          <div data-mobile-hero-actions className="mt-5 flex flex-col gap-3">
+            <a
+              href="/dashboard"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-sm font-bold text-white shadow-md"
+            >
+              {t('landing.startTrial')}
+              <span className="material-symbols-outlined text-lg" aria-hidden="true">arrow_forward</span>
+            </a>
+            <a
+              href="/login"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-secondary/10 bg-white px-4 text-sm font-bold text-secondary"
+            >
+              {t('landing.register')}
+            </a>
+          </div>
+        </section>
+
+        <section className="overflow-hidden rounded-3xl border border-white bg-white shadow-sm">
+          <div className="relative aspect-[4/3] overflow-hidden bg-orange-50">
+            <img
+              alt={t('landing.heroImageAlt')}
+              className="size-full object-cover"
+              loading="eager"
+              src="/images/hero-3d.png"
+            />
+            <div className="absolute left-4 top-4 max-w-[70%] rounded-2xl bg-white/90 p-3 shadow-sm backdrop-blur">
+              <div className="flex items-center gap-2 text-xs font-bold text-secondary">
+                <span className="flex size-8 items-center justify-center rounded-full bg-primary text-white">
+                  <span className="material-symbols-outlined text-base" aria-hidden="true">check</span>
+                </span>
+                <span>{t('landing.floatingCard.mastered')}</span>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 p-4">
+            <div className="rounded-2xl bg-orange-50 p-4">
+              <span className="material-symbols-outlined text-primary" aria-hidden="true">update</span>
+              <h2 className="mt-3 text-base font-bold text-secondary">{t('landing.feature1Title')}</h2>
+              <p className="mt-2 text-sm leading-6 text-on-surface-variant">{t('landing.feature1Desc')}</p>
+            </div>
+            <div className="rounded-2xl bg-surface p-4">
+              <span className="material-symbols-outlined text-primary" aria-hidden="true">library_books</span>
+              <h2 className="mt-3 text-base font-bold text-secondary">{t('landing.feature2Title')}</h2>
+              <p className="mt-2 text-sm leading-6 text-on-surface-variant">{t('landing.feature2Desc')}</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-3xl bg-secondary p-5 text-white shadow-sm">
+          <h2 className="text-xl font-bold">{t('landing.ready')}</h2>
+          <p className="mt-2 text-sm leading-6 text-white/80">{t('landing.ctaText')}</p>
+          <div className="mt-5 flex flex-col gap-3">
+            <a
+              href="/dashboard"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-4 text-sm font-bold text-primary"
+            >
+              {t('landing.studyNow')}
+            </a>
+            <a
+              href="/login"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/30 px-4 text-sm font-bold text-white"
+            >
+              {t('landing.login')}
+            </a>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div data-desktop-landing className="relative hidden min-h-screen flex-col overflow-hidden bg-surface md:flex">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-5%] w-96 h-96 bg-orange-200/40 rounded-full blur-3xl animate-blob" />
@@ -172,5 +273,6 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+    </>
   )
 }

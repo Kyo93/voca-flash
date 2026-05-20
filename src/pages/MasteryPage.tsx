@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
 import { useMasteryWords } from '../hooks/useMasteryWords'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import MobileMasteryView from '../components/mobile/MobileMasteryView'
 
 import CardRow from '../components/mastery/CardRow'
 import MasteryHeader from '../components/mastery/MasteryHeader'
@@ -62,6 +64,7 @@ export default function MasteryPage() {
   const [isNotebookOpen, setIsNotebookOpen] = useState(false)
   const [hasOpenedPanel, setHasOpenedPanel] = useState(false)
   const [hasOpenedNotebook, setHasOpenedNotebook] = useState(false)
+  const isMobileMastery = useMediaQuery('(max-width: 767px)')
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
 
@@ -95,6 +98,48 @@ export default function MasteryPage() {
   const handleSaveNote = async (note: string) => {
     if (!selectedWord) return
     await updateNote(selectedWord.word_id, note)
+  }
+
+  if (isMobileMastery) {
+    return (
+      <div className="bg-surface min-h-screen">
+        <MobileMasteryView
+          words={words}
+          stats={stats}
+          totalCount={totalCount}
+          loading={loading}
+          loadingMore={loadingMore}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onStartFreeStudy={handleStartFreeStudy}
+          notebookCount={notebookEntries.size}
+          onOpenNotebook={() => {
+            setHasOpenedNotebook(true)
+            setIsNotebookOpen(true)
+          }}
+          isNotebookSaved={isSaved}
+          onToggleNotebook={handleToggleNotebook}
+          getNote={getNote}
+          onSaveNote={handleSaveNote}
+          lastElementRef={lastElementRef}
+        />
+
+        {hasOpenedNotebook && (
+          <Suspense fallback={<DeferredOverlayFallback />}>
+            <NotebookScreen
+              isOpen={isNotebookOpen}
+              onClose={() => setIsNotebookOpen(false)}
+              userId={user?.id}
+              onSaveNote={updateNote}
+            />
+          </Suspense>
+        )}
+      </div>
+    )
   }
 
   return (
