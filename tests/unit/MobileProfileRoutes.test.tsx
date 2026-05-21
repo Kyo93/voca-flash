@@ -13,7 +13,7 @@ import { useMediaQuery } from '../../src/hooks/useMediaQuery'
 import { useRewardProgress } from '../../src/hooks/useRewardProgress'
 import { useSettingsForm } from '../../src/hooks/useSettingsForm'
 import { CHARACTER_CATALOG } from '../../src/lib/characters'
-import { toRewardProgressView } from '../../src/lib/rewards'
+import { REWARD_BADGES, toRewardProgressView } from '../../src/lib/rewards'
 import type { AnalyticsData } from '../../src/hooks/useAnalytics'
 import type { CharacterCollectionView } from '../../src/lib/characters'
 
@@ -129,6 +129,8 @@ vi.mock('react-i18next', () => ({
         'characters.needMoreXp': `${values?.xp ?? 0} XP needed`,
         'characters.items.seedling_scholar.stages.1.name': 'Seedling Scholar',
         'characters.items.seedling_scholar.stages.1.description': 'A focused learner.',
+        'characters.items.library_sprite.stages.1.name': 'Library Sprite',
+        'characters.items.library_sprite.stages.1.description': 'A library companion.',
         'settings.title': 'Settings',
         'settings.subtitle': 'Tune your learning setup.',
         'settings.profile': 'Profile',
@@ -186,6 +188,7 @@ const rewardProgress = toRewardProgressView({
 })
 
 const seedling = CHARACTER_CATALOG[0]
+const librarySprite = CHARACTER_CATALOG[1]
 const characterCollection: CharacterCollectionView = {
   totalXp: rewardProgress.totalXp,
   spentXp: 0,
@@ -199,6 +202,17 @@ const characterCollection: CharacterCollectionView = {
     unlocked: true,
     affordable: true,
     selected: true,
+    canEvolve: true,
+    maxed: false,
+    remainingXpForEvolution: 0,
+  }, {
+    character: librarySprite,
+    currentStage: 1,
+    currentStageDefinition: librarySprite.evolutionStages[0],
+    nextStageDefinition: librarySprite.evolutionStages[1],
+    unlocked: true,
+    affordable: true,
+    selected: false,
     canEvolve: true,
     maxed: false,
     remainingXpForEvolution: 0,
@@ -259,6 +273,7 @@ describe('mobile Profile routes', () => {
     expect(screen.getByRole('link', { name: /Achievements/i }).getAttribute('href')).toBe('/achievements')
     expect(screen.getByRole('link', { name: /Characters/i }).getAttribute('href')).toBe('/characters')
     expect(screen.getByRole('link', { name: /Settings/i }).getAttribute('href')).toBe('/settings')
+    expect(screen.getByText(`${rewardProgress.unlockedBadges.length}/${REWARD_BADGES.length} badges`)).toBeTruthy()
     expect(screen.getByText('200')).toBeTruthy()
     expect(screen.getByText('42')).toBeTruthy()
   })
@@ -290,7 +305,10 @@ describe('mobile Profile routes', () => {
     expect(container.querySelector('[data-mobile-characters]')).toBeTruthy()
     expect(screen.getByText('Character roster')).toBeTruthy()
     expect(screen.getByText('Seedling Scholar')).toBeTruthy()
-    expect(screen.getByTestId('character-avatar')).toBeTruthy()
+    expect(screen.getByText('Library Sprite')).toBeTruthy()
+    expect(screen.getAllByRole('button', { name: 'Evolve' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('button', { name: 'Select' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByTestId('character-avatar').length).toBeGreaterThan(1)
   })
 
   it('renders Settings as compact mobile controls with a safe save bar', () => {

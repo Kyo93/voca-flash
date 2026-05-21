@@ -32,7 +32,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
   return (
     <div className="w-full flex flex-col items-center">
       {/* Header */}
-      <div className="w-full bg-surface-container-low rounded-2xl p-6 mb-8 flex flex-col gap-6">
+      <div className="mb-5 flex w-full flex-col gap-4 rounded-2xl bg-surface-container-low p-4 sm:mb-8 sm:gap-6 sm:p-6">
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/8 border border-primary/15">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -40,7 +40,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
           </span>
           <button
             onClick={() => speak(word.word)}
-            className="p-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-primary flex items-center justify-center border border-outline-variant/10 active:scale-95 transition-all"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-outline-variant/10 bg-surface-container-high p-2 text-primary transition-all hover:bg-surface-container-highest active:scale-95"
           >
             <span className="material-symbols-outlined text-xl">volume_up</span>
           </button>
@@ -56,7 +56,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
             onTouchStart={() => setShowHint(true)}
             onTouchEnd={() => setShowHint(false)}
           >
-            <div className={`text-4xl font-black font-headline text-center transition-all duration-500 ${!showHint ? 'blur-md opacity-30' : 'blur-0 opacity-100'}`}>
+            <div className={`text-center font-headline text-3xl font-black transition-all duration-500 sm:text-4xl ${!showHint ? 'blur-md opacity-30' : 'blur-0 opacity-100'}`}>
               {word.definition}
             </div>
             {!showHint && (
@@ -85,7 +85,7 @@ export default memo(function GhostRecallChallengeInner({ word, onSubmit }: Ghost
       {/* Hint Toggle */}
       <button
         onClick={() => setShowHint(h => !h)}
-        className="mt-6 text-[10px] font-bold uppercase tracking-widest text-outline hover:text-primary transition-colors mb-12"
+        className="mb-6 mt-4 min-h-11 text-[10px] font-bold uppercase tracking-widest text-outline transition-colors hover:text-primary sm:mb-12 sm:mt-6"
       >
         {showHint ? `▲ ${t('arena.hideHint')}` : `▼ ${t('arena.showHint')}`}
       </button>

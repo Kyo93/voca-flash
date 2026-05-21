@@ -56,7 +56,7 @@ export default function MobileCharactersView({
     <main data-mobile-characters className="min-h-full bg-surface px-4 pb-6 pt-3">
       <Link
         to="/progress"
-        className="mb-3 inline-flex min-h-10 items-center gap-1 rounded-full bg-surface-container-low px-3 text-xs font-bold text-primary"
+        className="mb-3 inline-flex min-h-11 items-center gap-1 rounded-full bg-surface-container-low px-3 text-xs font-bold text-primary"
       >
         <span className="material-symbols-outlined text-base" aria-hidden="true">chevron_left</span>
         {t('profileMobile.hubEyebrow')}
@@ -149,7 +149,7 @@ export default function MobileCharactersView({
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-[1fr_auto] items-end gap-3">
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/65">
                     {item.unlocked ? t('characters.evolutionCost') : t('characters.cost')}
@@ -168,27 +168,52 @@ export default function MobileCharactersView({
                   )}
                 </div>
 
-                <button
-                  type="button"
-                  disabled={primaryDisabled}
-                  onClick={async () => {
-                    if (action.hasNextEvolution) {
-                      const evolved = await onEvolveCharacter(character.id)
-                      if (evolved) onEvolved(character.id)
-                    } else if (item.unlocked) {
-                      await onSelectCharacter(character.id)
-                    } else {
-                      await onUnlockCharacter(character.id)
-                    }
-                  }}
-                  className={`min-h-11 rounded-2xl px-4 text-xs font-bold transition-all active:scale-95 ${
-                    primaryDisabled
-                      ? 'bg-surface-container text-on-surface-variant'
-                      : 'bg-primary text-on-primary'
-                  }`}
-                >
-                  {t(action.key)}
-                </button>
+                <div className={`grid gap-2 sm:flex sm:justify-end ${
+                  item.unlocked && action.hasNextEvolution ? 'grid-cols-2' : 'grid-cols-1'
+                }`}>
+                  <button
+                    type="button"
+                    disabled={primaryDisabled}
+                    onClick={async () => {
+                      if (action.hasNextEvolution) {
+                        const evolved = await onEvolveCharacter(character.id)
+                        if (evolved) onEvolved(character.id)
+                      } else if (item.unlocked) {
+                        await onSelectCharacter(character.id)
+                      } else {
+                        await onUnlockCharacter(character.id)
+                      }
+                    }}
+                    className={`min-h-11 rounded-2xl px-4 text-xs font-bold transition-all active:scale-95 ${
+                      primaryDisabled
+                        ? 'bg-surface-container text-on-surface-variant'
+                        : 'bg-primary text-on-primary'
+                    }`}
+                  >
+                    {t(action.key)}
+                  </button>
+
+                  {item.unlocked && action.hasNextEvolution && (
+                    item.selected ? (
+                      <span
+                        className="flex min-h-11 items-center justify-center rounded-2xl bg-primary-container px-3 text-primary"
+                        aria-label={t('characters.actions.selected')}
+                        title={t('characters.actions.selected')}
+                      >
+                        <span className="material-symbols-outlined text-base" aria-hidden="true">verified</span>
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={isMutatingCharacter}
+                        onClick={() => onSelectCharacter(character.id)}
+                        className="min-h-11 rounded-2xl border border-primary/20 px-4 text-xs font-bold text-primary transition-all active:scale-95 disabled:border-outline-variant disabled:text-on-surface-variant"
+                      >
+                        {t('characters.actions.select')}
+                      </button>
+                    )
+                  )}
+                </div>
               </div>
             </article>
           )

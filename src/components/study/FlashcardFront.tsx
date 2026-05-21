@@ -30,19 +30,19 @@ const FlashcardFront = memo(({ card }: FlashcardFrontProps) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-8 space-y-6 grow flex flex-col justify-start">
-        <div className="flex justify-between items-start">
+      <div className="flex grow flex-col justify-start space-y-4 p-5 sm:space-y-6 sm:p-8">
+        <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
-            <h1 className="text-4xl font-headline font-extrabold text-primary tracking-tight">{card.front}</h1>
+            <h1 className="break-words font-headline text-3xl font-extrabold leading-tight tracking-tight text-primary sm:text-4xl">{card.front}</h1>
             {(() => {
               const basePhonetic = card.phonetic || card.front;
               const formattedPhonetic = basePhonetic.startsWith('/') ? basePhonetic : `/${basePhonetic}/`;
-              return <p className="text-secondary font-medium tracking-wide text-lg">{formattedPhonetic}</p>;
+              return <p className="text-base font-medium tracking-wide text-secondary sm:text-lg">{formattedPhonetic}</p>;
             })()}
           </div>
           <div className="flex gap-2">
-            <AudioButton text={card.front} variant="tactile" size="md" />
-            <AudioButton text={card.front} slow variant="tactile" size="md" />
+            <AudioButton text={card.front} variant="tactile" size="md" className="h-11 w-11 p-0" />
+            <AudioButton text={card.front} slow variant="tactile" size="md" className="h-11 w-11 p-0" />
           </div>
         </div>
 
@@ -51,11 +51,11 @@ const FlashcardFront = memo(({ card }: FlashcardFrontProps) => {
 
         {/* Contextual Usage */}
         {card.example && (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <span className="font-label text-[10px] uppercase tracking-widest text-outline font-bold block">
               {t('flashcard.contextUsage')}
             </span>
-            <blockquote className="text-on-surface-variant leading-relaxed text-lg italic border-l-2 border-surface-container-highest pl-4 py-1 text-left">
+            <blockquote className="border-l-2 border-surface-container-highest py-1 pl-4 text-left text-sm italic leading-6 text-on-surface-variant sm:text-lg sm:leading-relaxed">
               &ldquo;{card.example}&rdquo;
             </blockquote>
           </div>

@@ -1621,7 +1621,12 @@
       "topic": "Topic",
       "emptyTitle": "No words yet",
       "emptyDesc": "Try another search or loosen the filter.",
-      "statsLabel": "Vocabulary stats"
+      "statsLabel": "Vocabulary stats",
+      "filtersLabel": "Filters",
+      "editNote": "Edit note",
+      "saveNote": "Save note",
+      "cancelNote": "Cancel",
+      "notePlaceholder": "Write a memory cue, personal example, or context..."
     },
     "notebook": {
       "open": "Open notebook",

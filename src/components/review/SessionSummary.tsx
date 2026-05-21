@@ -52,7 +52,8 @@ export default function SessionSummary({
   }, [stats.points])
 
   return (
-    <div className="fixed inset-0 bg-arena-bg flex items-center justify-center p-6 overflow-hidden">
+    <div data-mobile-session-summary className="fixed inset-0 max-h-[100dvh] overflow-y-auto overflow-x-hidden bg-arena-bg p-4 sm:p-6">
+      <div className="relative flex min-h-full items-center justify-center">
       {/* Background Stage - Vibrant Blobs (Same as ArenaShell for continuity) */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-arena-blob-1/20 rounded-full blur-[120px] animate-blob filter" />
@@ -64,22 +65,22 @@ export default function SessionSummary({
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-2xl relative z-10"
+        className="relative z-10 w-full max-w-2xl py-4"
       >
-        <div className="text-center mb-12">
+        <div className="mb-6 text-center sm:mb-12">
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="w-24 h-24 rounded-4xl bg-primary/20 text-primary flex items-center justify-center mb-8 mx-auto shadow-[0_0_80px_rgba(var(--primary-rgb),0.3)] border border-primary/20"
+            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-4xl border border-primary/20 bg-primary/20 text-primary shadow-[0_0_80px_rgba(var(--primary-rgb),0.3)] sm:mb-8 sm:h-24 sm:w-24"
           >
-            <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
+            <span className="material-symbols-outlined text-3xl sm:text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>military_tech</span>
           </motion.div>
           <motion.h1 
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-5xl font-black text-white mb-2 tracking-tight text-shadow-glow"
+            className="text-shadow-glow mb-2 text-3xl font-black tracking-tight text-white sm:text-5xl"
           >
             {t('sessionSummary.title')}
           </motion.h1>
@@ -87,21 +88,21 @@ export default function SessionSummary({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-white/40 font-bold text-lg"
+            className="text-base font-bold text-white/40 sm:text-lg"
           >
             {t('sessionSummary.subtitle')}
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="mb-5 grid grid-cols-2 gap-3 sm:mb-8 sm:gap-4">
           <motion.div 
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="glass-arena-item p-8 rounded-3xl text-center border-white/10 group overflow-hidden relative"
+            className="glass-arena-item group relative overflow-hidden rounded-3xl border-white/10 p-4 text-center sm:p-8"
           >
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <span className="block text-primary text-5xl font-black mb-1 relative text-shadow-glow">{displayXP}</span>
+            <span className="text-shadow-glow relative mb-1 block text-3xl font-black text-primary sm:text-5xl">{displayXP}</span>
             <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">{t('sessionSummary.xp')}</span>
           </motion.div>
 
@@ -109,9 +110,9 @@ export default function SessionSummary({
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="glass-arena-item p-8 rounded-3xl text-center border-white/10 group"
+            className="glass-arena-item group rounded-3xl border-white/10 p-4 text-center sm:p-8"
           >
-            <span className="block text-white text-5xl font-black mb-1 relative text-shadow-glow">{accuracy}%</span>
+            <span className="text-shadow-glow relative mb-1 block text-3xl font-black text-white sm:text-5xl">{accuracy}%</span>
             <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">{t('sessionSummary.accuracy')}</span>
           </motion.div>
         </div>
@@ -121,11 +122,11 @@ export default function SessionSummary({
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.65 }}
-            className="glass-arena-item p-5 rounded-3xl mb-8 border-white/10"
+            className="glass-arena-item mb-5 rounded-3xl border-white/10 p-4 sm:mb-8 sm:p-5"
           >
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-secondary/20 text-secondary flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/20 text-secondary sm:h-14 sm:w-14">
+                <span className="material-symbols-outlined text-2xl sm:text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                   {rewardProgress.currentLevel.icon}
                 </span>
               </div>
@@ -179,19 +180,19 @@ export default function SessionSummary({
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="mb-12"
+              className="mb-6 sm:mb-12"
             >
-              <div className="flex items-center gap-4 mb-6">
+              <div className="mb-4 flex items-center gap-4 sm:mb-6">
                 <div className="h-px flex-1 bg-white/5" />
                 <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">{t('sessionSummary.mistakes')}</span>
                 <div className="h-px flex-1 bg-white/5" />
               </div>
               
-              <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-4 custom-scrollbar">
+              <div className="grid max-h-[240px] grid-cols-1 gap-3 overflow-y-auto pr-1 custom-scrollbar sm:max-h-[300px] sm:pr-4">
                 {stats.mistakes.map((w, i) => (
                   <div key={`${w.id}-${i}`} className="glass-arena-item p-4 rounded-2xl flex items-center justify-between group border-white/5 hover:border-primary/20 transition-all">
-                    <div>
-                      <h4 className="text-white text-lg font-black group-hover:text-primary transition-colors">{w.word}</h4>
+                    <div className="min-w-0">
+                      <h4 className="truncate text-base font-black text-white transition-colors group-hover:text-primary sm:text-lg">{w.word}</h4>
                       <p className="text-white/40 text-sm font-medium">{w.definition}</p>
                     </div>
                     <div className="text-right">
@@ -212,14 +213,14 @@ export default function SessionSummary({
         >
           <button 
             onClick={onRestart}
-            className="w-full py-5 bg-primary text-white font-black rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-2xl primary-glow flex items-center justify-center gap-3 group"
+            className="primary-glow group flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-primary py-3 font-black text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-95 sm:py-5"
           >
             <span className="material-symbols-outlined group-hover:rotate-180 transition-transform duration-700">refresh</span>
             {t('sessionSummary.restart')}
           </button>
           <Link 
             to="/dashboard"
-            className="w-full py-5 glass-arena-item text-white/60 font-black rounded-2xl border border-white/10 hover:bg-white/10 hover:text-white text-center transition-all tracking-widest"
+            className="glass-arena-item flex min-h-12 w-full items-center justify-center rounded-2xl border border-white/10 py-3 text-center font-black tracking-widest text-white/60 transition-all hover:bg-white/10 hover:text-white sm:py-5"
           >
             {t('sessionSummary.dashboard')}
           </Link>
@@ -231,6 +232,7 @@ export default function SessionSummary({
           {mascot}
         </div>
       )}
+      </div>
     </div>
   )
 }

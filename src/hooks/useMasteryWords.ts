@@ -55,22 +55,28 @@ export function useMasteryWords({ userId }: UseMasteryWordsProps) {
     return () => clearTimeout(timer)
   }, [searchQuery])
 
-  // 2. Fetch Stats & Reset on filter/search change
+  // 2. Fetch Stats once per user
+  useEffect(() => {
+    async function loadStats() {
+      if (!userId) {
+        setStats(null)
+        return
+      }
+      const s = await getMasteryStats(userId)
+      setStats(s)
+    }
+    loadStats()
+  }, [userId])
+
+  // 3. Reset paginated words when filters change
   useEffect(() => {
     if (!userId) return
     setPage(0)
     setWords([])
     setHasMore(true)
-
-    async function loadStats() {
-      if (!userId) return
-      const s = await getMasteryStats(userId)
-      setStats(s)
-    }
-    loadStats()
   }, [userId, debouncedSearch, activeFilter, advancedFilters])
 
-  // 3. Re-fetch everything when page becomes visible
+  // 4. Re-fetch everything when page becomes visible
   useEffect(() => {
     if (!userId) return
 

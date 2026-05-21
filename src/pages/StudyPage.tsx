@@ -156,7 +156,7 @@ export default function StudyPage() {
 
   if (isComplete || !currentCard) {
     return (
-      <div className="relative flex flex-col items-center justify-center pt-8 min-h-[80vh]">
+      <div className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-6 pt-4 sm:min-h-[80vh] sm:pt-8">
         <CharacterReactionAvatar
           collection={characterCollection}
           animationState="celebrate"
@@ -172,7 +172,7 @@ export default function StudyPage() {
   const showCardBack = isFlipped && phase !== 'CHALLENGING' && phase !== 'READY_FOR_QUIZ'
 
   return (
-    <div className="flex flex-col items-center justify-center pt-8 min-h-[80vh] px-4 pb-12 relative">
+    <div data-mobile-study-session className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-6 sm:pb-12 pt-4 sm:pt-8 sm:min-h-[80vh]">
       <CharacterReactionAvatar
         collection={characterCollection}
         animationState={mascotReaction}
@@ -181,12 +181,12 @@ export default function StudyPage() {
         className="pointer-events-none absolute right-6 top-24 hidden xl:block"
         onReactionEnd={handleMascotReactionEnd}
       />
-      <div className="max-w-md w-full space-y-8">
+      <div className="w-full max-w-md space-y-5 sm:space-y-8">
         {/* Header with Exit */}
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center justify-between">
           <button
             onClick={resign}
-            className="flex items-center gap-2 text-outline hover:text-primary transition-colors text-sm font-bold"
+            className="flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-bold text-outline transition-colors hover:text-primary"
           >
             <span className="material-symbols-outlined text-lg">close</span>
             {t('study.resign')}
@@ -198,9 +198,9 @@ export default function StudyPage() {
           </div>
         </div>
 
-        <div className="pt-8">
+        <div className="pt-2 sm:pt-8">
           {/* Session Progress */}
-          <div className="flex flex-col gap-2 mb-8">
+          <div className="mb-4 flex flex-col gap-2 sm:mb-8">
           <div className="flex justify-between items-end">
             <span className="font-label text-xs uppercase tracking-widest text-secondary font-bold">{t('study.dailyMastery')}</span>
             <span className="font-label text-xs text-outline">{t('study.wordsCount', { remaining, total })}</span>
@@ -228,7 +228,7 @@ export default function StudyPage() {
           <div className="group relative">
             <div
               onClick={!isFlipped ? flip : undefined}
-              className={`perspective-1000 w-full aspect-3/4 ${!isFlipped ? 'cursor-pointer' : ''}`}
+              className={`perspective-1000 w-full h-[min(54dvh,32rem)] min-h-[22rem] sm:h-auto sm:aspect-3/4 ${!isFlipped ? 'cursor-pointer' : ''}`}
             >
               <div className={`preserve-3d transition-all duration-700 w-full h-full relative ${showCardBack ? 'rotate-y-180' : ''}`}>
 
@@ -249,7 +249,7 @@ export default function StudyPage() {
             </div>
 
             {/* Aesthetic accent shadow */}
-            <div className={`absolute -z-20 -bottom-4 -right-4 w-full h-full bg-primary/5 ${DESIGN_TOKENS.RADIUS['2XL']} border border-primary/10 pointer-events-none`} />
+            <div className={`absolute -z-20 bottom-0 right-0 h-full w-full bg-primary/5 sm:-bottom-4 sm:-right-4 ${DESIGN_TOKENS.RADIUS['2XL']} border border-primary/10 pointer-events-none`} />
           </div>
         )}
 

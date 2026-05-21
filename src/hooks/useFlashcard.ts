@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react'
-import { Card, CardProgress, calculateFSRSReview, createInitialProgress, isMastered, SrsRating, mapIntensityToRetention } from '../lib/srs'
-import { applyUserRewardGain, fetchWords, fetchSrsStates, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
+import { Card, CardProgress, calculateFSRSReview, createInitialProgress, SrsRating, mapIntensityToRetention } from '../lib/srs'
+import { applyUserRewardGain, fetchStudyPrepData, upsertSrsRecord, recordStreak, saveResumePointer } from '../lib/supabase-storage'
 import { useAuth } from '../contexts/AuthContext'
 import { StudySessionMode } from '../lib/types'
 import { SRS_RATINGS, TIME_CONSTANTS, SRS_CONFIG } from '../lib/constants'
@@ -43,36 +43,21 @@ export function useFlashcard() {
     setState((s) => ({ ...s, isLoading: true }))
     rewardedWordIds.current.clear()
 
-    // Fetch words and progress in parallel
-    const [cards, progressMap] = await Promise.all([
-      fetchWords(topic),
-      user ? fetchSrsStates(user.id) : Promise.resolve(new Map<string, CardProgress>()),
-    ])
-
-    const unlearned: Card[] = []
-    const learning: Card[] = []
-    const mastered: Card[] = []
-
-    for (const card of cards) {
-      const progress = progressMap.get(card.id)
-      if (!progress) {
-        unlearned.push(card)
-      } else if (isMastered(progress)) {
-        mastered.push(card)
-      } else {
-        learning.push(card)
-      }
-    }
+    const prepData = await fetchStudyPrepData(user?.id, topic)
 
     setState({
       queue: [],
       currentIndex: 0,
       isFlipped: false,
-      progressMap,
+      progressMap: prepData.progressMap ?? new Map<string, CardProgress>(),
       isComplete: false,
       isLoading: false,
       isPrepScreen: true,
-      prepStats: { unlearned, learning, mastered },
+      prepStats: {
+        unlearned: prepData.unlearned,
+        learning: prepData.learning,
+        mastered: prepData.mastered,
+      },
       cardStartTime: Date.now(),
     })
   }, [user])

@@ -2,6 +2,7 @@ import { supabase } from '../supabase'
 import type { Topic, Roadmap, InitialAppData, ProgressPageData, LibraryPageData, DashboardSummary, UserProfile } from '../types'
 import { fetchPaginated } from './base'
 import { getEndOfStudyDay } from '../utils'
+import { fetchResumePointers } from './session'
 
 const GUEST_USER_ID = '00000000-0000-0000-0000-000000000000'
 /** Forecast 7 ngày mặc định khi chưa có dữ liệu (Mon..Sun rỗng). */
@@ -28,6 +29,57 @@ const createEmptyProgressData = (): ProgressPageData => ({
   roadmap_progress: [],
   overall_stats: { streak_days: 0, total_mastered: 0 }
 })
+
+export interface TopicProgressStat {
+  total: number
+  learned: number
+  mastered: number
+  percent: number
+}
+
+export interface RoadmapDetailData {
+  roadmap: Roadmap | null
+  topics: Topic[]
+  stats: { total: number; learned: number; mastered: number }
+  topicProgress: Record<string, TopicProgressStat>
+  featuredId: string | null
+  upNextId: string | null
+}
+
+const emptyRoadmapDetail = (): RoadmapDetailData => ({
+  roadmap: null,
+  topics: [],
+  stats: { total: 0, learned: 0, mastered: 0 },
+  topicProgress: {},
+  featuredId: null,
+  upNextId: null,
+})
+
+function normalizeTopicProgress(raw: unknown): Record<string, TopicProgressStat> {
+  if (!raw) return {}
+
+  if (Array.isArray(raw)) {
+    return Object.fromEntries(raw.map(row => [
+      row.topic_id,
+      {
+        total: Number(row.total ?? row.total_words ?? 0),
+        learned: Number(row.learned ?? row.learned_count ?? 0),
+        mastered: Number(row.mastered ?? row.mastered_count ?? 0),
+        percent: Number(row.percent ?? row.percent_complete ?? 0),
+      },
+    ]))
+  }
+
+  return Object.fromEntries(Object.entries(raw as Record<string, TopicProgressStat>).map(([topicId, stat]) => [
+    topicId,
+    {
+      total: Number(stat.total ?? 0),
+      learned: Number(stat.learned ?? 0),
+      mastered: Number(stat.mastered ?? 0),
+      percent: Number(stat.percent ?? 0),
+    },
+  ]))
+}
 
 /**
  * Fallback path: RPC `get_initial_app_data_v2` chưa deploy hoặc lỗi → đọc profile trực tiếp
@@ -107,6 +159,87 @@ export async function fetchTopicsByRoadmap(roadmapSlug: string): Promise<Topic[]
   const { data, error } = await supabase.from('topics').select('*').eq('roadmap_id', roadmap.id).order('sort_order')
   if (error) return []
   return (data as Topic[]) ?? []
+}
+
+async function fetchRoadmapDetailDataFallback(userId: string | undefined, roadmapSlug: string): Promise<RoadmapDetailData> {
+  const [allRoadmaps, roadmapTopics] = await Promise.all([
+    fetchRoadmaps(),
+    fetchTopicsByRoadmap(roadmapSlug),
+  ])
+
+  const currentRoadmap = allRoadmaps.find(r => r.slug === roadmapSlug)
+  if (!currentRoadmap) return emptyRoadmapDetail()
+
+  const [roadmapStats, topicProgress, learningStates] = await Promise.all([
+    fetchRoadmapStats(currentRoadmap.id, userId),
+    userId ? fetchTopicCompletionMap(userId, roadmapTopics.map(t => t.id)) : Promise.resolve({} as Record<string, TopicProgressStat>),
+    userId ? fetchResumePointers(userId) : Promise.resolve(new Map()),
+  ])
+
+  const lastTopicId = learningStates.get(currentRoadmap.id)?.last_topic_id
+  const featuredId = lastTopicId || roadmapTopics[0]?.id || null
+  const nextTopic = roadmapTopics.find(t => {
+    if (t.id === featuredId) return false
+    const progress = topicProgress[t.id]
+    if (!progress) return true
+    return progress.learned < progress.total
+  })
+  const upNextId = nextTopic?.id || null
+
+  const featuredIndex = roadmapTopics.findIndex(t => t.id === featuredId)
+  let sortedTopics = [...roadmapTopics]
+
+  if (featuredIndex > -1) {
+    const featuredTopic = roadmapTopics[featuredIndex]
+    const others = roadmapTopics.filter((_, i) => i !== featuredIndex)
+    const nextIndexInOthers = others.findIndex(t => t.id === upNextId)
+
+    if (nextIndexInOthers > -1) {
+      const upNextTopic = others[nextIndexInOthers]
+      const remaining = others.filter((_, i) => i !== nextIndexInOthers)
+      sortedTopics = [featuredTopic, upNextTopic, ...remaining]
+    } else {
+      sortedTopics = [featuredTopic, ...others]
+    }
+  }
+
+  return {
+    roadmap: currentRoadmap,
+    topics: sortedTopics,
+    stats: roadmapStats,
+    topicProgress,
+    featuredId,
+    upNextId,
+  }
+}
+
+export async function fetchRoadmapDetailData(userId: string | undefined, roadmapSlug: string): Promise<RoadmapDetailData> {
+  const { data, error } = await supabase.rpc('get_roadmap_detail_data', {
+    p_user_id: userId ?? GUEST_USER_ID,
+    p_roadmap_slug: roadmapSlug,
+  })
+
+  if (error) {
+    console.error('[Storage] fetchRoadmapDetailData error:', error)
+    return fetchRoadmapDetailDataFallback(userId, roadmapSlug)
+  }
+
+  const payload = (Array.isArray(data) ? data[0] : data) ?? {}
+  const roadmap = (payload.roadmap as Roadmap | null) ?? null
+  if (!roadmap) return emptyRoadmapDetail()
+
+  return {
+    roadmap,
+    topics: (payload.topics ?? []) as Topic[],
+    stats: {
+      total: Number(payload.stats?.total ?? 0),
+      learned: Number(payload.stats?.learned ?? 0),
+      mastered: Number(payload.stats?.mastered ?? 0),
+    },
+    topicProgress: normalizeTopicProgress(payload.topic_progress),
+    featuredId: payload.featured_id ?? null,
+    upNextId: payload.up_next_id ?? null,
+  }
 }
 
 export async function fetchAllTopics(): Promise<Topic[]> {

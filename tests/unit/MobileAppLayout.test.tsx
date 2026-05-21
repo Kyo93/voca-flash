@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { render, screen, within } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { MemoryRouter, Route, Routes, useOutletContext } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import MobileAppLayout from '../../src/components/mobile/MobileAppLayout'
 
@@ -20,6 +20,7 @@ vi.mock('react-i18next', () => ({
       'nav.characters': 'Characters',
       'nav.settings': 'Settings',
       'nav.methodology': 'Methodology',
+      'nav.searchPlaceholder': 'Search',
     }[key] ?? key),
   }),
 }))
@@ -37,13 +38,18 @@ vi.mock('../../src/components/PageLoader', () => ({
 }))
 
 function renderMobileShell(initialPath = '/dashboard') {
+  function RoadmapProbe() {
+    const { searchQuery } = useOutletContext<{ searchQuery: string }>()
+    return <div>query:{searchQuery}</div>
+  }
+
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route element={<MobileAppLayout />}>
           <Route path="/dashboard" element={<div>Today content</div>} />
           <Route path="/library" element={<div>Library content</div>} />
-          <Route path="/library/:roadmapSlug" element={<div>Roadmap content</div>} />
+          <Route path="/library/:roadmapSlug" element={<RoadmapProbe />} />
           <Route path="/review" element={<div>Review content</div>} />
           <Route path="/mastery" element={<div>Notebook content</div>} />
           <Route path="/progress" element={<div>Progress content</div>} />
@@ -75,6 +81,15 @@ describe('MobileAppLayout', () => {
     renderMobileShell('/library/academic-english')
 
     expect(screen.getByRole('link', { name: 'Learn' }).getAttribute('aria-current')).toBe('page')
+  })
+
+  it('keeps roadmap search available from the mobile header', () => {
+    renderMobileShell('/library/academic-english')
+
+    const input = screen.getByPlaceholderText('Search')
+    fireEvent.change(input, { target: { value: 'anchor' } })
+
+    expect(screen.getByText('query:anchor')).toBeTruthy()
   })
 
   it('hides mobile chrome during full-screen study sessions', () => {

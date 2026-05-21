@@ -26,27 +26,27 @@ export default function SRSButtons({
             <button
               key={rating}
               onClick={() => onRate(rating)}
-              className={`flex flex-col items-center gap-1 rounded-2xl border p-4 transition-all active:scale-95 ${
+              className={`flex min-h-16 flex-col items-center gap-1 rounded-2xl border p-2.5 sm:p-4 transition-all active:scale-95 ${
                 isSuggested
                   ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10 -m-0.5 ring-2 ring-primary/30'
                   : 'border-outline-variant/20 bg-surface-container-low hover:bg-surface-container transition-shadow'
               }`}
             >
               {/* Main label */}
-              <span className={`text-sm font-headline font-bold tracking-tight ${
+              <span className={`font-headline text-xs font-bold tracking-tight sm:text-sm ${
                 isSuggested ? 'text-primary' : 'text-on-surface'
               }`}>
                 {t(`srs.${RATING_KEYS[rating]}`)}
               </span>
 
               {/* Sub-label */}
-              <span className="text-[10px] text-on-surface-variant opacity-60 tracking-wider uppercase">
+              <span className="text-[9px] uppercase tracking-wider text-on-surface-variant opacity-60 sm:text-[10px]">
                 {t(`srs.subLabels.${RATING_KEYS[rating]}`)}
               </span>
 
               {/* Interval preview */}
               {preview && (
-                <span className={`text-[11px] font-bold mt-1.5 px-2 py-0.5 rounded-full ${
+                <span className={`mt-1 rounded-full px-2 py-0.5 text-[10px] font-bold sm:mt-1.5 sm:text-[11px] ${
                   isSuggested 
                     ? 'bg-primary/10 text-primary' 
                     : 'bg-surface-container-highest/50 text-on-surface-variant'

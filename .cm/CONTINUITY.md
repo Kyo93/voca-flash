@@ -3,10 +3,31 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
-- Active Goal: Execute May 2026 clean-code review plan.
-- Current Plan: `openspec/changes/clean-code-may-2026-review/design.md` and `tasks.md`.
+- Active Goal: Roadmap/topic/study data performance optimization.
+- Current Plan: `openspec/changes/performance-roadmap-study-data/design.md` and `tasks.md`.
+- Current Phase: verified locally; pending Supabase migration deployment.
+- Working Context: route-shaped RPC wrappers are wired with fallback behavior; local dev still logs PGRST202 until migration `044_route_data_performance.sql` is applied to the active Supabase project.
+- Next Actions: verify Supabase project identity, apply migration 044, then re-run S25 smoke to confirm RPC path without fallback.
+
+## Current Session Override
+- Active Goal: Mobile viewport fit for S25 Ultra.
+- Current Plan: `openspec/changes/mobile-viewport-fit-s25-ultra/design.md` and `tasks.md`.
 - Current Phase: verified.
-- Working Context: clean-code baseline is committed; notebook personal notes no longer render raw HTML; `ArenaLoading` uses typed static variants; dashboard quotes/growth labels and word-form validation copy moved to i18n; reward fallback storage now normalizes malformed localStorage fail-closed. Three.js runtime imports now live behind dynamic `character-model-scene-runner`; `CharacterModelAvatar` shell chunk dropped from 648.10 kB to 2.46 kB while the runner remains a separate 646.37 kB lazy chunk. `NotebookInvestigationPage` now delegates sticky note behavior to `NotebookStickyNote` and learning fields/related terms to `NotebookInvestigationFields`. TypeScript hardcoded color literals are now isolated to token/data-color modules by `code-hygiene.test.ts`.
+- Working Context: feed pages may scroll, but short focus screens like Study Prep, active study, challenge, completion, review summary, and confirm exit now use mobile-first compact spacing with desktop restored via `sm:` classes.
+- Just Completed: added mobile density regression coverage for S25 Ultra-class focus screens, compacted Study Prep/study flashcards/actions/challenges/completion/review summary/confirm exit, and raised the Achievements back control to 44px.
+- Just Completed: visual-smoked S25 Ultra viewport at 412x915 through Playwright; mobile shell routes had no horizontal overflow, Study Prep with 3 actions fit without vertical scroll, and active Study front/back fit without vertical scroll.
+- Just Completed: fixed the Study Prep edge case where `Learn only new` was offered with `New words = 0`, causing a 0-word completion.
+- Verification: focused mobile/study tests passed with 4 files / 16 tests; `npm run build` passed; `git diff --check` passed with CRLF warnings only; final `npm run test:gate` passed with 94 files / 576 tests.
+- Next Actions: visually refresh `http://192.168.1.44:5174/study` on the S25 Ultra and check whether the remaining backend console warning for missing `get_study_prep_data` RPC should be handled separately.
+
+## Current Session Override
+- Active Goal: Mobile UI parity improvements.
+- Current Plan: `openspec/changes/mobile-ui-parity-improvements/design.md` and `tasks.md`.
+- Current Phase: verified.
+- Working Context: mobile shell now keeps roadmap search in the mobile header, restores Mastery note editing and advanced filters on mobile, preserves character display selection while evolution is available, improves review focus-route mobile density, raises key tap targets, and fixes profile badge totals.
+- Just Completed: added mobile parity tests, implemented the UI fixes, updated i18n, and documented the work in `openspec/changes/mobile-ui-parity-improvements/`.
+- Verification: focused mobile parity tests passed with 19 tests; `npm run build` passed; `npm run test:gate` passed with 92 files / 565 tests.
+- Next Actions: visually smoke test mobile `/library/:roadmapSlug`, `/mastery`, `/characters`, and `/review` in a 375px viewport.
 - Just Completed: split `CharacterModelAvatar.tsx` from a 340-line WebGL lifecycle component into a 71-line render shell plus `useCharacterModelScene.ts`.
 - Just Completed: moved character procedural animation transforms into `applyCharacterModelProceduralAnimation()` in `character-model-avatar-runtime.ts`.
 - Just Completed: split the left notebook archive page and mnemonic photo into `src/components/mastery/NotebookArchivePage.tsx`.

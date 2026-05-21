@@ -14,34 +14,35 @@ export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: Confirm
     <AnimatePresence>
       {isOpen && (
         <div 
-          className="fixed inset-0 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl"
+          data-mobile-confirm-exit
+          className="fixed inset-0 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xl sm:p-6"
           style={{ zIndex: UI_CONFIG.Z_INDEX.OVERLAY }}
         >
           <motion.div 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="glass-arena-container w-full max-w-sm p-12 text-center shadow-[0_0_100px_rgba(0,0,0,0.8)] border-white/20"
+            className="glass-arena-container w-full max-w-sm border-white/20 p-6 text-center shadow-[0_0_100px_rgba(0,0,0,0.8)] sm:p-12"
           >
-            <div className="w-24 h-24 rounded-4xl bg-red-500/10 text-red-500 flex items-center justify-center mb-10 mx-auto border border-red-500/20 shadow-2xl">
-              <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>logout</span>
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-4xl border border-red-500/20 bg-red-500/10 text-red-500 shadow-2xl sm:mb-10 sm:h-24 sm:w-24">
+              <span className="material-symbols-outlined text-4xl sm:text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>logout</span>
             </div>
             
-            <h2 className="text-3xl font-black text-white mb-6 text-shadow-glow tracking-tight">{t('confirmExit.title')}</h2>
-            <p className="text-white/40 mb-12 text-base font-medium leading-[1.6]">
+            <h2 className="text-shadow-glow mb-4 text-2xl font-black tracking-tight text-white sm:mb-6 sm:text-3xl">{t('confirmExit.title')}</h2>
+            <p className="mb-6 text-base font-medium leading-[1.6] text-white/40 sm:mb-12">
               {t('confirmExit.subtitle')}
             </p>
     
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <button
                 onClick={onConfirm}
-                className="w-full py-5 bg-white text-black font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+                className="min-h-12 w-full rounded-2xl bg-white py-3 font-black text-black shadow-xl transition-all hover:scale-105 active:scale-95 sm:py-5"
               >
                 {t('confirmExit.exit')}
               </button>
               <button
                 onClick={onClose}
-                className="w-full py-5 glass-arena-item text-white font-black rounded-2xl hover:bg-white/10 active:scale-95 transition-all border-white/10"
+                className="glass-arena-item min-h-12 w-full rounded-2xl border-white/10 py-3 font-black text-white transition-all hover:bg-white/10 active:scale-95 sm:py-5"
               >
                 {t('confirmExit.stay')}
               </button>

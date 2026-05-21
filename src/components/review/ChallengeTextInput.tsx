@@ -8,7 +8,7 @@ interface ChallengeTextInputProps {
   onSubmit: () => void
   isWrong: boolean
   placeholder?: string
-  /** Tailwind text-size class for the input. Default `text-3xl`. */
+  /** Tailwind text-size class for the input. Default `text-2xl sm:text-3xl`. */
   textSize?: string
   /** Optional placeholder font class (e.g. `placeholder:font-mono`). */
   placeholderClassName?: string
@@ -20,7 +20,7 @@ interface ChallengeTextInputProps {
  */
 const ChallengeTextInput = forwardRef<HTMLInputElement, ChallengeTextInputProps>(
   function ChallengeTextInput(
-    { value, onChange, onSubmit, isWrong, placeholder, textSize = 'text-3xl', placeholderClassName = '' },
+    { value, onChange, onSubmit, isWrong, placeholder, textSize = 'text-2xl sm:text-3xl', placeholderClassName = '' },
     ref,
   ) {
     const { t } = useTranslation()
@@ -33,7 +33,7 @@ const ChallengeTextInput = forwardRef<HTMLInputElement, ChallengeTextInputProps>
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
           placeholder={placeholder}
-          className={`w-full bg-surface-container-low rounded-2xl border-2 p-5 text-center ${textSize} font-black font-headline text-primary outline-none transition-all placeholder:text-primary/20 ${placeholderClassName} ${
+          className={`w-full rounded-2xl border-2 bg-surface-container-low p-4 text-center font-headline ${textSize} font-black text-primary outline-none transition-all placeholder:text-primary/20 sm:p-5 ${placeholderClassName} ${
             isWrong
               ? 'border-error bg-error/5 animate-[shake_0.4s_cubic-bezier(.36,.07,.19,.97)_both]'
               : 'border-outline-variant/20 focus:border-primary shadow-sm'

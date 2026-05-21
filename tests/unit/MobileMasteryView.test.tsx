@@ -22,6 +22,11 @@ vi.mock('react-i18next', () => ({
         'mastery.mobile.dueNow': 'Due now',
         'mastery.mobile.noReview': 'No review date',
         'mastery.mobile.detailTitle': 'Word detail',
+        'mastery.mobile.filtersLabel': 'Filters',
+        'mastery.mobile.editNote': 'Edit note',
+        'mastery.mobile.saveNote': 'Save note',
+        'mastery.mobile.cancelNote': 'Cancel',
+        'mastery.mobile.notePlaceholder': 'Write a memory cue',
         'mastery.mobile.selectWord': `Select ${values?.word ?? ''}`,
         'mastery.mobile.saveWord': `Save ${values?.word ?? ''} to notebook`,
         'mastery.mobile.unsaveWord': `Remove ${values?.word ?? ''} from notebook`,
@@ -35,6 +40,12 @@ vi.mock('react-i18next', () => ({
         'mastery.filters.due': 'Due',
         'mastery.filters.weak': 'Weak',
         'mastery.filters.mastered': 'Mastered',
+        'mastery.filters.allRoadmaps': 'All roadmaps',
+        'mastery.filters.allStability': 'All stability',
+        'mastery.filters.stability.learning': 'Learning stability',
+        'mastery.filters.sortBy': 'Sort by',
+        'mastery.filters.sort.date': 'Recent',
+        'mastery.filters.sort.alphabetical': 'Alphabetical',
         'mastery.stats.learning': 'Learning',
         'mastery.stats.due': 'Due',
         'mastery.stats.weak': 'Weak',
@@ -97,8 +108,13 @@ const words: MasteryWord[] = [
   },
 ]
 
+const roadmaps = [
+  { id: 'roadmap-1', name: 'Academic Core' },
+  { id: 'roadmap-2', name: 'Travel English' },
+]
+
 function renderMobileMastery(overrides: Partial<React.ComponentProps<typeof MobileMasteryView>> = {}) {
-  const props: React.ComponentProps<typeof MobileMasteryView> = {
+  const props: React.ComponentProps<typeof MobileMasteryView> & Record<string, unknown> = {
     words,
     stats,
     totalCount: 25,
@@ -117,6 +133,14 @@ function renderMobileMastery(overrides: Partial<React.ComponentProps<typeof Mobi
     onToggleNotebook: vi.fn(async () => {}),
     getNote: (wordId) => wordId === 'word-1' ? 'Remember with a boat anchor.' : null,
     onSaveNote: vi.fn(async () => {}),
+    roadmaps,
+    advancedFilters: {
+      roadmapId: null,
+      stability: null,
+      abcLetter: null,
+      sortBy: 'date',
+    },
+    onAdvancedFilterChange: vi.fn(),
     lastElementRef: vi.fn(),
     ...overrides,
   }
@@ -169,5 +193,33 @@ describe('MobileMasteryView', () => {
     expect(within(sheet).getByText('This phrase anchors the memory.')).toBeTruthy()
     expect(within(sheet).getByText('Remember with a boat anchor.')).toBeTruthy()
     expect(within(sheet).getByText('7 reps')).toBeTruthy()
+  })
+
+  it('lets mobile users edit and save a personal note from the word detail sheet', () => {
+    const { props } = renderMobileMastery()
+
+    fireEvent.click(screen.getByText('anchor'))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit note' }))
+    fireEvent.change(screen.getByPlaceholderText('Write a memory cue'), {
+      target: { value: 'Anchor this to a boat image.' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save note' }))
+
+    expect(props.onSaveNote).toHaveBeenCalledWith('Anchor this to a boat image.')
+  })
+
+  it('exposes advanced filters and A-Z jump controls on mobile', () => {
+    const { props } = renderMobileMastery()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Filters' }))
+    fireEvent.change(screen.getByLabelText('All roadmaps'), { target: { value: 'roadmap-1' } })
+    fireEvent.change(screen.getByLabelText('All stability'), { target: { value: 'learning' } })
+    fireEvent.change(screen.getByLabelText('Sort by'), { target: { value: 'alphabetical' } })
+    fireEvent.click(screen.getByRole('button', { name: 'A' }))
+
+    expect(props.onAdvancedFilterChange).toHaveBeenCalledWith({ roadmapId: 'roadmap-1' })
+    expect(props.onAdvancedFilterChange).toHaveBeenCalledWith({ stability: 'learning' })
+    expect(props.onAdvancedFilterChange).toHaveBeenCalledWith({ sortBy: 'alphabetical' })
+    expect(props.onAdvancedFilterChange).toHaveBeenCalledWith({ abcLetter: 'A' })
   })
 })

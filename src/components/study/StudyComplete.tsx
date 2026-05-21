@@ -18,25 +18,25 @@ export default function StudyComplete({ total }: StudyCompleteProps) {
   const studyLink = currentQuery ? `/study?${currentQuery}` : '/study'
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4">
-      <div className="w-32 h-32 rounded-full bg-secondary-container flex items-center justify-center mb-8 shadow-xl animate-in zoom-in duration-500">
-        <span className="material-symbols-outlined text-6xl text-on-secondary-container" style={{ fontVariationSettings: "'FILL' 1" }}>emoji_events</span>
+    <div data-mobile-study-complete className="flex min-h-[100dvh] flex-col items-center justify-center px-4 py-6 text-center">
+      <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-secondary-container shadow-xl animate-in zoom-in duration-500 sm:mb-8 sm:h-32 sm:w-32">
+        <span className="material-symbols-outlined text-4xl text-on-secondary-container sm:text-6xl" style={{ fontVariationSettings: "'FILL' 1" }}>emoji_events</span>
       </div>
       
-      <h2 className="text-4xl font-black text-on-surface mb-4 tracking-tight">{t('studyComplete.title')}</h2>
-      <p className="text-xl text-on-surface-variant mb-2">{t('studyComplete.reviewedCount', { count: total })}</p>
-      <p className="text-on-surface-variant mb-10 font-normal">{t('studyComplete.comeBackLater')}</p>
+      <h2 className="mb-3 text-2xl font-extrabold tracking-tight text-on-surface sm:mb-4 sm:text-4xl sm:font-black">{t('studyComplete.title')}</h2>
+      <p className="mb-2 text-base text-on-surface-variant sm:text-xl">{t('studyComplete.reviewedCount', { count: total })}</p>
+      <p className="mb-6 font-normal text-on-surface-variant sm:mb-10">{t('studyComplete.comeBackLater')}</p>
       
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm justify-center">
+      <div className="flex w-full max-w-sm flex-col justify-center gap-3 sm:flex-row sm:gap-4">
         <Link
           to="/dashboard"
-          className="flex-1 px-8 py-4 bg-surface-container-highest text-on-surface font-bold rounded-xl shadow-md hover:bg-surface-container-high active:scale-95 transition-all text-center"
+          className="flex min-h-12 flex-1 items-center justify-center rounded-xl bg-surface-container-highest px-6 py-3 text-center font-bold text-on-surface shadow-md transition-all hover:bg-surface-container-high active:scale-95 sm:px-8 sm:py-4"
         >
           {t('studyComplete.dashboard')}
         </Link>
         <Link
           to={studyLink}
-          className="flex-1 px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all text-center"
+          className="flex min-h-12 flex-1 items-center justify-center rounded-xl bg-primary px-6 py-3 text-center font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-95 sm:px-8 sm:py-4"
         >
           {t('studyComplete.learnMore')}
         </Link>

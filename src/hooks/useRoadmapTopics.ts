@@ -1,12 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import {
-  fetchRoadmaps,
-  fetchTopicsByRoadmap,
-  fetchRoadmapStats,
-  fetchTopicCompletionMap
-} from '../lib/storage/roadmap'
-import { fetchResumePointers } from '../lib/supabase-storage'
+import { fetchRoadmapDetailData } from '../lib/storage/roadmap'
 import type { Topic, Roadmap } from '../lib/types'
 
 export function useRoadmapTopics(roadmapSlug: string | undefined, searchQuery: string) {
@@ -22,75 +16,21 @@ export function useRoadmapTopics(roadmapSlug: string | undefined, searchQuery: s
 
   useEffect(() => {
     async function loadData() {
-      if (!roadmapSlug) return
+      if (!roadmapSlug) {
+        setLoading(false)
+        return
+      }
       setLoading(true)
 
       try {
-        // 1. Fetch Roadmap and its topics
-        const [allRoadmaps, roadmapTopics] = await Promise.all([
-          fetchRoadmaps(),
-          fetchTopicsByRoadmap(roadmapSlug)
-        ])
+        const detail = await fetchRoadmapDetailData(user?.id, roadmapSlug)
 
-        const currentRoadmap = allRoadmaps.find(r => r.slug === roadmapSlug)
-        if (!currentRoadmap) {
-          setLoading(false)
-          return
-        }
-
-        setRoadmap(currentRoadmap)
-
-        // 2. Fetch stats and progress
-        const [roadmapStats, topicProgMapRaw, learningStates] = await Promise.all([
-          fetchRoadmapStats(currentRoadmap.id, user?.id),
-          user?.id ? fetchTopicCompletionMap(user.id, roadmapTopics.map(t => t.id)) : Promise.resolve({} as Record<string, { total: number, learned: number, mastered: number, percent: number }>),
-          user?.id ? fetchResumePointers(user.id) : Promise.resolve(new Map())
-        ])
-
-        const topicProgMap = topicProgMapRaw as Record<string, { total: number, learned: number, mastered: number, percent: number }>
-        setStats(roadmapStats)
-        setTopicProgress(topicProgMap)
-
-        // 3. Determine Featured and Up Next topics
-        const lastTopicId = learningStates.get(currentRoadmap.id)?.last_topic_id
-
-        // featured is always the one you just studied, or the first one
-        let fId = lastTopicId || roadmapTopics[0]?.id
-        setFeaturedId(fId)
-
-        // upNext is the first one in curriculum order that is:
-        // - not the featured one
-        // - not 100% perfected (learned < total)
-        const nextTopic = roadmapTopics.find(t => {
-          if (t.id === fId) return false
-          const p = topicProgMap[t.id]
-          if (!p) return true // No progress yet = unstudied
-          return p.learned < p.total
-        })
-        setUpNextId(nextTopic?.id || null)
-
-        // 4. Sort topics (featured first, upNext second)
-        const featuredIndex = roadmapTopics.findIndex(t => t.id === fId)
-        let finalTopics = [...roadmapTopics]
-
-        if (featuredIndex > -1) {
-          const featuredTopic = roadmapTopics[featuredIndex]
-          const others = roadmapTopics.filter((_, i) => i !== featuredIndex)
-
-          // Find nextTopic in others
-          const nextId = nextTopic?.id
-          const nextIndexInOthers = others.findIndex(t => t.id === nextId)
-
-          if (nextIndexInOthers > -1) {
-            const nextT = others[nextIndexInOthers]
-            const remaining = others.filter((_, i) => i !== nextIndexInOthers)
-            finalTopics = [featuredTopic, nextT, ...remaining]
-          } else {
-            finalTopics = [featuredTopic, ...others]
-          }
-        }
-
-        setTopics(finalTopics)
+        setRoadmap(detail.roadmap)
+        setStats(detail.stats)
+        setTopicProgress(detail.topicProgress)
+        setFeaturedId(detail.featuredId)
+        setUpNextId(detail.upNextId)
+        setTopics(detail.topics)
 
       } catch (err) {
         console.error('Error loading roadmap topics:', err)

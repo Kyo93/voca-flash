@@ -1621,7 +1621,12 @@
       "topic": "Chủ đề",
       "emptyTitle": "Chưa có từ nào",
       "emptyDesc": "Thử tìm từ khác hoặc nới bộ lọc để xem thêm.",
-      "statsLabel": "Thống kê học từ"
+      "statsLabel": "Thống kê học từ",
+      "filtersLabel": "Bộ lọc",
+      "editNote": "Sửa ghi chú",
+      "saveNote": "Lưu ghi chú",
+      "cancelNote": "Hủy",
+      "notePlaceholder": "Viết cách nhớ, ví dụ riêng hoặc ngữ cảnh..."
     },
     "notebook": {
       "open": "Mở sổ tay",

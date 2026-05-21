@@ -32,7 +32,7 @@ export default function MobileAchievementsView({
     <main data-mobile-achievements className="min-h-full bg-surface px-4 pb-6 pt-3">
       <Link
         to="/progress"
-        className="mb-3 inline-flex min-h-10 items-center gap-1 rounded-full bg-surface-container-low px-3 text-xs font-bold text-primary"
+        className="mb-3 inline-flex min-h-11 items-center gap-1 rounded-full bg-surface-container-low px-3 text-xs font-bold text-primary"
       >
         <span className="material-symbols-outlined text-base" aria-hidden="true">chevron_left</span>
         {t('achievements.backToProgress')}

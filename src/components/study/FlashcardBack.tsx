@@ -20,7 +20,7 @@ const FlashcardBack = memo(({
 }: FlashcardBackProps) => {
   const { t } = useTranslation()
   return (
-    <div className="relative w-full h-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col items-center text-center p-12 transition-all border border-outline-variant/10">
+    <div className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 text-center shadow-sm transition-all sm:p-12">
       {/* Background Texture (Subtle) */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -37,7 +37,7 @@ const FlashcardBack = memo(({
             e.stopPropagation()
             onToggleNotebook()
           }}
-          className="absolute top-0 right-0 p-2 text-outline-variant hover:text-red-500 transition-all active:scale-90 group"
+          className="absolute right-0 top-0 flex h-11 w-11 items-center justify-center text-outline-variant transition-all hover:text-red-500 active:scale-90"
           title={isSaved ? t('flashcard.removeFromNotebook') : t('flashcard.saveToNotebook')}
         >
           <span className={`material-symbols-outlined text-2xl transition-colors ${isSaved ? 'text-error fill-icon' : ''}`}
@@ -47,33 +47,33 @@ const FlashcardBack = memo(({
         </button>
 
         {/* English Word (Small, Above) */}
-        <div className="flex flex-col items-center mt-2 mb-4">
-          <span className="text-secondary font-label font-bold tracking-widest text-[10px] uppercase mb-1">{t('flashcard.englishWord')}</span>
-          <h2 className="text-primary font-headline text-3xl font-bold tracking-tight">{card.front}</h2>
+        <div className="mb-3 mt-1 flex flex-col items-center sm:mb-4 sm:mt-2">
+          <span className="mb-1 font-label text-[10px] font-bold uppercase tracking-widest text-secondary">{t('flashcard.englishWord')}</span>
+          <h2 className="break-words font-headline text-2xl font-bold leading-tight tracking-tight text-primary sm:text-3xl">{card.front}</h2>
           <div className="mt-1 text-outline text-xs">
             <div className="flex items-center justify-center gap-3">
               <span>/{card.front}/</span>
               <div className="flex items-center gap-1.5 ml-1">
-                <AudioButton text={card.front} variant="ghost" size="sm" />
-                <AudioButton text={card.front} slow variant="ghost" size="sm" />
+                <AudioButton text={card.front} variant="ghost" size="sm" className="h-11 w-11 p-0" />
+                <AudioButton text={card.front} slow variant="ghost" size="sm" className="h-11 w-11 p-0" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Spacer Line */}
-        <div className="w-12 h-1 oceanic-pulse rounded-full mx-auto mb-10"></div>
+        <div className="oceanic-pulse mx-auto mb-6 h-1 w-12 rounded-full sm:mb-10"></div>
 
         {/* Vietnamese Meaning (Prominent) */}
         <div className="grow flex flex-col items-center">
           <span className="text-secondary font-label font-bold tracking-widest text-[10px] uppercase mb-2">{t('flashcard.meaning')}</span>
-          <p className="text-on-surface font-headline text-[32px] font-black leading-tight mb-8">
+          <p className="mb-5 font-headline text-2xl font-extrabold leading-tight text-on-surface sm:mb-8 sm:text-[32px] sm:font-black">
             {card.back}
           </p>
 
           {/* Context Sentence */}
           {card.example && (
-            <div className="bg-surface-container-low p-6 rounded-xl text-left w-full mt-auto mb-4">
+            <div className="mb-3 mt-auto w-full rounded-xl bg-surface-container-low p-4 text-left sm:mb-4 sm:p-6">
               <div className="flex items-start gap-3">
                 <span className="material-symbols-outlined text-secondary text-lg mt-0.5 opacity-40">format_quote</span>
                 <div className="space-y-2">
@@ -92,7 +92,7 @@ const FlashcardBack = memo(({
         </div>
 
         {/* Card Footer / Metadata */}
-        <div className="mt-auto pt-6 border-t border-outline-variant/15 flex justify-between items-center text-outline text-[10px] font-bold uppercase tracking-widest">
+        <div className="mt-auto flex items-center justify-between border-t border-outline-variant/15 pt-4 text-[10px] font-bold uppercase tracking-widest text-outline sm:pt-6">
           <span className="text-stone-300 italic">{card.topic || t('flashcard.noTopic')}</span>
           <span className="flex items-center gap-1">
             <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>

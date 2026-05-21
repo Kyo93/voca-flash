@@ -31,17 +31,17 @@ const StudyActions = memo(({
 
   if (!isFlipped) {
     return (
-      <div className="flex flex-col gap-4 mt-8">
+      <div className="mt-4 flex flex-col gap-3 sm:mt-8 sm:gap-4">
         <button
           onClick={onFlip}
-          className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
+          className={`oceanic-pulse flex min-h-12 w-full items-center justify-center gap-3 py-3 font-headline font-bold text-on-primary transition-all hover:brightness-110 active:scale-95 sm:py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG}`}
         >
           <span className="tracking-wide">{t('study.showAnswer')}</span>
           <span className="material-symbols-outlined">visibility</span>
         </button>
         <button
           onClick={onMarkLearned}
-          className={`w-full bg-secondary text-on-secondary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.MD} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
+          className={`flex min-h-12 w-full items-center justify-center gap-3 bg-secondary py-3 font-headline font-bold text-on-secondary transition-all hover:brightness-110 active:scale-95 sm:py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.MD}`}
         >
           <span className="tracking-wide">{t('study.markLearned')}</span>
           <span className="material-symbols-outlined">check_circle</span>
@@ -52,7 +52,7 @@ const StudyActions = memo(({
 
   if (phase === 'RATING') {
     return (
-      <div className="flex flex-col items-center mt-8">
+      <div className="mt-4 flex flex-col items-center sm:mt-8">
         {suggestedRating !== null && (
           <p className="text-center text-primary text-xs mb-3 font-bold tracking-widest uppercase">
             {t('study.suggestedRating')}
@@ -69,10 +69,10 @@ const StudyActions = memo(({
 
   if (showCardBack) {
     return (
-      <div className="mt-8">
+      <div className="mt-4 sm:mt-8">
         <button
           onClick={onNextToChallenge}
-          className={`w-full oceanic-pulse text-on-primary font-headline font-bold py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG} hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3`}
+          className={`oceanic-pulse flex min-h-12 w-full items-center justify-center gap-3 py-3 font-headline font-bold text-on-primary transition-all hover:brightness-110 active:scale-95 sm:py-4 ${DESIGN_TOKENS.RADIUS.XL} ${DESIGN_TOKENS.SHADOW.LG}`}
         >
           <span className="tracking-wide">{t('common.next')}</span>
           <span className="material-symbols-outlined">arrow_forward</span>

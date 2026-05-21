@@ -51,19 +51,19 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
   return (
     <div className="w-full flex flex-col items-center">
       {/* Header */}
-      <div className="w-full bg-surface-container-low rounded-2xl p-6 mb-8 flex flex-col gap-3 text-center">
+      <div className="mb-5 flex w-full flex-col gap-3 rounded-2xl bg-surface-container-low p-4 text-center sm:mb-8 sm:p-6">
         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
           {t('challenges.recognition')}
         </span>
-        <h2 className="text-4xl font-black font-headline text-primary tracking-tight">{word.word}</h2>
+        <h2 className="font-headline text-3xl font-black tracking-tight text-primary sm:text-4xl">{word.word}</h2>
         {word.phonetic && (
           <p className="text-secondary font-medium text-sm tracking-wide">/{word.phonetic}/</p>
         )}
       </div>
 
       {/* Choices */}
-      <div className="w-full max-w-sm space-y-3">
+      <div className="w-full max-w-sm space-y-2 sm:space-y-3">
         {choices.map((choice, i) => {
           const state = stateOf(choice)
           return (
@@ -73,7 +73,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
               disabled={isDone}
               whileHover={!isDone ? { scale: 1.01 } : {}}
               whileTap={!isDone ? { scale: 0.98 } : {}}
-              className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all ${state === 'correct'
+              className={`flex min-h-12 w-full items-center gap-3 rounded-2xl border-2 p-3 text-left transition-all sm:gap-4 sm:p-4 ${state === 'correct'
                   ? 'bg-primary/10 border-primary shadow-md'
                   : state === 'wrong'
                     ? 'bg-error/8 border-error'

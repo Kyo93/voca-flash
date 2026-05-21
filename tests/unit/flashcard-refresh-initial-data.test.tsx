@@ -15,6 +15,15 @@ import { useFlashcard } from '../../src/hooks/useFlashcard'
 
 // Mock storage layer
 vi.mock('../../src/lib/supabase-storage', () => ({
+  fetchStudyPrepData: vi.fn(async () => ({
+    unlearned: [
+      { id: 'w1', front: 'apple', back: 'apple', topic: 'topic-x', createdAt: 0 },
+      { id: 'w2', front: 'banana', back: 'banana', topic: 'topic-x', createdAt: 0 },
+    ],
+    learning: [],
+    mastered: [],
+    progressMap: new Map(),
+  })),
   fetchWords: vi.fn(async () => [
     { id: 'w1', front: 'apple', back: 'táo' },
     { id: 'w2', front: 'banana', back: 'chuối' },

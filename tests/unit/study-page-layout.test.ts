@@ -25,12 +25,13 @@ describe('StudyPage — flashcard content must be vertically centered with top p
     // After fix: the main return container should have pt-{n} or mt-{n} or gap-{n}
     // to create space between content and the sticky Header (h-20)
     // Bug: current code has no top padding — content touches header
-    const contentStart = source.indexOf('flex flex-col items-center justify-center pt-8 min-h-[80vh]')
+    const contentStart = source.indexOf('data-mobile-study-session')
     expect(contentStart).toBeGreaterThan(-1)
-    const snippet = source.substring(contentStart, contentStart + 100)
+    const snippet = source.substring(contentStart, contentStart + 240)
     // After fix: should have pt-6 or pt-8 or mt-6 or similar to create gap from header
     // The current bug: only has "min-h-[60vh]" with no top spacing
     expect(snippet).toMatch(/pt-|mt-|gap-|space-y-/)
+    expect(snippet).toContain('pt-4 sm:pt-8')
   })
 
   it('"Daily Mastery" label must not touch sticky Header (has top spacing)', () => {

@@ -18,6 +18,10 @@ function isFocusRoute(pathname: string) {
   return FOCUS_ROUTE_PREFIXES.some(prefix => pathname.startsWith(prefix))
 }
 
+function isSearchRoute(pathname: string) {
+  return pathname === '/library' || pathname.startsWith('/library/')
+}
+
 function getMobileTitle(pathname: string, t: (key: string) => string) {
   if (pathname === '/dashboard') return t('mobileNav.today')
   if (pathname === '/library' || pathname.startsWith('/library/')) return t('mobileNav.learn')
@@ -36,6 +40,7 @@ export default function MobileAppLayout() {
   const location = useLocation()
   const [searchQuery, setSearchQuery] = useState('')
   const focusRoute = isFocusRoute(location.pathname)
+  const searchRoute = isSearchRoute(location.pathname)
 
   const navItems = useMemo<MobileNavItem[]>(() => {
     const reviewCount = initialData?.global_review_count ?? 0
@@ -129,6 +134,20 @@ export default function MobileAppLayout() {
               </Link>
             </div>
           </div>
+
+          {searchRoute && (
+            <div className="relative mt-3">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/45" aria-hidden="true">
+                search
+              </span>
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder={t('nav.searchPlaceholder')}
+                className="min-h-11 w-full rounded-2xl border border-outline-variant/30 bg-surface-container-lowest pl-12 pr-4 text-sm font-medium text-on-surface outline-hidden transition focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+              />
+            </div>
+          )}
         </header>
       )}
 

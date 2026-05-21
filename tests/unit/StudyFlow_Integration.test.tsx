@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useFlashcard } from '../../src/hooks/useFlashcard'
 import * as storage from '../../src/lib/supabase-storage'
-import type { Card, CardProgress } from '../../src/lib/srs'
+import type { Card } from '../../src/lib/srs'
 
 vi.mock('../../src/lib/supabase-storage', () => ({
+  fetchStudyPrepData: vi.fn(),
   fetchWords: vi.fn(),
   fetchSrsStates: vi.fn(),
   upsertSrsRecord: vi.fn(async () => ({})),
@@ -34,7 +35,12 @@ describe('Study Flow Integration - Transitions & Modes', () => {
     vi.mocked(storage.fetchWords).mockResolvedValue([...mockCards])
   })
 
-  it('correctly transitions unlearned word to learning and respects selection modes', async () => {
+  it('loads Study Prep from scoped RPC data instead of all user SRS records', async () => {
+    vi.mocked(storage.fetchStudyPrepData).mockResolvedValue({
+      unlearned: [...mockCards],
+      learning: [],
+      mastered: [],
+    })
     vi.mocked(storage.fetchSrsStates).mockResolvedValue(new Map())
 
     const { result } = renderHook(() => useFlashcard())
@@ -45,6 +51,9 @@ describe('Study Flow Integration - Transitions & Modes', () => {
 
     expect(result.current.prepStats?.unlearned).toHaveLength(2)
     expect(result.current.prepStats?.learning).toHaveLength(0)
+    expect(storage.fetchStudyPrepData).toHaveBeenCalledWith('user-1', 'topic-1')
+    expect(storage.fetchSrsStates).not.toHaveBeenCalled()
+    expect(storage.fetchWords).not.toHaveBeenCalled()
 
     await act(async () => {
       await result.current.startSession('r1', 't1', 'new')
@@ -56,19 +65,11 @@ describe('Study Flow Integration - Transitions & Modes', () => {
       await result.current.rate(3)
     })
 
-    const progressMapAfterRate = new Map<string, CardProgress>()
-    progressMapAfterRate.set('w1', {
-      cardId: 'w1',
-      stability: 1.0,
-      difficulty: 5.0,
-      state: 1,
-      reps: 1,
-      lapses: 0,
-      scheduledDays: 1,
-      due: Date.now(),
-      lastReview: Date.now(),
+    vi.mocked(storage.fetchStudyPrepData).mockResolvedValue({
+      unlearned: [mockCards[1]],
+      learning: [mockCards[0]],
+      mastered: [],
     })
-    vi.mocked(storage.fetchSrsStates).mockResolvedValue(progressMapAfterRate)
 
     await act(async () => {
       await result.current.initialize('topic-1')

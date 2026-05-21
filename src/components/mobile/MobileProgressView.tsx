@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { AnalyticsData } from '../../hooks/useAnalytics'
+import { REWARD_BADGES } from '../../lib/rewards'
 import type { RewardProgressView } from '../../lib/rewards'
 
 interface RetentionSummary {
@@ -36,6 +37,7 @@ export default function MobileProgressView({
   const { t } = useTranslation()
 
   const unlockedBadges = rewardProgress?.unlockedBadges.length ?? 0
+  const totalBadges = REWARD_BADGES.length
   const nextBadge = rewardProgress?.nextBadge ? t(rewardProgress.nextBadge.titleKey) : t('achievements.allXpUnlocked')
   const retentionValue = retentionInfo.hasData ? `${retentionInfo.percent}%` : t('common.no_data')
   const weakWords = data.weak_words.slice(0, 3)
@@ -114,7 +116,7 @@ export default function MobileProgressView({
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-bold text-on-surface">{t('profileMobile.quickLinks')}</h2>
           <span className="text-xs font-bold text-on-surface-variant">
-            {t('profileMobile.badgesUnlocked', { unlocked: unlockedBadges, total: rewardProgress?.unlockedBadges.length ?? 0 })}
+            {t('profileMobile.badgesUnlocked', { unlocked: unlockedBadges, total: totalBadges })}
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">

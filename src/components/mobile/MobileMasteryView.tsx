@@ -3,6 +3,18 @@ import { useTranslation } from 'react-i18next'
 import type { FilterType } from '../../hooks/useMasteryWords'
 import type { MasteryStats, MasteryWord } from '../../lib/types'
 
+export interface MobileMasteryAdvancedFilters {
+  roadmapId: string | null
+  stability: string | null
+  abcLetter: string | null
+  sortBy: string
+}
+
+interface MobileMasteryRoadmapOption {
+  id: string
+  name: string
+}
+
 interface MobileMasteryViewProps {
   words: MasteryWord[]
   stats: MasteryStats | null
@@ -22,10 +34,20 @@ interface MobileMasteryViewProps {
   onToggleNotebook: (wordId: string, event?: React.MouseEvent) => Promise<void>
   getNote: (wordId: string) => string | null
   onSaveNote: (note: string) => Promise<void>
+  roadmaps?: MobileMasteryRoadmapOption[]
+  advancedFilters?: MobileMasteryAdvancedFilters
+  onAdvancedFilterChange?: (filters: Partial<MobileMasteryAdvancedFilters>) => void
   lastElementRef: (node: HTMLElement | null) => void
 }
 
 const FILTERS: FilterType[] = ['all', 'due', 'weak', 'mastered']
+const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+const DEFAULT_ADVANCED_FILTERS: MobileMasteryAdvancedFilters = {
+  roadmapId: null,
+  stability: null,
+  abcLetter: null,
+  sortBy: 'date',
+}
 
 function clampPercent(value: number) {
   if (!Number.isFinite(value)) return 0
@@ -69,10 +91,17 @@ export default function MobileMasteryView({
   isNotebookSaved,
   onToggleNotebook,
   getNote,
+  onSaveNote,
+  roadmaps = [],
+  advancedFilters = DEFAULT_ADVANCED_FILTERS,
+  onAdvancedFilterChange,
   lastElementRef,
 }: MobileMasteryViewProps) {
   const { t } = useTranslation()
   const [selectedWord, setSelectedWord] = useState<MasteryWord | null>(null)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [isEditingNote, setIsEditingNote] = useState(false)
+  const [draftNote, setDraftNote] = useState('')
 
   const statCards = useMemo(() => [
     { key: 'learning', label: t('mastery.stats.learning'), value: stats?.learning ?? 0, icon: 'school' },
@@ -80,6 +109,17 @@ export default function MobileMasteryView({
     { key: 'weak', label: t('mastery.stats.weak'), value: stats?.weak ?? 0, icon: 'trending_down' },
     { key: 'mastered', label: t('mastery.stats.mastered'), value: stats?.mastered ?? 0, icon: 'verified' },
   ], [stats, t])
+
+  const openWordDetail = (word: MasteryWord) => {
+    setSelectedWord(word)
+    setIsEditingNote(false)
+    setDraftNote(getNote(word.word_id) || '')
+  }
+
+  const handleSaveNote = async () => {
+    await onSaveNote(draftNote)
+    setIsEditingNote(false)
+  }
 
   return (
     <main data-mobile-mastery className="min-h-full bg-surface px-4 pb-6 pt-3">
@@ -151,6 +191,84 @@ export default function MobileMasteryView({
         })}
       </div>
 
+      <button
+        type="button"
+        onClick={() => setFiltersOpen(open => !open)}
+        className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-surface-container-low px-4 text-sm font-bold text-on-surface-variant active:scale-95"
+        aria-expanded={filtersOpen}
+      >
+        <span className="material-symbols-outlined text-lg" aria-hidden="true">tune</span>
+        {t('mastery.mobile.filtersLabel')}
+      </button>
+
+      {filtersOpen && (
+        <section className="mt-3 space-y-3 rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30">
+          <div className="grid grid-cols-1 gap-3">
+            <select
+              aria-label={t('mastery.filters.allRoadmaps')}
+              value={advancedFilters.roadmapId ?? ''}
+              onChange={(event) => onAdvancedFilterChange?.({ roadmapId: event.target.value || null })}
+              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-bold text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+            >
+              <option value="">{t('mastery.filters.allRoadmaps')}</option>
+              {roadmaps.map((roadmap) => (
+                <option key={roadmap.id} value={roadmap.id}>{roadmap.name}</option>
+              ))}
+            </select>
+
+            <select
+              aria-label={t('mastery.filters.allStability')}
+              value={advancedFilters.stability ?? ''}
+              onChange={(event) => onAdvancedFilterChange?.({ stability: event.target.value || null })}
+              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-bold text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+            >
+              <option value="">{t('mastery.filters.allStability')}</option>
+              {['fresh', 'learning', 'mastered', 'rooted'].map((stability) => (
+                <option key={stability} value={stability}>
+                  {t(`mastery.filters.stability.${stability}`)}
+                </option>
+              ))}
+            </select>
+
+            <select
+              aria-label={t('mastery.filters.sortBy')}
+              value={advancedFilters.sortBy}
+              onChange={(event) => onAdvancedFilterChange?.({ sortBy: event.target.value })}
+              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-bold text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+            >
+              {['date', 'stability', 'alphabetical'].map((sortBy) => (
+                <option key={sortBy} value={sortBy}>{t(`mastery.filters.sort.${sortBy}`)}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button
+              type="button"
+              onClick={() => onAdvancedFilterChange?.({ abcLetter: null })}
+              className={`flex h-11 min-w-11 items-center justify-center rounded-2xl text-xs font-bold ${
+                advancedFilters.abcLetter === null ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'
+              }`}
+            >
+              {t('mastery.filters.all')}
+            </button>
+            {LETTERS.map((letter) => (
+              <button
+                key={letter}
+                type="button"
+                onClick={() => onAdvancedFilterChange?.({ abcLetter: letter })}
+                className={`flex h-11 min-w-11 items-center justify-center rounded-2xl text-xs font-bold ${
+                  advancedFilters.abcLetter === letter ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'
+                }`}
+                aria-pressed={advancedFilters.abcLetter === letter}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
       {selectedIds.size > 0 && (
         <button
           type="button"
@@ -194,17 +312,19 @@ export default function MobileMasteryView({
                 className={`rounded-3xl border bg-surface-container-lowest p-4 shadow-sm transition-all ${
                   selected ? 'border-primary/50 ring-2 ring-primary/15' : 'border-outline-variant/30'
                 }`}
-                onClick={() => setSelectedWord(word)}
+                onClick={() => openWordDetail(word)}
               >
                 <div className="flex items-start gap-3">
-                  <input
-                    type="checkbox"
-                    checked={selected}
-                    onChange={(event) => onToggleSelect(word.word_id, event)}
-                    onClick={(event) => event.stopPropagation()}
-                    className="mt-1 h-5 w-5 rounded-md border-outline-variant text-primary accent-primary"
-                    aria-label={t('mastery.mobile.selectWord', { word: word.word })}
-                  />
+                  <div className="flex h-11 w-11 shrink-0 items-start justify-center pt-1">
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={(event) => onToggleSelect(word.word_id, event)}
+                      onClick={(event) => event.stopPropagation()}
+                      className="h-6 w-6 rounded-md border-outline-variant text-primary accent-primary"
+                      aria-label={t('mastery.mobile.selectWord', { word: word.word })}
+                    />
+                  </div>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
@@ -222,7 +342,7 @@ export default function MobileMasteryView({
                           event.stopPropagation()
                           onToggleNotebook(word.word_id, event)
                         }}
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all active:scale-95 ${
+                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all active:scale-95 ${
                           saved ? 'bg-primary-container text-primary' : 'bg-surface-container-low text-on-surface-variant/55'
                         }`}
                         aria-label={saved
@@ -308,7 +428,7 @@ export default function MobileMasteryView({
               <button
                 type="button"
                 onClick={() => setSelectedWord(null)}
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-surface-container-low text-on-surface-variant"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-surface-container-low text-on-surface-variant"
                 aria-label={t('common.close')}
               >
                 <span className="material-symbols-outlined" aria-hidden="true">close</span>
@@ -344,10 +464,55 @@ export default function MobileMasteryView({
               </div>
 
               <section className="rounded-2xl bg-primary-container/60 p-4 text-on-primary-container">
-                <p className="text-[11px] font-bold uppercase tracking-wider">{t('mastery.mobile.note')}</p>
-                <p className="mt-2 text-sm font-medium leading-6">
-                  {getNote(selectedWord.word_id) || t('mastery.mobile.noNote')}
-                </p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-[11px] font-bold uppercase tracking-wider">{t('mastery.mobile.note')}</p>
+                  {!isEditingNote && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDraftNote(getNote(selectedWord.word_id) || '')
+                        setIsEditingNote(true)
+                      }}
+                      className="flex min-h-11 items-center justify-center rounded-2xl bg-surface/60 px-3 text-xs font-bold text-primary active:scale-95"
+                    >
+                      {t('mastery.mobile.editNote')}
+                    </button>
+                  )}
+                </div>
+
+                {isEditingNote ? (
+                  <div className="mt-3 space-y-3">
+                    <textarea
+                      value={draftNote}
+                      onChange={(event) => setDraftNote(event.target.value)}
+                      placeholder={t('mastery.mobile.notePlaceholder')}
+                      className="min-h-28 w-full resize-none rounded-2xl border border-primary/15 bg-surface px-4 py-3 text-sm font-medium leading-6 text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDraftNote(getNote(selectedWord.word_id) || '')
+                          setIsEditingNote(false)
+                        }}
+                        className="min-h-11 rounded-2xl bg-surface/60 px-4 text-sm font-bold text-primary"
+                      >
+                        {t('mastery.mobile.cancelNote')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveNote}
+                        className="min-h-11 rounded-2xl bg-primary px-4 text-sm font-bold text-on-primary"
+                      >
+                        {t('mastery.mobile.saveNote')}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm font-medium leading-6">
+                    {getNote(selectedWord.word_id) || t('mastery.mobile.noNote')}
+                  </p>
+                )}
               </section>
             </div>
           </section>

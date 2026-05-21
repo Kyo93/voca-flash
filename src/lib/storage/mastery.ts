@@ -1,8 +1,9 @@
 import { supabase } from '../supabase'
 import type { MasteryWord, MasteryStats, Word } from '../types'
-import type { Card } from '../srs'
+import { isMastered, type Card, type CardProgress } from '../srs'
 import { fetchPaginated } from './base'
 import { MASTERY_CONFIG } from '../constants'
+import { fetchSrsStates } from './session'
 
 export async function getMasteryStats(userId: string): Promise<MasteryStats> {
   const { data, error } = await supabase.rpc('get_mastery_stats', { p_user_id: userId })
@@ -22,6 +23,127 @@ interface FetchVocabularyOptions {
   roadmapId?: string | null
   stability?: string | null
   sortBy?: string
+}
+
+export interface StudyPrepData {
+  unlearned: Card[]
+  learning: Card[]
+  mastered: Card[]
+  progressMap?: Map<string, CardProgress>
+}
+
+interface StudyPrepRow {
+  word_id: string
+  word: string
+  definition: string
+  phonetic: string | null
+  example: string | null
+  example_vi: string | null
+  image_url: string | null
+  image_position: string | null
+  topic_slug: string | null
+  created_at: string
+  has_progress: boolean
+  mastered: boolean | null
+  next_review_at: string | null
+  last_reviewed: string | null
+  fsrs_stability: number | null
+  fsrs_difficulty: number | null
+  fsrs_state: number | null
+  fsrs_reps: number | null
+  fsrs_lapses: number | null
+  fsrs_scheduled_days: number | null
+  repetitions: number | null
+  lapse_count: number | null
+}
+
+function mapStudyPrepRowToCard(row: StudyPrepRow, topicSlug?: string): Card {
+  return {
+    id: row.word_id,
+    front: row.word,
+    back: row.definition,
+    phonetic: row.phonetic ?? undefined,
+    example: row.example ?? undefined,
+    example_vi: row.example_vi ?? undefined,
+    image_url: row.image_url ?? undefined,
+    image_position: row.image_position ?? 'center',
+    topic: row.topic_slug ?? topicSlug ?? 'general',
+    createdAt: new Date(row.created_at).getTime(),
+  }
+}
+
+function mapStudyPrepRowToProgress(row: StudyPrepRow): CardProgress {
+  return {
+    cardId: row.word_id,
+    stability: row.fsrs_stability ?? 0,
+    difficulty: row.fsrs_difficulty ?? 5,
+    state: row.fsrs_state ?? 0,
+    reps: row.fsrs_reps ?? row.repetitions ?? 0,
+    lapses: row.fsrs_lapses ?? row.lapse_count ?? 0,
+    scheduledDays: row.fsrs_scheduled_days ?? 0,
+    due: row.next_review_at ? new Date(row.next_review_at).getTime() : Date.now(),
+    lastReview: row.last_reviewed ? new Date(row.last_reviewed).getTime() : 0,
+  }
+}
+
+async function fetchStudyPrepDataFallback(userId: string | undefined, topicSlug?: string): Promise<StudyPrepData> {
+  const [cards, progressMap] = await Promise.all([
+    fetchWords(topicSlug),
+    userId ? fetchSrsStates(userId) : Promise.resolve(new Map<string, CardProgress>()),
+  ])
+
+  const unlearned: Card[] = []
+  const learning: Card[] = []
+  const mastered: Card[] = []
+
+  for (const card of cards) {
+    const progress = progressMap.get(card.id)
+    if (!progress) {
+      unlearned.push(card)
+    } else if (isMastered(progress)) {
+      mastered.push(card)
+    } else {
+      learning.push(card)
+    }
+  }
+
+  return { unlearned, learning, mastered, progressMap }
+}
+
+export async function fetchStudyPrepData(userId: string | undefined, topicSlug?: string): Promise<StudyPrepData> {
+  const { data, error } = await supabase.rpc('get_study_prep_data', {
+    p_user_id: userId ?? null,
+    p_topic_slug: topicSlug ?? null,
+  })
+
+  if (error) {
+    console.error('[Storage] fetchStudyPrepData error:', error)
+    return fetchStudyPrepDataFallback(userId, topicSlug)
+  }
+
+  const progressMap = new Map<string, CardProgress>()
+  const unlearned: Card[] = []
+  const learning: Card[] = []
+  const mastered: Card[] = []
+
+  for (const row of (data ?? []) as StudyPrepRow[]) {
+    const card = mapStudyPrepRowToCard(row, topicSlug)
+    if (!row.has_progress) {
+      unlearned.push(card)
+      continue
+    }
+
+    const progress = mapStudyPrepRowToProgress(row)
+    progressMap.set(card.id, progress)
+
+    if (row.mastered) {
+      mastered.push(card)
+    } else {
+      learning.push(card)
+    }
+  }
+
+  return { unlearned, learning, mastered, progressMap }
 }
 
 export async function getUserVocabulary(

@@ -1,6 +1,7 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { MasteryWord } from '../lib/types'
+import { MasteryWord, Roadmap } from '../lib/types'
+import { fetchRoadmaps } from '../lib/storage/roadmap'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useNotebook } from '../hooks/useNotebook'
@@ -64,9 +65,15 @@ export default function MasteryPage() {
   const [isNotebookOpen, setIsNotebookOpen] = useState(false)
   const [hasOpenedPanel, setHasOpenedPanel] = useState(false)
   const [hasOpenedNotebook, setHasOpenedNotebook] = useState(false)
+  const [mobileRoadmaps, setMobileRoadmaps] = useState<Roadmap[]>([])
   const isMobileMastery = useMediaQuery('(max-width: 767px)')
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
+
+  useEffect(() => {
+    if (!isMobileMastery) return
+    fetchRoadmaps().then(setMobileRoadmaps).catch(console.error)
+  }, [isMobileMastery])
 
   const handleStartFreeStudy = () => {
     const selectedWords = words.filter(w => selectedIds.has(w.word_id))
@@ -125,6 +132,9 @@ export default function MasteryPage() {
           onToggleNotebook={handleToggleNotebook}
           getNote={getNote}
           onSaveNote={handleSaveNote}
+          roadmaps={mobileRoadmaps}
+          advancedFilters={advancedFilters}
+          onAdvancedFilterChange={handleFilterChange}
           lastElementRef={lastElementRef}
         />
 

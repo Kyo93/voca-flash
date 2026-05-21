@@ -13,7 +13,7 @@ interface ChallengeManagerProps {
 export default function ChallengeManager({ challenge, onSubmit }: ChallengeManagerProps) {
   const { t } = useTranslation()
   return (
-    <div key={challenge.id} className="w-full flex justify-center py-12">
+    <div key={challenge.id} className="w-full flex justify-center py-6 sm:py-12">
       {renderQuadrant(challenge, onSubmit, t)}
     </div>
   )
