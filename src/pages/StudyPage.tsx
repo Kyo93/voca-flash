@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useState, useRef } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useFlashcard } from '../hooks/useFlashcard'
 import { speak, stop } from '../lib/tts'
@@ -21,8 +21,9 @@ import type { SrsRating } from '../lib/srs'
 import { SRS_RATINGS } from '../lib/constants'
 
 export default function StudyPage() {
-  const { user, profile } = useAuth()
+  const { user, profile, activeRoadmapSlug } = useAuth()
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const topic = searchParams.get('topic') || undefined
   const topicId = searchParams.get('topicId') || undefined
@@ -109,6 +110,10 @@ export default function StudyPage() {
     startSession(roadmapId, topicId || '', mode)
   }, [startSession, roadmapId, topicId])
 
+  const handleExitPrep = useCallback(() => {
+    navigate(activeRoadmapSlug ? `/library/${activeRoadmapSlug}` : '/library')
+  }, [activeRoadmapSlug, navigate])
+
   const handleMascotReactionEnd = useCallback(() => {
     setMascotReaction('idle')
   }, [])
@@ -151,7 +156,7 @@ export default function StudyPage() {
           errorKey={prepError}
           loading={isLoading}
           onStart={onStartCallback}
-          onBack={() => window.history.back()}
+          onBack={handleExitPrep}
         />
       </div>
     )

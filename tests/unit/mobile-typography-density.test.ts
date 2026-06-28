@@ -98,6 +98,14 @@ describe('mobile typography density contract', () => {
     expect(source).not.toContain('pt-8 min-h-[80vh] px-4 pb-12')
   })
 
+  it('keeps Study Prep exit deterministic instead of depending on browser history', () => {
+    const source = readFileSync('src/pages/StudyPage.tsx', 'utf8')
+
+    expect(source).toContain('handleExitPrep')
+    expect(source).toContain('activeRoadmapSlug ? `/library/${activeRoadmapSlug}` : \'/library\'')
+    expect(source).not.toContain('window.history.back()')
+  })
+
   it('compacts flashcards and study actions on mobile without shrinking tap targets', () => {
     const frontSource = readFileSync('src/components/study/FlashcardFront.tsx', 'utf8')
     const backSource = readFileSync('src/components/study/FlashcardBack.tsx', 'utf8')
