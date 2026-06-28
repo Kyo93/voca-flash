@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { CharacterCollectionView } from '../../lib/characters'
 import type { InitialAppData, Topic, UserProfile } from '../../lib/types'
+import CharacterReactionAvatar from '../characters/CharacterReactionAvatar'
 
 interface MobileDashboardViewProps {
   profile: UserProfile | null
@@ -26,6 +27,7 @@ function buildStudyUrl(topic: Topic) {
 }
 
 export default function MobileDashboardView({
+  profile,
   initialData,
   reviewCount,
   newTodayTotal,
@@ -33,7 +35,7 @@ export default function MobileDashboardView({
   primaryTopic,
   isResume,
   currentQuote,
-  collection: _collection,
+  collection,
 }: MobileDashboardViewProps) {
   const { t } = useTranslation()
   const progressPct = dailyGoal > 0 ? Math.min(100, Math.round((newTodayTotal / dailyGoal) * 100)) : 0
@@ -66,6 +68,17 @@ export default function MobileDashboardView({
   const forecastBars = forecast.slice(0, 5)
   while (forecastBars.length < 5) forecastBars.push(0)
   const maxForecast = Math.max(...forecastBars, 1)
+  const displayName = profile?.display_name?.trim()
+  const hasResumeTopic = isResume && !!primaryTopic
+  const nextHref = hasResumeTopic ? buildStudyUrl(primaryTopic) : '/library'
+  const nextTitle = hasResumeTopic ? primaryTopic.name : t('home.mobile.startTitle')
+  const retentionQualityKey = retentionRate >= 0.8
+    ? 'home.mobile.retentionExcellent'
+    : retentionRate >= 0.6
+      ? 'home.mobile.retentionGood'
+      : retentionRate > 0
+        ? 'home.mobile.retentionNeedsWork'
+        : 'common.no_data'
 
   return (
     <section
@@ -74,77 +87,146 @@ export default function MobileDashboardView({
       data-mobile-today-dashboard="true"
     >
       <article
-        className="mobile-panel relative overflow-hidden p-5"
+        className={`mobile-panel relative overflow-hidden ${heroMode === 'review' ? 'flex items-center gap-3 p-3' : 'p-4'}`}
         data-mobile-today-hero={heroMode}
       >
-        <div className="relative flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-secondary">
-              {heroMode === 'review' ? t('home.activeRecall') : isResume ? t('home.tracking') : t('home.suggestion')}
-            </p>
-            <h3 className="mt-2 text-xl font-medium leading-tight text-on-surface">
-              {t(heroTitleKey)}
-            </h3>
-            {primaryTopic && heroMode === 'learn' && (
-              <p className="mt-1 truncate text-sm font-medium text-primary">
-                {primaryTopic.name}
+        {heroMode === 'review' ? (
+          <>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[10px] font-medium uppercase tracking-widest text-secondary">
+                {t('home.activeRecall')}
               </p>
-            )}
-            <p className="mt-2 max-w-52 text-sm font-medium leading-5 text-on-surface-variant">
-              {t(heroDescKey, { count: reviewCount })}
-            </p>
-          </div>
+              <h3 className="mt-1 text-[15px] font-medium leading-tight text-on-surface">
+                {t('home.mobile.reviewDueToday', { count: reviewCount })}
+              </h3>
+            </div>
+            <Link
+              to={heroHref}
+              className="mobile-primary-action flex min-h-11 shrink-0 items-center justify-center gap-1.5 px-3 text-xs transition-transform active:scale-95"
+            >
+              {t('home.mobile.reviewShortCta')}
+              <span aria-hidden="true" className="material-symbols-outlined text-base">arrow_forward</span>
+            </Link>
+          </>
+        ) : (
+          <>
+            <div className="relative flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium uppercase tracking-widest text-secondary">
+                  {isResume ? t('home.tracking') : t('home.suggestion')}
+                </p>
+                <h3 className="mt-1.5 text-lg font-medium leading-tight text-on-surface">
+                  {t(heroTitleKey)}
+                </h3>
+                {primaryTopic && (
+                  <p className="mt-1 truncate text-sm font-medium text-primary">
+                    {primaryTopic.name}
+                  </p>
+                )}
+                <p className="mt-1 max-w-56 truncate text-xs font-medium text-on-surface-variant">
+                  {t(heroDescKey, { count: reviewCount })}
+                </p>
+              </div>
 
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-container text-primary">
-            <span aria-hidden="true" className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-              {heroMode === 'review' ? 'bolt' : heroMode === 'learn' ? 'school' : 'auto_stories'}
-            </span>
-          </div>
-        </div>
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-container text-primary">
+                <span aria-hidden="true" className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  {heroMode === 'learn' ? 'school' : 'auto_stories'}
+                </span>
+              </div>
+            </div>
 
-        <Link
-          to={heroHref}
-          className="mobile-primary-action relative mt-5 flex min-h-12 items-center justify-center gap-2 px-4 text-sm transition-transform active:scale-95"
-        >
-          {t(heroCtaKey)}
-          <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
-        </Link>
+            <Link
+              to={heroHref}
+              className="mobile-primary-action relative mt-3 flex min-h-11 items-center justify-center gap-2 px-4 text-sm transition-transform active:scale-95"
+            >
+              {t(heroCtaKey)}
+              <span aria-hidden="true" className="material-symbols-outlined text-lg">arrow_forward</span>
+            </Link>
+          </>
+        )}
       </article>
+
+      <figure
+        className="mobile-panel flex min-h-24 items-center justify-between gap-3 overflow-hidden bg-primary-container/25 px-4 py-3"
+        data-mobile-motivation-strip="true"
+      >
+        <div className="min-w-0 flex-1">
+          <figcaption className="text-[11px] font-medium leading-4 text-primary">
+            {displayName
+              ? t('home.mobile.greetingName', { name: displayName })
+              : t('home.readyToday')}
+          </figcaption>
+          <blockquote className="mt-1 line-clamp-2 font-serif text-[15px] italic leading-6 text-on-surface-variant">
+            “{currentQuote}”
+          </blockquote>
+          <Link
+            to={nextHref}
+            className="mt-2 inline-flex min-h-8 items-center rounded-full bg-surface-container-lowest px-3 text-[11px] font-medium text-primary"
+          >
+            {t('home.mobile.quickStudy')}
+          </Link>
+        </div>
+        <CharacterReactionAvatar
+          collection={collection}
+          animationState="idle"
+          animated
+          size="sm"
+          className="flex h-20 w-20 shrink-0 items-center justify-center"
+        />
+      </figure>
 
       <div className="grid grid-cols-2 gap-3">
         <div
-          className="mobile-panel p-4"
+          className="mobile-panel p-3"
           data-mobile-daily-progress={progressPct}
         >
-          <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2">
             <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/70">
               {t('home.dailyMission')}
             </p>
             <span aria-hidden="true" className="material-symbols-outlined text-base text-primary">target</span>
           </div>
-          <p className="text-xl font-medium text-secondary">
-            {newTodayTotal}
-            <span className="text-sm font-medium text-on-surface-variant/45"> / {dailyGoal}</span>
-          </p>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-container">
+          <div className="mt-2 flex items-end justify-between gap-2">
+            <p className="text-lg font-medium leading-none text-secondary">
+              {newTodayTotal}
+              <span className="text-xs font-medium text-on-surface-variant/45"> / {dailyGoal}</span>
+            </p>
+            <p className="text-[10px] font-medium text-on-surface-variant/55">
+              {progressPct}%
+            </p>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-container">
             <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progressPct}%` }} />
           </div>
-          <p className="mt-2 text-[11px] font-medium text-on-surface-variant/60">
+          <p className="mt-1.5 truncate text-[10px] font-medium text-on-surface-variant/60">
             {t('home.mobile.missionHint', { count: newTodayTotal })}
           </p>
         </div>
 
-        <div className="mobile-panel p-4">
-          <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="mobile-panel p-3">
+          <div className="flex items-center justify-between gap-2">
             <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/70">
               {t('home.retention')}
             </p>
             <span aria-hidden="true" className="material-symbols-outlined text-base text-secondary">psychology</span>
           </div>
-          <p className="text-xl font-medium text-on-surface">
-            {retentionRate > 0 ? `${Math.round(retentionRate * 100)}%` : '—'}
-          </p>
-          <p className="mt-2 text-[11px] font-medium text-on-surface-variant/60">
+          <div className="mt-2 flex items-end justify-between gap-2">
+            <p className="text-lg font-medium leading-none text-on-surface">
+              {retentionRate > 0 ? `${Math.round(retentionRate * 100)}%` : '—'}
+              {retentionRate > 0 && (
+                <span className="ml-1 text-[10px] font-medium text-secondary">
+                  · {t(retentionQualityKey)}
+                </span>
+              )}
+            </p>
+            <div className="h-1.5 w-12 overflow-hidden rounded-full bg-surface-container">
+              <div
+                className="h-full rounded-full bg-secondary transition-all"
+                style={{ width: `${retentionRate > 0 ? Math.round(retentionRate * 100) : 0}%` }}
+              />
+            </div>
+          </div>
+          <p className="mt-1.5 truncate text-[10px] font-medium text-on-surface-variant/60">
             {retentionRate > 0
               ? t('home.mobile.stabilityHint', { days: avgStability.toFixed(1) })
               : t('common.no_data')}
@@ -153,7 +235,7 @@ export default function MobileDashboardView({
       </div>
 
       <div className="mobile-panel p-4">
-        <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="mb-3 flex items-center justify-between gap-3">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/60">
               {t('home.forecast')}
@@ -166,32 +248,61 @@ export default function MobileDashboardView({
             {dueSoon}
           </span>
         </div>
-        <div className="flex h-24 items-end gap-2">
+        <div className="grid grid-cols-5 gap-2" data-mobile-forecast-timeline="true">
           {forecastBars.map((count, index) => {
-            const height = Math.max(16, Math.round((count / maxForecast) * 100))
+            const width = count > 0 ? Math.max(16, Math.round((count / maxForecast) * 100)) : 0
             return (
-              <div key={index} className="flex flex-1 flex-col items-center gap-2">
-                <div className="flex h-16 w-full items-end rounded-full bg-surface-container-lowest/70 px-1">
+              <div
+                key={index}
+                className="rounded-xl bg-surface-container-lowest/45 px-2 py-2"
+              >
+                <div className="flex h-6 items-center justify-center">
+                  <span className={`text-xs font-medium ${count > 0 ? 'text-primary' : 'text-on-surface-variant/35'}`}>
+                    {count > 0 ? count : '—'}
+                  </span>
+                </div>
+                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-outline-variant/25">
                   <div
-                    className={`w-full rounded-full transition-all ${count > 0 ? 'bg-primary' : 'bg-outline-variant/40'}`}
-                    style={{ height: `${height}%` }}
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${width}%` }}
                   />
                 </div>
-                <span className="text-[9px] font-medium text-on-surface-variant/45">{index + 1}</span>
+                <span className="mt-1 block text-center text-[9px] font-medium text-on-surface-variant/45">
+                  {index === 0
+                    ? t('home.mobile.forecastToday')
+                    : index === 1
+                      ? t('home.mobile.forecastTomorrow')
+                      : t('home.mobile.forecastPlus', { count: index })}
+                </span>
               </div>
             )
           })}
         </div>
       </div>
 
-      <figure className="mobile-panel p-5">
-        <figcaption className="mb-2 text-[10px] font-medium uppercase tracking-widest text-primary">
-          {t('home.mobile.quoteTitle')}
-        </figcaption>
-        <blockquote className="font-serif text-lg italic leading-7 text-on-surface-variant">
-          “{currentQuote}”
-        </blockquote>
-      </figure>
+      <article
+        className="mobile-panel flex items-center justify-between gap-3 p-3"
+        data-mobile-next-step="true"
+      >
+        <div className="min-w-0">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/60">
+            {t('home.mobile.nextStep')}
+          </p>
+          <h3 className="mt-1 truncate text-sm font-medium text-on-surface">
+            {nextTitle}
+          </h3>
+          <p className="mt-0.5 truncate text-[11px] font-medium text-on-surface-variant/60">
+            {t('home.mobile.nextStepHint')}
+          </p>
+        </div>
+        <Link
+          to={nextHref}
+          className="flex min-h-11 shrink-0 items-center justify-center rounded-full border border-primary/20 px-4 text-xs font-medium text-primary transition-transform active:scale-95"
+        >
+          {hasResumeTopic ? t('home.mobile.quickStudyCta') : t('home.mobile.startCta')}
+        </Link>
+      </article>
+
     </section>
   )
 }

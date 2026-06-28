@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, useOutletContext, useParams } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import LibraryPage from '../../src/pages/LibraryPage'
@@ -45,10 +45,30 @@ vi.mock('react-i18next', () => ({
         'roadmap.card.upNext': 'Up next',
         'roadmapDetail.mobile.emptyDesc': 'Try a different search.',
         'roadmapDetail.mobile.emptyTitle': 'No topics found',
+        'roadmapDetail.mobile.completedStep': 'Completed',
+        'roadmapDetail.mobile.chapterTitle': 'Topics in this path',
+        'roadmapDetail.mobile.changePath': 'Change path',
+        'roadmapDetail.mobile.closeTopicSearch': 'Close topic search',
+        'roadmapDetail.mobile.continueTitle': 'Continue learning',
+        'roadmapDetail.mobile.continuePath': 'Continue learning',
+        'roadmapDetail.mobile.collapseTopic': 'Collapse topic details',
+        'roadmapDetail.mobile.currentStep': 'In progress',
+        'roadmapDetail.mobile.expandTopic': 'Expand topic details',
+        'roadmapDetail.mobile.focusTitle': 'Next step',
         'roadmapDetail.mobile.learnedLabel': 'learned',
+        'roadmapDetail.mobile.lockedStep': 'Not started',
         'roadmapDetail.mobile.masteredLabel': 'mastered',
+        'roadmapDetail.mobile.notStartedHint': 'Not started',
+        'roadmapDetail.mobile.openTopicSearch': 'Open topic search',
+        'roadmapDetail.mobile.pathLabel': 'Learning path',
         'roadmapDetail.mobile.progressTitle': 'Roadmap progress',
+        'roadmapDetail.mobile.quickSession': '5 min',
+        'roadmapDetail.mobile.remainingWords': `${values?.count ?? 0} left`,
         'roadmapDetail.mobile.startTopic': 'Start topic',
+        'roadmapDetail.mobile.summaryHint': `${values?.learned ?? 0}/${values?.total ?? 0} words learned`,
+        'roadmapDetail.mobile.timelineTitle': 'Learning checkpoints',
+        'roadmapDetail.mobile.topicSearchPlaceholder': 'Search topics...',
+        'roadmapDetail.mobile.searchAction': 'Search',
         'roadmapDetail.mobile.topicProgress': 'Topic progress',
         'roadmapDetail.mobile.totalLabel': 'words',
         'topic.action.resume': 'Resume topic',
@@ -165,10 +185,11 @@ describe('mobile Learn routes', () => {
     expect(screen.getByRole('link', { name: /Academic Core/i }).getAttribute('href')).toBe('/library/academic-core')
   })
 
-  it('renders roadmap topics as mobile cards with the up-next topic pinned', () => {
+  it('renders roadmap topics as a mobile learning path with the in-progress topic focused', () => {
     arrangeMobile()
     vi.mocked(useParams).mockReturnValue({ roadmapSlug: 'academic-core' })
-    vi.mocked(useOutletContext).mockReturnValue({ searchQuery: '' })
+    const setSearchQuery = vi.fn()
+    vi.mocked(useOutletContext).mockReturnValue({ searchQuery: '', setSearchQuery })
     vi.mocked(useRoadmapTopics).mockReturnValue({
       roadmap: academicRoadmap,
       topics: [introTopic, nextTopic],
@@ -187,12 +208,29 @@ describe('mobile Learn routes', () => {
       </MemoryRouter>,
     )
 
-    const hero = container.querySelector('[data-mobile-topic-hero="topic-2"]')
+    const hero = container.querySelector('[data-mobile-topic-hero="topic-1"]')
+    const stickyCta = container.querySelector('[data-mobile-roadmap-sticky-cta]')
+    const chapterRows = container.querySelectorAll('[data-mobile-topic-chapter-row="true"]')
 
     expect(container.querySelector('[data-mobile-roadmap-detail]')).toBeTruthy()
     expect(hero).toBeTruthy()
-    expect(within(hero as HTMLElement).getByText('Argument Flow')).toBeTruthy()
-    expect(within(hero as HTMLElement).getByRole('link', { name: /Start topic/i }).getAttribute('href')).toBe(
+    expect(within(hero as HTMLElement).getByText('Research Basics')).toBeTruthy()
+    expect(within(hero as HTMLElement).getByRole('link', { name: /Resume topic/i }).getAttribute('href')).toBe(
+      '/study?topic=research-basics&topicId=topic-1&roadmapId=roadmap-1',
+    )
+    expect(screen.getByText('Topics in this path')).toBeTruthy()
+    expect(screen.getByRole('link', { name: /Change/i }).getAttribute('href')).toBe('/library')
+    expect(chapterRows).toHaveLength(2)
+    expect(stickyCta).toBeFalsy()
+    expect(screen.queryByPlaceholderText('Search topics...')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Open topic search' }))
+    fireEvent.change(screen.getByPlaceholderText('Search topics...'), { target: { value: 'arg' } })
+    expect(setSearchQuery).toHaveBeenCalledWith('arg')
+
+    fireEvent.click(within(chapterRows[1] as HTMLElement).getByRole('button'))
+
+    expect(within(chapterRows[1] as HTMLElement).getByText('Track claims and evidence.')).toBeTruthy()
+    expect(within(chapterRows[1] as HTMLElement).getByRole('link', { name: /Start topic/i }).getAttribute('href')).toBe(
       '/study?topic=argument-flow&topicId=topic-2&roadmapId=roadmap-1',
     )
   })

@@ -6,11 +6,19 @@
 - Active Goal: Mobile Codex-like minimal redesign for S25 Ultra 390x850.
 - Current Plan: `openspec/changes/mobile-codex-minimal-redesign-2026-06-28/design.md` and `tasks.md`.
 - Current Phase: verified.
+- Project Knowledge Update: canonical mobile design/QA viewport is S25 Ultra `390x850` CSS px. Future mobile UI work should verify this viewport first and re-check device facts when user-provided metrics conflict or look outdated.
 - Working Context: user rejected glass/blur direction and wants the mobile app to feel closer to the Codex app: flat, minimal, calm, hairline borders, moderate radius, no decorative blur/shadow, clear mobile ergonomics.
 - Just Completed: added a scoped mobile minimal foundation; flattened `MobileAppLayout`; applied shared mobile primitives to dashboard/library/roadmap/mastery/progress/achievements/characters/settings; simplified Study Prep, flashcards, NoteDrawer, Review shell, Landing, and Login mobile treatments.
 - Just Completed: adjusted the mobile foundation after design review so it reuses the Desktop/Tactile Scholar palette instead of forcing primary/secondary colors to monochrome; mobile remains flat/minimal but keeps terracotta primary and sage secondary semantics for maintainability.
 - Just Completed: fixed dashboard mobile contrast regression where flattened panels retained `text-on-secondary`; compacted the dashboard by removing the duplicate greeting/mascot block so the primary review action uses the first viewport better.
+- Just Completed: refined Home mobile feedback pass: dashboard topbar now surfaces due-review status in a compact macOS-like toolbar, two metric cards are shorter, and the review forecast uses a lighter 5-day timeline instead of heavy rounded vertical blobs.
 - Just Completed: restored Study Prep colors to the desktop palette: primary-gradient main CTA, primary/secondary stat rows, and no black `bg-on-surface` primary action on the prep screen.
+- Just Completed: restored the mobile Home motivational layer as a compact strip near the top: inspirational quote plus selected character companion, keeping the S25 Ultra layout dense without removing learning motivation.
+- Just Completed: applied Home mobile polish items 1-5: compressed due-review hero into a single action row, added a 5-minute chip to the motivation banner, added human-readable retention quality, changed forecast labels to Today/Tomorrow/+n, and added a bottom next-step strip to use empty space.
+- Just Completed: fixed mobile Home regressions from visual review: due-review hero no longer squeezes text beside a duplicate icon, the motivation `Học 5 phút` chip links to the learning continuation/library path instead of review, and `Tiếp theo` only promotes a resume topic rather than a fresh fallback topic.
+- Just Completed: redesigned mobile roadmap detail `/library/:roadmapSlug` away from noisy timeline/sticky CTA into a Codex-like Chapter Stack: compact roadmap summary, one focused continue card, and quiet chapter rows with minimal progress metadata.
+- Just Completed: refined mobile roadmap detail from visual feedback: focus card can show topic image, primary CTA is a compact pill instead of a full-width block, chapter title spacing avoids rounded-card clipping, and chapter rows now expand inline for details + study CTA.
+- Verification: mobile roadmap focused tests passed; mobile density contract passed; `npm run build` passed; `npm run test:gate` passed with 95 files / 583 tests.
 - Verification: focused `MobileAppLayout` test passed; `npm run test:gate` passed with 95 files / 582 tests; browser smoke at 390x850 for `/`, `/login`, `/dashboard`, `/library`, `/mastery`, `/progress`, `/settings`, `/study`, and `/review` showed no horizontal overflow, no visible blur, and minimum visible interactive target height of 44px.
 - Next Actions: optional designer pass with screenshots route-by-route for finer typography/spacing tuning, then commit the verified mobile redesign.
 

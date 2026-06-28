@@ -1,14 +1,15 @@
 // @vitest-environment jsdom
 
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useOutletContext } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import MobileAppLayout from '../../src/components/mobile/MobileAppLayout'
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => ({
+    t: (key: string, values?: Record<string, unknown>) => ({
       'app.name': 'VocaFlash',
+      'home.wordsDue': `${values?.count ?? 0} words due`,
       'mobileNav.label': 'Primary navigation',
       'mobileNav.today': 'Today',
       'mobileNav.learn': 'Learn',
@@ -28,6 +29,10 @@ vi.mock('react-i18next', () => ({
 vi.mock('../../src/contexts/AuthContext', () => ({
   useAuth: () => ({
     user: { email: 'ocean@example.com' },
+    profile: {
+      display_name: 'Ocean',
+      avatar_url: 'https://example.com/avatar.png',
+    },
     initialData: { global_review_count: 7 },
     activeRoadmapSlug: 'academic-english',
   }),
@@ -70,6 +75,7 @@ describe('MobileAppLayout', () => {
     expect(container.querySelector('[data-mobile-bottom-nav="true"]')?.className).toContain('mobile-bottom-nav-minimal')
     expect(container.querySelector('.mobile-topbar-minimal')).toBeTruthy()
     expect(container.innerHTML).not.toContain('backdrop-blur')
+    expect(screen.getByText('7 words due')).toBeTruthy()
 
     expect(within(nav).getByRole('link', { name: 'Today' }).getAttribute('aria-current')).toBe('page')
     expect(within(nav).getByRole('link', { name: 'Learn' }).getAttribute('href')).toBe('/library/academic-english')
@@ -79,19 +85,42 @@ describe('MobileAppLayout', () => {
     expect(nav.textContent).toContain('7')
   })
 
+  it('shows the account avatar in the compact topbar profile action', () => {
+    renderMobileShell('/dashboard')
+
+    const profileLink = screen
+      .getAllByRole('link', { name: 'Profile' })
+      .find(link => link.getAttribute('href') === '/settings')
+    if (!profileLink) throw new Error('Topbar profile link was not found')
+    const avatar = profileLink.querySelector('img')
+
+    expect(profileLink?.className).toContain('h-9')
+    expect(profileLink?.className).toContain('w-9')
+    expect(profileLink?.className).toContain('rounded-full')
+    expect(avatar?.getAttribute('src')).toBe('https://example.com/avatar.png')
+    expect(avatar?.className).toContain('h-8')
+    expect(avatar?.className).toContain('w-8')
+    expect(avatar?.className).toContain('rounded-full')
+  })
+
   it('groups roadmap routes under the Learn tab', () => {
     renderMobileShell('/library/academic-english')
 
     expect(screen.getByRole('link', { name: 'Learn' }).getAttribute('aria-current')).toBe('page')
   })
 
-  it('keeps roadmap search available from the mobile header', () => {
+  it('keeps global library search in the library landing header', () => {
+    renderMobileShell('/library')
+
+    expect(screen.getByPlaceholderText('Search')).toBeTruthy()
+  })
+
+  it('uses a compact contextual header for roadmap detail routes', () => {
     renderMobileShell('/library/academic-english')
 
-    const input = screen.getByPlaceholderText('Search')
-    fireEvent.change(input, { target: { value: 'anchor' } })
-
-    expect(screen.getByText('query:anchor')).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'Learn' })).toBeTruthy()
+    expect(screen.queryByRole('link', { name: 'Back' })).toBeNull()
+    expect(screen.queryByPlaceholderText('Search')).toBeNull()
   })
 
   it('hides mobile chrome during full-screen study sessions', () => {

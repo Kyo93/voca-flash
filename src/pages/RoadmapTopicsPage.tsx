@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, Link, useOutletContext } from 'react-router-dom'
 import { useRoadmapTopics } from '../hooks/useRoadmapTopics'
@@ -7,7 +8,11 @@ import MobileRoadmapTopicsView from '../components/mobile/MobileRoadmapTopicsVie
 
 export default function RoadmapTopicsPage() {
   const { roadmapSlug } = useParams<{ roadmapSlug: string }>()
-  const { searchQuery } = useOutletContext<{ searchQuery: string }>()
+  const { searchQuery, setSearchQuery, setMobileHeaderMeta } = useOutletContext<{
+    searchQuery: string
+    setSearchQuery: (query: string) => void
+    setMobileHeaderMeta?: (meta: { title: string; subtitle?: string } | null) => void
+  }>()
   const { t } = useTranslation()
   const isMobileRoadmap = useMediaQuery('(max-width: 767px)')
 
@@ -20,6 +25,17 @@ export default function RoadmapTopicsPage() {
     upNextId,
     getTopicStats
   } = useRoadmapTopics(roadmapSlug, searchQuery)
+
+  useEffect(() => {
+    if (!isMobileRoadmap || !roadmap) return
+
+    setMobileHeaderMeta?.({
+      title: t('roadmapDetail.mobile.pathLabel'),
+      subtitle: roadmap.name,
+    })
+
+    return () => setMobileHeaderMeta?.(null)
+  }, [isMobileRoadmap, roadmap, setMobileHeaderMeta, t])
 
   if (loading) {
     return (
@@ -55,6 +71,7 @@ export default function RoadmapTopicsPage() {
         featuredId={featuredId}
         upNextId={upNextId}
         searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
         getTopicStats={getTopicStats}
       />
     )

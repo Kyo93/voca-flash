@@ -13,7 +13,8 @@ The target aesthetic is Codex-like minimalism:
 - Desktop palette is reused for maintainability: terracotta primary, sage secondary, and existing container tokens remain the source of truth
 - Primary action clear but quiet
 - Lists and forms feel like app workspace rows, not marketing cards
-- S25 Ultra target: 390x850, no horizontal overflow
+- Canonical mobile QA target: S25 Ultra `390x850` CSS px, no horizontal overflow
+- If device metrics conflict with user-provided values, verify with browser/device metrics or official device data before changing the design basis
 
 ## Proposed Changes
 

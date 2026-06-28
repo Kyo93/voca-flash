@@ -1,8 +1,13 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../contexts/AuthContext'
 import PageLoader from '../PageLoader'
+
+interface MobileHeaderMeta {
+  title: string
+  subtitle?: string
+}
 
 interface MobileNavItem {
   path: string
@@ -19,7 +24,7 @@ function isFocusRoute(pathname: string) {
 }
 
 function isSearchRoute(pathname: string) {
-  return pathname === '/library' || pathname.startsWith('/library/')
+  return pathname === '/library'
 }
 
 function getMobileTitle(pathname: string, t: (key: string) => string) {
@@ -36,9 +41,11 @@ function getMobileTitle(pathname: string, t: (key: string) => string) {
 
 export default function MobileAppLayout() {
   const { t } = useTranslation()
-  const { user, initialData, activeRoadmapSlug } = useAuth()
+  const { user, profile, initialData, activeRoadmapSlug } = useAuth()
   const location = useLocation()
   const [searchQuery, setSearchQuery] = useState('')
+  const [mobileHeaderMeta, setMobileHeaderMeta] = useState<MobileHeaderMeta | null>(null)
+  const [avatarError, setAvatarError] = useState(false)
   const focusRoute = isFocusRoute(location.pathname)
   const searchRoute = isSearchRoute(location.pathname)
 
@@ -88,7 +95,19 @@ export default function MobileAppLayout() {
   }, [activeRoadmapSlug, initialData?.global_review_count])
 
   const title = getMobileTitle(location.pathname, t)
-  const avatarLetter = (user?.email ?? 'A')[0].toUpperCase()
+  const displayName = profile?.display_name?.trim() || user?.email || 'A'
+  const avatarLetter = displayName[0].toUpperCase()
+  const avatarUrl = profile?.avatar_url?.trim()
+  const reviewCount = initialData?.global_review_count ?? 0
+  const isDashboard = location.pathname === '/dashboard'
+  const headerTitle = mobileHeaderMeta?.title ?? title
+  const headerSubtitle = mobileHeaderMeta?.subtitle ?? (
+    isDashboard && reviewCount > 0 ? t('home.wordsDue', { count: reviewCount }) : t('app.name')
+  )
+
+  useEffect(() => {
+    setAvatarError(false)
+  }, [avatarUrl])
 
   return (
     <div
@@ -96,41 +115,54 @@ export default function MobileAppLayout() {
       data-mobile-app-shell="true"
     >
       {!focusRoute && (
-        <header className="mobile-topbar-minimal sticky top-0 z-40 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-          <div className="flex min-h-14 items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase text-on-surface-variant">
-                {t('app.name')}
-              </p>
-              <h1 className="truncate text-lg font-semibold text-on-surface">
-                {title}
-              </h1>
+        <header className="mobile-topbar-minimal sticky top-0 z-40 px-4 pb-1 pt-[max(0.35rem,env(safe-area-inset-top))]">
+          <div className="flex min-h-10 items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="min-w-0">
+                <h1 className="truncate text-[19px] font-semibold leading-tight text-on-surface">
+                  {headerTitle}
+                </h1>
+                <p className="truncate text-[10px] font-medium text-on-surface-variant/70">
+                  {headerSubtitle}
+                </p>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex h-9 items-center gap-1.5 text-on-surface-variant">
               <Link
                 to="/review"
-                className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-primary/20 bg-primary-container text-primary transition-colors active:scale-95"
+                className="flex h-9 items-center justify-center gap-1 rounded-md px-1.5 text-primary transition-colors active:scale-95"
                 aria-label={t('mobileNav.review')}
                 title={t('mobileNav.review')}
               >
                 <span aria-hidden="true" className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                   bolt
                 </span>
-                {(initialData?.global_review_count ?? 0) > 0 && (
-                  <span className="absolute right-0 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-medium leading-none text-on-secondary">
-                    {initialData?.global_review_count}
+                {reviewCount > 0 && (
+                  <span className="text-xs font-semibold leading-none">
+                    {reviewCount}
                   </span>
                 )}
               </Link>
 
               <Link
                 to="/settings"
-                className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-secondary/20 bg-secondary-container text-sm font-semibold text-secondary transition-colors active:scale-95"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors active:scale-95"
                 aria-label={t('mobileNav.profile')}
                 title={t('mobileNav.profile')}
               >
-                {avatarLetter}
+                {avatarUrl && !avatarError ? (
+                  <img
+                    src={avatarUrl}
+                    alt=""
+                    className="h-8 w-8 rounded-full object-cover"
+                    onError={() => setAvatarError(true)}
+                  />
+                ) : (
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary-container text-sm font-semibold text-secondary">
+                    {avatarLetter}
+                  </span>
+                )}
               </Link>
             </div>
           </div>
@@ -153,7 +185,7 @@ export default function MobileAppLayout() {
 
       <main className={focusRoute ? 'min-h-dvh' : 'pb-[calc(5.75rem+env(safe-area-inset-bottom))]'}>
         <Suspense fallback={<PageLoader />}>
-          <Outlet context={{ searchQuery, setSearchQuery }} />
+          <Outlet context={{ searchQuery, setSearchQuery, setMobileHeaderMeta }} />
         </Suspense>
       </main>
 

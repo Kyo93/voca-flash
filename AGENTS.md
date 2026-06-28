@@ -41,6 +41,10 @@ src/
 - Sử dụng Tailwind CSS v4 Theme variables (ví dụ: `bg-primary`, `rounded-4xl`).
 - Tuyệt đối không dùng mã màu Hex trực tiếp trong code UI.
 - Luôn ưu tiên **Desktop-first** (chiều rộng chuẩn 1440px).
+- **Mobile target canonical**: Mọi thiết kế mobile phải tối ưu và kiểm tra trên viewport S25 Ultra `390x850` CSS px.
+- **Mobile QA**: Khi thay đổi UI mobile, phải kiểm tra không tràn ngang ở `390x850`, bottom nav không che nội dung chính, và các điểm chạm chính đạt tối thiểu 44px.
+- **Màu sắc mobile**: Mobile dùng cùng desktop palette/Tactile Scholar tokens để dễ maintenance; không chuyển toàn bộ mobile sang đen trắng nếu không có yêu cầu rõ ràng.
+- **Xác minh thông tin thiết bị**: Nếu thông tin user cung cấp về thiết bị/kích thước có dấu hiệu mâu thuẫn hoặc có thể sai, phải kiểm tra lại bằng browser/device metrics hoặc nguồn chính thức trước khi thiết kế.
 
 ### 3. Cấu trúc Component
 - Chỉ sử dụng Functional Components và Hooks.
