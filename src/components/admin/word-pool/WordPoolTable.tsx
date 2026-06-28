@@ -37,7 +37,7 @@ export function WordPoolTable({
       <div className="overflow-y-auto h-full custom-scrollbar">
         <table className="w-full text-left">
           <thead className="bg-surface-container-low border-b border-stone-200/50 sticky top-0 z-10">
-            <tr className="text-stone-500 font-bold text-xs uppercase tracking-widest">
+            <tr className="text-stone-500 font-medium text-xs uppercase tracking-widest">
               <th className="p-4 w-12 text-center">
                 <input
                   type="checkbox"
@@ -89,7 +89,7 @@ export function WordPoolTable({
                       className="w-4 h-4 rounded accent-primary cursor-pointer"
                     />
                   </td>
-                  <td className="p-4 font-bold text-on-surface">{word.word}</td>
+                  <td className="p-4 font-medium text-on-surface">{word.word}</td>
                   <td className="p-4 text-stone-400 font-mono text-xs">{word.phonetic}</td>
                   <td className="p-4 max-w-xs truncate" title={word.definition}>
                     {word.definition}
@@ -100,7 +100,7 @@ export function WordPoolTable({
                   <td className="p-4">
                     {primaryTag && (
                       <span
-                        className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white whitespace-nowrap"
+                        className="px-2 py-0.5 rounded-full text-[10px] font-medium text-white whitespace-nowrap"
                         style={{ backgroundColor: tagColor }}
                       >
                         {tagMeta?.label ?? primaryTag}

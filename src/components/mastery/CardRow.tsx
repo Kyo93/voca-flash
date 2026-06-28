@@ -60,7 +60,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
         <div className="flex items-center gap-4">
           <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-base font-bold text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight leading-none">
+              <span className="text-base font-medium text-on-surface group-hover:text-primary transition-colors whitespace-nowrap tracking-tight leading-none">
                 {word.word}
               </span>
               {word.phonetic && (
@@ -102,7 +102,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
         <SrsLevelBadge stability={stability} showStrength hideLabel />
       </td>
       <td className="py-6 px-8 hidden md:table-cell">
-        <div className="flex items-center gap-3 text-[11px] font-bold tracking-tight">
+        <div className="flex items-center gap-3 text-[11px] font-medium tracking-tight">
           <span className="inline-flex items-center gap-1 text-on-surface-variant/60" title={t('mastery.table.repsTooltip', { count: reps })}>
             <span className="material-symbols-outlined text-sm text-primary/60">check_circle</span>
             {reps}
@@ -128,7 +128,7 @@ const CardRow = React.forwardRef<HTMLTableRowElement, CardRowProps>(({
             </button>
           </div>
 
-          <span className={`text-xs font-bold tracking-tight ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
+          <span className={`text-xs font-medium tracking-tight ${isDue ? 'text-primary' : 'text-on-surface-variant/40'}`}>
             {nextReviewDate ? format(nextReviewDate, 'dd/MM/yy', { locale }) : '--'}
           </span>
         </div>

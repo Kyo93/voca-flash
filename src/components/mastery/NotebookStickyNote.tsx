@@ -155,7 +155,7 @@ export function NotebookStickyNote({
           )}
         >
           <div className="flex min-w-0 items-center gap-2">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest text-current opacity-70">
+            <h4 className="text-[10px] font-medium uppercase tracking-widest text-current opacity-70">
               {t('mastery.notebook.personalNote')}
             </h4>
           </div>
@@ -251,7 +251,7 @@ export function NotebookStickyNote({
               data-testid="notebook-sticky-copy-button"
               onClick={() => void copyNote()}
               disabled={!entry.personal_note}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-on-surface transition-colors hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-35"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-on-surface transition-colors hover:bg-surface-container-high disabled:cursor-not-allowed disabled:opacity-35"
             >
               <span className="material-symbols-outlined text-[18px]">content_copy</span>
               {t('mastery.notebook.copyNote')}
@@ -261,7 +261,7 @@ export function NotebookStickyNote({
               data-testid="notebook-sticky-clear-button"
               onClick={() => void clearNote()}
               disabled={!entry.personal_note}
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-bold uppercase tracking-wider text-error transition-colors hover:bg-error/10 disabled:cursor-not-allowed disabled:opacity-35"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-error transition-colors hover:bg-error/10 disabled:cursor-not-allowed disabled:opacity-35"
             >
               <span className="material-symbols-outlined text-[18px]">delete</span>
               {t('mastery.notebook.clearNote')}
@@ -297,7 +297,7 @@ export function NotebookStickyNote({
           {!isEditing && (
             <p
               data-testid="notebook-sticky-note-status"
-              className="mt-auto border-t border-black/10 pt-2 font-sans text-[9px] font-black uppercase tracking-widest opacity-55"
+              className="mt-auto border-t border-black/10 pt-2 font-sans text-[9px] font-semibold uppercase tracking-widest opacity-55"
             >
               {t('mastery.notebook.noteStats', {
                 words: noteStats.words,

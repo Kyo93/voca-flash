@@ -61,12 +61,12 @@ export default function AchievementsPage() {
           <div>
             <Link
               to="/progress"
-              className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-container transition-colors mb-4"
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-container transition-colors mb-4"
             >
               <span className="material-symbols-outlined text-base">chevron_left</span>
               {t('achievements.backToProgress')}
             </Link>
-            <h1 className="text-4xl lg:text-5xl font-black text-on-surface mb-3">
+            <h1 className="text-4xl lg:text-5xl font-semibold text-on-surface mb-3">
               {t('achievements.title')}
             </h1>
             <p className="max-w-2xl text-lg text-on-surface-variant">
@@ -75,10 +75,10 @@ export default function AchievementsPage() {
           </div>
 
           <div className="bg-surface-container-lowest rounded-xl p-6 min-w-64 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)]">
-            <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+            <p className="text-xs font-medium uppercase tracking-widest text-on-surface-variant mb-2">
               {t('achievements.totalBadges')}
             </p>
-            <p className="text-4xl font-black text-on-surface">
+            <p className="text-4xl font-semibold text-on-surface">
               {t('achievements.unlockedSummary', achievementCounts)}
             </p>
           </div>
@@ -94,10 +94,10 @@ export default function AchievementsPage() {
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-on-surface-variant">
+                  <p className="text-sm font-medium text-on-surface-variant">
                     {t('achievements.currentLevel')}
                   </p>
-                  <h2 className="text-2xl font-black text-on-surface">
+                  <h2 className="text-2xl font-semibold text-on-surface">
                     {t(rewardProgress.currentLevel.titleKey)}
                   </h2>
                 </div>
@@ -120,10 +120,10 @@ export default function AchievementsPage() {
             </div>
 
             <div className="bg-primary text-white rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)]">
-              <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-3">
+              <p className="text-xs font-medium uppercase tracking-widest opacity-80 mb-3">
                 {t('achievements.nextFocus')}
               </p>
-              <p className="text-2xl font-black leading-tight">
+              <p className="text-2xl font-semibold leading-tight">
                 {rewardProgress.nextBadge
                   ? t(rewardProgress.nextBadge.titleKey)
                   : t('achievements.allXpUnlocked')}
@@ -143,7 +143,7 @@ export default function AchievementsPage() {
 
             return (
               <section key={category} className="space-y-4">
-                <h2 className="text-2xl font-black text-on-surface">
+                <h2 className="text-2xl font-semibold text-on-surface">
                   {t(ACHIEVEMENT_CATEGORY_TITLE_KEYS[category])}
                 </h2>
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">

@@ -44,7 +44,7 @@ export default function SettingsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
-            <h1 className="text-4xl font-black text-secondary tracking-tight mb-2">{t('settings.title')}</h1>
+            <h1 className="text-4xl font-semibold text-secondary tracking-tight mb-2">{t('settings.title')}</h1>
             <p className="text-stone-500 font-medium">
               {t('settings.subtitle')}
             </p>
@@ -54,7 +54,7 @@ export default function SettingsPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="hidden md:flex items-center gap-2 px-8 py-4 primary-gradient text-white font-bold text-sm rounded-2xl shadow-[0_10px_30px_rgba(255,145,0,0.3)] hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
+            className="hidden md:flex items-center gap-2 px-8 py-4 primary-gradient text-white font-medium text-sm rounded-2xl shadow-[0_10px_30px_rgba(255,145,0,0.3)] hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
           >
             <span className="material-symbols-outlined text-xl">
               {saving ? 'sync' : 'save'}
@@ -68,14 +68,14 @@ export default function SettingsPage() {
           {saveMessage && (
             <div className="p-4 bg-green-50 text-green-700 rounded-2xl border border-green-200/50 flex items-center gap-3 animate-fade-in shadow-sm">
               <span className="material-symbols-outlined font-variation-fill">check_circle</span>
-              <span className="font-bold">{saveMessage}</span>
+              <span className="font-medium">{saveMessage}</span>
             </div>
           )}
 
           {error && (
             <div className="p-4 bg-red-50 text-red-700 rounded-2xl border border-red-200/50 flex items-center gap-3 animate-fade-in shadow-sm">
               <span className="material-symbols-outlined font-variation-fill">error</span>
-              <span className="font-bold">{error}</span>
+              <span className="font-medium">{error}</span>
             </div>
           )}
         </div>

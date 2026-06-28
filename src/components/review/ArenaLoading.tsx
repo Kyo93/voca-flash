@@ -31,7 +31,7 @@ export default function ArenaLoading({ message, variant = 'primary' }: ArenaLoad
       </div>
       <div className="text-center animate-pulse relative z-10">
         <div className={`w-16 h-16 rounded-full border-4 ${colors.spinner} animate-spin mb-8 mx-auto`} />
-        <p className={`${colors.text} font-black tracking-[0.3em] uppercase text-[10px]`}>{displayMessage}</p>
+        <p className={`${colors.text} font-semibold tracking-[0.3em] uppercase text-[10px]`}>{displayMessage}</p>
       </div>
     </div>
   )

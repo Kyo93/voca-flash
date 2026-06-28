@@ -3,6 +3,25 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
+- Active Goal: Mobile Codex-like minimal redesign for S25 Ultra 390x850.
+- Current Plan: `openspec/changes/mobile-codex-minimal-redesign-2026-06-28/design.md` and `tasks.md`.
+- Current Phase: verified.
+- Working Context: user rejected glass/blur direction and wants the mobile app to feel closer to the Codex app: flat, minimal, calm, hairline borders, moderate radius, no decorative blur/shadow, clear mobile ergonomics.
+- Just Completed: added a scoped mobile minimal foundation; flattened `MobileAppLayout`; applied shared mobile primitives to dashboard/library/roadmap/mastery/progress/achievements/characters/settings; simplified Study Prep, flashcards, NoteDrawer, Review shell, Landing, and Login mobile treatments.
+- Just Completed: adjusted the mobile foundation after design review so it reuses the Desktop/Tactile Scholar palette instead of forcing primary/secondary colors to monochrome; mobile remains flat/minimal but keeps terracotta primary and sage secondary semantics for maintainability.
+- Verification: focused `MobileAppLayout` test passed; `npm run test:gate` passed with 95 files / 582 tests; browser smoke at 390x850 for `/`, `/login`, `/dashboard`, `/library`, `/mastery`, `/progress`, `/settings`, `/study`, and `/review` showed no horizontal overflow, no visible blur, and minimum visible interactive target height of 44px.
+- Next Actions: optional designer pass with screenshots route-by-route for finer typography/spacing tuning, then commit the verified mobile redesign.
+
+## Current Session Override
+- Active Goal: UI/UX trust and flow fixes from learner audit.
+- Current Plan: `openspec/changes/ui-ux-trust-flow-fix-2026-06-28/design.md` and `tasks.md`.
+- Current Phase: verified.
+- Working Context: implement audit Option A only: fix Mastery desktop overflow, missing/mojibake i18n keys, direct Study loading trap, and key 44px interactive targets while preserving current visual direction.
+- Just Completed: added focused regression coverage for audit trust-breakers; fixed missing/mojibake i18n keys; fixed direct `/study` initialization and pending-load timeout; constrained Mastery desktop layout; raised key header/sidebar/admin controls to 44px.
+- Verification: focused tests passed with 131 tests; visual smoke confirmed `/mastery` has no horizontal overflow at 1440px and direct `/study` reaches Study Prep; `npm run test:gate` passed with 95 files / 582 tests; `git diff --check` passed.
+- Next Actions: optional follow-up is a broader learner journey redesign after these trust fixes settle.
+
+## Current Session Override
 - Active Goal: Roadmap/topic/study data performance optimization.
 - Current Plan: `openspec/changes/performance-roadmap-study-data/design.md` and `tasks.md`.
 - Current Phase: verified locally; pending Supabase migration deployment.

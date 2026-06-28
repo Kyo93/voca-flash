@@ -92,17 +92,17 @@ export default function MobileAppLayout() {
 
   return (
     <div
-      className="min-h-dvh bg-surface text-on-surface"
+      className="mobile-shell-minimal min-h-dvh text-on-surface"
       data-mobile-app-shell="true"
     >
       {!focusRoute && (
-        <header className="sticky top-0 z-40 border-b border-outline-variant/40 bg-surface/95 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-xl">
+        <header className="mobile-topbar-minimal sticky top-0 z-40 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex min-h-14 items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
+              <p className="text-[10px] font-semibold uppercase text-on-surface-variant">
                 {t('app.name')}
               </p>
-              <h1 className="truncate text-lg font-bold tracking-tight text-on-surface">
+              <h1 className="truncate text-lg font-semibold text-on-surface">
                 {title}
               </h1>
             </div>
@@ -110,7 +110,7 @@ export default function MobileAppLayout() {
             <div className="flex items-center gap-2">
               <Link
                 to="/review"
-                className="relative flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors active:scale-95"
+                className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-primary/20 bg-primary-container text-primary transition-colors active:scale-95"
                 aria-label={t('mobileNav.review')}
                 title={t('mobileNav.review')}
               >
@@ -118,7 +118,7 @@ export default function MobileAppLayout() {
                   bolt
                 </span>
                 {(initialData?.global_review_count ?? 0) > 0 && (
-                  <span className="absolute right-0 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold leading-none text-on-secondary">
+                  <span className="absolute right-0 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-medium leading-none text-on-secondary">
                     {initialData?.global_review_count}
                   </span>
                 )}
@@ -126,7 +126,7 @@ export default function MobileAppLayout() {
 
               <Link
                 to="/settings"
-                className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-primary/20 bg-surface-container-low text-sm font-bold text-primary transition-colors active:scale-95"
+                className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-secondary/20 bg-secondary-container text-sm font-semibold text-secondary transition-colors active:scale-95"
                 aria-label={t('mobileNav.profile')}
                 title={t('mobileNav.profile')}
               >
@@ -144,7 +144,7 @@ export default function MobileAppLayout() {
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder={t('nav.searchPlaceholder')}
-                className="min-h-11 w-full rounded-2xl border border-outline-variant/30 bg-surface-container-lowest pl-12 pr-4 text-sm font-medium text-on-surface outline-hidden transition focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+                className="mobile-input w-full pl-12 pr-4 text-sm font-medium outline-hidden transition"
               />
             </div>
           )}
@@ -160,7 +160,7 @@ export default function MobileAppLayout() {
       {!focusRoute && (
         <nav
           aria-label={t('mobileNav.label')}
-          className="fixed inset-x-0 bottom-0 z-50 border-t border-outline-variant/50 bg-surface-container-lowest/95 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-16px_40px_rgba(86,67,55,0.12)] backdrop-blur-xl"
+          className="mobile-bottom-nav-minimal fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2"
           data-mobile-bottom-nav="true"
         >
           <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
@@ -173,9 +173,9 @@ export default function MobileAppLayout() {
                   to={item.path}
                   aria-label={t(item.labelKey)}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[10px] font-bold transition-all active:scale-95 ${
+                  className={`relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[10px] font-semibold transition-all active:scale-95 ${
                     active
-                      ? 'bg-primary-container text-primary shadow-sm'
+                      ? 'bg-primary-container text-primary'
                       : 'text-on-surface-variant hover:bg-surface-container'
                   }`}
                 >
@@ -190,7 +190,7 @@ export default function MobileAppLayout() {
                     {t(item.labelKey)}
                   </span>
                   {item.badge && (
-                    <span className="absolute right-2 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold leading-none text-on-secondary">
+                    <span className="absolute right-2 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-medium leading-none text-on-secondary">
                       {item.badge}
                     </span>
                   )}

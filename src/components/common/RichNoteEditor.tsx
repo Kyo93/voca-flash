@@ -123,7 +123,7 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
             isActive={editor.isActive('bold')}
             title={t('editor.toolbar.bold')}
             icon="format_bold"
-            className="font-bold"
+            className="font-medium"
           />
           <MenuButton
             onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -232,7 +232,7 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
         onClick={() => editor.chain().focus().run()}
       >
         <EditorContent editor={editor} className="h-full" />
-        <div className="absolute top-6 right-8 text-[10px] font-black text-on-surface-variant/10 uppercase tracking-[0.2em] pointer-events-none select-none italic">
+        <div className="absolute top-6 right-8 text-[10px] font-semibold text-on-surface-variant/10 uppercase tracking-[0.2em] pointer-events-none select-none italic">
           {t('common.draftingMode')}
         </div>
       </div>
@@ -240,16 +240,16 @@ export default function RichNoteEditor({ content, onChange, placeholder }: RichN
       {/* Status Bar */}
       <div className="px-6 py-2 bg-surface-container-low border-t border-outline-variant/5 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
+          <span className="text-[9px] font-medium uppercase tracking-widest text-on-surface-variant/40">
             {t('editor.status.characters', { count: getMarkdown(editor).length })}
           </span>
-          <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
+          <span className="text-[9px] font-medium uppercase tracking-widest text-on-surface-variant/40">
             {t('editor.status.words', { count: getMarkdown(editor).split(/\s+/).filter(Boolean).length })}
           </span>
         </div>
         <div className="flex items-center gap-1">
           <div className={`w-1.5 h-1.5 rounded-full ${editor.isFocused ? 'bg-primary animate-pulse' : 'bg-on-surface-variant/20'}`} />
-          <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant/40">
+          <span className="text-[9px] font-medium uppercase tracking-widest text-on-surface-variant/40">
             {editor.isFocused ? t('editor.status.editing') : t('editor.status.saved')}
           </span>
         </div>

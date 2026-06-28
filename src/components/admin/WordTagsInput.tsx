@@ -58,7 +58,7 @@ export function WordTagsInput({ selectedTags, onAddTag, onRemoveTag }: WordTagsI
 
   return (
     <div>
-      <label className="block text-sm font-bold text-secondary mb-2">
+      <label className="block text-sm font-medium text-secondary mb-2">
         {t('admin.wordForm.tagsLabel')} <span className="font-normal text-stone-400">{t('admin.wordForm.tagsHint')}</span>
       </label>
       
@@ -116,7 +116,7 @@ export function WordTagsInput({ selectedTags, onAddTag, onRemoveTag }: WordTagsI
           <button
             type="button"
             onClick={() => { if (tagInput.trim()) handleAddTag(tagInput.trim()) }}
-            className="px-4 py-3 rounded-xl bg-stone-100 text-stone-500 font-bold hover:bg-stone-200 transition-all shrink-0"
+            className="px-4 py-3 rounded-xl bg-stone-100 text-stone-500 font-medium hover:bg-stone-200 transition-all shrink-0"
           >
             + {t('common.add')}
           </button>

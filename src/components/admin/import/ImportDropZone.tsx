@@ -34,7 +34,7 @@ export function ImportDropZone({
         onClick={() => fileInputRef.current?.click()}
       >
         <span className="material-symbols-outlined text-5xl text-orange-300 mb-3 block">upload_file</span>
-        <p className="font-bold text-secondary text-lg">{t('admin.import.dragDrop')}</p>
+        <p className="font-medium text-secondary text-lg">{t('admin.import.dragDrop')}</p>
         <p className="text-sm text-on-surface-variant mt-1">{t('admin.import.orClick')}</p>
         <p className="text-xs text-stone-400 mt-2">{t('admin.import.supported')}</p>
       </div>
@@ -52,13 +52,13 @@ export function ImportDropZone({
       {/* Divider */}
       <div className="flex items-center gap-3">
         <div className="flex-1 border-t border-orange-100" />
-        <span className="text-xs font-bold text-stone-400 uppercase">{t('admin.import.or')}</span>
+        <span className="text-xs font-medium text-stone-400 uppercase">{t('admin.import.or')}</span>
         <div className="flex-1 border-t border-orange-100" />
       </div>
 
       {/* Google Sheets URL */}
       <div className="space-y-3">
-        <label className="block text-sm font-bold text-secondary">
+        <label className="block text-sm font-medium text-secondary">
           {t('admin.import.pasteUrl')}
         </label>
         <input
@@ -74,7 +74,7 @@ export function ImportDropZone({
         <button
           onClick={onSheetsUrlSubmit}
           disabled={!sheetsUrl.trim()}
-          className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {t('admin.import.preview')}
         </button>
@@ -96,7 +96,7 @@ export function ImportDropZone({
           document.body.removeChild(a)
           URL.revokeObjectURL(url)
         }}
-        className="flex items-center gap-2 text-sm font-bold text-primary hover:text-orange-600 transition-colors"
+        className="flex items-center gap-2 text-sm font-medium text-primary hover:text-orange-600 transition-colors"
       >
         <span className="material-symbols-outlined text-lg">download</span>
         {t('admin.import.downloadTemplate')}

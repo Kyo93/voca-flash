@@ -59,11 +59,11 @@ function renderQuadrant(challenge: ReviewChallenge, onSubmit: (isCorrect: boolea
     default:
       return (
         <div className="text-center text-white/20">
-          <p className="uppercase tracking-widest text-xs font-black mb-4">{t('arena.debugSimulation')}: {challenge.quadrant}</p>
-          <h2 className="text-6xl font-black text-white mb-8">{challenge.word.word}</h2>
+          <p className="uppercase tracking-widest text-xs font-semibold mb-4">{t('arena.debugSimulation')}: {challenge.quadrant}</p>
+          <h2 className="text-6xl font-semibold text-white mb-8">{challenge.word.word}</h2>
           <button
             onClick={() => onSubmit(true)}
-            className="px-12 py-4 bg-primary text-white font-black rounded-2xl"
+            className="px-12 py-4 bg-primary text-white font-semibold rounded-2xl"
           >
             {t('arena.debugConfirm')}
           </button>

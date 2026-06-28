@@ -46,12 +46,12 @@ export default function MobileSettingsView({
   }, [populateVoices])
 
   return (
-    <main data-mobile-settings className="min-h-full bg-surface px-4 pb-32 pt-3">
-      <section className="rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
+    <main data-mobile-settings className="mobile-page min-h-full pb-32">
+      <section className="mobile-panel p-4">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-primary">
           {t('mobileNav.profile')}
         </p>
-        <h1 className="mt-1 text-xl font-bold leading-tight text-on-surface">{t('settings.title')}</h1>
+        <h1 className="mt-1 text-xl font-medium leading-tight text-on-surface">{t('settings.title')}</h1>
         <p className="mt-2 text-sm font-medium leading-5 text-on-surface-variant">
           {t('settings.subtitle')}
         </p>
@@ -59,27 +59,27 @@ export default function MobileSettingsView({
 
       <div className="mt-4 space-y-4">
         {(saveMessage || error) && (
-          <div className={`rounded-2xl p-3 text-sm font-bold ${
+          <div className={`rounded-2xl p-3 text-sm font-medium ${
             error ? 'bg-error/10 text-error' : 'bg-success-container text-success'
           }`}>
             {error || saveMessage}
           </div>
         )}
 
-        <section className="rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30">
+        <section className="mobile-panel p-4">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-container text-primary">
               <span className="material-symbols-outlined text-xl" aria-hidden="true">person</span>
             </div>
             <div>
-              <h2 className="text-base font-bold text-on-surface">{t('settings.profile')}</h2>
+              <h2 className="text-base font-medium text-on-surface">{t('settings.profile')}</h2>
               <p className="text-xs font-medium text-on-surface-variant">{t('settings.profileDesc')}</p>
             </div>
           </div>
 
           <div className="space-y-3">
             <label className="block space-y-1.5">
-              <span className="text-xs font-bold text-on-surface-variant">{t('settings.displayName')}</span>
+              <span className="text-xs font-medium text-on-surface-variant">{t('settings.displayName')}</span>
               <input
                 type="text"
                 value={formData.display_name}
@@ -90,14 +90,14 @@ export default function MobileSettingsView({
             </label>
 
             <label className="block space-y-1.5">
-              <span className="text-xs font-bold text-on-surface-variant">{t('settings.email')}</span>
+              <span className="text-xs font-medium text-on-surface-variant">{t('settings.email')}</span>
               <div className="min-h-12 rounded-2xl border border-outline-variant/30 bg-surface-container-low px-4 py-3 text-sm font-medium text-on-surface-variant">
                 {userEmail || t('common.no_data')}
               </div>
             </label>
 
             <label className="block space-y-1.5">
-              <span className="text-xs font-bold text-on-surface-variant">{t('settings.avatarUrl')}</span>
+              <span className="text-xs font-medium text-on-surface-variant">{t('settings.avatarUrl')}</span>
               <input
                 type="text"
                 value={formData.avatar_url}
@@ -109,20 +109,20 @@ export default function MobileSettingsView({
           </div>
         </section>
 
-        <section className="rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30">
+        <section className="mobile-panel p-4">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary-container text-secondary">
               <span className="material-symbols-outlined text-xl" aria-hidden="true">school</span>
             </div>
             <div>
-              <h2 className="text-base font-bold text-on-surface">{t('settings.learning')}</h2>
+              <h2 className="text-base font-medium text-on-surface">{t('settings.learning')}</h2>
               <p className="text-xs font-medium text-on-surface-variant">{t('settings.learningDesc')}</p>
             </div>
           </div>
 
           <div className="space-y-5">
             <label className="block space-y-2">
-              <span className="flex items-center justify-between gap-2 text-xs font-bold text-on-surface-variant">
+              <span className="flex items-center justify-between gap-2 text-xs font-medium text-on-surface-variant">
                 <span>{t('settings.dailyTarget')}</span>
                 <span className="rounded-full bg-secondary-container px-2 py-1 text-secondary">
                   {formData.daily_target} {t('topics.words')}
@@ -140,7 +140,7 @@ export default function MobileSettingsView({
             </label>
 
             <label className="block space-y-1.5">
-              <span className="text-xs font-bold text-on-surface-variant">{t('settings.retentionLabel')}</span>
+              <span className="text-xs font-medium text-on-surface-variant">{t('settings.retentionLabel')}</span>
               <select
                 value={formData.srs_intensity}
                 onChange={(event) => onChange({ srs_intensity: Number(event.target.value) })}
@@ -154,20 +154,20 @@ export default function MobileSettingsView({
           </div>
         </section>
 
-        <section className="rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30">
+        <section className="mobile-panel p-4">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-container text-primary">
               <span className="material-symbols-outlined text-xl" aria-hidden="true">volume_up</span>
             </div>
             <div>
-              <h2 className="text-base font-bold text-on-surface">{t('settings.audio')}</h2>
+              <h2 className="text-base font-medium text-on-surface">{t('settings.audio')}</h2>
               <p className="text-xs font-medium text-on-surface-variant">{t('settings.audioDesc')}</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <label className="block space-y-1.5">
-              <span className="text-xs font-bold text-on-surface-variant">{t('settings.voice')}</span>
+              <span className="text-xs font-medium text-on-surface-variant">{t('settings.voice')}</span>
               <select
                 value={formData.tts_voice || ''}
                 onChange={(event) => onChange({ tts_voice: event.target.value })}
@@ -181,7 +181,7 @@ export default function MobileSettingsView({
             </label>
 
             <label className="block space-y-2">
-              <span className="flex items-center justify-between gap-2 text-xs font-bold text-on-surface-variant">
+              <span className="flex items-center justify-between gap-2 text-xs font-medium text-on-surface-variant">
                 <span>{t('settings.speed')}</span>
                 <span className="rounded-full bg-primary-container px-2 py-1 text-primary">
                   {t('profileMobile.rateValue', { rate: clampRate(formData.tts_rate) })}
@@ -205,7 +205,7 @@ export default function MobileSettingsView({
                 className="flex min-h-12 items-center justify-between gap-3 rounded-2xl bg-surface-container-low px-4 text-left"
                 aria-pressed={formData.auto_play_audio}
               >
-                <span className="text-sm font-bold text-on-surface">{t('settings.autoPlay')}</span>
+                <span className="text-sm font-medium text-on-surface">{t('settings.autoPlay')}</span>
                 <span className={`relative h-8 w-14 rounded-full transition-colors ${
                   formData.auto_play_audio ? 'bg-primary' : 'bg-outline-variant'
                 }`}>
@@ -219,7 +219,7 @@ export default function MobileSettingsView({
                 <button
                   type="button"
                   onClick={() => onChange({ app_language: 'vi' })}
-                  className={`rounded-xl text-xs font-bold ${
+                  className={`rounded-xl text-xs font-medium ${
                     formData.app_language === 'vi' ? 'bg-surface text-primary shadow-sm' : 'text-on-surface-variant'
                   }`}
                 >
@@ -228,7 +228,7 @@ export default function MobileSettingsView({
                 <button
                   type="button"
                   onClick={() => onChange({ app_language: 'en' })}
-                  className={`rounded-xl text-xs font-bold ${
+                  className={`rounded-xl text-xs font-medium ${
                     formData.app_language === 'en' ? 'bg-surface text-primary shadow-sm' : 'text-on-surface-variant'
                   }`}
                 >
@@ -239,12 +239,12 @@ export default function MobileSettingsView({
           </div>
         </section>
 
-        <section className="rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30">
-          <h2 className="text-base font-bold text-on-surface">{t('profileMobile.accountActions')}</h2>
+        <section className="mobile-panel p-4">
+          <h2 className="text-base font-medium text-on-surface">{t('profileMobile.accountActions')}</h2>
           <button
             type="button"
             onClick={onSignOut}
-            className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-surface-container-low px-4 text-sm font-bold text-on-surface-variant"
+            className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-surface-container-low px-4 text-sm font-medium text-on-surface-variant"
           >
             <span className="material-symbols-outlined text-lg" aria-hidden="true">logout</span>
             {t('settings.logout')}
@@ -256,7 +256,7 @@ export default function MobileSettingsView({
         data-mobile-settings-savebar
         className="fixed inset-x-0 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-40 px-4"
       >
-        <div className="mx-auto flex max-w-md items-center justify-between gap-3 rounded-3xl border border-outline-variant/40 bg-surface-container-lowest/95 p-3 shadow-[0_12px_36px_rgba(86,67,55,0.14)] backdrop-blur-xl">
+        <div className="mobile-panel mx-auto flex max-w-md items-center justify-between gap-3 p-3">
           <p className="min-w-0 text-xs font-medium leading-5 text-on-surface-variant">
             {t('profileMobile.settingsHint')}
           </p>
@@ -264,7 +264,7 @@ export default function MobileSettingsView({
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-sm font-bold text-on-primary disabled:opacity-60"
+            className="flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-sm font-medium text-on-primary disabled:opacity-60"
           >
             <span className="material-symbols-outlined text-lg" aria-hidden="true">
               {saving ? 'sync' : 'save'}

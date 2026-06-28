@@ -28,7 +28,7 @@ export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: Confirm
               <span className="material-symbols-outlined text-4xl sm:text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>logout</span>
             </div>
             
-            <h2 className="text-shadow-glow mb-4 text-2xl font-black tracking-tight text-white sm:mb-6 sm:text-3xl">{t('confirmExit.title')}</h2>
+            <h2 className="text-shadow-glow mb-4 text-2xl font-semibold tracking-tight text-white sm:mb-6 sm:text-3xl">{t('confirmExit.title')}</h2>
             <p className="mb-6 text-base font-medium leading-[1.6] text-white/40 sm:mb-12">
               {t('confirmExit.subtitle')}
             </p>
@@ -36,13 +36,13 @@ export default function ConfirmExitModal({ isOpen, onClose, onConfirm }: Confirm
             <div className="flex flex-col gap-3 sm:gap-4">
               <button
                 onClick={onConfirm}
-                className="min-h-12 w-full rounded-2xl bg-white py-3 font-black text-black shadow-xl transition-all hover:scale-105 active:scale-95 sm:py-5"
+                className="min-h-12 w-full rounded-2xl bg-white py-3 font-semibold text-black shadow-xl transition-all hover:scale-105 active:scale-95 sm:py-5"
               >
                 {t('confirmExit.exit')}
               </button>
               <button
                 onClick={onClose}
-                className="glass-arena-item min-h-12 w-full rounded-2xl border-white/10 py-3 font-black text-white transition-all hover:bg-white/10 active:scale-95 sm:py-5"
+                className="glass-arena-item min-h-12 w-full rounded-2xl border-white/10 py-3 font-semibold text-white transition-all hover:bg-white/10 active:scale-95 sm:py-5"
               >
                 {t('confirmExit.stay')}
               </button>

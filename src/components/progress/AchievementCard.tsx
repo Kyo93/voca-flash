@@ -45,10 +45,10 @@ export default function AchievementCard({ achievement, compact = false, index = 
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">
-            <p className={`text-sm font-bold truncate ${achievement.unlocked ? 'text-on-surface' : 'text-on-surface-variant'}`}>
+            <p className={`text-sm font-medium truncate ${achievement.unlocked ? 'text-on-surface' : 'text-on-surface-variant'}`}>
               {t(achievement.titleKey)}
             </p>
-            <span className="text-xs font-bold text-on-surface-variant shrink-0">{achievement.progress}%</span>
+            <span className="text-xs font-medium text-on-surface-variant shrink-0">{achievement.progress}%</span>
           </div>
           <p className="text-xs text-on-surface-variant truncate">{progressText}</p>
           <div className="mt-2 h-1.5 rounded-full bg-surface-container overflow-hidden">
@@ -92,7 +92,7 @@ export default function AchievementCard({ achievement, compact = false, index = 
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className={`font-bold truncate ${achievement.unlocked ? 'text-on-surface' : 'text-on-surface-variant'}`}>
+            <p className={`font-medium truncate ${achievement.unlocked ? 'text-on-surface' : 'text-on-surface-variant'}`}>
               {t(achievement.titleKey)}
             </p>
             <p className="text-sm text-on-surface-variant line-clamp-2">
@@ -100,7 +100,7 @@ export default function AchievementCard({ achievement, compact = false, index = 
             </p>
           </div>
           {!compact && (
-            <span className={`text-xs font-bold rounded-full px-3 py-1 shrink-0 ${
+            <span className={`text-xs font-medium rounded-full px-3 py-1 shrink-0 ${
               achievement.unlocked
                 ? 'bg-primary-container/20 text-primary'
                 : 'bg-surface-container text-on-surface-variant'
@@ -113,7 +113,7 @@ export default function AchievementCard({ achievement, compact = false, index = 
         <div className="mt-3">
           <div className="flex items-center justify-between gap-3 mb-1">
             <span className="text-xs font-medium text-on-surface-variant">{progressText}</span>
-            <span className="text-xs font-bold text-on-surface-variant">{achievement.progress}%</span>
+            <span className="text-xs font-medium text-on-surface-variant">{achievement.progress}%</span>
           </div>
           <div className="h-2 rounded-full bg-surface-container overflow-hidden">
             <div className="h-full rounded-full bg-primary" style={{ width: `${achievement.progress}%` }} />

@@ -52,7 +52,7 @@ export default function AppLayout() {
       </aside>
 
       {/* Main content area */}
-      <div style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%' }}>
+      <div style={{ gridArea: 'main', display: 'flex', flexDirection: 'column', minHeight: '100vh', width: '100%', minWidth: 0 }}>
         <Header 
           title={getPageTitle()} 
           searchQuery={searchQuery}
@@ -60,9 +60,11 @@ export default function AppLayout() {
         />
         
         <main className="flex-1 overflow-y-auto">
-          <Suspense fallback={<PageLoader />}>
-            <Outlet context={{ searchQuery, setSearchQuery }} />
-          </Suspense>
+          <div className="min-w-0">
+            <Suspense fallback={<PageLoader />}>
+              <Outlet context={{ searchQuery, setSearchQuery }} />
+            </Suspense>
+          </div>
         </main>
       </div>
 

@@ -46,21 +46,21 @@ export default function ConfirmDialog({
             </span>
           </div>
           <div>
-            <h3 className="text-lg font-black text-secondary">{title}</h3>
+            <h3 className="text-lg font-semibold text-secondary">{title}</h3>
             <p className="text-sm text-on-surface-variant mt-1">{message}</p>
           </div>
         </div>
         <div className="flex gap-3 mt-6">
           <button
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-50 transition-all"
+            className="flex-1 py-2.5 rounded-xl border-2 border-stone-200 text-stone-600 font-medium hover:bg-stone-50 transition-all"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 py-2.5 rounded-xl font-bold text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
+            className={`flex-1 py-2.5 rounded-xl font-medium text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
               danger
                 ? 'bg-red-500 hover:bg-red-600'
                 : 'primary-gradient hover:shadow-lg'

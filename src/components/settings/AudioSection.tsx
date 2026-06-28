@@ -47,7 +47,7 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {/* Voice Selection */}
         <div className="space-y-4">
-          <label className="text-sm font-bold text-stone-600 ml-1">
+          <label className="text-sm font-medium text-stone-600 ml-1">
             {t('settings.voice')}
           </label>
           <div className="relative group">
@@ -73,10 +73,10 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
         {/* Speech Rate */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-bold text-stone-600 ml-1">
+            <label className="text-sm font-medium text-stone-600 ml-1">
               {t('settings.speed')}
             </label>
-            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-black rounded-full shadow-sm">
+            <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full shadow-sm">
               {formData.tts_rate}x
             </span>
           </div>
@@ -90,7 +90,7 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
               onChange={(e) => onChange({ tts_rate: Number(e.target.value) })}
               className="w-full h-8 appearance-none bg-transparent cursor-pointer accent-amber-500"
             />
-            <div className="flex justify-between text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">
+            <div className="flex justify-between text-[10px] text-stone-400 font-medium uppercase tracking-wider mt-1">
               <span>{t('settings.slow')} (0.5)</span>
               <span>{t('settings.fast')} (1.5)</span>
             </div>
@@ -104,7 +104,7 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
               <span className="material-symbols-outlined font-variation-fill">play_circle</span>
             </div>
             <div>
-              <span className="block text-sm font-bold text-secondary">{t('settings.autoPlay')}</span>
+              <span className="block text-sm font-medium text-secondary">{t('settings.autoPlay')}</span>
               <span className="block text-[10px] text-stone-400 font-medium leading-tight">{t('settings.autoPlayDesc')}</span>
             </div>
           </div>
@@ -123,20 +123,20 @@ export default function AudioSection({ formData, onChange }: AudioSectionProps) 
               <span className="material-symbols-outlined font-variation-fill">language</span>
             </div>
             <div>
-              <span className="block text-sm font-bold text-secondary">{t('settings.language')}</span>
+              <span className="block text-sm font-medium text-secondary">{t('settings.language')}</span>
               <span className="block text-[10px] text-stone-400 font-medium leading-tight">{t('settings.languageDesc')}</span>
             </div>
           </div>
           <div className="flex bg-stone-200/50 p-1 rounded-xl">
             <button
               onClick={() => onChange({ app_language: 'vi' })}
-              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all ${formData.app_language === 'vi' ? 'bg-white text-primary shadow-sm' : 'text-stone-500'}`}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${formData.app_language === 'vi' ? 'bg-white text-primary shadow-sm' : 'text-stone-500'}`}
             >
               VI
             </button>
             <button
               onClick={() => onChange({ app_language: 'en' })}
-              className={`px-4 py-1.5 text-xs font-black rounded-lg transition-all ${formData.app_language === 'en' ? 'bg-white text-primary shadow-sm' : 'text-stone-500'}`}
+              className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${formData.app_language === 'en' ? 'bg-white text-primary shadow-sm' : 'text-stone-500'}`}
             >
               EN
             </button>

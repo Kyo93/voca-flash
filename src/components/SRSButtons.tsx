@@ -33,7 +33,7 @@ export default function SRSButtons({
               }`}
             >
               {/* Main label */}
-              <span className={`font-headline text-xs font-bold tracking-tight sm:text-sm ${
+              <span className={`font-headline text-xs font-medium tracking-tight sm:text-sm ${
                 isSuggested ? 'text-primary' : 'text-on-surface'
               }`}>
                 {t(`srs.${RATING_KEYS[rating]}`)}
@@ -46,7 +46,7 @@ export default function SRSButtons({
 
               {/* Interval preview */}
               {preview && (
-                <span className={`mt-1 rounded-full px-2 py-0.5 text-[10px] font-bold sm:mt-1.5 sm:text-[11px] ${
+                <span className={`mt-1 rounded-full px-2 py-0.5 text-[10px] font-medium sm:mt-1.5 sm:text-[11px] ${
                   isSuggested 
                     ? 'bg-primary/10 text-primary' 
                     : 'bg-surface-container-highest/50 text-on-surface-variant'

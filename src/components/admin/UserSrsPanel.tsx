@@ -86,10 +86,10 @@ export default function UserSrsPanel({ user, onClose }: { user: UserProfile; onC
         <div className="p-8 border-b border-stone-100 flex items-center justify-between bg-white/50 backdrop-blur-md sticky top-0 z-10">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-xl bg-stone-50 flex items-center justify-center border border-stone-100 shadow-sm overflow-hidden">
-              {user.avatar_url ? <img src={user.avatar_url} /> : <span className="text-2xl font-black text-primary">{(user.display_name || user.email)[0].toUpperCase()}</span>}
+              {user.avatar_url ? <img src={user.avatar_url} /> : <span className="text-2xl font-semibold text-primary">{(user.display_name || user.email)[0].toUpperCase()}</span>}
             </div>
             <div>
-              <h2 className="text-xl font-black text-secondary leading-tight">{user.display_name || user.email}</h2>
+              <h2 className="text-xl font-semibold text-secondary leading-tight">{user.display_name || user.email}</h2>
               <p className="text-xs text-stone-400 font-medium">{t('admin.users.panel.srsDetails')}</p>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function UserSrsPanel({ user, onClose }: { user: UserProfile; onC
 
         <div className="flex-1 overflow-y-auto p-8 space-y-8">
           <section>
-            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">{t('admin.users.panel.distribution')}</h3>
+            <h3 className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.2em] mb-6">{t('admin.users.panel.distribution')}</h3>
             {loading ? (
               <div className="flex items-center justify-center py-10">
                 <LoadingSpinner size="text-3xl" />
@@ -113,9 +113,9 @@ export default function UserSrsPanel({ user, onClose }: { user: UserProfile; onC
                       <div className={`w-8 h-8 rounded-xl ${stat.color}/10 flex items-center justify-center`}>
                         <span className={`material-symbols-outlined text-lg ${stat.color.replace('bg-', 'text-')}`}>{stat.icon}</span>
                       </div>
-                      <span className="text-xs font-black text-stone-400 uppercase tracking-widest">{stat.label}</span>
+                      <span className="text-xs font-semibold text-stone-400 uppercase tracking-widest">{stat.label}</span>
                     </div>
-                    <p className="text-3xl font-black text-secondary">{stat.count}</p>
+                    <p className="text-3xl font-semibold text-secondary">{stat.count}</p>
                   </div>
                 ))}
               </div>
@@ -123,7 +123,7 @@ export default function UserSrsPanel({ user, onClose }: { user: UserProfile; onC
           </section>
 
           <section className="bg-linear-to-br from-primary/5 to-transparent rounded-3xl p-6 border border-primary/5">
-            <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-4">{t('admin.users.panel.systemInfo')}</h3>
+            <h3 className="text-[10px] font-semibold text-stone-400 uppercase tracking-[0.2em] mb-4">{t('admin.users.panel.systemInfo')}</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-stone-100/50">
                 <span className="text-sm text-stone-500 font-medium">{t('admin.users.panel.userId')}</span>
@@ -134,7 +134,7 @@ export default function UserSrsPanel({ user, onClose }: { user: UserProfile; onC
         </div>
 
         <div className="p-8 bg-stone-50/50 border-t border-stone-100 border-dashed">
-          <button className="w-full py-4 bg-secondary text-white rounded-2xl font-black text-sm hover:bg-primary transition-all shadow-xl shadow-secondary/10">
+          <button className="w-full py-4 bg-secondary text-white rounded-2xl font-semibold text-sm hover:bg-primary transition-all shadow-xl shadow-secondary/10">
             {t('admin.users.panel.viewAll')}
           </button>
         </div>

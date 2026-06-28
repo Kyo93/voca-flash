@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useFlashcard } from '../../src/hooks/useFlashcard'
 import * as storage from '../../src/lib/supabase-storage'
@@ -32,7 +32,12 @@ describe('Study Flow Integration - Transitions & Modes', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.useRealTimers()
     vi.mocked(storage.fetchWords).mockResolvedValue([...mockCards])
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('loads Study Prep from scoped RPC data instead of all user SRS records', async () => {
@@ -94,5 +99,45 @@ describe('Study Flow Integration - Transitions & Modes', () => {
     })
 
     expect(result.current.queue).toHaveLength(2)
+  })
+
+  it('returns to a learner-facing prep state when Study Prep loading fails', async () => {
+    vi.mocked(storage.fetchStudyPrepData).mockRejectedValue(new Error('network down'))
+
+    const { result } = renderHook(() => useFlashcard())
+
+    await act(async () => {
+      await result.current.initialize('topic-1')
+    })
+
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.isPrepScreen).toBe(true)
+    expect(result.current.prepError).toBe('studyPrep.loadError')
+    expect(result.current.prepStats).toEqual({
+      unlearned: [],
+      learning: [],
+      mastered: [],
+    })
+  })
+
+  it('stops showing an indefinite spinner when Study Prep loading hangs', async () => {
+    vi.useFakeTimers()
+    vi.mocked(storage.fetchStudyPrepData).mockReturnValue(new Promise(() => {}))
+
+    const { result } = renderHook(() => useFlashcard())
+
+    act(() => {
+      void result.current.initialize('topic-1')
+    })
+
+    expect(result.current.isLoading).toBe(true)
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000)
+    })
+
+    expect(result.current.isLoading).toBe(false)
+    expect(result.current.isPrepScreen).toBe(true)
+    expect(result.current.prepError).toBe('studyPrep.loadError')
   })
 })

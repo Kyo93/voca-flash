@@ -34,7 +34,7 @@ export default function AdminSidebar() {
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <p className="text-xl font-black text-primary leading-none whitespace-nowrap">{t('admin.sidebar.panelTitle')}</p>
+            <p className="text-xl font-semibold text-primary leading-none whitespace-nowrap">{t('admin.sidebar.panelTitle')}</p>
             <p className="text-[10px] text-stone-500 font-medium tracking-widest uppercase whitespace-nowrap">{t('admin.sidebar.panelSubtitle')}</p>
           </div>
         )}
@@ -42,13 +42,13 @@ export default function AdminSidebar() {
 
       {/* Admin Navigation */}
       <nav className="flex flex-col gap-1">
-        {!collapsed && <p className="px-4 py-2 text-[10px] font-black text-stone-400 tracking-widest uppercase">{t('admin.sidebar.manage')}</p>}
+        {!collapsed && <p className="px-4 py-2 text-[10px] font-semibold text-stone-400 tracking-widest uppercase">{t('admin.sidebar.manage')}</p>}
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
             title={collapsed ? item.label : undefined}
-            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all text-sm ${
+            className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all text-sm ${
               isActive(item)
                 ? 'bg-white text-primary shadow-sm border border-stone-100'
                 : 'text-stone-500 hover:text-stone-700 hover:bg-stone-100'
@@ -67,7 +67,7 @@ export default function AdminSidebar() {
       <Link
         to="/dashboard"
         title={collapsed ? t('admin.sidebar.backToApp') : undefined}
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-sm text-stone-500 hover:text-stone-700 hover:bg-stone-100 ${collapsed ? 'justify-center px-0' : ''}`}
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all text-sm text-stone-500 hover:text-stone-700 hover:bg-stone-100 ${collapsed ? 'justify-center px-0' : ''}`}
       >
         <span className="material-symbols-outlined shrink-0">arrow_back</span>
         {!collapsed && <span className="whitespace-nowrap overflow-hidden">{t('admin.sidebar.backToApp')}</span>}
@@ -84,13 +84,13 @@ export default function AdminSidebar() {
           <span className="material-symbols-outlined text-lg transition-transform duration-300 shrink-0" style={{ transform: collapsed ? 'rotate(180deg)' : 'none' }}>
             menu_open
           </span>
-          {!collapsed && <span className="text-xs font-bold whitespace-nowrap">{t('admin.sidebar.collapseAction')}</span>}
+          {!collapsed && <span className="text-xs font-medium whitespace-nowrap">{t('admin.sidebar.collapseAction')}</span>}
         </button>
 
         {/* Admin Badge */}
         {!collapsed && (
           <div className="px-4 py-2 bg-orange-50 border border-orange-100 rounded-xl">
-            <p className="text-[10px] font-black text-orange-600 uppercase tracking-wider">{t('admin.sidebar.adminRole')}</p>
+            <p className="text-[10px] font-semibold text-orange-600 uppercase tracking-wider">{t('admin.sidebar.adminRole')}</p>
             <p className="text-xs font-medium text-orange-500 truncate">
               {profile?.email ?? '...'}
             </p>
@@ -100,17 +100,17 @@ export default function AdminSidebar() {
         {/* User card */}
         <div className={`flex items-center gap-3 p-3 bg-white rounded-2xl shadow-sm border border-stone-100 ${collapsed ? 'justify-center' : ''}`}>
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="text-sm font-black text-primary">
+            <span className="text-sm font-semibold text-primary">
               {(profile?.display_name ?? profile?.email ?? 'A')[0].toUpperCase()}
             </span>
           </div>
           {!collapsed && (
             <>
               <div className="overflow-hidden flex-1">
-                <p className="text-[13px] font-black truncate">
+                <p className="text-[13px] font-semibold truncate">
                   {profile?.display_name ?? t('common.admin')}
                 </p>
-                <p className="text-[10px] text-stone-400 font-bold uppercase truncate">
+                <p className="text-[10px] text-stone-400 font-medium uppercase truncate">
                   {profile?.email ?? ''}
                 </p>
               </div>

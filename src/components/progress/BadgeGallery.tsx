@@ -30,7 +30,7 @@ export default function BadgeGallery({ streak, totalMastered, totalTimeMs, rewar
     <div className="bg-surface-container-lowest rounded-xl p-6 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] flex-1 flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h3 className="text-lg font-bold text-on-surface">
+          <h3 className="text-lg font-medium text-on-surface">
             {t('progress.recent_achievements')}
           </h3>
           <p className="text-xs text-on-surface-variant mt-1">
@@ -55,7 +55,7 @@ export default function BadgeGallery({ streak, totalMastered, totalTimeMs, rewar
               </span>
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-on-surface truncate">{t(rewardProgress.currentLevel.titleKey)}</p>
+              <p className="text-sm font-medium text-on-surface truncate">{t(rewardProgress.currentLevel.titleKey)}</p>
               <p className="text-xs text-on-surface-variant truncate">
                 {t('rewards.totalXp', { xp: rewardProgress.totalXp })}
               </p>
@@ -80,7 +80,7 @@ export default function BadgeGallery({ streak, totalMastered, totalTimeMs, rewar
 
       <Link
         to="/achievements"
-        className="mt-auto pt-4 inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-container transition-colors"
+        className="mt-auto pt-4 inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-container transition-colors"
       >
         {t('achievements.viewAll')}
         <span className="material-symbols-outlined text-base">chevron_right</span>

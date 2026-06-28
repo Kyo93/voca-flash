@@ -114,7 +114,7 @@ export default function WordDetailPanel({
 
               <div className="space-y-3">
                 <div className="flex items-baseline gap-3">
-                  <h2 className="text-4xl font-black text-on-surface tracking-tighter text-editorial-asymmetry">{word.word}</h2>
+                  <h2 className="text-4xl font-semibold text-on-surface tracking-tighter text-editorial-asymmetry">{word.word}</h2>
                   {word.phonetic && (
                     <span className="text-lg text-on-surface-variant/60 font-normal font-mono italic">{word.phonetic}</span>
                   )}

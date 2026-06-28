@@ -24,7 +24,7 @@ export default function DashboardHero({
   return (
     <div className="relative overflow-hidden rounded-4xl bg-linear-[135deg] from-primary to-primary-dim px-10 py-10 mb-10 flex items-center shadow-2xl group">
       <div className="relative z-10 max-w-2xl animate-fade-in">
-        <h3 className="text-4xl md:text-5xl font-black text-white mb-6 editorial-asymmetry leading-tight">
+        <h3 className="text-4xl md:text-5xl font-semibold text-white mb-6 editorial-asymmetry leading-tight">
           {t('home.readyToday')}, <span className="text-secondary-container">{profile?.display_name || t('progress.sageFallback')}</span>?
         </h3>
         
@@ -37,7 +37,7 @@ export default function DashboardHero({
         <div className="flex items-center gap-6">
           <Link
             to="/study"
-            className="flex items-center gap-2 px-8 py-3 bg-white text-primary font-black rounded-xl hover:bg-stone-50 transition-all shadow-lg active:scale-95 group/btn text-sm"
+            className="flex items-center gap-2 px-8 py-3 bg-white text-primary font-semibold rounded-xl hover:bg-stone-50 transition-all shadow-lg active:scale-95 group/btn text-sm"
           >
             {t('home.continueChallenge')}
             <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">bolt</span>
@@ -49,7 +49,7 @@ export default function DashboardHero({
                 setShowBanner(false)
                 sessionStorage.setItem('welcome_banner_dismissed', 'true')
               }}
-              className="text-white/40 font-bold hover:text-white transition-colors text-xs"
+              className="text-white/40 font-medium hover:text-white transition-colors text-xs"
             >
               {t('common.later')}
             </button>
@@ -75,7 +75,7 @@ export default function DashboardHero({
             <div className="absolute inset-0 bg-amber-200/20 blur-3xl rounded-full scale-150 -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
           </div>
           
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/30 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
             {growth.label}
           </span>
         </div>

@@ -70,11 +70,11 @@ export default function AdminTopicCard({
             {topic.icon}
           </span>
           <span className="material-symbols-outlined text-stone-300 text-base cursor-grab shrink-0">drag_indicator</span>
-          <p className={`flex-1 font-bold text-sm leading-tight min-w-0 truncate ${isActive ? 'text-primary' : 'text-secondary'}`}>
+          <p className={`flex-1 font-medium text-sm leading-tight min-w-0 truncate ${isActive ? 'text-primary' : 'text-secondary'}`}>
             {topic.name}
           </p>
           <span
-            className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0 ${
+            className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wider shrink-0 ${
               status === 'PUBLISHED'
                 ? 'bg-green-100 text-green-700'
                 : 'bg-stone-200 text-stone-600'
@@ -100,7 +100,7 @@ export default function AdminTopicCard({
 
         {/* Footer Stats + Actions */}
         <div className="flex items-center justify-between pl-5.5">
-          <span className="text-[10px] font-bold text-stone-500">{t('admin.topics.wordCount', { count })}</span>
+          <span className="text-[10px] font-medium text-stone-500">{t('admin.topics.wordCount', { count })}</span>
           <div
             className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
             onClick={(e) => e.stopPropagation()}

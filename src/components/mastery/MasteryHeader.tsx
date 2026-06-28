@@ -27,11 +27,11 @@ export default function MasteryHeader({
     : t('mastery.filters.flashReview')
 
   return (
-    <div className="mb-12 flex flex-col justify-between gap-8 md:flex-row md:items-start">
+    <div className="mb-12 flex flex-col justify-between gap-8 2xl:flex-row 2xl:items-start">
       <div className="space-y-4">
         <div className="flex flex-col">
-          <span className="label-md uppercase tracking-[0.3em] text-secondary font-bold mb-2">{t('mastery.filters.lexicalArchive')}</span>
-          <h1 className="text-5xl font-black text-on-surface tracking-tighter leading-none">{t('mastery.title')}</h1>
+          <span className="label-md uppercase tracking-[0.3em] text-secondary font-medium mb-2">{t('mastery.filters.lexicalArchive')}</span>
+          <h1 className="text-5xl font-semibold text-on-surface tracking-tighter leading-none">{t('mastery.title')}</h1>
         </div>
         <p className="text-on-surface-variant font-medium max-w-xl leading-relaxed h-6">
           {loading && totalCount === 0 ? (
@@ -43,7 +43,7 @@ export default function MasteryHeader({
       </div>
       <div
         data-testid="mastery-header-actions"
-        className="flex w-full flex-col items-stretch gap-3 sm:flex-row md:w-auto md:items-center md:pt-7"
+        className="flex w-full flex-col items-stretch gap-3 sm:flex-row md:items-center 2xl:w-auto 2xl:pt-7"
       >
         <div className="group relative flex-1 sm:flex-none">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors">search</span>
@@ -52,7 +52,7 @@ export default function MasteryHeader({
             placeholder={t('nav.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 pr-6 py-4 bg-surface-container-lowest border-none rounded-2xl shadow-sun-drenched input-tactile-focus transition-all w-full md:w-80 font-bold text-sm"
+            className="pl-12 pr-6 py-4 bg-surface-container-lowest border-none rounded-2xl shadow-sun-drenched input-tactile-focus transition-all w-full md:w-80 font-medium text-sm"
           />
         </div>
 
@@ -61,7 +61,7 @@ export default function MasteryHeader({
           onClick={onOpenNotebook}
           aria-label={t('mastery.notebook.open')}
           title={t('mastery.notebook.open')}
-          className="group flex h-14 min-w-[10rem] items-center justify-center gap-2 rounded-2xl bg-surface-container-lowest px-5 text-sm font-black text-secondary shadow-sun-drenched transition-all hover:-translate-y-0.5 hover:bg-secondary hover:text-on-secondary active:scale-95"
+          className="group flex h-14 min-w-[10rem] items-center justify-center gap-2 rounded-2xl bg-surface-container-lowest px-5 text-sm font-semibold text-secondary shadow-sun-drenched transition-all hover:-translate-y-0.5 hover:bg-secondary hover:text-on-secondary active:scale-95"
         >
           <span className="material-symbols-outlined text-[22px] group-hover:rotate-6 transition-transform">menu_book</span>
           <span className="hidden sm:inline">{t('mastery.table.notebook')}</span>
@@ -74,7 +74,7 @@ export default function MasteryHeader({
           type="button"
           onClick={onStartFreeStudy}
           aria-label={freeStudyLabel}
-          className="group flex h-14 min-w-[10rem] items-center justify-center gap-3 whitespace-nowrap rounded-2xl px-6 text-sm font-black text-on-primary shadow-sun-drenched transition-all primary-gradient hover:-translate-y-0.5 active:scale-95"
+          className="group flex h-14 min-w-[10rem] items-center justify-center gap-3 whitespace-nowrap rounded-2xl px-6 text-sm font-semibold text-on-primary shadow-sun-drenched transition-all primary-gradient hover:-translate-y-0.5 active:scale-95"
         >
           <span className="material-symbols-outlined font-variation-fill group-hover:rotate-12 transition-transform">bolt</span>
           <span>{freeStudyLabel}</span>

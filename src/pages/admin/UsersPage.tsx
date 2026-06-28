@@ -28,7 +28,7 @@ return (
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-black text-secondary">{t('admin.users.title')}</h1>
+        <h1 className="text-3xl font-semibold text-secondary">{t('admin.users.title')}</h1>
         <p className="text-sm text-on-surface-variant mt-1">
           {loading ? '...' : t('admin.users.count', { count: users.length })}
         </p>
@@ -41,11 +41,11 @@ return (
           <table className="w-full border-separate border-spacing-0">
             <thead>
               <tr className="bg-stone-50/50 border-b border-stone-100">
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.user')}</th>
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.email')}</th>
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.streak')}</th>
-                <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.joined')}</th>
-                <th className="px-8 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.actions')}</th>
+                <th className="px-8 py-4 text-left text-[10px] font-semibold text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.user')}</th>
+                <th className="px-8 py-4 text-left text-[10px] font-semibold text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.email')}</th>
+                <th className="px-8 py-4 text-left text-[10px] font-semibold text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.streak')}</th>
+                <th className="px-8 py-4 text-left text-[10px] font-semibold text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.joined')}</th>
+                <th className="px-8 py-4 text-right text-[10px] font-semibold text-stone-400 uppercase tracking-[0.2em]">{t('admin.users.table.header.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -64,11 +64,11 @@ return (
                         {u.avatar_url ? (
                           <img src={u.avatar_url} alt={u.display_name || u.email} className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-lg font-black text-primary">{(u.display_name || u.email || '?')[0].toUpperCase()}</span>
+                          <span className="text-lg font-semibold text-primary">{(u.display_name || u.email || '?')[0].toUpperCase()}</span>
                         )}
                       </div>
                       <div>
-                        <p className="font-black text-secondary leading-tight">{u.display_name || u.email}</p>
+                        <p className="font-semibold text-secondary leading-tight">{u.display_name || u.email}</p>
                         <p className="text-[10px] text-stone-400 font-mono tracking-wider mt-0.5 uppercase">{t('admin.users.table.student')}</p>
                       </div>
                     </div>
@@ -79,7 +79,7 @@ return (
                   <td className="px-8 py-5">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-orange-500 text-xl filled">local_fire_department</span>
-                      <span className="text-sm font-black text-secondary">{u.streak_days || 0}</span>
+                      <span className="text-sm font-semibold text-secondary">{u.streak_days || 0}</span>
                     </div>
                   </td>
                   <td className="px-8 py-5">

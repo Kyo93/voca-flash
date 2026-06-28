@@ -14,7 +14,7 @@ export default function WeakWordsList({ words, limit = 5 }: Props) {
 
   return (
     <div className="bg-surface-container rounded-xl p-6 shadow-[0_4px_24px_-4px_rgba(29,27,22,0.03)] border-l-4 border-error-container hover:bg-surface-container-highest transition-colors">
-      <h3 className="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+      <h3 className="text-lg font-medium text-on-surface mb-4 flex items-center gap-2">
         <span className="material-symbols-outlined text-error text-xl">warning</span>
         {t('progress.weak_clusters')}
       </h3>
@@ -33,11 +33,11 @@ export default function WeakWordsList({ words, limit = 5 }: Props) {
             const barColor = barPct < 50 ? 'bg-warm-accent' : 'bg-error'
             return (
               <li key={w.id} className="flex items-center gap-3">
-                <div className="w-8 text-sm font-bold text-on-surface-variant">
+                <div className="w-8 text-sm font-medium text-on-surface-variant">
                   {String(i + 1).padStart(2, '0')}
                 </div>
                 <div className="flex-1">
-                  <p className="font-bold text-base text-on-surface">{w.word}</p>
+                  <p className="font-medium text-base text-on-surface">{w.word}</p>
                   <div className="w-full bg-surface-dim h-1.5 rounded-full mt-1 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}

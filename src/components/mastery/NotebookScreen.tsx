@@ -194,14 +194,14 @@ export function NotebookScreenContent({
               <div className="mx-auto flex max-w-[84rem] flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center justify-between gap-5">
                   <div>
-                    <span className="text-[0.64rem] font-black uppercase tracking-[0.22em] text-secondary">
+                    <span className="text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-secondary">
                       {t('mastery.notebook.eyebrow')}
                     </span>
                     <div className="mt-0.5 flex flex-wrap items-center gap-3">
-                      <h2 className="text-2xl font-black leading-none text-on-surface md:text-3xl">
+                      <h2 className="text-2xl font-semibold leading-none text-on-surface md:text-3xl">
                         {t('mastery.notebook.title')}
                       </h2>
-                      <span className="rounded-full bg-primary-container/25 px-3 py-1 text-xs font-black text-primary">
+                      <span className="rounded-full bg-primary-container/25 px-3 py-1 text-xs font-semibold text-primary">
                         {t('mastery.notebook.savedCount', { count: entries.length })}
                       </span>
                     </div>
@@ -226,7 +226,7 @@ export function NotebookScreenContent({
                       value={searchQuery}
                       onChange={(event) => onSearchChange(event.target.value)}
                       placeholder={t('mastery.notebook.searchPlaceholder')}
-                      className="input-tactile-focus h-10 w-full rounded-full bg-surface-container-low px-4 pl-11 text-sm font-bold text-on-surface placeholder:text-on-surface-variant/65"
+                      className="input-tactile-focus h-10 w-full rounded-full bg-surface-container-low px-4 pl-11 text-sm font-medium text-on-surface placeholder:text-on-surface-variant/65"
                     />
                   </div>
 
@@ -507,7 +507,7 @@ function NotebookEmpty() {
           <span className="material-symbols-outlined mb-5 text-8xl text-on-surface-variant/10">
             menu_book
           </span>
-          <p className="text-xl font-black text-on-surface">{t('mastery.notebook.emptyTitle')}</p>
+          <p className="text-xl font-semibold text-on-surface">{t('mastery.notebook.emptyTitle')}</p>
           <p className="mt-2 text-sm font-semibold text-on-surface-variant/50">
             {t('mastery.notebook.emptySubtitle')}
           </p>

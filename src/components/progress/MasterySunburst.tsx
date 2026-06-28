@@ -47,7 +47,7 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
   if (total === 0) {
     return (
       <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] flex flex-col items-center justify-center min-h-[260px]">
-        <h3 className="text-lg font-bold text-on-surface mb-4 self-start">
+        <h3 className="text-lg font-medium text-on-surface mb-4 self-start">
           {t('progress.knowledge_structure')}
         </h3>
         <span className="material-symbols-outlined text-3xl text-stone-200 mb-2">school</span>
@@ -58,7 +58,7 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
 
   return (
     <div className="bg-surface-container-lowest rounded-xl p-7 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)] flex flex-col items-center justify-center relative">
-      <h3 className="text-lg font-bold text-on-surface absolute top-7 left-7">
+      <h3 className="text-lg font-medium text-on-surface absolute top-7 left-7">
         {t('progress.knowledge_structure')}
       </h3>
 
@@ -87,7 +87,7 @@ export default function MasterySunburst({ topicStats }: MasterySunburstProps) {
           />
         </svg>
         <div className="text-center z-10">
-          <p className="text-3xl font-bold text-on-surface">{qualityLabel}</p>
+          <p className="text-3xl font-medium text-on-surface">{qualityLabel}</p>
           <p className="text-xs text-on-surface-variant uppercase tracking-widest mt-1">
             {t('progress.diversity')}
           </p>

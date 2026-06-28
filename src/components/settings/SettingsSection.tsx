@@ -28,7 +28,7 @@ export default function SettingsSection({
           <span className="material-symbols-outlined font-variation-fill text-2xl">{icon}</span>
         </div>
         <div>
-          <h2 className="text-xl font-black text-secondary leading-tight">{title}</h2>
+          <h2 className="text-xl font-semibold text-secondary leading-tight">{title}</h2>
           {description && <p className="text-sm text-stone-400 font-medium mt-0.5">{description}</p>}
         </div>
       </div>

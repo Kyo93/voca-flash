@@ -73,11 +73,11 @@ export default function ReviewPage() {
           <div className="w-24 h-24 rounded-4xl bg-primary/10 text-primary flex items-center justify-center mb-10 mx-auto border border-primary/20 shadow-2xl glass-arena-item">
             <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>auto_awesome</span>
           </div>
-          <h1 className="text-4xl font-black text-white mb-6 tracking-tight">{t('arena.recordTitle')}</h1>
+          <h1 className="text-4xl font-semibold text-white mb-6 tracking-tight">{t('arena.recordTitle')}</h1>
           <p className="text-white/40 mb-12 font-medium leading-relaxed">{t('arena.recordSubtitle')}</p>
           <button
             onClick={() => navigate('/dashboard')}
-            className="px-10 py-4 bg-white text-black font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+            className="px-10 py-4 bg-white text-black font-semibold rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
           >
             {t('arena.backToDashboard')}
           </button>

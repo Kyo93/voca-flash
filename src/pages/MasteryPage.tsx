@@ -153,8 +153,8 @@ export default function MasteryPage() {
   }
 
   return (
-    <div className="bg-surface min-h-screen">
-      <div className="px-6 md:px-10 py-8 max-w-7xl mx-auto w-full">
+    <div data-mastery-desktop-page className="min-h-screen min-w-0 max-w-full overflow-x-hidden bg-surface">
+      <div className="mx-auto w-full max-w-full px-6 py-8 md:px-10 xl:max-w-7xl">
         {/* Hero Header */}
         <MasteryHeader 
           totalCount={totalCount}
@@ -187,9 +187,9 @@ export default function MasteryPage() {
         />
 
         {/* Word Table (Scholarly Ledger) */}
-        <div className="bg-surface-container-lowest rounded-4xl shadow-sun-drenched overflow-hidden mb-12 border-none">
+        <div className="mb-12 min-w-0 overflow-hidden rounded-4xl border-none bg-surface-container-lowest shadow-sun-drenched">
           <div className="w-full overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="min-w-[52rem] w-full text-left border-collapse">
               <thead className="sticky top-0 z-10">
                 <tr className="bg-surface-container">
                   <th className="py-6 px-8 w-12">
@@ -200,11 +200,11 @@ export default function MasteryPage() {
                       className="w-5 h-5 rounded-lg border-outline-variant text-primary focus:ring-primary/20 accent-primary cursor-pointer transition-all"
                     />
                   </th>
-                  <th className="py-6 px-2 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.word')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] w-24">{t('mastery.table.notebook')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] w-48">{t('mastery.table.strength')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] w-28 hidden md:table-cell">{t('mastery.table.progress')}</th>
-                  <th className="py-6 px-8 text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] text-right w-40">{t('mastery.table.nextReview')}</th>
+                  <th className="py-6 px-2 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em]">{t('mastery.table.word')}</th>
+                  <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] w-24">{t('mastery.table.notebook')}</th>
+                  <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] w-48">{t('mastery.table.strength')}</th>
+                  <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] w-28 hidden md:table-cell">{t('mastery.table.progress')}</th>
+                  <th className="py-6 px-8 text-[10px] font-semibold text-on-surface-variant/40 uppercase tracking-[0.2em] text-right w-40">{t('mastery.table.nextReview')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/5">
@@ -253,7 +253,7 @@ export default function MasteryPage() {
           {!loading && words.length === 0 && (
             <div className="py-32 text-center bg-white">
               <span className="material-symbols-outlined text-stone-100 text-8xl mb-6">folder_off</span>
-              <p className="text-on-surface-variant/60 font-black text-xl">{t('mastery.empty.title')}</p>
+              <p className="text-on-surface-variant/60 font-semibold text-xl">{t('mastery.empty.title')}</p>
               <p className="text-on-surface-variant/40 text-sm mt-2">{t('mastery.empty.subtitle')}</p>
             </div>
           )}
@@ -296,5 +296,4 @@ export default function MasteryPage() {
     </div>
   )
 }
-
 

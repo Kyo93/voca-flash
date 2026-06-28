@@ -13,7 +13,7 @@ interface HeaderProps {
 
 function StreakBadge({ streak }: { streak: StreakData }) {
   return (
-    <div className="flex items-center gap-1.5 text-primary font-black px-3 py-1.5 bg-white rounded-xl shadow-sm border border-stone-100">
+    <div className="flex min-h-11 items-center gap-1.5 rounded-xl border border-stone-100 bg-white px-3 py-1.5 font-semibold text-primary shadow-sm">
       <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>local_fire_department</span>
       <span className="text-sm leading-none">{streak.currentStreak}</span>
     </div>
@@ -27,14 +27,14 @@ export default function Header({ title, searchQuery, onSearchChange, searchPlace
 
   return (
     <header className="h-20 px-10 flex items-center justify-between bg-surface/95 backdrop-blur-md sticky top-0 z-40 border-b border-stone-100 shadow-sm shrink-0">
-      <h2 className="text-xl font-black text-on-surface shrink-0">{title}</h2>
+      <h2 className="text-xl font-semibold text-on-surface shrink-0">{title}</h2>
 
       <div className="flex items-center gap-6">
         {/* Search */}
         <div className="relative w-72">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-300 text-xl">search</span>
           <input
-            className="w-full pl-12 pr-4 py-2.5 bg-white border-none rounded-2xl text-sm shadow-sm placeholder:text-stone-300 focus:ring-2 focus:ring-secondary transition-all"
+            className="min-h-11 w-full rounded-2xl border-none bg-white py-2.5 pl-12 pr-4 text-sm shadow-sm placeholder:text-stone-300 transition-all focus:ring-2 focus:ring-secondary"
             placeholder={searchPlaceholder || t('nav.searchPlaceholder')}
             type="text"
             value={searchQuery}
@@ -47,13 +47,13 @@ export default function Header({ title, searchQuery, onSearchChange, searchPlace
           <Link
             to="/methodology"
             title={t('nav.methodology')}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-stone-400 transition-all hover:bg-stone-100 hover:text-primary"
           >
             <span className="material-symbols-outlined text-xl">psychology</span>
           </Link>
 
           <button
-            className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-stone-400 transition-all hover:bg-stone-100 hover:text-primary"
             title={t('common.notifications')}
           >
             <span className="material-symbols-outlined text-xl">notifications</span>
@@ -61,8 +61,8 @@ export default function Header({ title, searchQuery, onSearchChange, searchPlace
 
           <StreakBadge streak={streak} />
 
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/20">
-            <span className="text-sm font-black text-primary leading-none">
+          <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-primary/20 bg-primary/10">
+            <span className="text-sm font-semibold text-primary leading-none">
               {(user?.email ?? 'A')[0].toUpperCase()}
             </span>
           </div>

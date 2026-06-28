@@ -38,14 +38,14 @@ export function NoteTab({
       className="space-y-6"
     >
       <div className="flex items-center justify-between">
-        <h3 className="label-md text-on-surface-variant font-black tracking-widest uppercase opacity-40">{t('mastery.detail.personalNote')}</h3>
+        <h3 className="label-md text-on-surface-variant font-semibold tracking-widest uppercase opacity-40">{t('mastery.detail.personalNote')}</h3>
         {!isEditing && (
           <button
             onClick={onStartEdit}
             className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/5 text-primary transition-all active:scale-95 group"
           >
             <span className="material-symbols-outlined text-[18px] group-hover:rotate-12 transition-transform">edit</span>
-            <span className="text-[10px] font-black uppercase tracking-wider">{t('mastery.detail.edit')}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider">{t('mastery.detail.edit')}</span>
           </button>
         )}
       </div>
@@ -88,7 +88,7 @@ export function NoteTab({
                   ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-1">{children}</ul>,
                   ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-1">{children}</ol>,
                   li: ({ children }) => <li className="marker:text-primary/40">{children}</li>,
-                  strong: ({ children }) => <strong className="text-primary font-black not-italic">{children}</strong>,
+                  strong: ({ children }) => <strong className="text-primary font-semibold not-italic">{children}</strong>,
                   em: ({ children }) => <em className="text-on-surface/80">{children}</em>,
                 }}
               >

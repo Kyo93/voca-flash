@@ -122,14 +122,14 @@ export default function MobileMasteryView({
   }
 
   return (
-    <main data-mobile-mastery className="min-h-full bg-surface px-4 pb-6 pt-3">
+    <main data-mobile-mastery className="mobile-page min-h-full">
       <header className="space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-secondary">
               {t('mastery.filters.lexicalArchive')}
             </p>
-            <h1 className="mt-1 text-xl font-bold tracking-tight text-on-surface">
+            <h1 className="mt-1 text-xl font-medium tracking-tight text-on-surface">
               {t('mastery.mobile.title')}
             </h1>
             <p className="mt-2 text-sm font-medium leading-5 text-on-surface-variant">
@@ -139,7 +139,7 @@ export default function MobileMasteryView({
           <button
             type="button"
             onClick={onOpenNotebook}
-            className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-container px-3 text-sm font-bold text-on-primary-container active:scale-95"
+            className="flex h-11 min-w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-container px-3 text-sm font-medium text-on-primary-container active:scale-95"
             aria-label={t('mastery.mobile.openNotebook')}
           >
             <span className="material-symbols-outlined text-xl" aria-hidden="true">menu_book</span>
@@ -164,8 +164,8 @@ export default function MobileMasteryView({
         {statCards.map((item) => (
           <div key={item.key} className="min-w-0 rounded-2xl bg-surface-container-lowest p-3 text-center shadow-sm ring-1 ring-outline-variant/30">
             <span className="material-symbols-outlined text-base text-primary" aria-hidden="true">{item.icon}</span>
-            <p className="mt-1 text-base font-bold tabular-nums text-on-surface">{item.value}</p>
-            <p className="mt-0.5 truncate text-[9px] font-bold uppercase tracking-tight text-on-surface-variant/65">{item.label}</p>
+            <p className="mt-1 text-base font-medium tabular-nums text-on-surface">{item.value}</p>
+            <p className="mt-0.5 truncate text-[9px] font-medium uppercase tracking-tight text-on-surface-variant/65">{item.label}</p>
           </div>
         ))}
       </section>
@@ -179,7 +179,7 @@ export default function MobileMasteryView({
               key={filter}
               type="button"
               onClick={() => setActiveFilter(filter)}
-              className={`min-h-11 rounded-full px-3 text-[13px] font-bold transition-all active:scale-95 ${
+              className={`min-h-11 rounded-full px-3 text-[13px] font-medium transition-all active:scale-95 ${
                 active
                   ? 'bg-secondary text-on-secondary'
                   : 'bg-surface-container-low text-on-surface-variant'
@@ -194,7 +194,7 @@ export default function MobileMasteryView({
       <button
         type="button"
         onClick={() => setFiltersOpen(open => !open)}
-        className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-surface-container-low px-4 text-sm font-bold text-on-surface-variant active:scale-95"
+        className="mt-2 flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl bg-surface-container-low px-4 text-sm font-medium text-on-surface-variant active:scale-95"
         aria-expanded={filtersOpen}
       >
         <span className="material-symbols-outlined text-lg" aria-hidden="true">tune</span>
@@ -208,7 +208,7 @@ export default function MobileMasteryView({
               aria-label={t('mastery.filters.allRoadmaps')}
               value={advancedFilters.roadmapId ?? ''}
               onChange={(event) => onAdvancedFilterChange?.({ roadmapId: event.target.value || null })}
-              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-bold text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-medium text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
             >
               <option value="">{t('mastery.filters.allRoadmaps')}</option>
               {roadmaps.map((roadmap) => (
@@ -220,7 +220,7 @@ export default function MobileMasteryView({
               aria-label={t('mastery.filters.allStability')}
               value={advancedFilters.stability ?? ''}
               onChange={(event) => onAdvancedFilterChange?.({ stability: event.target.value || null })}
-              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-bold text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-medium text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
             >
               <option value="">{t('mastery.filters.allStability')}</option>
               {['fresh', 'learning', 'mastered', 'rooted'].map((stability) => (
@@ -234,7 +234,7 @@ export default function MobileMasteryView({
               aria-label={t('mastery.filters.sortBy')}
               value={advancedFilters.sortBy}
               onChange={(event) => onAdvancedFilterChange?.({ sortBy: event.target.value })}
-              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-bold text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
+              className="min-h-11 rounded-2xl border border-outline-variant/30 bg-surface px-4 text-sm font-medium text-on-surface outline-hidden focus:border-primary/40 focus:ring-2 focus:ring-primary/15"
             >
               {['date', 'stability', 'alphabetical'].map((sortBy) => (
                 <option key={sortBy} value={sortBy}>{t(`mastery.filters.sort.${sortBy}`)}</option>
@@ -246,7 +246,7 @@ export default function MobileMasteryView({
             <button
               type="button"
               onClick={() => onAdvancedFilterChange?.({ abcLetter: null })}
-              className={`flex h-11 min-w-11 items-center justify-center rounded-2xl text-xs font-bold ${
+              className={`flex h-11 min-w-11 items-center justify-center rounded-2xl text-xs font-medium ${
                 advancedFilters.abcLetter === null ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'
               }`}
             >
@@ -257,7 +257,7 @@ export default function MobileMasteryView({
                 key={letter}
                 type="button"
                 onClick={() => onAdvancedFilterChange?.({ abcLetter: letter })}
-                className={`flex h-11 min-w-11 items-center justify-center rounded-2xl text-xs font-bold ${
+                className={`flex h-11 min-w-11 items-center justify-center rounded-2xl text-xs font-medium ${
                   advancedFilters.abcLetter === letter ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'
                 }`}
                 aria-pressed={advancedFilters.abcLetter === letter}
@@ -273,7 +273,7 @@ export default function MobileMasteryView({
         <button
           type="button"
           onClick={onStartFreeStudy}
-          className="mt-2 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-sm font-bold text-on-primary shadow-sm active:scale-95"
+          className="mt-2 flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-sm font-medium text-on-primary shadow-sm active:scale-95"
         >
           <span className="material-symbols-outlined text-lg" aria-hidden="true">bolt</span>
           {t('mastery.mobile.studySelected')}
@@ -293,7 +293,7 @@ export default function MobileMasteryView({
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container">
               <span className="material-symbols-outlined" aria-hidden="true">folder_off</span>
             </div>
-            <h2 className="mt-4 text-lg font-bold text-on-surface">{t('mastery.mobile.emptyTitle')}</h2>
+            <h2 className="mt-4 text-lg font-medium text-on-surface">{t('mastery.mobile.emptyTitle')}</h2>
             <p className="mt-2 text-sm font-medium leading-6 text-on-surface-variant">{t('mastery.mobile.emptyDesc')}</p>
           </div>
         ) : (
@@ -309,7 +309,7 @@ export default function MobileMasteryView({
                 key={word.word_id}
                 ref={index === words.length - 1 ? lastElementRef : undefined}
                 data-mobile-mastery-card={word.word_id}
-                className={`rounded-3xl border bg-surface-container-lowest p-4 shadow-sm transition-all ${
+                className={`mobile-panel p-4 transition-all ${
                   selected ? 'border-primary/50 ring-2 ring-primary/15' : 'border-outline-variant/30'
                 }`}
                 onClick={() => openWordDetail(word)}
@@ -329,7 +329,7 @@ export default function MobileMasteryView({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h2 className="truncate text-lg font-bold leading-tight text-on-surface">{word.word}</h2>
+                        <h2 className="truncate text-lg font-medium leading-tight text-on-surface">{word.word}</h2>
                         {word.phonetic && (
                           <p className="mt-1 truncate font-mono text-xs font-medium text-on-surface-variant/65">
                             /{word.phonetic.replace(/\//g, '')}/
@@ -367,16 +367,16 @@ export default function MobileMasteryView({
 
                 <div className="mt-4 flex flex-wrap items-center gap-2">
                   {topicName && (
-                    <span className="rounded-full bg-secondary-container px-3 py-1 text-[11px] font-bold text-on-secondary-container">
+                    <span className="rounded-full bg-secondary-container px-3 py-1 text-[11px] font-medium text-on-secondary-container">
                       {topicName}
                     </span>
                   )}
                   {note && (
-                    <span className="rounded-full bg-primary-container px-3 py-1 text-[11px] font-bold text-on-primary-container">
+                    <span className="rounded-full bg-primary-container px-3 py-1 text-[11px] font-medium text-on-primary-container">
                       {t('mastery.mobile.note')}
                     </span>
                   )}
-                  <span className={`rounded-full px-3 py-1 text-[11px] font-bold ${
+                  <span className={`rounded-full px-3 py-1 text-[11px] font-medium ${
                     isWordDue(word) ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'
                   }`}>
                     {formatReviewDate(word, t)}
@@ -384,7 +384,7 @@ export default function MobileMasteryView({
                 </div>
 
                 <div className="mt-4 space-y-2">
-                  <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                  <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-wider text-on-surface-variant">
                     <span>{t('mastery.mobile.strength')}</span>
                     <span>{Math.round(Number(word.fsrs_stability ?? 0))}d</span>
                   </div>
@@ -417,8 +417,8 @@ export default function MobileMasteryView({
             <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-outline-variant" />
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">{t('mastery.mobile.detailTitle')}</p>
-                <h2 className="mt-1 text-xl font-bold leading-tight text-on-surface">{selectedWord.word}</h2>
+                <p className="text-[11px] font-medium uppercase tracking-wider text-secondary">{t('mastery.mobile.detailTitle')}</p>
+                <h2 className="mt-1 text-xl font-medium leading-tight text-on-surface">{selectedWord.word}</h2>
                 {selectedWord.phonetic && (
                   <p className="mt-1 font-mono text-xs font-medium text-on-surface-variant/65">
                     /{selectedWord.phonetic.replace(/\//g, '')}/
@@ -437,7 +437,7 @@ export default function MobileMasteryView({
 
             <div className="mt-5 space-y-4">
               <section className="rounded-2xl bg-surface p-4">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/65">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant/65">
                   {t('mastery.detail.definitionAndExample')}
                 </p>
                 <p className="mt-2 text-sm font-medium leading-6 text-on-surface">{selectedWord.definition}</p>
@@ -450,22 +450,22 @@ export default function MobileMasteryView({
 
               <div className="grid grid-cols-3 gap-2">
                 <div className="rounded-2xl bg-surface p-3 text-center">
-                  <p className="text-base font-bold tabular-nums text-on-surface">{selectedWord.fsrs_reps}</p>
-                  <p className="text-[10px] font-bold text-on-surface-variant">{t('mastery.mobile.reps', { count: selectedWord.fsrs_reps })}</p>
+                  <p className="text-base font-medium tabular-nums text-on-surface">{selectedWord.fsrs_reps}</p>
+                  <p className="text-[10px] font-medium text-on-surface-variant">{t('mastery.mobile.reps', { count: selectedWord.fsrs_reps })}</p>
                 </div>
                 <div className="rounded-2xl bg-surface p-3 text-center">
-                  <p className="text-base font-bold tabular-nums text-on-surface">{selectedWord.fsrs_lapses}</p>
-                  <p className="text-[10px] font-bold text-on-surface-variant">{t('mastery.mobile.lapses', { count: selectedWord.fsrs_lapses })}</p>
+                  <p className="text-base font-medium tabular-nums text-on-surface">{selectedWord.fsrs_lapses}</p>
+                  <p className="text-[10px] font-medium text-on-surface-variant">{t('mastery.mobile.lapses', { count: selectedWord.fsrs_lapses })}</p>
                 </div>
                 <div className="rounded-2xl bg-surface p-3 text-center">
-                  <p className="text-base font-bold tabular-nums text-on-surface">{Math.round(selectedWord.fsrs_stability)}d</p>
-                  <p className="text-[10px] font-bold text-on-surface-variant">{t('mastery.mobile.strength')}</p>
+                  <p className="text-base font-medium tabular-nums text-on-surface">{Math.round(selectedWord.fsrs_stability)}d</p>
+                  <p className="text-[10px] font-medium text-on-surface-variant">{t('mastery.mobile.strength')}</p>
                 </div>
               </div>
 
               <section className="rounded-2xl bg-primary-container/60 p-4 text-on-primary-container">
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-bold uppercase tracking-wider">{t('mastery.mobile.note')}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wider">{t('mastery.mobile.note')}</p>
                   {!isEditingNote && (
                     <button
                       type="button"
@@ -473,7 +473,7 @@ export default function MobileMasteryView({
                         setDraftNote(getNote(selectedWord.word_id) || '')
                         setIsEditingNote(true)
                       }}
-                      className="flex min-h-11 items-center justify-center rounded-2xl bg-surface/60 px-3 text-xs font-bold text-primary active:scale-95"
+                      className="flex min-h-11 items-center justify-center rounded-2xl bg-surface/60 px-3 text-xs font-medium text-primary active:scale-95"
                     >
                       {t('mastery.mobile.editNote')}
                     </button>
@@ -495,14 +495,14 @@ export default function MobileMasteryView({
                           setDraftNote(getNote(selectedWord.word_id) || '')
                           setIsEditingNote(false)
                         }}
-                        className="min-h-11 rounded-2xl bg-surface/60 px-4 text-sm font-bold text-primary"
+                        className="min-h-11 rounded-2xl bg-surface/60 px-4 text-sm font-medium text-primary"
                       >
                         {t('mastery.mobile.cancelNote')}
                       </button>
                       <button
                         type="button"
                         onClick={handleSaveNote}
-                        className="min-h-11 rounded-2xl bg-primary px-4 text-sm font-bold text-on-primary"
+                        className="min-h-11 rounded-2xl bg-primary px-4 text-sm font-medium text-on-primary"
                       >
                         {t('mastery.mobile.saveNote')}
                       </button>

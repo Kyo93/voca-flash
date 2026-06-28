@@ -22,7 +22,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
       <span key={i} className="inline">
         {part}
         {i < arr.length - 1 && (
-            <span className="mx-1 inline-flex items-center rounded-full border-2 border-primary/25 bg-primary/8 px-3 py-1.5 font-black text-primary animate-pulse sm:px-5">
+            <span className="mx-1 inline-flex items-center rounded-full border-2 border-primary/25 bg-primary/8 px-3 py-1.5 font-semibold text-primary animate-pulse sm:px-5">
             _____
           </span>
         )}
@@ -34,7 +34,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
     <div className="w-full flex flex-col items-center">
       {/* Header */}
       <div className="mb-5 flex w-full flex-col gap-2 rounded-2xl bg-surface-container-low p-4 text-center sm:mb-8 sm:p-6">
-        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-medium uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
           {t('challenges.cloze')}
         </span>
@@ -43,7 +43,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
       {/* Sentence with gap */}
       <div className="relative mb-5 w-full overflow-hidden rounded-2xl border-2 border-outline-variant/15 bg-surface-container-low p-5 sm:mb-8 sm:p-8">
         <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/40 rounded-full" />
-        <div className="text-center font-headline text-xl font-bold leading-relaxed text-on-surface sm:text-2xl">
+        <div className="text-center font-headline text-xl font-medium leading-relaxed text-on-surface sm:text-2xl">
           {gappedSentence ?? (
             <span className="text-outline italic">{t('arena.noExample')}</span>
           )}
@@ -66,7 +66,7 @@ export default function ContextGapChallenge({ word, onSubmit }: ContextGapChalle
       {/* Meaning hint */}
       <div className="mt-5 flex w-full items-center gap-3 text-center sm:mt-8">
         <div className="h-px flex-1 bg-outline-variant/20" />
-        <span className="text-[9px] font-bold uppercase tracking-widest text-outline shrink-0">{t('arena.meaningHint')}</span>
+        <span className="text-[9px] font-medium uppercase tracking-widest text-outline shrink-0">{t('arena.meaningHint')}</span>
         <div className="h-px flex-1 bg-outline-variant/20" />
       </div>
       <p className="mb-6 mt-3 text-center font-body text-base italic leading-relaxed text-on-surface-variant sm:mb-12 sm:text-lg">

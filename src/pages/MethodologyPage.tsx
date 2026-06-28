@@ -10,7 +10,7 @@ const MethodologyPage: React.FC = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-2xl bg-surface-container-high p-8 md:p-16 group">
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-4xl md:text-6xl font-bold text-editorial-asymmetry leading-tight mb-6">
+          <h1 className="text-4xl md:text-6xl font-medium text-editorial-asymmetry leading-tight mb-6">
             {t('methodology.heroTitle')}
           </h1>
           <p className="text-xl text-on-surface-variant opacity-80 leading-relaxed">
@@ -41,7 +41,7 @@ const MethodologyPage: React.FC = () => {
       {/* Forgetting Curve Section */}
       <section className="space-y-12">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">{t('methodology.curveTitle')}</h2>
+          <h2 className="text-3xl font-medium mb-4">{t('methodology.curveTitle')}</h2>
           <p className="text-on-surface-variant italic">{t('methodology.curveDesc')}</p>
         </div>
 
@@ -87,7 +87,7 @@ const MethodologyPage: React.FC = () => {
       {/* FSRS Mechanism */}
       <section className="space-y-12">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">{t('methodology.fsrsTitle')}</h2>
+          <h2 className="text-3xl font-medium mb-4">{t('methodology.fsrsTitle')}</h2>
           <p className="text-on-surface-variant mb-6">{t('methodology.fsrsSubtitle')}</p>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </div>
@@ -98,7 +98,7 @@ const MethodologyPage: React.FC = () => {
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">analytics</span>
             </div>
-            <h3 className="font-bold text-xl">{t('methodology.stability')}</h3>
+            <h3 className="font-medium text-xl">{t('methodology.stability')}</h3>
             <p className="text-on-surface-variant leading-relaxed text-sm">
               {t('methodology.stabilityDesc')}
             </p>
@@ -107,7 +107,7 @@ const MethodologyPage: React.FC = () => {
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">psychology_alt</span>
             </div>
-            <h3 className="font-bold text-xl">{t('methodology.difficulty')}</h3>
+            <h3 className="font-medium text-xl">{t('methodology.difficulty')}</h3>
             <p className="text-on-surface-variant leading-relaxed text-sm">
               {t('methodology.difficultyDesc')}
             </p>
@@ -116,7 +116,7 @@ const MethodologyPage: React.FC = () => {
             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <span className="material-symbols-outlined">reorder</span>
             </div>
-            <h3 className="font-bold text-xl">{t('methodology.retrievability')}</h3>
+            <h3 className="font-medium text-xl">{t('methodology.retrievability')}</h3>
             <p className="text-on-surface-variant leading-relaxed text-sm">
               {t('methodology.retrievabilityDesc')}
             </p>
@@ -125,7 +125,7 @@ const MethodologyPage: React.FC = () => {
 
         {/* Rating Impact Sub-section */}
         <div className="space-y-6">
-          <h3 className="text-xl font-bold flex items-center gap-2">
+          <h3 className="text-xl font-medium flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">touch_app</span>
             {t('methodology.repetitions')}
           </h3>
@@ -133,28 +133,28 @@ const MethodologyPage: React.FC = () => {
 
           <div className="grid md:grid-cols-4 gap-6">
             <div className="p-6 rounded-xl border border-red-500/20 bg-red-500/5 space-y-3">
-              <h4 className="font-bold text-red-600 flex items-center gap-2">
+              <h4 className="font-medium text-red-600 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">sentiment_very_dissatisfied</span>
                 {t('methodology.ratingAgain')}
               </h4>
               <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingAgainDesc')}</p>
             </div>
             <div className="p-6 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3">
-              <h4 className="font-bold text-amber-600 flex items-center gap-2">
+              <h4 className="font-medium text-amber-600 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">sentiment_neutral</span>
                 {t('methodology.ratingHard')}
               </h4>
               <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingHardDesc')}</p>
             </div>
             <div className="p-6 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-3">
-              <h4 className="font-bold text-blue-600 flex items-center gap-2">
+              <h4 className="font-medium text-blue-600 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">sentiment_satisfied</span>
                 {t('methodology.ratingGood')}
               </h4>
               <p className="text-sm text-on-surface-variant leading-relaxed">{t('methodology.ratingGoodDesc')}</p>
             </div>
             <div className="p-6 rounded-xl border border-green-500/20 bg-green-500/5 space-y-3">
-              <h4 className="font-bold text-green-600 flex items-center gap-2">
+              <h4 className="font-medium text-green-600 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">sentiment_very_satisfied</span>
                 {t('methodology.ratingEasy')}
               </h4>
@@ -166,11 +166,11 @@ const MethodologyPage: React.FC = () => {
 
       {/* Pedagogical Pillars */}
       <section className="p-12 rounded-2xl bg-surface-container-low border border-outline/5 relative overflow-hidden">
-        <h2 className="text-3xl font-bold mb-12">{t('methodology.title')}</h2>
+        <h2 className="text-3xl font-medium mb-12">{t('methodology.title')}</h2>
 
         <div className="grid md:grid-cols-2 gap-12">
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+            <h3 className="text-xl font-medium text-primary flex items-center gap-2">
               <span className="material-symbols-outlined">psychology</span>
               {t('methodology.activeRecall')}
             </h3>
@@ -179,7 +179,7 @@ const MethodologyPage: React.FC = () => {
             </p>
           </div>
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+            <h3 className="text-xl font-medium text-primary flex items-center gap-2">
               <span className="material-symbols-outlined">layers</span>
               {t('methodology.multisensory')}
             </h3>
@@ -188,7 +188,7 @@ const MethodologyPage: React.FC = () => {
             </p>
           </div>
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+            <h3 className="text-xl font-medium text-primary flex items-center gap-2">
               <span className="material-symbols-outlined">account_tree</span>
               {t('methodology.contextual')}
             </h3>
@@ -197,7 +197,7 @@ const MethodologyPage: React.FC = () => {
             </p>
           </div>
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+            <h3 className="text-xl font-medium text-primary flex items-center gap-2">
               <span className="material-symbols-outlined">timer</span>
               {t('methodology.microlearning')}
             </h3>
@@ -211,7 +211,7 @@ const MethodologyPage: React.FC = () => {
         <div className="mt-16 p-6 rounded-xl bg-primary/5 border border-primary/10 flex items-start gap-4">
           <span className="material-symbols-outlined text-primary mt-1">info</span>
           <div>
-            <h4 className="font-bold text-primary mb-1">{t('methodology.intensityTitle')}</h4>
+            <h4 className="font-medium text-primary mb-1">{t('methodology.intensityTitle')}</h4>
             <p className="text-sm text-on-surface-variant">{t('methodology.intensityDesc')}</p>
           </div>
         </div>
@@ -220,14 +220,14 @@ const MethodologyPage: React.FC = () => {
       {/* FAQ Section */}
       <section className="space-y-12">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">{t('methodology.faqTitle')}</h2>
+          <h2 className="text-3xl font-medium mb-4">{t('methodology.faqTitle')}</h2>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </div>
 
         <div className="grid gap-6 max-w-4xl mx-auto">
           {/* Q1 */}
           <div className="p-8 rounded-3xl bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
-            <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
+            <h3 className="text-lg font-semibold text-secondary mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ1')}
             </h3>
@@ -240,7 +240,7 @@ const MethodologyPage: React.FC = () => {
 
           {/* Q2 */}
           <div className="p-8 rounded-3xl bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
-            <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
+            <h3 className="text-lg font-semibold text-secondary mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ2')}
             </h3>
@@ -253,7 +253,7 @@ const MethodologyPage: React.FC = () => {
 
           {/* Q3 */}
           <div className="p-8 rounded-3xl bg-white border border-stone-100 shadow-sm hover:shadow-md transition-all">
-            <h3 className="text-lg font-black text-secondary mb-4 flex items-center gap-3">
+            <h3 className="text-lg font-semibold text-secondary mb-4 flex items-center gap-3">
               <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">Q</span>
               {t('methodology.faqQ3')}
             </h3>
@@ -268,10 +268,10 @@ const MethodologyPage: React.FC = () => {
 
       {/* Final CTA */}
       <section className="text-center py-12">
-        <h2 className="text-2xl font-bold mb-6">{t('methodology.readyToConquer')}</h2>
+        <h2 className="text-2xl font-medium mb-6">{t('methodology.readyToConquer')}</h2>
         <Link
           to="/dashboard"
-          className="inline-flex items-center gap-2 px-12 py-4 rounded-full bg-primary text-white font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+          className="inline-flex items-center gap-2 px-12 py-4 rounded-full bg-primary text-white font-medium text-lg hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
         >
           {t('methodology.learnNow')}
           <span className="material-symbols-outlined ml-2">trending_flat</span>

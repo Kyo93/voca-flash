@@ -64,10 +64,10 @@
   --radius-5xl: 3rem;    /* 48px */
   --radius-full: 9999px;
 
-  /* Font Family: Be Vietnam Pro */
-  --font-headline: "Be Vietnam Pro", system-ui, sans-serif;
-  --font-body: "Be Vietnam Pro", system-ui, sans-serif;
-  --font-label: "Be Vietnam Pro", system-ui, sans-serif;
+  /* Font Family: macOS-style system stack */
+  --font-headline: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  --font-label: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   --font-serif: "Newsreader", "Playfair Display", Georgia, serif;
   --font-handwriting: "Caveat", cursive;
 
@@ -251,6 +251,245 @@ body {
 .notebook-sticky-swatch-charcoal { background-color: #3F3A34; }
 .notebook-sticky-toolbar-charcoal { background-color: #2F2B27; }
 
+/* === Mobile Minimal Foundation — Codex-like, flat, no glass === */
+@media (max-width: 767px) {
+  [data-mobile-app-shell="true"],
+  [data-mobile-landing],
+  [data-mobile-login],
+  .mobile-shell-minimal {
+    --mobile-bg: var(--color-surface);
+    --mobile-surface: var(--color-surface-container-lowest);
+    --mobile-surface-muted: var(--color-surface-container-low);
+    --mobile-border: color-mix(in srgb, var(--color-outline-variant) 70%, transparent);
+    --mobile-border-strong: color-mix(in srgb, var(--color-outline) 32%, transparent);
+    --mobile-text: var(--color-on-surface);
+    --mobile-muted: var(--color-on-surface-variant);
+    --mobile-faint: color-mix(in srgb, var(--color-on-surface-variant) 62%, transparent);
+    --mobile-accent: var(--color-primary);
+    --mobile-accent-quiet: var(--color-primary-container);
+    --mobile-secondary-accent: var(--color-secondary);
+    --mobile-secondary-quiet: var(--color-secondary-container);
+    --mobile-radius: 16px;
+    --mobile-radius-sm: 12px;
+    background: var(--mobile-bg);
+    color: var(--mobile-text);
+  }
+
+  [data-mobile-app-shell="true"] *,
+  [data-mobile-app-shell="true"] *::before,
+  [data-mobile-app-shell="true"] *::after,
+  [data-mobile-landing] *,
+  [data-mobile-login] * {
+    letter-spacing: 0;
+  }
+
+  [data-mobile-app-shell="true"] .backdrop-blur,
+  [data-mobile-app-shell="true"] .backdrop-blur-sm,
+  [data-mobile-app-shell="true"] .backdrop-blur-md,
+  [data-mobile-app-shell="true"] .backdrop-blur-xl {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  [data-mobile-app-shell="true"] [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  [data-mobile-landing] .backdrop-blur,
+  [data-mobile-landing] .backdrop-blur-xl,
+  [data-mobile-login] .backdrop-blur-xl {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  [data-mobile-review-shell] {
+    background: #111111 !important;
+  }
+
+  [data-mobile-review-shell] .animate-blob,
+  [data-mobile-review-shell] [class*="blur-"],
+  [data-mobile-review-shell] [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    filter: none !important;
+  }
+
+  [data-mobile-review-shell] .animate-blob {
+    display: none !important;
+  }
+
+  .mobile-topbar-minimal {
+    border-bottom: 1px solid var(--mobile-border);
+    background: var(--mobile-bg);
+  }
+
+  .mobile-bottom-nav-minimal {
+    border-top: 1px solid var(--mobile-border);
+    background: var(--mobile-surface);
+    box-shadow: none;
+  }
+
+  .mobile-page,
+  [data-mobile-dashboard],
+  [data-mobile-learn],
+  [data-mobile-roadmap-detail],
+  [data-mobile-mastery],
+  [data-mobile-progress],
+  [data-mobile-achievements],
+  [data-mobile-characters],
+  [data-mobile-settings] {
+    background: var(--mobile-bg) !important;
+  }
+
+  [data-mobile-landing],
+  [data-mobile-login] {
+    background: var(--mobile-bg) !important;
+    color: var(--mobile-text);
+  }
+
+  [data-mobile-login] > .absolute {
+    display: none;
+  }
+
+  .mobile-page {
+    width: 100%;
+    max-width: 430px;
+    margin-inline: auto;
+    padding: 14px 16px 24px;
+  }
+
+  .mobile-panel,
+  .mobile-section,
+  [data-mobile-dashboard] article,
+  [data-mobile-dashboard] figure,
+  [data-mobile-learn] section,
+  [data-mobile-roadmap-detail] section,
+  [data-mobile-mastery] section,
+  [data-mobile-mastery-card],
+  [data-mobile-progress] section,
+  [data-mobile-achievements] section,
+  [data-mobile-character-card],
+  [data-mobile-settings] section {
+    border: 1px solid var(--mobile-border) !important;
+    border-radius: var(--mobile-radius) !important;
+    background: var(--mobile-surface) !important;
+    box-shadow: none !important;
+  }
+
+  [data-mobile-landing] header,
+  [data-mobile-landing] section,
+  [data-mobile-login] header,
+  [data-mobile-login] main > div > div {
+    border-color: var(--mobile-border) !important;
+    border-radius: var(--mobile-radius) !important;
+    background: var(--mobile-surface) !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-row {
+    display: flex;
+    min-height: 56px;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--mobile-border);
+    padding: 12px 0;
+  }
+
+  .mobile-row:last-child {
+    border-bottom: 0;
+  }
+
+  .mobile-primary-action,
+  .mobile-secondary-action,
+  [data-mobile-app-shell="true"] button,
+  [data-mobile-app-shell="true"] a,
+  [data-mobile-app-shell="true"] input,
+  [data-mobile-app-shell="true"] select,
+  [data-mobile-app-shell="true"] textarea {
+    min-height: 44px;
+  }
+
+  .mobile-primary-action {
+    border-radius: var(--mobile-radius-sm);
+    background: var(--mobile-accent);
+    color: var(--mobile-surface);
+    font-weight: 600;
+  }
+
+  .mobile-secondary-action,
+  .mobile-chip {
+    border: 1px solid var(--mobile-border);
+    border-radius: var(--mobile-radius-sm);
+    background: var(--mobile-surface);
+    color: var(--mobile-text);
+  }
+
+  .mobile-input {
+    min-height: 44px;
+    border: 1px solid var(--mobile-border);
+    border-radius: var(--mobile-radius-sm);
+    background: var(--mobile-surface);
+    color: var(--mobile-text);
+  }
+
+  .mobile-sheet {
+    border: 1px solid var(--mobile-border);
+    border-bottom: 0;
+    border-radius: 18px 18px 0 0;
+    background: var(--mobile-surface);
+    box-shadow: none;
+  }
+
+  [data-mobile-app-shell="true"] .rounded-3xl,
+  [data-mobile-app-shell="true"] .rounded-\[40px\] {
+    border-radius: var(--mobile-radius) !important;
+  }
+
+  [data-mobile-landing] .rounded-3xl,
+  [data-mobile-login] .rounded-2xl {
+    border-radius: var(--mobile-radius) !important;
+  }
+
+  [data-mobile-app-shell="true"] .rounded-2xl {
+    border-radius: var(--mobile-radius-sm) !important;
+  }
+
+  [data-mobile-app-shell="true"] .shadow-sm,
+  [data-mobile-app-shell="true"] .shadow-lg,
+  [data-mobile-app-shell="true"] .shadow-xl,
+  [data-mobile-app-shell="true"] [class*="shadow-["],
+  [data-mobile-app-shell="true"] [class*="shadow_"] {
+    box-shadow: none !important;
+  }
+
+  [data-mobile-app-shell="true"] .ring-1,
+  [data-mobile-app-shell="true"] .ring-2 {
+    box-shadow: 0 0 0 1px var(--mobile-border) !important;
+  }
+
+  [data-mobile-app-shell="true"] .text-on-surface-variant,
+  [data-mobile-app-shell="true"] .text-outline {
+    color: var(--mobile-muted) !important;
+  }
+
+  [data-mobile-app-shell="true"] .bg-surface-container-lowest,
+  [data-mobile-app-shell="true"] .bg-white {
+    background-color: var(--mobile-surface) !important;
+  }
+
+  [data-mobile-app-shell="true"] [class*="bg-linear"],
+  [data-mobile-app-shell="true"] [class*="blur-"] {
+    background-image: none !important;
+    filter: none !important;
+  }
+
+  [data-mobile-app-shell="true"] :focus-visible {
+    outline: 2px solid var(--mobile-text);
+    outline-offset: 2px;
+  }
+}
+
 @utility editorial-asymmetry {
   letter-spacing: -0.02em;
 }
@@ -258,7 +497,7 @@ body {
 @utility label-md {
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.75rem;
 }
 

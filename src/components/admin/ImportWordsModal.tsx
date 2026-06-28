@@ -51,9 +51,9 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
       <div className="bg-white rounded-2xl shadow-2xl border border-orange-50 w-full max-w-[1400px] max-h-[90vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between p-6 border-b border-orange-100 shrink-0">
           <div>
-            <h2 className="text-xl font-black text-secondary">{t('admin.import.title')}</h2>
+            <h2 className="text-xl font-semibold text-secondary">{t('admin.import.title')}</h2>
             <p className="text-sm text-on-surface-variant mt-1">{stepLabel}</p>
-            {roadmapId && <p className="text-xs font-bold text-primary mt-1">📍 {t('admin.import.importingInto', { name: roadmapName })}</p>}
+            {roadmapId && <p className="text-xs font-medium text-primary mt-1">📍 {t('admin.import.importingInto', { name: roadmapName })}</p>}
           </div>
           <button onClick={handleClose} className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-stone-500">close</span>
@@ -65,10 +65,10 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
             <div className="flex flex-col items-center gap-4 py-16 text-center">
               <span className="material-symbols-outlined text-6xl text-stone-300">folder_off</span>
               <div>
-                <p className="text-lg font-black text-secondary">{t('admin.import.needRoadmap')}</p>
+                <p className="text-lg font-semibold text-secondary">{t('admin.import.needRoadmap')}</p>
                 <p className="text-sm text-on-surface-variant mt-1">{t('admin.import.needRoadmapDesc')}</p>
               </div>
-              <a href="/admin/roadmaps" className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">{t('admin.import.goToRoadmaps')}</a>
+              <a href="/admin/roadmaps" className="px-6 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">{t('admin.import.goToRoadmaps')}</a>
             </div>
           )}
 
@@ -99,8 +99,8 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
             <div className="space-y-4 py-6">
               <div className="flex flex-col items-center gap-3">
                 <span className="material-symbols-outlined text-6xl text-red-400">error</span>
-                <p className="text-lg font-bold text-red-600">{t(flow.errorMessage) || flow.errorMessage || t('admin.import.importFailed')}</p>
-                <button onClick={flow.clearError} className="px-6 py-3 bg-stone-100 text-stone-700 font-bold rounded-xl hover:bg-stone-200 transition-all">
+                <p className="text-lg font-medium text-red-600">{t(flow.errorMessage) || flow.errorMessage || t('admin.import.importFailed')}</p>
+                <button onClick={flow.clearError} className="px-6 py-3 bg-stone-100 text-stone-700 font-medium rounded-xl hover:bg-stone-200 transition-all">
                   {t('admin.import.resetAndTryAgain')}
                 </button>
               </div>
@@ -109,7 +109,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
         </div>
 
         <div className="flex items-center justify-end gap-3 p-6 border-t border-orange-100 shrink-0 bg-stone-50">
-          <button onClick={handleClose} className="px-6 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-100 transition-all">
+          <button onClick={handleClose} className="px-6 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-medium hover:bg-stone-100 transition-all">
             {t('admin.import.cancel')}
           </button>
 
@@ -117,7 +117,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
             <button
               onClick={flow.handleStartImport}
               disabled={stats.willImport === 0 || stats.errors > 0}
-              className="flex items-center gap-2 px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="material-symbols-outlined text-lg">upload</span>
               {t('admin.import.continue')}
@@ -125,7 +125,7 @@ export default function ImportWordsModal({ open, onClose, onImportComplete, topi
           )}
 
           {state === 'done' && (
-            <button onClick={() => { onImportComplete(); handleClose() }} className="px-6 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">
+            <button onClick={() => { onImportComplete(); handleClose() }} className="px-6 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all">
               {t('admin.import.close')}
             </button>
           )}

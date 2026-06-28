@@ -29,7 +29,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl z-10">
           <div>
-            <h2 className="text-xl font-black text-secondary">
+            <h2 className="text-xl font-semibold text-secondary">
               {roadmap ? t('admin.roadmapForm.titleEdit') : t('admin.roadmapForm.titleAdd')}
             </h2>
             <p className="text-sm text-on-surface-variant mt-1">
@@ -49,13 +49,13 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           {/* Section 1: Info */}
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-base text-orange-400">label</span>
-            <span className="text-xs font-black text-stone-400 uppercase tracking-wider">{t('common.info')}</span>
+            <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">{t('common.info')}</span>
             <div className="flex-1 h-px bg-stone-100" />
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.roadmapForm.nameLabel')} *</label>
+              <label className="block text-sm font-medium text-secondary mb-2">{t('admin.roadmapForm.nameLabel')} *</label>
               <input
                 type="text"
                 value={form.name}
@@ -66,7 +66,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.topicForm.slugLabel')}</label>
+              <label className="block text-sm font-medium text-secondary mb-2">{t('admin.topicForm.slugLabel')}</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -88,7 +88,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-bold text-secondary mb-2">{t('admin.roadmapForm.descLabel')}</label>
+            <label className="block text-sm font-medium text-secondary mb-2">{t('admin.roadmapForm.descLabel')}</label>
             <textarea
               value={form.description}
               onChange={(e) => form.setDescription(e.target.value)}
@@ -101,7 +101,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           {/* Section 2: Image */}
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-base text-orange-400">image</span>
-            <span className="text-xs font-black text-stone-400 uppercase tracking-wider">{t('common.image')}</span>
+            <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">{t('common.image')}</span>
             <div className="flex-1 h-px bg-stone-100" />
           </div>
 
@@ -117,7 +117,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
           {/* Section 3: Status */}
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-base text-orange-400">toggle_on</span>
-            <span className="text-xs font-black text-stone-400 uppercase tracking-wider">{t('common.status')}</span>
+            <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">{t('common.status')}</span>
             <div className="flex-1 h-px bg-stone-100" />
           </div>
 
@@ -141,7 +141,7 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
               />
             </div>
             <div>
-              <p className="font-bold text-secondary text-sm">
+              <p className="font-medium text-secondary text-sm">
                 {form.isActive ? t('topic.status.learning') : t('topics.locked')}
               </p>
               <p className="text-xs text-stone-400">
@@ -157,14 +157,14 @@ export default function RoadmapFormModal({ open, roadmap, onSave, onClose }: Pro
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-50 transition-all"
+              className="flex-1 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-medium hover:bg-stone-50 transition-all"
             >
               {t('common.cancel')}
             </button>
             <button
               type="submit"
               disabled={form.loading}
-              className="flex-1 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              className="flex-1 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {form.loading ? t('common.loading') : roadmap ? t('common.save') : t('common.add')}
             </button>

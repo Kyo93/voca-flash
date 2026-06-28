@@ -37,7 +37,7 @@ export default function BulkActionBar({
         className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-secondary text-white px-6 py-4 rounded-2xl shadow-2xl border border-stone-700/50 backdrop-blur-xl"
       >
         <div className="flex items-center gap-3 pr-4 border-r border-stone-700">
-          <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">
+          <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-medium text-sm">
             {selectedIds.size}
           </div>
           <span className="font-medium text-sm">{t('admin.bulkAction.selected')}</span>
@@ -46,17 +46,17 @@ export default function BulkActionBar({
         <div className="flex items-center gap-2">
           {bulkDeleteConfirm ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-red-400 mr-2">{t('admin.bulkAction.confirmDelete')}</span>
+              <span className="text-sm font-medium text-red-400 mr-2">{t('admin.bulkAction.confirmDelete')}</span>
               <button 
                 onClick={handleBulkDelete}
                 disabled={bulkLoading}
-                className="px-4 py-2 bg-red-500 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-red-500 text-white text-sm font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
               >
                 {bulkLoading ? t('admin.bulkAction.deleting') : t('admin.bulkAction.deleteNow')}
               </button>
               <button 
                 onClick={() => setBulkDeleteConfirm(false)}
-                className="px-4 py-2 bg-stone-700 text-white text-sm font-bold rounded-xl hover:bg-stone-600 transition-colors"
+                className="px-4 py-2 bg-stone-700 text-white text-sm font-medium rounded-xl hover:bg-stone-600 transition-colors"
               >
                 {t('common.cancel')}
               </button>
@@ -76,13 +76,13 @@ export default function BulkActionBar({
               <button 
                 onClick={handleBulkAssign}
                 disabled={bulkLoading || !assignTopicId}
-                className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50"
               >
                 {bulkLoading ? t('admin.bulkAction.saving') : t('common.save')}
               </button>
               <button 
                 onClick={() => setShowAssignModal(false)}
-                className="px-4 py-2 bg-stone-700 text-white text-sm font-bold rounded-xl hover:bg-stone-600 transition-colors"
+                className="px-4 py-2 bg-stone-700 text-white text-sm font-medium rounded-xl hover:bg-stone-600 transition-colors"
               >
                 {t('common.cancel')}
               </button>
@@ -91,14 +91,14 @@ export default function BulkActionBar({
             <>
               <button
                 onClick={() => setShowAssignModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-stone-800 text-stone-200 hover:text-white hover:bg-stone-700 text-sm font-bold rounded-xl transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-stone-800 text-stone-200 hover:text-white hover:bg-stone-700 text-sm font-medium rounded-xl transition-colors"
               >
                 <span className="material-symbols-outlined text-sm">folder</span>
                 {t('admin.bulkAction.changeTopic')}
               </button>
               <button
                 onClick={() => setBulkDeleteConfirm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white text-sm font-bold rounded-xl transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white text-sm font-medium rounded-xl transition-colors"
               >
                 <span className="material-symbols-outlined text-sm">delete</span>
                 {t('admin.bulkAction.delete')}

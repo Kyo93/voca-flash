@@ -29,7 +29,7 @@ export const SrsLevelBadge: React.FC<SrsLevelBadgeProps> = ({
   return (
     <div className="flex items-center gap-3">
       {!hideLabel && (
-        <span className={`px-2.5 py-1 rounded-md font-black uppercase tracking-widest ${level.bg} ${level.text} ${level.glow} leading-none ${size === 'sm' ? 'text-[9px]' : 'text-[10px]'}`}>
+        <span className={`px-2.5 py-1 rounded-md font-semibold uppercase tracking-widest ${level.bg} ${level.text} ${level.glow} leading-none ${size === 'sm' ? 'text-[9px]' : 'text-[10px]'}`}>
           {level.label}
         </span>
       )}
@@ -42,7 +42,7 @@ export const SrsLevelBadge: React.FC<SrsLevelBadgeProps> = ({
               style={{ width: `${strengthPercent}%` }}
             />
           </div>
-          <p className="text-[10px] font-black text-on-surface-variant/40 uppercase leading-none tracking-tighter">
+          <p className="text-[10px] font-semibold text-on-surface-variant/40 uppercase leading-none tracking-tighter">
             {stability.toFixed(1)}d
           </p>
         </div>

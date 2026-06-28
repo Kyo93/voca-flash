@@ -80,7 +80,7 @@ export default function SessionSummary({
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-shadow-glow mb-2 text-3xl font-black tracking-tight text-white sm:text-5xl"
+            className="text-shadow-glow mb-2 text-3xl font-semibold tracking-tight text-white sm:text-5xl"
           >
             {t('sessionSummary.title')}
           </motion.h1>
@@ -88,7 +88,7 @@ export default function SessionSummary({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-base font-bold text-white/40 sm:text-lg"
+            className="text-base font-medium text-white/40 sm:text-lg"
           >
             {t('sessionSummary.subtitle')}
           </motion.p>
@@ -102,8 +102,8 @@ export default function SessionSummary({
             className="glass-arena-item group relative overflow-hidden rounded-3xl border-white/10 p-4 text-center sm:p-8"
           >
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <span className="text-shadow-glow relative mb-1 block text-3xl font-black text-primary sm:text-5xl">{displayXP}</span>
-            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">{t('sessionSummary.xp')}</span>
+            <span className="text-shadow-glow relative mb-1 block text-3xl font-semibold text-primary sm:text-5xl">{displayXP}</span>
+            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-semibold relative">{t('sessionSummary.xp')}</span>
           </motion.div>
 
           <motion.div 
@@ -112,8 +112,8 @@ export default function SessionSummary({
             transition={{ delay: 0.6 }}
             className="glass-arena-item group rounded-3xl border-white/10 p-4 text-center sm:p-8"
           >
-            <span className="text-shadow-glow relative mb-1 block text-3xl font-black text-white sm:text-5xl">{accuracy}%</span>
-            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-black relative">{t('sessionSummary.accuracy')}</span>
+            <span className="text-shadow-glow relative mb-1 block text-3xl font-semibold text-white sm:text-5xl">{accuracy}%</span>
+            <span className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-semibold relative">{t('sessionSummary.accuracy')}</span>
           </motion.div>
         </div>
 
@@ -132,8 +132,8 @@ export default function SessionSummary({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-4 mb-1">
-                  <p className="text-white font-black truncate">{t(rewardProgress.currentLevel.titleKey)}</p>
-                  <span className="text-[10px] text-secondary font-black uppercase tracking-widest shrink-0">
+                  <p className="text-white font-semibold truncate">{t(rewardProgress.currentLevel.titleKey)}</p>
+                  <span className="text-[10px] text-secondary font-semibold uppercase tracking-widest shrink-0">
                     {t('rewards.levelShort', { level: rewardProgress.currentLevel.level })}
                   </span>
                 </div>
@@ -141,7 +141,7 @@ export default function SessionSummary({
                 <div className="h-2 mt-4 rounded-full bg-white/10 overflow-hidden">
                   <div className="h-full rounded-full bg-secondary" style={{ width: `${rewardProgress.levelProgress}%` }} />
                 </div>
-                <div className="flex items-center justify-between mt-2 text-[10px] font-black uppercase tracking-widest text-white/25">
+                <div className="flex items-center justify-between mt-2 text-[10px] font-semibold uppercase tracking-widest text-white/25">
                   <span>{t('rewards.totalXp', { xp: rewardProgress.totalXp })}</span>
                   <span>
                     {rewardProgress.nextLevel
@@ -157,14 +157,14 @@ export default function SessionSummary({
 
             {unlockedBadges.length > 0 && (
               <div className="mt-5 pt-5 border-t border-white/10">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-secondary mb-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-secondary mb-3">
                   {t('rewards.unlocked')}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {unlockedBadges.map(badge => (
                     <div key={badge.id} className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/5 border border-white/10">
                       <span className="material-symbols-outlined text-secondary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>{badge.icon}</span>
-                      <span className="text-xs font-black text-white">{t(badge.titleKey)}</span>
+                      <span className="text-xs font-semibold text-white">{t(badge.titleKey)}</span>
                     </div>
                   ))}
                 </div>
@@ -184,7 +184,7 @@ export default function SessionSummary({
             >
               <div className="mb-4 flex items-center gap-4 sm:mb-6">
                 <div className="h-px flex-1 bg-white/5" />
-                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">{t('sessionSummary.mistakes')}</span>
+                <span className="text-[10px] font-semibold text-white/20 uppercase tracking-[0.3em]">{t('sessionSummary.mistakes')}</span>
                 <div className="h-px flex-1 bg-white/5" />
               </div>
               
@@ -192,11 +192,11 @@ export default function SessionSummary({
                 {stats.mistakes.map((w, i) => (
                   <div key={`${w.id}-${i}`} className="glass-arena-item p-4 rounded-2xl flex items-center justify-between group border-white/5 hover:border-primary/20 transition-all">
                     <div className="min-w-0">
-                      <h4 className="truncate text-base font-black text-white transition-colors group-hover:text-primary sm:text-lg">{w.word}</h4>
+                      <h4 className="truncate text-base font-semibold text-white transition-colors group-hover:text-primary sm:text-lg">{w.word}</h4>
                       <p className="text-white/40 text-sm font-medium">{w.definition}</p>
                     </div>
                     <div className="text-right">
-                       <span className="text-[8px] font-black text-red-500/60 uppercase tracking-widest bg-red-500/5 px-2 py-1 rounded-full border border-red-500/10">{t('sessionSummary.reviewSoon')}</span>
+                       <span className="text-[8px] font-semibold text-red-500/60 uppercase tracking-widest bg-red-500/5 px-2 py-1 rounded-full border border-red-500/10">{t('sessionSummary.reviewSoon')}</span>
                     </div>
                   </div>
                 ))}
@@ -213,14 +213,14 @@ export default function SessionSummary({
         >
           <button 
             onClick={onRestart}
-            className="primary-glow group flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-primary py-3 font-black text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-95 sm:py-5"
+            className="primary-glow group flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl bg-primary py-3 font-semibold text-white shadow-2xl transition-all hover:scale-[1.02] active:scale-95 sm:py-5"
           >
             <span className="material-symbols-outlined group-hover:rotate-180 transition-transform duration-700">refresh</span>
             {t('sessionSummary.restart')}
           </button>
           <Link 
             to="/dashboard"
-            className="glass-arena-item flex min-h-12 w-full items-center justify-center rounded-2xl border border-white/10 py-3 text-center font-black tracking-widest text-white/60 transition-all hover:bg-white/10 hover:text-white sm:py-5"
+            className="glass-arena-item flex min-h-12 w-full items-center justify-center rounded-2xl border border-white/10 py-3 text-center font-semibold tracking-widest text-white/60 transition-all hover:bg-white/10 hover:text-white sm:py-5"
           >
             {t('sessionSummary.dashboard')}
           </Link>

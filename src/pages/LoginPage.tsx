@@ -42,7 +42,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-surface">
+    <div data-mobile-login className="relative min-h-screen flex flex-col overflow-hidden bg-surface">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-5%] w-96 h-96 bg-orange-200/40 rounded-full blur-3xl animate-blob" />
@@ -51,9 +51,9 @@ export default function LoginPage() {
       </div>
 
       {/* Header */}
-      <header className="w-full flex-none bg-white/60 backdrop-blur-xl border-b border-orange-100 z-50 relative">
+      <header className="w-full flex-none bg-white border-b border-orange-100 z-50 relative">
         <nav className="flex items-center justify-between px-6 md:px-12 py-5 max-w-[1440px] mx-auto">
-          <Link to="/" className="text-3xl font-black tracking-tighter text-primary flex items-center gap-2">
+          <Link to="/" className="flex min-h-11 items-center gap-2 text-3xl font-semibold tracking-tighter text-primary">
             <span className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white text-xl rotate-3">V</span>
             VocaFlash
           </Link>
@@ -66,10 +66,10 @@ export default function LoginPage() {
           <div className="bg-white rounded-2xl shadow-2xl border border-orange-50 p-8 md:p-10">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-white text-2xl font-black rotate-3 mx-auto mb-4">
+              <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-white text-2xl font-semibold rotate-3 mx-auto mb-4">
                 V
               </div>
-              <h1 className="text-2xl font-black text-secondary">
+              <h1 className="text-2xl font-semibold text-secondary">
                 {isSignUp ? t('auth.signUpTitle') : t('auth.signInTitle')}
               </h1>
               <p className="text-sm text-on-surface-variant mt-2">
@@ -81,7 +81,7 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-secondary mb-2" htmlFor="email">
+                <label className="block text-sm font-medium text-secondary mb-2" htmlFor="email">
                   {t('auth.email')}
                 </label>
                 <input
@@ -96,7 +96,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-secondary mb-2" htmlFor="password">
+                <label className="block text-sm font-medium text-secondary mb-2" htmlFor="password">
                   {t('auth.password')}
                 </label>
                 <input
@@ -126,7 +126,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full py-3.5 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {submitting
                   ? t('auth.processing')
@@ -143,7 +143,7 @@ export default function LoginPage() {
                   setError(null)
                   setSuccess(null)
                 }}
-                className="text-sm font-medium text-primary hover:text-primary-fixed-dim transition-colors"
+                className="inline-flex min-h-11 items-center justify-center px-3 text-sm font-medium text-primary transition-colors hover:text-primary-fixed-dim"
               >
                 {isSignUp
                   ? t('auth.hasAccount')

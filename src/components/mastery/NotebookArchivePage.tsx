@@ -53,7 +53,7 @@ export function NotebookArchivePage({
       <div className="relative flex h-full flex-col">
         <div className="mb-6">
           <div>
-            <h3 className="font-serif text-3xl font-bold text-primary">
+            <h3 className="font-serif text-3xl font-medium text-primary">
               {t('mastery.notebook.recentAdditions')}
             </h3>
           </div>
@@ -84,7 +84,7 @@ export function NotebookArchivePage({
 
         <div
           data-testid="notebook-page-controls"
-          className="absolute bottom-10 left-10 z-10 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-outline"
+          className="absolute bottom-10 left-10 z-10 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-outline"
         >
           <button
             type="button"
@@ -163,7 +163,7 @@ function NotebookArchiveEntry({
         <div className="flex items-baseline justify-between gap-4">
           <h4
             className={classes(
-              'notebook-line-text notebook-engraved-text font-serif font-bold tracking-normal transition-colors',
+              'notebook-line-text notebook-engraved-text font-serif font-medium tracking-normal transition-colors',
               selected ? 'text-primary' : 'text-on-surface group-hover:text-primary',
               compact ? 'text-base' : 'text-xl',
             )}
@@ -173,7 +173,7 @@ function NotebookArchiveEntry({
           {levelLabel && (
             <span
               className={classes(
-                'rounded-md border border-warm-accent/35 px-2 py-0.5 text-[10px] font-black uppercase leading-none',
+                'rounded-md border border-warm-accent/35 px-2 py-0.5 text-[10px] font-semibold uppercase leading-none',
                 selected ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-secondary',
               )}
             >
@@ -221,7 +221,7 @@ function NotebookMnemonicPhoto({
     >
       <h5
         data-testid="notebook-visual-mnemonic-label"
-        className="sr-only font-label text-[10px] font-bold uppercase tracking-[0.14em] text-outline"
+        className="sr-only font-label text-[10px] font-medium uppercase tracking-[0.14em] text-outline"
       >
         {t('mastery.notebook.visualMnemonic')}
       </h5>
@@ -240,7 +240,7 @@ function NotebookMnemonicPhoto({
               className="h-full w-full object-cover brightness-95 transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_50%_45%,rgba(230,126,34,0.32),transparent_44%),var(--color-surface-container-low)] text-5xl font-black text-primary">
+            <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_50%_45%,rgba(230,126,34,0.32),transparent_44%),var(--color-surface-container-low)] text-5xl font-semibold text-primary">
               {word.word.slice(0, 1).toUpperCase()}
             </div>
           )}

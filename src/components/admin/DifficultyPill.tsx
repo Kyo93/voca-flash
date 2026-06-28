@@ -13,7 +13,7 @@ export default function DifficultyPill({ value, className = '' }: Props) {
     : 'bg-red-50 text-red-700 border border-red-100'
 
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-bold shrink-0 ${classes} ${className}`}>
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${classes} ${className}`}>
       {label}
     </span>
   )

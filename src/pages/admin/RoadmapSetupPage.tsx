@@ -61,14 +61,14 @@ export default function RoadmapSetupPage() {
       <div className="flex items-center gap-4 mb-6">
         <Link
           to="/admin/roadmaps"
-          className="flex items-center gap-1 text-stone-500 hover:text-primary transition-colors text-sm font-bold"
+          className="flex items-center gap-1 text-stone-500 hover:text-primary transition-colors text-sm font-medium"
         >
           <span className="material-symbols-outlined text-lg">arrow_back</span>
           {t('admin.roadmapSetup.back')}
         </Link>
         <div className="h-6 w-px bg-stone-200" />
         <div>
-          <h1 className="text-2xl font-black text-secondary">
+          <h1 className="text-2xl font-semibold text-secondary">
             {roadmap?.name ?? '...'}
           </h1>
           <p className="text-sm text-on-surface-variant">{t('admin.roadmapSetup.manage')}</p>

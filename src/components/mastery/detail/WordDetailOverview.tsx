@@ -30,7 +30,7 @@ export const WordDetailOverview: React.FC<WordDetailOverviewProps> = ({ word }) 
       <section className="space-y-4">
         <h3 className="label-md text-on-surface-variant">{t('mastery.detail.definitionAndExample')}</h3>
         <div className="p-8 bg-surface rounded-2xl sun-drenched-shadow space-y-6">
-          <p className="text-2xl font-bold text-on-surface leading-tight">{word.definition}</p>
+          <p className="text-2xl font-medium text-on-surface leading-tight">{word.definition}</p>
           {word.example && (
             <div className="pt-6 border-t border-surface-container">
               <p className="text-on-surface-variant italic leading-relaxed text-lg">

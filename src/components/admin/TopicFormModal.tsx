@@ -90,7 +90,7 @@ export default function TopicFormModal({
         <div className="px-6 pt-6 pb-5 border-b border-stone-100 shrink-0">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-black text-stone-800 leading-tight">
+              <h2 className="text-2xl font-semibold text-stone-800 leading-tight">
                 {topic ? t('admin.topicForm.titleEdit') : t('admin.topicForm.titleAdd')}
               </h2>
               <p className="text-sm text-stone-400 mt-0.5">
@@ -113,7 +113,7 @@ export default function TopicFormModal({
           <div className="grid grid-cols-2 gap-5">
             {/* Topic Name */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
                 {t('admin.topicForm.nameLabel')}
               </label>
               <div className="relative">
@@ -139,7 +139,7 @@ export default function TopicFormModal({
 
             {/* Slug */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
                 {t('admin.topicForm.slugLabel')}
               </label>
               <div className="flex items-center gap-0 rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden focus-within:border-orange-300 focus-within:ring-2 focus-within:ring-orange-100 transition-all">
@@ -174,7 +174,7 @@ export default function TopicFormModal({
 
           {/* ── Description ──────────────────── */}
           <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
               {t('admin.topicForm.descLabel')}
             </label>
             <textarea
@@ -189,7 +189,7 @@ export default function TopicFormModal({
           {/* ── 2-col row: Roadmap + Icon ─────────────────── */}
           <div className="space-y-5">
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
                 {t('roadmap.title')}
               </label>
               <select
@@ -224,7 +224,7 @@ export default function TopicFormModal({
             label={t('common.image')}
             placeholder={t('admin.topicForm.imagePlaceholder')}
             inputClassName="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-600 text-sm shadow-sm outline-none focus:border-orange-300 focus:ring-2 focus:ring-orange-100 transition-all"
-            labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2"
+            labelClassName="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2"
             previewWrapperClassName="mt-3 rounded-xl overflow-hidden border border-stone-100 bg-stone-100"
             fallbackImage={ADMIN_FALLBACK_IMAGE}
             emptyState={
@@ -269,7 +269,7 @@ export default function TopicFormModal({
               <button
                 type="submit"
                 form="topic-form"
-                className="px-6 py-2.5 rounded-xl text-white text-sm font-bold shadow-sm transition-all disabled:opacity-50"
+                className="px-6 py-2.5 rounded-xl text-white text-sm font-medium shadow-sm transition-all disabled:opacity-50"
                 style={{ backgroundColor: color }}
               >
                 {topic ? t('common.save') : t('common.add')}

@@ -64,7 +64,7 @@ export default function ProgressPage() {
         {/* Hero Header */}
         <section className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
-            <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-on-surface mb-2">
+            <h1 className="text-4xl lg:text-5xl font-semibold tracking-tight text-on-surface mb-2">
               {t(greetingKey)}
             </h1>
             <div className="flex flex-wrap items-center gap-4 mt-2">
@@ -74,7 +74,7 @@ export default function ProgressPage() {
               {typeof reviewCount === 'number' && (
                 <Link 
                   to="/review"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-warm-accent text-white text-sm font-bold rounded-full hover:opacity-90 transition-opacity shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-warm-accent text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity shadow-sm"
                 >
                   <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
                   {t('progress.words_due', { count: reviewCount })}
@@ -83,10 +83,10 @@ export default function ProgressPage() {
             </div>
           </div>
           <div className="text-right shrink-0">
-            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-1">
+            <p className="text-xs font-medium text-on-surface-variant uppercase tracking-widest mb-1">
               {t('progress.current_level')}
             </p>
-            <p className="text-3xl font-bold bg-linear-to-r from-primary to-primary-dim bg-clip-text text-transparent">
+            <p className="text-3xl font-medium bg-linear-to-r from-primary to-primary-dim bg-clip-text text-transparent">
               {userLevel}
             </p>
           </div>
@@ -106,7 +106,7 @@ export default function ProgressPage() {
                 </span>
               )}
             </div>
-            <h3 className="text-4xl font-bold text-on-surface mb-1">{totalWords.toLocaleString()}</h3>
+            <h3 className="text-4xl font-medium text-on-surface mb-1">{totalWords.toLocaleString()}</h3>
             <p className="text-on-surface-variant font-medium text-sm">{t('progress.vocab_learned')}</p>
           </div>
 
@@ -122,7 +122,7 @@ export default function ProgressPage() {
                 </span>
               )}
             </div>
-            <h3 className="text-4xl font-bold text-on-surface mb-1">{data.mastered_count.toLocaleString()}</h3>
+            <h3 className="text-4xl font-medium text-on-surface mb-1">{data.mastered_count.toLocaleString()}</h3>
             <p className="text-on-surface-variant font-medium text-sm">{t('progress.masteredWords')}</p>
           </div>
 
@@ -138,7 +138,7 @@ export default function ProgressPage() {
                 </span>
               )}
             </div>
-            <h3 className="text-4xl font-bold text-on-surface mb-1">{data.streak_days}</h3>
+            <h3 className="text-4xl font-medium text-on-surface mb-1">{data.streak_days}</h3>
             <p className="text-on-surface-variant font-medium text-sm">{t('progress.streak_label')}</p>
           </div>
 
@@ -156,7 +156,7 @@ export default function ProgressPage() {
                     : t('progress.needs_work')}
               </span>
             </div>
-            <h3 className="text-4xl font-bold text-on-surface mb-1">
+            <h3 className="text-4xl font-medium text-on-surface mb-1">
               {retentionInfo.hasData ? `${retentionInfo.percent}%` : '—'}
             </h3>
             <p className="text-on-surface-variant font-medium text-sm">{t('progress.retention_metric')}</p>
@@ -182,7 +182,7 @@ export default function ProgressPage() {
             <div className="bg-secondary text-on-secondary rounded-xl p-6 shadow-lg relative overflow-hidden flex flex-col justify-between">
               <span className="material-symbols-outlined absolute -top-4 -right-4 text-8xl opacity-10" style={{ fontVariationSettings: "'FILL' 1" }}>format_quote</span>
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-secondary-container mb-4">
+                <h3 className="text-xs font-medium uppercase tracking-widest text-secondary-container mb-4">
                   {t('progress.mentor_advice_title')}
                 </h3>
                 <p className="text-base font-medium leading-7 mb-5">
@@ -190,11 +190,11 @@ export default function ProgressPage() {
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary-container text-base font-bold">
+                <div className="w-10 h-10 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary-container text-base font-medium">
                   E
                 </div>
                 <div>
-                  <p className="font-bold text-on-secondary text-sm">{t('progress.mentor_name')}</p>
+                  <p className="font-medium text-on-secondary text-sm">{t('progress.mentor_name')}</p>
                   <p className="text-xs text-secondary-container">{t('progress.mentor_role')}</p>
                 </div>
               </div>

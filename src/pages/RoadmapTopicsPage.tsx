@@ -26,7 +26,7 @@ export default function RoadmapTopicsPage() {
       <div className="flex-1 flex items-center justify-center p-20">
         <div className="flex flex-col items-center gap-4">
           <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
-          <p className="text-on-surface-variant font-bold">{t('roadmap.loading')}</p>
+          <p className="text-on-surface-variant font-medium">{t('roadmap.loading')}</p>
         </div>
       </div>
     )
@@ -35,8 +35,8 @@ export default function RoadmapTopicsPage() {
   if (!roadmap) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-surface p-6">
-        <h2 className="text-3xl font-black text-secondary mb-6 tracking-tight">{t('roadmap.notFound')}</h2>
-        <Link to="/library" className="px-8 py-4 primary-gradient text-white font-black rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm">
+        <h2 className="text-3xl font-semibold text-secondary mb-6 tracking-tight">{t('roadmap.notFound')}</h2>
+        <Link to="/library" className="px-8 py-4 primary-gradient text-white font-semibold rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all uppercase tracking-widest text-sm">
           {t('roadmapDetail.back')}
         </Link>
       </div>
@@ -75,7 +75,7 @@ export default function RoadmapTopicsPage() {
             </span>
           </div>
           <div className="space-y-4">
-            <h1 className="text-6xl font-bold editorial-asymmetry leading-none text-on-surface">
+            <h1 className="text-6xl font-medium editorial-asymmetry leading-none text-on-surface">
               {roadmap.name}
             </h1>
             <div className="flex items-center gap-4 bg-surface-container-low w-fit px-5 py-2.5 rounded-full">
@@ -89,7 +89,7 @@ export default function RoadmapTopicsPage() {
                     loading="lazy"
                   />
                 ))}
-                <div className="w-8 h-8 rounded-full border-2 border-surface-container-low bg-secondary-fixed flex items-center justify-center text-[10px] font-bold text-on-secondary-fixed">+2k</div>
+                <div className="w-8 h-8 rounded-full border-2 border-surface-container-low bg-secondary-fixed flex items-center justify-center text-[10px] font-medium text-on-secondary-fixed">+2k</div>
               </div>
               <span className="text-sm font-semibold text-on-surface-variant italic">{t('roadmapDetail.social')}</span>
             </div>
@@ -102,18 +102,18 @@ export default function RoadmapTopicsPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
           <div className="md:col-span-2 space-y-2">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-outline mb-0 block leading-none">{t('roadmapDetail.learning_label')}</span>
-              <div className="text-5xl font-black tracking-tighter text-secondary leading-none">{learnedPercent}%</div>
+              <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-outline mb-0 block leading-none">{t('roadmapDetail.learning_label')}</span>
+              <div className="text-5xl font-semibold tracking-tighter text-secondary leading-none">{learnedPercent}%</div>
             </div>
             <div className="opacity-50">
-              <span className="text-[9px] uppercase tracking-[0.15em] font-bold text-outline mb-0 block leading-none">{t('roadmapDetail.mastery_label')}</span>
-              <div className="text-xl font-black tracking-tighter text-primary leading-none">{overallPercent}%</div>
+              <span className="text-[9px] uppercase tracking-[0.15em] font-medium text-outline mb-0 block leading-none">{t('roadmapDetail.mastery_label')}</span>
+              <div className="text-xl font-semibold tracking-tighter text-primary leading-none">{overallPercent}%</div>
             </div>
           </div>
           <div className="md:col-span-7 space-y-2">
             {/* Learned Progress */}
             <div className="space-y-0.5">
-              <div className="flex justify-between items-end text-[10px] font-bold text-outline uppercase tracking-wider">
+              <div className="flex justify-between items-end text-[10px] font-medium text-outline uppercase tracking-wider">
                 <span>{t('roadmapDetail.learnedWords')}</span>
                 <span className="text-xs text-secondary font-medium">{stats.learned} / {stats.total}</span>
               </div>
@@ -127,7 +127,7 @@ export default function RoadmapTopicsPage() {
 
             {/* Mastery Progress */}
             <div className="space-y-0.5">
-              <div className="flex justify-between items-end text-[10px] font-bold text-outline uppercase tracking-wider">
+              <div className="flex justify-between items-end text-[10px] font-medium text-outline uppercase tracking-wider">
                 <span>{t('roadmapDetail.masteredWords')}</span>
                 <span className="text-xs text-primary font-medium">{stats.mastered} / {stats.total}</span>
               </div>
@@ -147,22 +147,22 @@ export default function RoadmapTopicsPage() {
             {/* Total */}
             <div className="flex flex-col items-center text-center">
               <span className="material-symbols-outlined text-primary-container text-base mb-0.5">book</span>
-              <span className="text-sm font-black text-primary leading-none">{stats.total}</span>
-              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">{t('roadmapDetail.total_label')}</span>
+              <span className="text-sm font-semibold text-primary leading-none">{stats.total}</span>
+              <span className="text-[8px] uppercase font-medium text-outline tracking-tight mt-0.5">{t('roadmapDetail.total_label')}</span>
             </div>
 
             {/* Learned */}
             <div className="flex flex-col items-center text-center">
               <span className="material-symbols-outlined text-secondary text-base mb-0.5">menu_book</span>
-              <span className="text-sm font-black text-secondary leading-none">{stats.learned}</span>
-              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">{t('roadmapDetail.learned_label')}</span>
+              <span className="text-sm font-semibold text-secondary leading-none">{stats.learned}</span>
+              <span className="text-[8px] uppercase font-medium text-outline tracking-tight mt-0.5">{t('roadmapDetail.learned_label')}</span>
             </div>
 
             {/* Mastered */}
             <div className="flex flex-col items-center text-center">
               <span className="material-symbols-outlined text-mastery-accent text-base mb-0.5">stars</span>
-              <span className="text-sm font-black text-primary leading-none">{stats.mastered}</span>
-              <span className="text-[8px] uppercase font-bold text-outline tracking-tight mt-0.5">{t('roadmapDetail.mastered_label')}</span>
+              <span className="text-sm font-semibold text-primary leading-none">{stats.mastered}</span>
+              <span className="text-[8px] uppercase font-medium text-outline tracking-tight mt-0.5">{t('roadmapDetail.mastered_label')}</span>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function RoadmapTopicsPage() {
       <footer className="bg-surface-container rounded-t-[60px] mt-20 -mx-12">
         <div className="flex flex-col md:flex-row justify-between items-end w-full px-16 py-20 max-w-[1440px] mx-auto gap-12">
           <div className="max-w-md space-y-6">
-            <div className="text-xl font-bold text-on-surface">VocaFlash</div>
+            <div className="text-xl font-medium text-on-surface">VocaFlash</div>
             <p className="font-headline italic text-lg leading-[1.6] text-on-surface-variant">
               {t('roadmapDetail.footer.quote')}
             </p>
@@ -201,11 +201,11 @@ export default function RoadmapTopicsPage() {
             </div>
             <div className="bg-secondary-container/40 p-10 rounded-3xl space-y-6 w-full sm:w-[320px]">
               <div>
-                <span className="text-[10px] uppercase tracking-widest font-black text-on-secondary-container">{t('roadmapDetail.milestone.title')}</span>
-                <h4 className="text-2xl font-bold mt-1 text-on-secondary-container">{t('roadmapDetail.milestone.name')}</h4>
+                <span className="text-[10px] uppercase tracking-widest font-semibold text-on-secondary-container">{t('roadmapDetail.milestone.title')}</span>
+                <h4 className="text-2xl font-medium mt-1 text-on-secondary-container">{t('roadmapDetail.milestone.name')}</h4>
               </div>
               <p className="text-sm text-on-secondary-container/80 leading-relaxed">{t('roadmapDetail.milestone.desc')}</p>
-              <button className="w-full bg-secondary text-on-secondary py-4 rounded-full font-bold hover:shadow-lg hover:shadow-secondary/20 transition-all">{t('roadmapDetail.milestone.view')}</button>
+              <button className="w-full bg-secondary text-on-secondary py-4 rounded-full font-medium hover:shadow-lg hover:shadow-secondary/20 transition-all">{t('roadmapDetail.milestone.view')}</button>
             </div>
           </div>
         </div>

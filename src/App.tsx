@@ -32,7 +32,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-surface">
-      <div className="text-primary font-bold animate-pulse">{t('common.loading')}</div>
+      <div className="text-primary font-medium animate-pulse">{t('common.loading')}</div>
     </div>
   )
   if (!user) return <Navigate to="/login" replace />
@@ -45,7 +45,7 @@ function RequireAdmin({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   if (loading || adminLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-surface">
-      <div className="text-primary font-bold animate-pulse">{t('common.loading')}</div>
+      <div className="text-primary font-medium animate-pulse">{t('common.loading')}</div>
     </div>
   )
   if (!user) return <Navigate to="/login" replace />

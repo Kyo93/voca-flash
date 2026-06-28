@@ -144,7 +144,7 @@ export default function AdminWordsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-black text-secondary">{t('admin.words.title')}</h1>
+          <h1 className="text-3xl font-semibold text-secondary">{t('admin.words.title')}</h1>
           <p className="text-sm text-on-surface-variant mt-1">
             {loading ? '...' : t('admin.words.count', { count: words.length })}
           </p>
@@ -152,7 +152,7 @@ export default function AdminWordsPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => { setEditWordData(null); setEditWordWrongChoices([]); setShowModal(true) }}
-            className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined text-sm">add</span>
             {t('admin.words.addWord')}
@@ -193,7 +193,7 @@ export default function AdminWordsPage() {
           <LoadingSpinner
             label={t('admin.words.loading')}
             color="text-primary"
-            labelClassName="text-sm font-bold text-stone-400"
+            labelClassName="text-sm font-medium text-stone-400"
             className="flex flex-col items-center gap-3"
           />
         </div>
@@ -218,21 +218,21 @@ export default function AdminWordsPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white border border-stone-100 rounded-2xl shadow-sm">
-          <p className="text-sm font-bold text-stone-400">
+          <p className="text-sm font-medium text-stone-400">
             {t('admin.words.pagination.page', { current: page, total: totalPages })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 rounded-xl border border-stone-200 bg-white text-sm font-bold text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
+              className="px-4 py-2 rounded-xl border border-stone-200 bg-white text-sm font-medium text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
             >
               {t('admin.words.pagination.prev')}
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="px-4 py-2 rounded-xl border border-stone-200 bg-white text-sm font-bold text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
+              className="px-4 py-2 rounded-xl border border-stone-200 bg-white text-sm font-medium text-stone-600 hover:bg-stone-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm"
             >
               {t('admin.words.pagination.next')}
             </button>

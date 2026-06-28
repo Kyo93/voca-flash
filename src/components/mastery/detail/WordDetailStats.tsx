@@ -24,19 +24,19 @@ export const WordDetailStats: React.FC<WordDetailStatsProps> = ({ word, locale }
         <div className="grid grid-cols-2 gap-4">
           <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
             <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.stability')}</p>
-            <p className="text-3xl font-bold text-on-surface">{word.fsrs_stability.toFixed(1)}d</p>
+            <p className="text-3xl font-medium text-on-surface">{word.fsrs_stability.toFixed(1)}d</p>
           </div>
           <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
             <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.difficulty')}</p>
-            <p className="text-3xl font-bold text-on-surface">{word.fsrs_difficulty.toFixed(1)}</p>
+            <p className="text-3xl font-medium text-on-surface">{word.fsrs_difficulty.toFixed(1)}</p>
           </div>
           <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
             <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.reps')}</p>
-            <p className="text-3xl font-bold text-on-surface">{word.fsrs_reps}</p>
+            <p className="text-3xl font-medium text-on-surface">{word.fsrs_reps}</p>
           </div>
           <div className="p-6 bg-surface rounded-2xl sun-drenched-shadow">
             <p className="label-md text-on-surface-variant mb-2">{t('mastery.detail.lapses')}</p>
-            <p className="text-3xl font-bold text-red-500">{word.fsrs_lapses}</p>
+            <p className="text-3xl font-medium text-red-500">{word.fsrs_lapses}</p>
           </div>
         </div>
       </section>
@@ -46,7 +46,7 @@ export const WordDetailStats: React.FC<WordDetailStatsProps> = ({ word, locale }
         <div className="p-8 secondary-gradient text-on-secondary rounded-2xl flex justify-between items-center sun-drenched-shadow">
           <div>
             <p className="label-md text-on-secondary/60 mb-2">{t('mastery.detail.nextReview')}</p>
-            <p className="text-2xl font-bold">
+            <p className="text-2xl font-medium">
               {word.next_review_at ? format(new Date(word.next_review_at), 'dd MMMM, yyyy', { locale }) : '--'}
             </p>
           </div>

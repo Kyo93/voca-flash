@@ -24,10 +24,10 @@ export default function LearningSection({ formData, onChange }: LearningSectionP
         {/* Daily Target */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-bold text-stone-600 ml-1">
+            <label className="text-sm font-medium text-stone-600 ml-1">
               {t('settings.dailyTarget')}
             </label>
-            <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-black rounded-full shadow-sm">
+            <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full shadow-sm">
               {formData.daily_target} {t('topics.words')}
             </span>
           </div>
@@ -41,7 +41,7 @@ export default function LearningSection({ formData, onChange }: LearningSectionP
               onChange={(e) => onChange({ daily_target: Number(e.target.value) })}
               className="w-full h-8 appearance-none bg-transparent cursor-pointer accent-emerald-500"
             />
-            <div className="flex justify-between text-[10px] text-stone-400 font-bold uppercase tracking-wider mt-1">
+            <div className="flex justify-between text-[10px] text-stone-400 font-medium uppercase tracking-wider mt-1">
               <span>{t('settings.relaxed')} (5)</span>
               <span>{t('settings.determined')} (50)</span>
             </div>
@@ -50,7 +50,7 @@ export default function LearningSection({ formData, onChange }: LearningSectionP
 
         {/* FSRS Retention */}
         <div className="space-y-4">
-          <label className="text-sm font-bold text-stone-600 ml-1">
+          <label className="text-sm font-medium text-stone-600 ml-1">
             {t('settings.retentionLabel')}
           </label>
           <div className="relative group">

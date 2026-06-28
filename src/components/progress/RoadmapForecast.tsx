@@ -41,19 +41,19 @@ export default function RoadmapForecast({ velocity, totalWords, masteredWords }:
       <div className="relative z-10">
         <div className="flex justify-between items-end mb-7">
           <div>
-            <h3 className="text-xl font-bold text-on-surface mb-2">
+            <h3 className="text-xl font-medium text-on-surface mb-2">
               {t('progress.roadmap_forecast', { defaultValue: 'Roadmap Forecast' })}
             </h3>
             <p className="text-on-surface-variant text-sm">
               {t('progress.estimated_next_level')}{' '}
-              <span className="font-bold text-primary">
+              <span className="font-medium text-primary">
                 {finishDate ? formatMonthYear(finishDate) : t('progress.insufficient_data')}
               </span>
             </p>
           </div>
           <div className="text-right">
-            <p className="text-5xl font-black text-secondary">{progressPct}%</p>
-            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mt-1">
+            <p className="text-5xl font-semibold text-secondary">{progressPct}%</p>
+            <p className="text-xs font-medium text-on-surface-variant uppercase tracking-widest mt-1">
               {t('progress.total_progress')}
             </p>
           </div>
@@ -78,7 +78,7 @@ export default function RoadmapForecast({ velocity, totalWords, masteredWords }:
                 }`}
                 style={i >= 3 && !isLast ? { opacity: i === 3 ? 0.6 : 0.85 } : undefined}
               >
-                <div className={`absolute -top-7 left-1/2 -translate-x-1/2 text-xs px-2 py-0.5 rounded font-bold ${
+                <div className={`absolute -top-7 left-1/2 -translate-x-1/2 text-xs px-2 py-0.5 rounded font-medium ${
                   isLast
                     ? 'bg-on-surface text-surface opacity-100'
                     : 'bg-on-surface text-surface opacity-0 group-hover:opacity-100'

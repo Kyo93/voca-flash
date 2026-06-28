@@ -74,7 +74,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-orange-100 sticky top-0 bg-white rounded-t-2xl z-20">
           <div>
-            <h2 className="text-xl font-black text-secondary">
+            <h2 className="text-xl font-semibold text-secondary">
               {word ? t('admin.wordForm.titleEdit') : t('admin.wordForm.titleAdd')}
             </h2>
             <p className="text-sm text-on-surface-variant mt-1">
@@ -94,7 +94,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* Word + Phonetic */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.wordLabel')}</label>
+              <label className="block text-sm font-medium text-secondary mb-2">{t('admin.wordForm.wordLabel')}</label>
               <input
                 type="text"
                 value={state.wordText}
@@ -105,7 +105,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.phoneticLabel')}</label>
+              <label className="block text-sm font-medium text-secondary mb-2">{t('admin.wordForm.phoneticLabel')}</label>
               <input
                 type="text"
                 value={state.phonetic}
@@ -119,7 +119,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* POS + Difficulty */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.posLabel')}</label>
+              <label className="block text-sm font-medium text-secondary mb-2">{t('admin.wordForm.posLabel')}</label>
               <select
                 value={state.pos ?? 'noun'}
                 onChange={(e) => actions.setPos(e.target.value as Word['pos'])}
@@ -131,7 +131,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 {t('admin.wordForm.difficultyLabel')}: <span className="text-primary">{difficultyLabels[state.difficulty - 1]}</span>
               </label>
               <input
@@ -150,7 +150,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
 
           {/* Definition */}
           <div>
-            <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.definitionLabel')}</label>
+            <label className="block text-sm font-medium text-secondary mb-2">{t('admin.wordForm.definitionLabel')}</label>
             <textarea
               value={state.definition}
               onChange={(e) => actions.setDefinition(e.target.value)}
@@ -164,7 +164,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* Example EN & VI */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.exampleEn')}</label>
+              <label className="block text-sm font-medium text-secondary mb-2">{t('admin.wordForm.exampleEn')}</label>
               <input
                 type="text"
                 value={state.example}
@@ -174,7 +174,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.exampleVi')}</label>
+              <label className="block text-sm font-medium text-secondary mb-2">{t('admin.wordForm.exampleVi')}</label>
               <input
                 type="text"
                 value={state.exampleVi}
@@ -188,7 +188,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
           {/* Synonyms / Antonyms / Word Family */}
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 {t('admin.wordForm.synonyms')} <span className="font-normal text-stone-400">{t('admin.wordForm.commaSeparated')}</span>
               </label>
               <input
@@ -200,7 +200,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 {t('admin.wordForm.antonyms')} <span className="font-normal text-stone-400">{t('admin.wordForm.commaSeparated')}</span>
               </label>
               <input
@@ -212,7 +212,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-secondary mb-2">
+              <label className="block text-sm font-medium text-secondary mb-2">
                 {t('admin.wordForm.wordFamily')} <span className="font-normal text-stone-400">{t('admin.wordForm.variants')}</span>
               </label>
               <input
@@ -234,7 +234,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
 
           {/* Image URL + Focal Point + Preview */}
             <div>
-            <label className="block text-sm font-bold text-secondary mb-2">{t('admin.wordForm.imageUrl')}</label>
+            <label className="block text-sm font-medium text-secondary mb-2">{t('admin.wordForm.imageUrl')}</label>
             <input
               type="text"
               value={state.imageUrl}
@@ -245,13 +245,13 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
             {state.imageUrl && (
               <div className="mt-3 space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-stone-500">{t('admin.wordForm.focalPoint')}:</span>
+                  <span className="text-xs font-medium text-stone-500">{t('admin.wordForm.focalPoint')}:</span>
                   {(['top', 'center', 'bottom'] as const).map((pos) => (
                     <button
                       key={pos}
                       type="button"
                       onClick={() => actions.setImagePosition(pos)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                         state.imagePosition === pos
                           ? 'bg-primary text-white shadow-md'
                           : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
@@ -262,7 +262,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                   ))}
                 </div>
                 <div className="bg-stone-50 rounded-xl p-3 border border-stone-200">
-                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-2">{t('admin.wordForm.previewTitle')}</p>
+                  <p className="text-[10px] font-medium text-stone-400 uppercase tracking-wider mb-2">{t('admin.wordForm.previewTitle')}</p>
                   <div className="aspect-4/3 w-full max-w-[280px] rounded-lg overflow-hidden border border-stone-200 shadow-sm relative">
                     <img
                       src={state.imageUrl}
@@ -272,7 +272,7 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
                       onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_PREVIEW_IMAGE; }}
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent pointer-events-none" />
-                    <div className="absolute bottom-2 left-3 text-white text-sm font-bold drop-shadow-lg">
+                    <div className="absolute bottom-2 left-3 text-white text-sm font-medium drop-shadow-lg">
                       {state.wordText || 'word'}
                     </div>
                   </div>
@@ -295,14 +295,14 @@ export default function WordFormModal({ open, word, initialWrongChoices, onSave,
             <button
                type="button"
                onClick={onClose}
-               className="flex-1 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-bold hover:bg-stone-50 transition-all"
+               className="flex-1 py-3 rounded-xl border-2 border-stone-200 text-stone-600 font-medium hover:bg-stone-50 transition-all"
              >
                {t('common.cancel')}
              </button>
              <button
                type="submit"
                disabled={state.loading}
-               className="flex-1 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+               className="flex-1 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
              >
                {state.loading ? t('common.loading') : word ? t('common.save') : t('common.add')}
              </button>

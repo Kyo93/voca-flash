@@ -66,8 +66,10 @@ describe('MobileAppLayout', () => {
     const { container } = renderMobileShell('/dashboard')
 
     const nav = screen.getByRole('navigation', { name: 'Primary navigation' })
-    expect(container.querySelector('[data-mobile-app-shell="true"]')).toBeTruthy()
-    expect(container.querySelector('[data-mobile-bottom-nav="true"]')).toBeTruthy()
+    expect(container.querySelector('[data-mobile-app-shell="true"]')?.className).toContain('mobile-shell-minimal')
+    expect(container.querySelector('[data-mobile-bottom-nav="true"]')?.className).toContain('mobile-bottom-nav-minimal')
+    expect(container.querySelector('.mobile-topbar-minimal')).toBeTruthy()
+    expect(container.innerHTML).not.toContain('backdrop-blur')
 
     expect(within(nav).getByRole('link', { name: 'Today' }).getAttribute('aria-current')).toBe('page')
     expect(within(nav).getByRole('link', { name: 'Learn' }).getAttribute('href')).toBe('/library/academic-english')

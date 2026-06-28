@@ -39,14 +39,14 @@ export default function MobileLibraryView({
   const { t } = useTranslation()
 
   return (
-    <main data-mobile-learn className="min-h-full bg-surface px-4 pb-6 pt-3">
+    <main data-mobile-learn className="mobile-page min-h-full">
       <header className="space-y-3">
         <div className="flex items-end justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-secondary">
               {t('library.mobile.availablePaths', { count: roadmaps.length })}
             </p>
-            <h1 className="mt-1 text-xl font-bold tracking-tight text-on-surface">
+            <h1 className="mt-1 text-xl font-medium tracking-tight text-on-surface">
               {t('library.mobile.title')}
             </h1>
           </div>
@@ -68,7 +68,7 @@ export default function MobileLibraryView({
               key={filter}
               type="button"
               onClick={() => setActiveFilter(filter)}
-              className={`min-h-11 rounded-full px-3 text-[13px] font-bold transition-all active:scale-95 ${
+              className={`min-h-11 rounded-full px-3 text-[13px] font-medium transition-all active:scale-95 ${
                 isActive
                   ? 'bg-secondary text-on-secondary shadow-sm'
                   : 'bg-surface-container-low text-on-surface-variant'
@@ -85,7 +85,7 @@ export default function MobileLibraryView({
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container">
             <span className="material-symbols-outlined" aria-hidden="true">search_off</span>
           </div>
-          <h2 className="mt-4 text-lg font-bold text-on-surface">{t('library.mobile.emptyTitle')}</h2>
+          <h2 className="mt-4 text-lg font-medium text-on-surface">{t('library.mobile.emptyTitle')}</h2>
           <p className="mt-2 text-sm font-medium leading-6 text-on-surface-variant">{t('library.mobile.emptyDesc')}</p>
         </section>
       ) : (
@@ -103,7 +103,7 @@ export default function MobileLibraryView({
                 key={roadmap.id}
                 to={`/library/${roadmap.slug}`}
                 data-mobile-roadmap-card={roadmap.id}
-                className="group block overflow-hidden rounded-3xl border border-outline-variant/30 bg-surface-container-lowest shadow-sm transition-all active:scale-[0.99]"
+                className="mobile-panel group block overflow-hidden transition-all active:scale-[0.99]"
               >
                 <div className="relative aspect-[16/9] overflow-hidden bg-surface-container-high">
                   <img
@@ -114,11 +114,11 @@ export default function MobileLibraryView({
                   />
                   <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-scrim/60 to-transparent" />
                   <div className="absolute left-3 top-3 flex flex-wrap gap-2">
-                    <span className={`${specs.badgeClass} rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider`}>
+                    <span className={`${specs.badgeClass} rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-wider`}>
                       {specs.badge}
                     </span>
                     {isResuming && (
-                      <span className="rounded-full bg-primary text-on-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider">
+                      <span className="rounded-full bg-primary text-on-primary px-3 py-1 text-[10px] font-medium uppercase tracking-wider">
                         {t('library.mobile.resumeBadge')}
                       </span>
                     )}
@@ -128,8 +128,8 @@ export default function MobileLibraryView({
                 <div className="space-y-4 p-4">
                   <div className="space-y-2">
                     <div className="flex items-start justify-between gap-3">
-                      <h2 className="text-lg font-bold leading-tight text-on-surface">{roadmap.name}</h2>
-                      <span className="shrink-0 text-base font-bold tabular-nums text-primary">{progress}%</span>
+                      <h2 className="text-lg font-medium leading-tight text-on-surface">{roadmap.name}</h2>
+                      <span className="shrink-0 text-base font-medium tabular-nums text-primary">{progress}%</span>
                     </div>
                     <p className="line-clamp-2 text-sm font-medium leading-6 text-on-surface-variant">
                       {roadmap.description || t('library.card.defaultDesc')}
@@ -137,7 +137,7 @@ export default function MobileLibraryView({
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                    <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-wider text-on-surface-variant">
                       <span>{isCompleted ? t('library.mobile.completedHint') : t('library.mobile.progressLabel')}</span>
                       {stats && (
                         <span>
@@ -153,7 +153,7 @@ export default function MobileLibraryView({
                     </div>
                   </div>
 
-                  <span className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl text-sm font-bold transition-all ${
+                  <span className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all ${
                     isCompleted
                       ? 'bg-secondary-container text-on-secondary-container'
                       : 'bg-primary text-on-primary'

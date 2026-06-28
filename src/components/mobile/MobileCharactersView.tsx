@@ -53,22 +53,22 @@ export default function MobileCharactersView({
   const { t } = useTranslation()
 
   return (
-    <main data-mobile-characters className="min-h-full bg-surface px-4 pb-6 pt-3">
+    <main data-mobile-characters className="mobile-page min-h-full">
       <Link
         to="/progress"
-        className="mb-3 inline-flex min-h-11 items-center gap-1 rounded-full bg-surface-container-low px-3 text-xs font-bold text-primary"
+        className="mb-3 inline-flex min-h-11 items-center gap-1 rounded-full bg-surface-container-low px-3 text-xs font-medium text-primary"
       >
         <span className="material-symbols-outlined text-base" aria-hidden="true">chevron_left</span>
         {t('profileMobile.hubEyebrow')}
       </Link>
 
-      <section className="rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ring-outline-variant/30">
+      <section className="mobile-panel p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-primary">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-primary">
               {t('characters.availableXp')}
             </p>
-            <h1 className="mt-1 text-xl font-bold leading-tight text-on-surface">
+            <h1 className="mt-1 text-xl font-medium leading-tight text-on-surface">
               {t('profileMobile.characterRoster')}
             </h1>
             <p className="mt-2 text-sm font-medium leading-5 text-on-surface-variant">
@@ -76,22 +76,22 @@ export default function MobileCharactersView({
             </p>
           </div>
           <div className="shrink-0 rounded-2xl bg-primary-container px-3 py-2 text-right text-on-primary-container">
-            <p className="text-[10px] font-bold uppercase tracking-wider opacity-75">{t('characters.availableXp')}</p>
-            <p className="text-base font-bold tabular-nums">{t('rewards.xpAmount', { xp: collection?.availableXp ?? 0 })}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wider opacity-75">{t('characters.availableXp')}</p>
+            <p className="text-base font-medium tabular-nums">{t('rewards.xpAmount', { xp: collection?.availableXp ?? 0 })}</p>
           </div>
         </div>
       </section>
 
       {characterError && (
-        <div className="mt-4 rounded-2xl bg-error/10 p-3 text-sm font-bold text-error">
+        <div className="mt-4 rounded-2xl bg-error/10 p-3 text-sm font-medium text-error">
           {t(characterError)}
         </div>
       )}
 
       {collection?.selectedCharacter && (
-        <section className="mt-4 rounded-3xl bg-secondary text-on-secondary p-4">
-          <p className="text-[11px] font-bold uppercase tracking-wider opacity-75">{t('profileMobile.activeCharacter')}</p>
-          <p className="mt-1 text-lg font-bold">{t(collection.selectedCharacter.nameKey)}</p>
+        <section className="mobile-panel mt-4 p-4">
+          <p className="text-[11px] font-medium uppercase tracking-wider opacity-75">{t('profileMobile.activeCharacter')}</p>
+          <p className="mt-1 text-lg font-medium">{t(collection.selectedCharacter.nameKey)}</p>
         </section>
       )}
 
@@ -105,7 +105,7 @@ export default function MobileCharactersView({
             <article
               key={character.id}
               data-mobile-character-card={character.id}
-              className={`rounded-3xl bg-surface-container-lowest p-4 shadow-sm ring-1 ${
+              className={`mobile-panel p-4 ${
                 item.selected ? 'ring-primary/50' : 'ring-outline-variant/30'
               }`}
             >
@@ -129,10 +129,10 @@ export default function MobileCharactersView({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <h2 className="truncate text-base font-bold text-on-surface">
+                      <h2 className="truncate text-base font-medium text-on-surface">
                         {t(item.currentStageDefinition.nameKey)}
                       </h2>
-                      <p className="mt-1 text-xs font-bold uppercase tracking-wider text-on-surface-variant/65">
+                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-on-surface-variant/65">
                         {t(`characters.rarity.${character.rarity}`)}
                       </p>
                     </div>
@@ -151,10 +151,10 @@ export default function MobileCharactersView({
 
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/65">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-on-surface-variant/65">
                     {item.unlocked ? t('characters.evolutionCost') : t('characters.cost')}
                   </p>
-                  <p className="mt-1 text-sm font-bold text-on-surface">
+                  <p className="mt-1 text-sm font-medium text-on-surface">
                     {item.unlocked
                       ? item.maxed
                         ? t('characters.maxStage')
@@ -184,7 +184,7 @@ export default function MobileCharactersView({
                         await onUnlockCharacter(character.id)
                       }
                     }}
-                    className={`min-h-11 rounded-2xl px-4 text-xs font-bold transition-all active:scale-95 ${
+                    className={`min-h-11 rounded-2xl px-4 text-xs font-medium transition-all active:scale-95 ${
                       primaryDisabled
                         ? 'bg-surface-container text-on-surface-variant'
                         : 'bg-primary text-on-primary'
@@ -207,7 +207,7 @@ export default function MobileCharactersView({
                         type="button"
                         disabled={isMutatingCharacter}
                         onClick={() => onSelectCharacter(character.id)}
-                        className="min-h-11 rounded-2xl border border-primary/20 px-4 text-xs font-bold text-primary transition-all active:scale-95 disabled:border-outline-variant disabled:text-on-surface-variant"
+                        className="min-h-11 rounded-2xl border border-primary/20 px-4 text-xs font-medium text-primary transition-all active:scale-95 disabled:border-outline-variant disabled:text-on-surface-variant"
                       >
                         {t('characters.actions.select')}
                       </button>

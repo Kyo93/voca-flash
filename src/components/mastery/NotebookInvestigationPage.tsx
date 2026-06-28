@@ -65,13 +65,13 @@ export function NotebookInvestigationPage({
             <div data-testid="notebook-title-line" className="notebook-on-rule-text mb-1 flex items-start justify-between gap-5">
               <h3
                 data-testid="notebook-headword"
-                className="notebook-engraved-text font-serif break-words text-5xl font-black leading-none tracking-normal text-on-surface md:text-6xl"
+                className="notebook-engraved-text font-serif break-words text-5xl font-semibold leading-none tracking-normal text-on-surface md:text-6xl"
               >
                 {word.word}
               </h3>
               <div className="mt-3 flex items-center gap-2">
                 {levelLabel && (
-                  <span className="rounded-lg bg-primary px-3 py-1 text-xs font-bold leading-none text-on-primary">
+                  <span className="rounded-lg bg-primary px-3 py-1 text-xs font-medium leading-none text-on-primary">
                     {levelLabel}
                   </span>
                 )}
@@ -98,7 +98,7 @@ export function NotebookInvestigationPage({
                   </span>
                 )}
                 {word.pos && (
-                  <span className="rounded-md border border-primary/20 bg-primary-container/20 px-2 py-0.5 text-[10px] font-bold uppercase leading-none text-primary">
+                  <span className="rounded-md border border-primary/20 bg-primary-container/20 px-2 py-0.5 text-[10px] font-medium uppercase leading-none text-primary">
                     {t(`common.pos.${word.pos}`)}
                   </span>
                 )}

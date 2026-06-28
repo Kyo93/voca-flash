@@ -23,9 +23,9 @@ export default function ForecastMiniChart({ forecast }: ForecastMiniChartProps) 
         <div className="flex justify-between items-start mb-5">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-white/60 text-lg">event_repeat</span>
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 block">{t('home.forecast')}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 block">{t('home.forecast')}</span>
           </div>
-          <span className="text-[11px] font-black text-white/60">
+          <span className="text-[11px] font-semibold text-white/60">
             {forecast.reduce((a, b) => a + b, 0)}
           </span>
         </div>
@@ -42,7 +42,7 @@ export default function ForecastMiniChart({ forecast }: ForecastMiniChartProps) 
               <div key={i} className="flex-1 h-full flex flex-col items-center justify-end gap-2">
                 <div className="relative w-full flex-1 flex flex-col items-center justify-end group/bar">
                   {count > 0 && (
-                    <span className="absolute -top-5 text-[8px] font-bold text-white/50 opacity-100 group-hover/bar:text-white transition-all">
+                    <span className="absolute -top-5 text-[8px] font-medium text-white/50 opacity-100 group-hover/bar:text-white transition-all">
                       {count}
                     </span>
                   )}
@@ -51,7 +51,7 @@ export default function ForecastMiniChart({ forecast }: ForecastMiniChartProps) 
                     style={{ height: `${height}%` }}
                   />
                 </div>
-                <span className="text-[8px] font-bold text-white/30 whitespace-nowrap">{dayLabel}</span>
+                <span className="text-[8px] font-medium text-white/30 whitespace-nowrap">{dayLabel}</span>
               </div>
             )
           })}

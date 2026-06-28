@@ -22,7 +22,7 @@ export default function LibraryPage() {
       <div className="flex-1 flex items-center justify-center p-20">
         <div className="flex flex-col items-center gap-4">
           <span className="material-symbols-outlined text-5xl text-primary animate-spin">progress_activity</span>
-          <p className="text-on-surface-variant font-bold">{t('library.loading')}</p>
+          <p className="text-on-surface-variant font-medium">{t('library.loading')}</p>
         </div>
       </div>
     )
@@ -47,8 +47,8 @@ export default function LibraryPage() {
       <div className="mb-12 relative flex items-end justify-between">
         <div className="relative">
           <div className="absolute -top-12 -left-12 w-64 h-64 bg-primary-container/10 rounded-full blur-3xl -z-10"></div>
-          <span className="label-md uppercase tracking-[0.2em] text-secondary font-bold mb-3 block">{t('library.tagline')}</span>
-          <h2 className="text-5xl font-black text-on-surface tracking-tight mb-4">{t('library.title')}</h2>
+          <span className="label-md uppercase tracking-[0.2em] text-secondary font-medium mb-3 block">{t('library.tagline')}</span>
+          <h2 className="text-5xl font-semibold text-on-surface tracking-tight mb-4">{t('library.title')}</h2>
           <p className="text-lg text-on-surface-variant max-w-xl leading-relaxed">
             {t('library.description')}
           </p>
@@ -68,7 +68,7 @@ export default function LibraryPage() {
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
-            className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${activeFilter === filter
+            className={`px-6 py-2 rounded-full text-xs font-medium transition-all ${activeFilter === filter
                 ? 'bg-secondary text-white shadow-md'
                 : 'bg-surface-container-low text-stone-500 hover:bg-surface-container'
               }`}
@@ -101,21 +101,21 @@ export default function LibraryPage() {
                 />
               </div>
               <div className="flex justify-between w-full mb-3">
-                <span className={`${specs.badgeClass} text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider`}>
+                <span className={`${specs.badgeClass} text-[9px] font-medium px-2 py-1 rounded uppercase tracking-wider`}>
                   {specs.badge}
                 </span>
                 {stats && stats.total > 0 && (
-                  <span className="text-xs font-bold text-stone-500">
+                  <span className="text-xs font-medium text-stone-500">
                     {stats.mastered} / {stats.total}
                   </span>
                 )}
               </div>
-              <h3 className="text-xl font-bold mb-2 text-on-surface">{roadmap.name}</h3>
+              <h3 className="text-xl font-medium mb-2 text-on-surface">{roadmap.name}</h3>
               <p className="text-on-surface-variant mb-6 text-xs leading-relaxed line-clamp-3">
                 {roadmap.description || t('library.card.defaultDesc')}
               </p>
 
-              <button className={`mt-auto w-full py-3 ${isCompleted ? 'bg-secondary/15 text-secondary' : specs.btnClass} text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95`}>
+              <button className={`mt-auto w-full py-3 ${isCompleted ? 'bg-secondary/15 text-secondary' : specs.btnClass} text-sm font-medium rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95`}>
                 {isCompleted ? t('library.card.completed') : isResuming ? t('library.card.resume') : t('library.card.start')}
                 {!isCompleted && <span className="material-symbols-outlined text-xs">arrow_forward</span>}
               </button>
@@ -131,11 +131,11 @@ export default function LibraryPage() {
             <span className="material-symbols-outlined">quiz</span>
           </div>
           <div>
-            <h4 className="text-lg font-bold text-on-surface">{t('library.assessment.title')}</h4>
+            <h4 className="text-lg font-medium text-on-surface">{t('library.assessment.title')}</h4>
             <p className="text-on-surface-variant text-sm">{t('library.assessment.subtitle')}</p>
           </div>
         </div>
-        <button className="px-8 py-3 bg-white text-primary font-bold rounded-xl border-2 border-primary/10 hover:border-primary/30 transition-all active:scale-95 shadow-sm whitespace-nowrap">
+        <button className="px-8 py-3 bg-white text-primary font-medium rounded-xl border-2 border-primary/10 hover:border-primary/30 transition-all active:scale-95 shadow-sm whitespace-nowrap">
           {t('library.assessment.cta')}
         </button>
       </div>

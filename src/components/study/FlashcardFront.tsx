@@ -18,7 +18,7 @@ const FlashcardFront = memo(({ card }: FlashcardFrontProps) => {
   const imagePosition = card.image_position || 'center'
 
   return (
-    <div className="w-full h-full bg-surface-container-lowest rounded-xl shadow-[0px_12px_32px_rgba(26,27,33,0.06)] overflow-hidden flex flex-col border border-outline-variant/10 relative">
+    <div className="w-full h-full bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col border border-outline-variant/20 relative">
       {/* 4:3 Visual Context Image */}
       <div className="aspect-4/3 w-full overflow-hidden bg-surface-container-low relative">
         <img
@@ -52,7 +52,7 @@ const FlashcardFront = memo(({ card }: FlashcardFrontProps) => {
         {/* Contextual Usage */}
         {card.example && (
           <div className="space-y-2 sm:space-y-3">
-            <span className="font-label text-[10px] uppercase tracking-widest text-outline font-bold block">
+            <span className="font-label text-[10px] uppercase tracking-widest text-outline font-medium block">
               {t('flashcard.contextUsage')}
             </span>
             <blockquote className="border-l-2 border-surface-container-highest py-1 pl-4 text-left text-sm italic leading-6 text-on-surface-variant sm:text-lg sm:leading-relaxed">

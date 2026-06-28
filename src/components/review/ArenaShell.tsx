@@ -49,9 +49,9 @@ export default function ArenaShell({
       {/* Error Alert Overlay */}
       {syncError && (
         <div className="absolute top-20 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-top-4 duration-300">
-          <div className="bg-red-500/10 border border-red-500/20 backdrop-blur-xl px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl">
+          <div className="bg-red-500/10 border border-red-500/20 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl">
             <span className="material-symbols-outlined text-red-500 text-sm animate-pulse">cloud_off</span>
-            <p className="text-red-500/80 font-black text-[10px] uppercase tracking-widest">{syncError}</p>
+            <p className="text-red-500/80 font-semibold text-[10px] uppercase tracking-widest">{syncError}</p>
           </div>
         </div>
       )}
@@ -81,19 +81,19 @@ export default function ArenaShell({
           className="flex min-h-11 items-center gap-2 hover:text-white transition-all group px-3 sm:px-4 py-2 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10"
         >
           <span className="material-symbols-outlined text-xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
-          <span className="font-black text-[10px] tracking-[0.2em] uppercase">{t('arena.exit')}</span>
+          <span className="font-semibold text-[10px] tracking-[0.2em] uppercase">{t('arena.exit')}</span>
         </button>
 
         <div className="flex items-center gap-2 sm:gap-8">
-          <div className="flex items-center gap-3 bg-white/5 py-1.5 px-4 rounded-full border border-white/10 backdrop-blur-md">
-            <span className="text-primary font-black text-xs">{currentIndex + 1}</span>
+          <div className="flex items-center gap-3 bg-white/5 py-1.5 px-4 rounded-full border border-white/10">
+            <span className="text-primary font-semibold text-xs">{currentIndex + 1}</span>
             <span className="text-white/20 text-[10px]">/</span>
-            <span className="text-white/40 font-black text-xs">{total}</span>
+            <span className="text-white/40 font-semibold text-xs">{total}</span>
           </div>
 
           <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
-            <span className="material-symbols-outlined text-lg font-black" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-            <span className="font-black text-sm">{points}</span>
+            <span className="material-symbols-outlined text-lg font-semibold" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+            <span className="font-semibold text-sm">{points}</span>
           </div>
 
           {rewardProgress && (
@@ -105,7 +105,7 @@ export default function ArenaShell({
                 {rewardProgress.currentLevel.icon}
               </span>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2 text-[9px] font-black uppercase tracking-widest">
+                <div className="flex items-center justify-between gap-2 text-[9px] font-semibold uppercase tracking-widest">
                   <span>{t('rewards.levelShort', { level: rewardProgress.currentLevel.level })}</span>
                   <span className="text-white/30">{t('rewards.xpAmount', { xp: rewardProgress.totalXp })}</span>
                 </div>
@@ -117,7 +117,7 @@ export default function ArenaShell({
           )}
 
           {modeLabel && (
-            <div className="hidden md:block px-3 py-1 rounded-full border border-white/10 text-[9px] font-black uppercase tracking-widest text-white/20">
+            <div className="hidden md:block px-3 py-1 rounded-full border border-white/10 text-[9px] font-semibold uppercase tracking-widest text-white/20">
               {modeLabel}
             </div>
           )}
@@ -138,7 +138,7 @@ export default function ArenaShell({
       )}
 
       {/* Footer Hotkeys */}
-      <div className="hidden sm:flex py-10 text-white/20 flex-wrap justify-center gap-8 font-black text-[9px] tracking-[0.2em] uppercase relative z-50">
+      <div className="hidden sm:flex py-10 text-white/20 flex-wrap justify-center gap-8 font-semibold text-[9px] tracking-[0.2em] uppercase relative z-50">
         {displayHotkeys.map((hk, i) => (
           <div key={i} className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
             <kbd className="px-2 py-1 bg-white/5 rounded-lg border border-white/10 min-w-[32px] text-center text-white/40">{hk.key}</kbd>

@@ -1051,6 +1051,10 @@
     "mastered": "Mastered",
     "masteredDesc": "From other topics or completed",
     "masteredPrompt": "Do you want to review the {{count}} mastered words?",
+    "loadError": {
+      "title": "Study data could not load",
+      "desc": "The learning data connection is having trouble. Go back to your roadmap and try opening the lesson again in a few minutes."
+    },
     "skipMastered": "No, skip them",
     "includeMastered": "Yes, review all",
     "learnOnlyNew": "Learn only new",
@@ -1076,6 +1080,7 @@
   "settings": {
     "title": "Personal Settings",
     "subtitle": "Customize your learning experience to fit your style.",
+    "profile": "Profile",
     "profileTitle": "Profile & Account",
     "profileDesc": "Edit your personal information displayed publicly on the app.",
     "displayName": "Display Name",
@@ -1196,6 +1201,9 @@
   },
   "admin": {
     "words": {
+      "title": "Vocabulary",
+      "count": "{{count}} words in the vault",
+      "addWord": "Add word",
       "searchPlaceholder": "Search words...",
       "allTopics": "All Topics",
       "newest": "Newest",

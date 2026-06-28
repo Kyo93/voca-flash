@@ -45,7 +45,7 @@ export default function ImageUrlField({
   label,
   placeholder = 'https://...',
   inputClassName = 'w-full px-4 py-3 rounded-xl border-2 border-orange-100 bg-orange-50/30 text-secondary text-sm outline-none focus:border-primary focus:bg-white transition-all',
-  labelClassName = 'block text-sm font-bold text-secondary mb-2',
+  labelClassName = 'block text-sm font-medium text-secondary mb-2',
   previewAspect = 'aspect-video',
   previewWrapperClassName = 'mt-3 w-full overflow-hidden rounded-xl border-2 border-stone-200 bg-stone-50',
   emptyState,

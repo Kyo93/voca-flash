@@ -33,7 +33,7 @@ const ChallengeTextInput = forwardRef<HTMLInputElement, ChallengeTextInputProps>
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
           placeholder={placeholder}
-          className={`w-full rounded-2xl border-2 bg-surface-container-low p-4 text-center font-headline ${textSize} font-black text-primary outline-none transition-all placeholder:text-primary/20 sm:p-5 ${placeholderClassName} ${
+          className={`w-full rounded-2xl border-2 bg-surface-container-low p-4 text-center font-headline ${textSize} font-semibold text-primary outline-none transition-all placeholder:text-primary/20 sm:p-5 ${placeholderClassName} ${
             isWrong
               ? 'border-error bg-error/5 animate-[shake_0.4s_cubic-bezier(.36,.07,.19,.97)_both]'
               : 'border-outline-variant/20 focus:border-primary shadow-sm'
@@ -49,7 +49,7 @@ const ChallengeTextInput = forwardRef<HTMLInputElement, ChallengeTextInputProps>
               exit={{ opacity: 0 }}
               className="absolute -bottom-10 left-0 right-0 text-center"
             >
-              <span className="text-[9px] font-bold uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
+              <span className="text-[9px] font-medium uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
                 {t('arena.pressEnterToConfirm')}
               </span>
             </motion.div>

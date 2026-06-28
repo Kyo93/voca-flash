@@ -14,7 +14,7 @@ export function ImportResultSummary({ result }: ImportResultSummaryProps) {
     <div className="space-y-4 py-6">
       <div className="flex flex-col items-center gap-3">
         <span className="material-symbols-outlined text-6xl text-green-500">task_alt</span>
-        <p className="text-xl font-black text-secondary">
+        <p className="text-xl font-semibold text-secondary">
           {result.inserted > 0
             ? t('admin.import.importSuccess', { count: result.inserted })
             : t('admin.import.importFailed')
@@ -24,7 +24,7 @@ export function ImportResultSummary({ result }: ImportResultSummaryProps) {
         {result.submitted > 0 && result.inserted !== result.submitted && (
           <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
             <span className="material-symbols-outlined text-red-500 text-lg">warning</span>
-            <p className="text-sm font-bold text-red-600">
+            <p className="text-sm font-medium text-red-600">
               {t('admin.import.criticalError', { submitted: result.submitted, inserted: result.inserted })}
             </p>
           </div>
@@ -34,7 +34,7 @@ export function ImportResultSummary({ result }: ImportResultSummaryProps) {
           <div className="w-full">
             <button
               onClick={() => setShowErrorDetail(d => !d)}
-              className="text-sm font-bold text-red-600 hover:text-red-700"
+              className="text-sm font-medium text-red-600 hover:text-red-700"
             >
               {showErrorDetail ? t('admin.import.hideErrors') : t('admin.import.viewErrors')} ({result.errors.length})
             </button>

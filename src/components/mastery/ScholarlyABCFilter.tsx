@@ -15,7 +15,7 @@ export default function ScholarlyABCFilter({ selectedLetter, onLetterSelect }: S
       <button
         onClick={() => onLetterSelect(null)}
         className={`
-          px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300
+          px-3 py-1.5 rounded-lg text-[10px] font-semibold uppercase tracking-widest transition-all duration-300
           ${selectedLetter === null 
             ? 'bg-primary text-on-primary shadow-md' 
             : 'text-on-surface-variant/40 hover:text-primary hover:bg-primary/5'}
@@ -31,7 +31,7 @@ export default function ScholarlyABCFilter({ selectedLetter, onLetterSelect }: S
           key={letter}
           onClick={() => onLetterSelect(letter)}
           className={`
-            w-8 h-8 flex items-center justify-center rounded-lg text-[11px] font-black transition-all duration-300
+            w-8 h-8 flex items-center justify-center rounded-lg text-[11px] font-semibold transition-all duration-300
             ${selectedLetter === letter 
               ? 'bg-primary text-on-primary shadow-md scale-110' 
               : 'text-on-surface-variant/40 hover:text-primary hover:bg-primary/5 hover:scale-105'}
@@ -44,7 +44,7 @@ export default function ScholarlyABCFilter({ selectedLetter, onLetterSelect }: S
       <button
         onClick={() => onLetterSelect('#')}
         className={`
-          w-8 h-8 flex items-center justify-center rounded-lg text-[11px] font-black transition-all duration-300
+          w-8 h-8 flex items-center justify-center rounded-lg text-[11px] font-semibold transition-all duration-300
           ${selectedLetter === '#' 
             ? 'bg-primary text-on-primary shadow-md scale-110' 
             : 'text-on-surface-variant/40 hover:text-primary hover:bg-primary/5 hover:scale-105'}

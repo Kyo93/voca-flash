@@ -46,7 +46,7 @@ export function NotebookControlRail({
             aria-pressed={viewStyle === option.value}
             onClick={() => onStyleChange(option.value)}
             className={classes(
-              'flex min-h-12 w-full flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-center text-[10px] font-black uppercase leading-tight transition-all',
+              'flex min-h-12 w-full flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-center text-[10px] font-semibold uppercase leading-tight transition-all',
               viewStyle === option.value
                 ? 'bg-surface-container-lowest text-primary sun-drenched-shadow'
                 : 'text-on-surface-variant/60 hover:bg-surface-container-low hover:text-on-surface',
@@ -69,7 +69,7 @@ export function NotebookControlRail({
             aria-pressed={density === option}
             onClick={() => onDensityChange(option)}
             className={classes(
-              'min-h-10 rounded-2xl px-2 py-2 text-[10px] font-black uppercase leading-tight transition-all',
+              'min-h-10 rounded-2xl px-2 py-2 text-[10px] font-semibold uppercase leading-tight transition-all',
               density === option
                 ? 'bg-surface-container-lowest text-secondary sun-drenched-shadow'
                 : 'text-on-surface-variant/60 hover:bg-surface-container-low hover:text-on-surface',
@@ -88,7 +88,7 @@ export function NotebookControlRail({
         aria-pressed={showImages}
         onClick={() => onShowImagesChange(!showImages)}
         className={classes(
-          'flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-center text-[10px] font-black uppercase leading-tight transition-all',
+          'flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-center text-[10px] font-semibold uppercase leading-tight transition-all',
           showImages
             ? 'bg-secondary text-on-secondary'
             : 'bg-surface-container text-on-surface-variant/60 hover:text-on-surface',

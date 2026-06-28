@@ -61,7 +61,7 @@ export default function ScholarlyFilterBar({
           <select
             value={selectedRoadmap || ''}
             onChange={(e) => setSelectedRoadmap(e.target.value || null)}
-            className="appearance-none pl-4 pr-10 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-bold text-xs rounded-full transition-all cursor-pointer focus:ring-2 focus:ring-primary/20 outline-hidden"
+            className="appearance-none pl-4 pr-10 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-medium text-xs rounded-full transition-all cursor-pointer focus:ring-2 focus:ring-primary/20 outline-hidden"
           >
             <option value="">{t('mastery.filters.allRoadmaps')}</option>
             {roadmaps.map(roadmap => (
@@ -76,7 +76,7 @@ export default function ScholarlyFilterBar({
           <select
             value={selectedStability || ''}
             onChange={(e) => setSelectedStability(e.target.value || null)}
-            className="appearance-none pl-4 pr-10 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-bold text-xs rounded-full transition-all cursor-pointer focus:ring-2 focus:ring-primary/20 outline-hidden"
+            className="appearance-none pl-4 pr-10 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-medium text-xs rounded-full transition-all cursor-pointer focus:ring-2 focus:ring-primary/20 outline-hidden"
           >
             <option value="">{t('mastery.filters.allStability')}</option>
             {stabilityOptions.map(opt => (
@@ -93,7 +93,7 @@ export default function ScholarlyFilterBar({
           <button
             key={f}
             onClick={() => setActiveFilter(activeFilter === f ? 'all' : f)}
-            className={`px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+            className={`px-5 py-2.5 rounded-full text-[10px] font-semibold uppercase tracking-widest transition-all ${
               activeFilter === f
                 ? 'bg-secondary text-white shadow-lg shadow-secondary/20'
                 : 'bg-surface-container-low text-on-surface-variant/60 hover:bg-surface-container'
@@ -106,12 +106,12 @@ export default function ScholarlyFilterBar({
 
       {/* Sort By Selector */}
       <div className="flex items-center gap-3">
-        <span className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/40">{t('mastery.filters.sortBy')}:</span>
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant/40">{t('mastery.filters.sortBy')}:</span>
         <div className="relative group">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="appearance-none pl-4 pr-10 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-bold text-xs rounded-full transition-all cursor-pointer focus:ring-2 focus:ring-primary/20 outline-hidden"
+            className="appearance-none pl-4 pr-10 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-medium text-xs rounded-full transition-all cursor-pointer focus:ring-2 focus:ring-primary/20 outline-hidden"
           >
             {sortOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>

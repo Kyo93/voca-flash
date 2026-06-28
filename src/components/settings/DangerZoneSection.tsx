@@ -73,7 +73,7 @@ export default function DangerZoneSection() {
         {/* Reset Topic */}
         <div className="bg-stone-50/50 p-6 rounded-3xl border border-stone-200/60 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-md">
-            <h3 className="font-black text-secondary mb-1">{t('settings.resetProgress')}</h3>
+            <h3 className="font-semibold text-secondary mb-1">{t('settings.resetProgress')}</h3>
             <p className="text-[11px] text-stone-400 font-medium leading-relaxed">{t('settings.resetProgressDesc')}</p>
           </div>
 
@@ -97,7 +97,7 @@ export default function DangerZoneSection() {
             <button
               disabled={!selectedTopicId || loading}
               onClick={() => setShowConfirmReset(true)}
-              className="px-6 py-3 bg-rose-50 text-rose-600 font-black rounded-2xl hover:bg-rose-100 transition-all disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap text-sm shadow-sm"
+              className="px-6 py-3 bg-rose-50 text-rose-600 font-semibold rounded-2xl hover:bg-rose-100 transition-all disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap text-sm shadow-sm"
             >
               {t('settings.resetAction')}
             </button>
@@ -107,14 +107,14 @@ export default function DangerZoneSection() {
         {/* Reset Global */}
         <div className="bg-rose-50/30 p-6 rounded-3xl border border-rose-100/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-md">
-            <h3 className="font-black text-rose-700 mb-1">{t('settings.resetGlobal')}</h3>
+            <h3 className="font-semibold text-rose-700 mb-1">{t('settings.resetGlobal')}</h3>
             <p className="text-[11px] text-rose-600/70 font-medium leading-relaxed">{t('settings.resetGlobalDesc')}</p>
           </div>
 
           <button
             disabled={loading}
             onClick={() => setShowConfirmGlobal(true)}
-            className="px-6 py-3 bg-rose-600 text-white font-black rounded-2xl hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap text-sm shadow-lg shadow-rose-200"
+            className="px-6 py-3 bg-rose-600 text-white font-semibold rounded-2xl hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap text-sm shadow-lg shadow-rose-200"
           >
             {t('settings.resetGlobal')}
           </button>
@@ -127,7 +127,7 @@ export default function DangerZoneSection() {
             <span className="material-symbols-outlined font-variation-fill">
               {message.type === 'success' ? 'check_circle' : 'error'}
             </span>
-            <span className="font-bold text-sm">{message.text}</span>
+            <span className="font-medium text-sm">{message.text}</span>
           </div>
         )}
 
@@ -135,7 +135,7 @@ export default function DangerZoneSection() {
         <div className="pt-4 border-t border-stone-100 flex justify-start">
           <button
             onClick={() => signOut()}
-            className="flex items-center gap-2 px-8 py-4 bg-stone-100 text-stone-500 hover:text-stone-700 hover:bg-stone-200 font-black text-sm rounded-2xl transition-all hover:scale-105 active:scale-95"
+            className="flex items-center gap-2 px-8 py-4 bg-stone-100 text-stone-500 hover:text-stone-700 hover:bg-stone-200 font-semibold text-sm rounded-2xl transition-all hover:scale-105 active:scale-95"
           >
             <span className="material-symbols-outlined">logout</span>
             {t('settings.logout')}
@@ -151,26 +151,26 @@ export default function DangerZoneSection() {
               <span className="material-symbols-outlined text-4xl font-variation-fill">delete_forever</span>
             </div>
 
-            <h3 className="text-2xl font-black text-center text-secondary mb-3">
+            <h3 className="text-2xl font-semibold text-center text-secondary mb-3">
               {t('settings.resetGlobalConfirm')}
             </h3>
 
             <p className="text-center text-stone-400 font-medium mb-10 leading-relaxed">
               {t('settings.resetConfirm')} <br />
-              <span className="text-rose-500 font-black mt-2 block">{t('settings.resetDesc')}</span>
+              <span className="text-rose-500 font-semibold mt-2 block">{t('settings.resetDesc')}</span>
             </p>
 
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => setShowConfirmReset(false)}
-                className="px-6 py-4 font-black text-stone-500 bg-stone-100 rounded-2xl hover:bg-stone-200 transition-all active:scale-95"
+                className="px-6 py-4 font-semibold text-stone-500 bg-stone-100 rounded-2xl hover:bg-stone-200 transition-all active:scale-95"
               >
                 {t('settings.cancel')}
               </button>
               <button
                 onClick={handleResetTopic}
                 disabled={loading}
-                className="px-6 py-4 font-black text-white bg-rose-500 rounded-2xl hover:bg-rose-600 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-rose-200"
+                className="px-6 py-4 font-semibold text-white bg-rose-500 rounded-2xl hover:bg-rose-600 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-rose-200"
               >
                 {loading && <span className="material-symbols-outlined animate-spin font-variation-fill text-xl">progress_activity</span>}
                 {loading ? t('settings.deleting') : t('settings.confirmDelete')}
@@ -188,11 +188,11 @@ export default function DangerZoneSection() {
               <span className="material-symbols-outlined text-5xl font-variation-fill">bomb</span>
             </div>
 
-            <h3 className="text-3xl font-black text-center text-rose-700 mb-4">
+            <h3 className="text-3xl font-semibold text-center text-rose-700 mb-4">
               {t('settings.resetGlobalConfirm')}
             </h3>
 
-            <p className="text-center text-stone-500 font-bold mb-10 leading-relaxed px-4">
+            <p className="text-center text-stone-500 font-medium mb-10 leading-relaxed px-4">
               {t('settings.resetGlobalDesc')} <br />
               <span className="text-rose-600 bg-rose-50 px-3 py-1 rounded-lg mt-4 inline-block transform -rotate-1">{t('settings.cannotUndo')}</span>
             </p>
@@ -201,14 +201,14 @@ export default function DangerZoneSection() {
               <button
                 onClick={handleResetGlobal}
                 disabled={loading}
-                className="w-full py-5 font-black text-white bg-rose-600 rounded-3xl hover:bg-rose-700 transition-all flex items-center justify-center gap-3 active:scale-[0.98] shadow-xl shadow-rose-200"
+                className="w-full py-5 font-semibold text-white bg-rose-600 rounded-3xl hover:bg-rose-700 transition-all flex items-center justify-center gap-3 active:scale-[0.98] shadow-xl shadow-rose-200"
               >
                 {loading && <span className="material-symbols-outlined animate-spin font-variation-fill">progress_activity</span>}
                 {loading ? t('settings.deleting') : t('settings.confirmDelete')}
               </button>
               <button
                 onClick={() => setShowConfirmGlobal(false)}
-                className="w-full py-5 font-black text-stone-400 bg-stone-100 rounded-3xl hover:bg-stone-200 transition-all active:scale-[0.98]"
+                className="w-full py-5 font-semibold text-stone-400 bg-stone-100 rounded-3xl hover:bg-stone-200 transition-all active:scale-[0.98]"
               >
                 {t('settings.cancel')}
               </button>

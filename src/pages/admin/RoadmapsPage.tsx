@@ -13,7 +13,7 @@ function StatusBadge({ active }: { active: boolean }) {
   const { t } = useTranslation()
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
         active
           ? 'bg-green-50 text-green-600 border border-green-200'
           : 'bg-stone-100 text-stone-500'
@@ -85,14 +85,14 @@ export default function AdminRoadmapsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-black text-secondary">{t('admin.roadmaps.title')}</h1>
+          <h1 className="text-3xl font-semibold text-secondary">{t('admin.roadmaps.title')}</h1>
           <p className="text-sm text-on-surface-variant mt-1">
             {loading ? '...' : t('admin.roadmaps.count', { count: roadmaps.length })}
           </p>
         </div>
         <button
           onClick={() => { setEditData(null); setShowModal(true) }}
-          className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
+          className="flex items-center gap-2 px-5 py-3 primary-gradient text-white font-medium rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
         >
           <span className="material-symbols-outlined text-sm">add</span>
           {t('admin.roadmaps.addRoadmap')}
@@ -147,12 +147,12 @@ export default function AdminRoadmapsPage() {
                 <div className="px-2 grow">
                   <div className="mb-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{r.slug}</span>
-                      <span className="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/10">
+                      <span className="text-[10px] font-semibold text-stone-300 uppercase tracking-widest">{r.slug}</span>
+                      <span className="text-[10px] font-medium text-primary bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/10">
                         {t('admin.roadmaps.card.topics', { count: r.topic_count || 0 })}
                       </span>
                     </div>
-                    <h3 className="text-xl font-black text-secondary group-hover:text-primary transition-colors">{r.name}</h3>
+                    <h3 className="text-xl font-semibold text-secondary group-hover:text-primary transition-colors">{r.name}</h3>
                   </div>
                   <p className="text-sm text-stone-500 line-clamp-2 min-h-10 mb-6">
                     {r.description || t('admin.roadmaps.card.noDesc')}
@@ -162,7 +162,7 @@ export default function AdminRoadmapsPage() {
                 {/* Footer / Actions */}
                 <div className="pt-4 px-2 border-t border-stone-50 flex items-center justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-stone-300 uppercase font-bold">{t('admin.roadmaps.card.createdAt')}</span>
+                    <span className="text-[10px] text-stone-300 uppercase font-medium">{t('admin.roadmaps.card.createdAt')}</span>
                     <span className="text-xs text-stone-400 font-mono">{r.created_at ? new Date(r.created_at).toLocaleDateString(t('common.dateLocale')) : '—'}</span>
                   </div>
                   <div className="flex items-center gap-1">

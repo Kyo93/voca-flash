@@ -20,7 +20,7 @@ const FlashcardBack = memo(({
 }: FlashcardBackProps) => {
   const { t } = useTranslation()
   return (
-    <div className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-lowest p-6 text-center shadow-sm transition-all sm:p-12">
+    <div className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 text-center transition-all sm:p-12">
       {/* Background Texture (Subtle) */}
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -48,8 +48,8 @@ const FlashcardBack = memo(({
 
         {/* English Word (Small, Above) */}
         <div className="mb-3 mt-1 flex flex-col items-center sm:mb-4 sm:mt-2">
-          <span className="mb-1 font-label text-[10px] font-bold uppercase tracking-widest text-secondary">{t('flashcard.englishWord')}</span>
-          <h2 className="break-words font-headline text-2xl font-bold leading-tight tracking-tight text-primary sm:text-3xl">{card.front}</h2>
+          <span className="mb-1 font-label text-[10px] font-medium uppercase tracking-widest text-secondary">{t('flashcard.englishWord')}</span>
+          <h2 className="break-words font-headline text-2xl font-medium leading-tight tracking-tight text-primary sm:text-3xl">{card.front}</h2>
           <div className="mt-1 text-outline text-xs">
             <div className="flex items-center justify-center gap-3">
               <span>/{card.front}/</span>
@@ -66,8 +66,8 @@ const FlashcardBack = memo(({
 
         {/* Vietnamese Meaning (Prominent) */}
         <div className="grow flex flex-col items-center">
-          <span className="text-secondary font-label font-bold tracking-widest text-[10px] uppercase mb-2">{t('flashcard.meaning')}</span>
-          <p className="mb-5 font-headline text-2xl font-extrabold leading-tight text-on-surface sm:mb-8 sm:text-[32px] sm:font-black">
+          <span className="text-secondary font-label font-medium tracking-widest text-[10px] uppercase mb-2">{t('flashcard.meaning')}</span>
+          <p className="mb-5 font-headline text-2xl font-extrabold leading-tight text-on-surface sm:mb-8 sm:text-[32px] sm:font-semibold">
             {card.back}
           </p>
 
@@ -92,7 +92,7 @@ const FlashcardBack = memo(({
         </div>
 
         {/* Card Footer / Metadata */}
-        <div className="mt-auto flex items-center justify-between border-t border-outline-variant/15 pt-4 text-[10px] font-bold uppercase tracking-widest text-outline sm:pt-6">
+        <div className="mt-auto flex items-center justify-between border-t border-outline-variant/15 pt-4 text-[10px] font-medium uppercase tracking-widest text-outline sm:pt-6">
           <span className="text-stone-300 italic">{card.topic || t('flashcard.noTopic')}</span>
           <span className="flex items-center gap-1">
             <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>

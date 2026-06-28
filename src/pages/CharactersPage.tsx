@@ -80,12 +80,12 @@ export default function CharactersPage() {
           <div>
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-container transition-colors mb-4"
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-container transition-colors mb-4"
             >
               <span className="material-symbols-outlined text-base">chevron_left</span>
               {t('characters.backToDashboard')}
             </Link>
-            <h1 className="text-4xl lg:text-5xl font-black text-on-surface mb-3">
+            <h1 className="text-4xl lg:text-5xl font-semibold text-on-surface mb-3">
               {t('characters.title')}
             </h1>
             <p className="max-w-2xl text-lg text-on-surface-variant">
@@ -94,10 +94,10 @@ export default function CharactersPage() {
           </div>
 
           <div className="bg-surface-container-lowest rounded-xl p-6 min-w-64 shadow-[0_8px_32px_-4px_rgba(29,27,22,0.05)]">
-            <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+            <p className="text-xs font-medium uppercase tracking-widest text-on-surface-variant mb-2">
               {t('characters.availableXp')}
             </p>
-            <p className="text-4xl font-black text-primary">
+            <p className="text-4xl font-semibold text-primary">
               {t('rewards.xpAmount', { xp: collection?.availableXp ?? 0 })}
             </p>
           </div>
@@ -165,7 +165,7 @@ export default function CharactersPage() {
                     />
                   </button>
                   <div className="flex flex-col items-end gap-2">
-                    <span className={`text-[10px] font-black uppercase tracking-widest rounded-full px-3 py-1 ${
+                    <span className={`text-[10px] font-semibold uppercase tracking-widest rounded-full px-3 py-1 ${
                       item.unlocked
                         ? 'bg-primary/10 text-primary'
                         : 'bg-surface-container text-on-surface-variant'
@@ -173,7 +173,7 @@ export default function CharactersPage() {
                       {t(`characters.rarity.${character.rarity}`)}
                     </span>
                     {item.unlocked && (
-                      <span className="text-[10px] font-black uppercase tracking-widest rounded-full px-3 py-1 bg-surface-container text-on-surface-variant">
+                      <span className="text-[10px] font-semibold uppercase tracking-widest rounded-full px-3 py-1 bg-surface-container text-on-surface-variant">
                         {t('characters.stageLabel', {
                           current: item.currentStage,
                           total: character.evolutionStages.length,
@@ -183,7 +183,7 @@ export default function CharactersPage() {
                   </div>
                 </div>
 
-                <h2 className="text-xl font-black text-on-surface">
+                <h2 className="text-xl font-semibold text-on-surface">
                   {t(item.currentStageDefinition.nameKey)}
                 </h2>
                 <p className="text-sm text-on-surface-variant mt-2 min-h-10">
@@ -192,10 +192,10 @@ export default function CharactersPage() {
 
                 <div className="mt-auto flex flex-col gap-4 pt-5 sm:flex-row sm:items-end sm:justify-between">
                   <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">
                       {item.unlocked ? t('characters.evolutionCost') : t('characters.cost')}
                     </p>
-                    <p className="font-black text-on-surface">
+                    <p className="font-semibold text-on-surface">
                       {item.unlocked
                         ? item.maxed
                           ? t('characters.maxStage')
@@ -225,7 +225,7 @@ export default function CharactersPage() {
                           await unlockCharacter(character.id)
                         }
                       }}
-                      className={`inline-flex h-9 min-w-24 items-center justify-center gap-1 rounded-xl px-3 text-xs font-black transition-colors ${
+                      className={`inline-flex h-9 min-w-24 items-center justify-center gap-1 rounded-xl px-3 text-xs font-semibold transition-colors ${
                         primaryDisabled
                           ? 'bg-surface-container text-on-surface-variant cursor-not-allowed'
                           : 'bg-primary text-white hover:bg-primary-dim'
@@ -247,7 +247,7 @@ export default function CharactersPage() {
                           type="button"
                           disabled={isMutatingCharacter}
                           onClick={() => selectCharacter(character.id)}
-                          className="inline-flex h-9 min-w-24 items-center justify-center gap-1 rounded-xl border border-primary/20 px-3 text-xs font-black text-primary transition-colors hover:bg-primary/5 disabled:cursor-not-allowed disabled:border-outline-variant disabled:text-on-surface-variant"
+                          className="inline-flex h-9 min-w-24 items-center justify-center gap-1 rounded-xl border border-primary/20 px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/5 disabled:cursor-not-allowed disabled:border-outline-variant disabled:text-on-surface-variant"
                         >
                           {t('characters.actions.select')}
                         </button>

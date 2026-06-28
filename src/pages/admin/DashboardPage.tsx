@@ -63,7 +63,7 @@ export default function AdminDashboardPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-secondary">{t('admin.dashboard.title')}</h1>
+        <h1 className="text-3xl font-semibold text-secondary">{t('admin.dashboard.title')}</h1>
         <p className="text-sm text-on-surface-variant mt-1">{t('admin.dashboard.subtitle')}</p>
       </div>
 
@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
                 <span className={`material-symbols-outlined ${card.iconColor}`}>{card.icon}</span>
               </div>
             </div>
-            <p className="text-3xl font-black text-secondary mb-1">
+            <p className="text-3xl font-semibold text-secondary mb-1">
               {loading ? (
                 <span className="inline-block w-12 h-7 bg-stone-100 rounded animate-pulse" />
               ) : (
@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
       <div className="bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-stone-100 flex items-center gap-3">
           <span className="material-symbols-outlined text-primary">history</span>
-          <h2 className="font-black text-secondary">{t('admin.dashboard.recent.title')}</h2>
+          <h2 className="font-semibold text-secondary">{t('admin.dashboard.recent.title')}</h2>
         </div>
         {loading ? (
           <div className="flex flex-col items-center gap-3 py-12">
@@ -106,7 +106,7 @@ export default function AdminDashboardPage() {
           <div className="flex flex-col items-center gap-3 py-12">
             <span className="material-symbols-outlined text-4xl text-stone-300">inventory_2</span>
             <p className="text-stone-400">{t('admin.dashboard.recent.empty')}</p>
-            <a href="/admin/words" className="mt-2 px-4 py-2 primary-gradient text-white text-sm font-bold rounded-xl">
+            <a href="/admin/words" className="mt-2 px-4 py-2 primary-gradient text-white text-sm font-medium rounded-xl">
               {t('admin.dashboard.recent.manage')}
             </a>
           </div>
@@ -119,7 +119,7 @@ export default function AdminDashboardPage() {
                   className={`border-b border-stone-50 last:border-0 ${i % 2 === 0 ? 'bg-white' : 'bg-stone-50/50'} hover:bg-orange-50/30 transition-colors`}
                 >
                   <td className="px-6 py-3">
-                    <p className="font-black text-secondary">{w.word}</p>
+                    <p className="font-semibold text-secondary">{w.word}</p>
                     {w.phonetic && <p className="text-xs text-stone-400">{w.phonetic}</p>}
                   </td>
                   <td className="px-6 py-3">
@@ -128,7 +128,7 @@ export default function AdminDashboardPage() {
                   <td className="px-6 py-3 text-right">
                     {w.topics && (
                       <span
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"
                         style={topicColorStyle(w.topics.color)}
                       >
                         {w.topics.name}

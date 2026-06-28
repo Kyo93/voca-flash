@@ -27,7 +27,7 @@ export default function RightSidebar() {
       <div className="flex justify-start p-4">
         <button
           onClick={toggleRightSidebar}
-          className="w-10 h-10 rounded-full flex items-center justify-center text-stone-400 hover:text-primary hover:bg-stone-100 transition-all cursor-pointer"
+          className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-stone-400 transition-all hover:bg-stone-100 hover:text-primary"
           title={rightCollapsed ? t('sidebar.expandRight') : t('sidebar.collapseRight')}
         >
           <span className="material-symbols-outlined transition-transform duration-300" style={{ transform: rightCollapsed ? 'rotate(180deg)' : 'none' }}>
@@ -46,7 +46,7 @@ export default function RightSidebar() {
               </span>
             </div>
             {!rightCollapsed && (
-              <div className="absolute -top-1 -right-1 bg-secondary text-white text-xs font-black w-6 h-6 rounded-full flex items-center justify-center border-4 border-stone-50">
+              <div className="absolute -top-1 -right-1 bg-secondary text-white text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center border-4 border-stone-50">
                 {streak.currentStreak}
               </div>
             )}
@@ -54,12 +54,12 @@ export default function RightSidebar() {
 
           {!rightCollapsed && (
             <>
-              <p className="text-xl font-black text-on-surface">{streak.currentStreak} {t('progress.dayStreak')}</p>
+              <p className="text-xl font-semibold text-on-surface">{streak.currentStreak} {t('progress.dayStreak')}</p>
               <p className="text-xs text-stone-400 mt-1 font-medium">{t('progress.topStreak')}</p>
               <div className="flex justify-between mt-5 px-1">
                 {STREAK_WEEK_DAYS.map((day, i) => (
                   <div key={i} className="flex flex-col items-center gap-1.5">
-                    <span className="text-[9px] font-black text-stone-300">{day}</span>
+                    <span className="text-[9px] font-semibold text-stone-300">{day}</span>
                     <div className={`w-2 rounded-full ${i === STREAK_TODAY_INDEX ? 'bg-primary' : 'bg-secondary/50'}`} style={{ height: `${STREAK_DAY_HEIGHTS[i]}%`, minHeight: '4px', maxHeight: '28px' }} />
                   </div>
                 ))}
@@ -68,7 +68,7 @@ export default function RightSidebar() {
           )}
 
           {rightCollapsed && (
-            <div className="bg-secondary text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center mx-auto mt-2">
+            <div className="bg-secondary text-white text-[10px] font-semibold w-6 h-6 rounded-full flex items-center justify-center mx-auto mt-2">
               {streak.currentStreak}
             </div>
           )}
@@ -90,20 +90,20 @@ export default function RightSidebar() {
               {!rightCollapsed && (
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-stone-400">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400">
                       {t('rewards.sidebarTitle')}
                     </p>
-                    <span className="text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full whitespace-nowrap">
+                    <span className="text-[10px] font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full whitespace-nowrap">
                       {t('rewards.levelShort', { level: rewardProgress.currentLevel.level })}
                     </span>
                   </div>
-                  <p className="mt-2 text-sm font-black text-on-surface truncate">
+                  <p className="mt-2 text-sm font-semibold text-on-surface truncate">
                     {t(rewardProgress.currentLevel.titleKey)}
                   </p>
                   <div className="mt-3 h-2 rounded-full bg-stone-100 overflow-hidden">
                     <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${rewardProgress.levelProgress}%` }} />
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-[10px] font-bold text-stone-400">
+                  <div className="mt-2 flex items-center justify-between text-[10px] font-medium text-stone-400">
                     <span>{t('rewards.xpAmount', { xp: rewardProgress.totalXp })}</span>
                     <span>
                       {rewardProgress.nextLevel
@@ -116,7 +116,7 @@ export default function RightSidebar() {
             </div>
 
             {rightCollapsed && (
-              <div className="bg-primary text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center mx-auto mt-2">
+              <div className="bg-primary text-white text-[10px] font-semibold w-6 h-6 rounded-full flex items-center justify-center mx-auto mt-2">
                 {rewardProgress.currentLevel.level}
               </div>
             )}
@@ -125,7 +125,7 @@ export default function RightSidebar() {
 
         {/* Reminders */}
         <div className={`bg-white rounded-2xl border border-stone-100 shadow-sm ${rightCollapsed ? 'p-3' : 'p-5'} transition-all`}>
-          {!rightCollapsed && <p className="text-[11px] font-black uppercase tracking-widest text-stone-400 mb-4">{t('rightSidebar.studyReminder')}</p>}
+          {!rightCollapsed && <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400 mb-4">{t('rightSidebar.studyReminder')}</p>}
           <div className="space-y-3">
             <div className={`flex ${rightCollapsed ? 'justify-center' : 'gap-3'} items-start`}>
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0" title={rightCollapsed ? t('rightSidebar.learnWord') : undefined}>
@@ -133,7 +133,7 @@ export default function RightSidebar() {
               </div>
               {!rightCollapsed && (
                 <div>
-                  <p className="text-xs font-black text-on-surface">{t('rightSidebar.learnWord')}</p>
+                  <p className="text-xs font-semibold text-on-surface">{t('rightSidebar.learnWord')}</p>
                   <p className="text-[10px] text-stone-400 font-medium mt-0.5 whitespace-nowrap">{t('rightSidebar.learnWordDesc')}</p>
                 </div>
               )}
@@ -144,7 +144,7 @@ export default function RightSidebar() {
               </div>
               {!rightCollapsed && (
                 <div>
-                  <p className="text-xs font-black text-on-surface">{t('rightSidebar.dynamicReview')}</p>
+                  <p className="text-xs font-semibold text-on-surface">{t('rightSidebar.dynamicReview')}</p>
                   <p className="text-[10px] text-stone-400 font-medium mt-0.5 whitespace-nowrap">{t('rightSidebar.dynamicReviewDesc')}</p>
                 </div>
               )}
@@ -155,15 +155,15 @@ export default function RightSidebar() {
         {/* Schedule */}
         {!rightCollapsed ? (
           <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-5">
-            <p className="text-[11px] font-black uppercase tracking-widest text-stone-400 mb-3">{t('rightSidebar.scheduleTitle')}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-stone-400 mb-3">{t('rightSidebar.scheduleTitle')}</p>
             <p className="text-[11px] text-stone-500 leading-relaxed mb-4">{t('rightSidebar.scheduleDesc')}</p>
-            <button className="w-full py-2.5 bg-primary/5 border border-primary/20 text-primary text-[11px] font-black rounded-xl hover:bg-primary hover:text-white transition-all">
+            <button className="w-full py-2.5 bg-primary/5 border border-primary/20 text-primary text-[11px] font-semibold rounded-xl hover:bg-primary hover:text-white transition-all">
               {t('rightSidebar.setReminder')}
             </button>
           </div>
         ) : (
           <div className="flex justify-center">
-            <button title={t('rightSidebar.setReminder')} className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 hover:text-primary transition-all">
+            <button title={t('rightSidebar.setReminder')} className="flex h-11 w-11 items-center justify-center rounded-xl border border-stone-100 bg-stone-50 text-stone-400 transition-all hover:text-primary">
               <span className="material-symbols-outlined">event</span>
             </button>
           </div>

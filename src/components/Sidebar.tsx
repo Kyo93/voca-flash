@@ -48,7 +48,7 @@ export default function Sidebar() {
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <p className="text-xl font-black text-primary leading-none whitespace-nowrap">{t('app.name')}</p>
+            <p className="text-xl font-semibold text-primary leading-none whitespace-nowrap">{t('app.name')}</p>
             <p className="text-[10px] text-stone-500 font-normal tracking-widest uppercase whitespace-nowrap">{t('sidebar.tagline')}</p>
           </div>
         )}
@@ -107,7 +107,7 @@ export default function Sidebar() {
         <Link
           to="/review"
           title={collapsed ? t('nav.startQuiz') : undefined}
-          className={`w-full py-4 primary-gradient text-white font-black text-sm rounded-2xl shadow-lg shadow-primary-container/20 active:scale-95 transition-all flex items-center justify-center gap-2 ${collapsed ? 'px-0' : ''}`}
+          className={`w-full py-4 primary-gradient text-white font-semibold text-sm rounded-2xl shadow-lg shadow-primary-container/20 active:scale-95 transition-all flex items-center justify-center gap-2 ${collapsed ? 'px-0' : ''}`}
         >
           <span className="material-symbols-outlined text-sm shrink-0">bolt</span>
           {!collapsed && <span className="whitespace-nowrap">{t('nav.startQuiz')}</span>}
@@ -124,13 +124,13 @@ export default function Sidebar() {
                 onError={() => setAvatarError(true)}
               />
             ) : (
-              <span className="text-sm font-black text-primary">{avatarChar}</span>
+              <span className="text-sm font-semibold text-primary">{avatarChar}</span>
             )}
           </div>
           {!collapsed && (
             <>
               <div className="overflow-hidden flex-1">
-                <p className="text-[13px] font-bold truncate">{displayName}</p>
+                <p className="text-[13px] font-medium truncate">{displayName}</p>
                 <p className="text-[10px] text-stone-400 font-normal uppercase truncate">
                   {profile?.streak_days ? t('sidebar.streakDay', { count: streakData.currentStreak }) : t('sidebar.student')}
                 </p>

@@ -133,7 +133,7 @@ export default function CharacterExpandedViewer({
               className="mb-4"
               data-character-viewer-animation-controls="true"
             >
-              <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-surface/80">
+              <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-surface/80">
                 <span className="material-symbols-outlined text-base">motion_photos_on</span>
                 {t('characters.viewer.animation.label')}
               </div>
@@ -142,7 +142,7 @@ export default function CharacterExpandedViewer({
                   <button
                     key={state}
                     type="button"
-                    className={`h-9 rounded-full px-3 text-xs font-black transition-colors ${
+                    className={`h-9 rounded-full px-3 text-xs font-semibold transition-colors ${
                       animationState === state
                         ? 'bg-surface text-on-surface'
                         : 'bg-surface/10 text-surface/80 ring-1 ring-surface/15 hover:bg-surface/15'
@@ -158,7 +158,7 @@ export default function CharacterExpandedViewer({
           )}
 
           <div className="mb-4 flex items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-surface/80">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-surface/80">
               <span className="material-symbols-outlined text-base">tune</span>
               {t('characters.viewer.lightPreset.label')}
             </span>
@@ -167,7 +167,7 @@ export default function CharacterExpandedViewer({
                 <button
                   key={preset}
                   type="button"
-                  className={`h-8 rounded-full px-3 text-xs font-black transition-colors ${
+                  className={`h-8 rounded-full px-3 text-xs font-semibold transition-colors ${
                     modelViewerSettings.lightPreset === preset
                       ? 'bg-surface text-on-surface'
                       : 'text-surface/80 hover:bg-surface/10'
@@ -186,7 +186,7 @@ export default function CharacterExpandedViewer({
             </div>
           </div>
 
-          <label className="flex items-center justify-between gap-3 text-xs font-black uppercase tracking-widest text-surface/80">
+          <label className="flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-widest text-surface/80">
             <span className="inline-flex items-center gap-2">
               <span className="material-symbols-outlined text-base">wb_sunny</span>
               {t('characters.viewer.exposure')}

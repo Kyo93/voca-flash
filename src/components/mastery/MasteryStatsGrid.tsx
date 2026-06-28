@@ -23,7 +23,7 @@ export default function MasteryStatsGrid({ stats }: MasteryStatsGridProps) {
             <span className="material-symbols-outlined font-variation-fill text-2xl">{s.icon}</span>
           </div>
           <div>
-            <p className="text-2xl font-bold text-on-surface leading-none">{s.value}</p>
+            <p className="text-2xl font-medium text-on-surface leading-none">{s.value}</p>
             <p className="text-[10px] font-normal text-on-surface-variant/60 uppercase tracking-widest mt-1.5">{s.label}</p>
           </div>
         </div>

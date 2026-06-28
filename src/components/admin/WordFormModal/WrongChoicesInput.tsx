@@ -23,7 +23,7 @@ export function WrongChoicesInput({ wrong1, setWrong1, wrong2, setWrong2, wrong3
 
   return (
     <div>
-      <label className="block text-sm font-bold text-secondary mb-2">
+      <label className="block text-sm font-medium text-secondary mb-2">
         {t('admin.wordForm.wrongChoices')}
       </label>
       <div className="grid grid-cols-3 gap-3">

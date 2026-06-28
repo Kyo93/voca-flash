@@ -45,7 +45,7 @@ export function NotebookInvestigationFields({
             label={t('mastery.notebook.vietnameseShort')}
             className="border-t-0 pt-0"
           >
-            <p className="notebook-line-text notebook-engraved-text text-base font-bold italic text-primary">
+            <p className="notebook-line-text notebook-engraved-text text-base font-medium italic text-primary">
               {word.example_vi}
             </p>
           </NotebookVintageField>
@@ -113,7 +113,7 @@ export function NotebookInvestigationFields({
             >
               psychology
             </span>
-            <h5 className="mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-secondary">
+            <h5 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-secondary">
               {t('mastery.notebook.smartVocabulary')}
             </h5>
             <NotebookVintageTerms terms={relatedTerms} tone="sage" />
@@ -145,7 +145,7 @@ function NotebookVintageField({
         className,
       )}
     >
-      <h5 className="notebook-line-text mb-0 text-[10px] font-bold uppercase tracking-[0.2em] text-outline">
+      <h5 className="notebook-line-text mb-0 text-[10px] font-medium uppercase tracking-[0.2em] text-outline">
         {label}
       </h5>
       <div className="min-w-0">{children}</div>
@@ -176,7 +176,7 @@ function NotebookVintageTerms({
         <span
           key={term}
           className={classes(
-            'rounded-md border px-2.5 py-1 text-xs font-black leading-none',
+            'rounded-md border px-2.5 py-1 text-xs font-semibold leading-none',
             tone === 'sage' && 'border-secondary/25 bg-secondary-container/45 text-secondary',
             tone === 'terracotta' && 'border-primary/20 bg-primary-container/25 text-primary',
             tone === 'ink' && 'border-warm-accent/25 bg-surface-container-high text-on-surface',

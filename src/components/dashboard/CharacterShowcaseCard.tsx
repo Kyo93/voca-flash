@@ -21,10 +21,10 @@ export default function CharacterShowcaseCard({ collection, loading = false }: C
       <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="flex min-w-0 items-center gap-5">
           <div className="min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant mb-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-on-surface-variant mb-2">
               {t('characters.showcaseLabel')}
             </p>
-            <h3 className="text-2xl font-black text-on-surface">
+            <h3 className="text-2xl font-semibold text-on-surface">
               {stage ? t(stage.nameKey) : selectedCharacter ? t(selectedCharacter.nameKey) : t('common.loading')}
             </h3>
             <p className="text-sm text-on-surface-variant mt-2 max-w-xl">
@@ -32,13 +32,13 @@ export default function CharacterShowcaseCard({ collection, loading = false }: C
             </p>
             {selectedItem && (
               <div className="flex flex-wrap items-center gap-2 mt-3">
-                <span className="text-xs font-black text-primary bg-primary/10 rounded-full px-3 py-1">
+                <span className="text-xs font-semibold text-primary bg-primary/10 rounded-full px-3 py-1">
                   {t('characters.stageLabel', {
                     current: selectedItem.currentStage,
                     total: selectedCharacter?.evolutionStages.length ?? selectedItem.currentStage,
                   })}
                 </span>
-                <span className="text-xs font-bold text-on-surface-variant">
+                <span className="text-xs font-medium text-on-surface-variant">
                   {selectedItem.maxed
                     ? t('characters.maxStage')
                     : t('characters.nextEvolutionCost', { xp: selectedItem.nextStageDefinition?.costXp ?? 0 })}
@@ -50,16 +50,16 @@ export default function CharacterShowcaseCard({ collection, loading = false }: C
 
         <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-3">
           <div className="rounded-2xl bg-primary/5 border border-primary/10 px-4 py-3 min-w-36">
-            <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-on-surface-variant">
               {t('characters.availableXp')}
             </p>
-            <p className="text-2xl font-black text-primary">
+            <p className="text-2xl font-semibold text-primary">
               {loading ? '...' : t('rewards.xpAmount', { xp: collection?.availableXp ?? 0 })}
             </p>
           </div>
           <Link
             to="/characters"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-white text-sm font-black hover:bg-primary-dim transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-white text-sm font-semibold hover:bg-primary-dim transition-colors"
           >
             {t('characters.openCollection')}
             <span className="material-symbols-outlined text-base">arrow_forward</span>

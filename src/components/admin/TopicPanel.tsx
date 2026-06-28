@@ -44,10 +44,10 @@ export default function TopicPanel({
     <div className="flex flex-col h-full px-6 py-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-black text-on-surface-variant tracking-tight">{t('admin.topics.title')}</h2>
+        <h2 className="text-lg font-semibold text-on-surface-variant tracking-tight">{t('admin.topics.title')}</h2>
         <button
           onClick={onAddTopic}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-secondary hover:bg-secondary-container/30 text-sm font-bold transition-all"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-secondary hover:bg-secondary-container/30 text-sm font-medium transition-all"
         >
           <span className="material-symbols-outlined text-base">add_box</span>
           {t('admin.topics.add')}
@@ -65,11 +65,11 @@ export default function TopicPanel({
       >
         <span className="text-lg">📦</span>
         <div className="flex-1 text-left">
-          <p className="font-bold text-sm text-secondary">{t('admin.topics.uncategorized')}</p>
+          <p className="font-medium text-sm text-secondary">{t('admin.topics.uncategorized')}</p>
           <p className="text-xs text-stone-400">{t('admin.topics.wordCount', { count: uncategorizedCount })}</p>
         </div>
         {uncategorizedCount > 0 && (
-          <span className="bg-stone-100 text-stone-500 text-xs font-bold px-2 py-0.5 rounded-full">
+          <span className="bg-stone-100 text-stone-500 text-xs font-medium px-2 py-0.5 rounded-full">
             {uncategorizedCount}
           </span>
         )}

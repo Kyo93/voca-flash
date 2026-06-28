@@ -44,11 +44,11 @@ export default function ChallengingScreen({
       <div className="flex items-center justify-between bg-surface-container-low px-4 py-2.5 sm:px-5 sm:py-3">
         <div className="flex items-center gap-2">
           <span className={`material-symbols-outlined text-xl ${timerTextClass}`}>timer</span>
-          <span className={`font-headline font-black text-lg tabular-nums ${timerTextClass}`}>
+          <span className={`font-headline font-semibold text-lg tabular-nums ${timerTextClass}`}>
             {timerSeconds}s
           </span>
         </div>
-        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium uppercase tracking-widest border ${
           currentChallengeType === 'cloze'
             ? 'text-primary bg-primary/8 border-primary/20'
             : currentChallengeType === 'listen'
@@ -74,7 +74,7 @@ export default function ChallengingScreen({
         />
         <button
           onClick={onSkip}
-          className="mt-4 w-full text-center text-xs font-bold uppercase tracking-widest text-outline transition-colors hover:text-primary sm:mt-6"
+          className="mt-4 w-full text-center text-xs font-medium uppercase tracking-widest text-outline transition-colors hover:text-primary sm:mt-6"
         >
           {t('arena.skipQuiz')}
         </button>

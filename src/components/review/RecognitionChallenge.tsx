@@ -52,11 +52,11 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
     <div className="w-full flex flex-col items-center">
       {/* Header */}
       <div className="mb-5 flex w-full flex-col gap-3 rounded-2xl bg-surface-container-low p-4 text-center sm:mb-8 sm:p-6">
-        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
+        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-medium uppercase tracking-widest text-secondary bg-secondary/8 border border-secondary/15 self-center">
           <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse" />
           {t('challenges.recognition')}
         </span>
-        <h2 className="font-headline text-3xl font-black tracking-tight text-primary sm:text-4xl">{word.word}</h2>
+        <h2 className="font-headline text-3xl font-semibold tracking-tight text-primary sm:text-4xl">{word.word}</h2>
         {word.phonetic && (
           <p className="text-secondary font-medium text-sm tracking-wide">/{word.phonetic}/</p>
         )}
@@ -85,7 +85,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
                 }`}
             >
               {/* Letter badge */}
-              <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-black text-sm transition-colors ${state === 'correct'
+              <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-semibold text-sm transition-colors ${state === 'correct'
                   ? 'bg-primary text-white'
                   : state === 'wrong'
                     ? 'bg-error text-white'
@@ -94,7 +94,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
                 {CHOICE_LABELS[i]}
               </span>
 
-              <span className={`font-bold font-headline leading-tight flex-1 ${state === 'correct' ? 'text-primary' : state === 'wrong' ? 'text-error' : 'text-on-surface'
+              <span className={`font-medium font-headline leading-tight flex-1 ${state === 'correct' ? 'text-primary' : state === 'wrong' ? 'text-error' : 'text-on-surface'
                 }`}>
                 {choice}
               </span>
@@ -104,7 +104,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
                 {state === 'correct' && (
                   <motion.span
                     initial={{ scale: 0 }} animate={{ scale: 1 }}
-                    className="material-symbols-outlined text-primary text-2xl font-black"
+                    className="material-symbols-outlined text-primary text-2xl font-semibold"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
                     check_circle
@@ -113,7 +113,7 @@ export default function RecognitionChallenge({ word, choices, onSubmit }: Recogn
                 {state === 'wrong' && (
                   <motion.span
                     initial={{ scale: 0 }} animate={{ scale: 1 }}
-                    className="material-symbols-outlined text-error text-2xl font-black"
+                    className="material-symbols-outlined text-error text-2xl font-semibold"
                     style={{ fontVariationSettings: "'FILL' 1" }}
                   >
                     cancel

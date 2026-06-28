@@ -87,11 +87,11 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8 sm:mb-16 w-full"
       >
-        <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] block mb-4 sm:mb-8 text-shadow-glow">
+        <span className="text-primary font-semibold uppercase tracking-[0.4em] text-[10px] block mb-4 sm:mb-8 text-shadow-glow">
           {t('review.construction.title')}
         </span>
         <div className="glass-arena-container p-6 sm:p-12 mb-6 sm:mb-8 relative overflow-hidden group">
-          <h2 className="text-2xl sm:text-4xl font-black text-white text-shadow-glow tracking-tight leading-relaxed px-1 sm:px-4">
+          <h2 className="text-2xl sm:text-4xl font-semibold text-white text-shadow-glow tracking-tight leading-relaxed px-1 sm:px-4">
             {word.definition}
           </h2>
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-primary/40 rounded-full" />
@@ -115,7 +115,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 600, damping: 25 }}
-                className="h-14 w-12 sm:w-16 sm:h-20 glass-arena-item text-primary text-2xl sm:text-4xl font-black rounded-2xl flex items-center justify-center shadow-2xl border-primary/20"
+                className="h-14 w-12 sm:w-16 sm:h-20 glass-arena-item text-primary text-2xl sm:text-4xl font-semibold rounded-2xl flex items-center justify-center shadow-2xl border-primary/20"
               >
                 {block.char}
               </motion.div>
@@ -124,7 +124,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
          {built.length === 0 && (
             <div className="flex flex-col items-center justify-center opacity-10">
               <span className="material-symbols-outlined text-4xl mb-2">construction</span>
-              <span className="text-xs font-black uppercase tracking-[0.4em]">{t('review.construction.building')}</span>
+              <span className="text-xs font-semibold uppercase tracking-[0.4em]">{t('review.construction.building')}</span>
             </div>
          )}
       </div>
@@ -143,7 +143,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              className="h-12 w-12 sm:w-16 sm:h-16 rounded-2xl glass-arena-item border-white/10 text-white text-xl sm:text-2xl font-black shadow-xl"
+              className="h-12 w-12 sm:w-16 sm:h-16 rounded-2xl glass-arena-item border-white/10 text-white text-xl sm:text-2xl font-semibold shadow-xl"
             >
               {block.char.toUpperCase()}
             </motion.button>
@@ -155,20 +155,20 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
          <button 
            onClick={undo}
            disabled={built.length === 0 || isWrong}
-           className="px-4 sm:px-8 h-12 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-2 sm:gap-3 disabled:opacity-5 border-white/10 shadow-lg"
+           className="px-4 sm:px-8 h-12 glass-arena-item text-white/40 rounded-full font-semibold text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-2 sm:gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
            <span className="material-symbols-outlined text-lg">undo</span> {t('review.construction.undo')}
          </button>
          <button 
            onClick={reset}
            disabled={built.length === 0 || isWrong}
-           className="px-4 sm:px-8 h-12 glass-arena-item text-white/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-2 sm:gap-3 disabled:opacity-5 border-white/10 shadow-lg"
+           className="px-4 sm:px-8 h-12 glass-arena-item text-white/40 rounded-full font-semibold text-[10px] uppercase tracking-[0.2em] hover:text-white transition-all flex items-center gap-2 sm:gap-3 disabled:opacity-5 border-white/10 shadow-lg"
          >
            <span className="material-symbols-outlined text-lg">refresh</span> {t('review.construction.reset')}
          </button>
          <button 
            onClick={() => onSubmit(false, true)}
-           className="px-4 sm:px-8 h-12 glass-arena-item text-primary/40 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:text-primary transition-all flex items-center gap-2 sm:gap-3 border-primary/10 shadow-lg"
+           className="px-4 sm:px-8 h-12 glass-arena-item text-primary/40 rounded-full font-semibold text-[10px] uppercase tracking-[0.2em] hover:text-primary transition-all flex items-center gap-2 sm:gap-3 border-primary/10 shadow-lg"
          >
            <span className="material-symbols-outlined text-lg">flag</span> {t('review.construction.give_up')}
          </button>

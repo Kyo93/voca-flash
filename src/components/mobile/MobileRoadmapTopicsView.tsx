@@ -57,11 +57,11 @@ export default function MobileRoadmapTopicsView({
   const heroCompleted = Boolean(heroStats && heroStats.total > 0 && heroStats.learned >= heroStats.total)
 
   return (
-    <main data-mobile-roadmap-detail className="min-h-full bg-surface px-4 pb-6 pt-3">
+    <main data-mobile-roadmap-detail className="mobile-page min-h-full">
       <header className="space-y-4">
         <Link
           to="/library"
-          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-container-low px-4 text-sm font-bold text-on-surface-variant active:scale-95"
+          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-surface-container-low px-4 text-sm font-medium text-on-surface-variant active:scale-95"
         >
           <span className="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
           {t('common.back')}
@@ -74,7 +74,7 @@ export default function MobileRoadmapTopicsView({
             </span>
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-on-surface">{roadmap.name}</h1>
+            <h1 className="text-xl font-medium leading-tight tracking-tight text-on-surface">{roadmap.name}</h1>
             {roadmap.description && (
               <p className="mt-2 line-clamp-2 text-sm font-medium leading-5 text-on-surface-variant">{roadmap.description}</p>
             )}
@@ -82,28 +82,28 @@ export default function MobileRoadmapTopicsView({
         </div>
       </header>
 
-      <section data-mobile-roadmap-progress className="mt-5 rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 shadow-sm">
+      <section data-mobile-roadmap-progress className="mobile-panel mt-5 p-4">
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-secondary">{t('roadmapDetail.mobile.progressTitle')}</p>
-            <p className="mt-1 text-xl font-bold tabular-nums text-on-surface">{learnedPercent}%</p>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-secondary">{t('roadmapDetail.mobile.progressTitle')}</p>
+            <p className="mt-1 text-xl font-medium tabular-nums text-on-surface">{learnedPercent}%</p>
           </div>
-          <span className="rounded-full bg-primary-container px-3 py-1 text-[11px] font-bold text-on-primary-container">
+          <span className="rounded-full bg-primary-container px-3 py-1 text-[11px] font-medium text-on-primary-container">
             {masteredPercent}%
           </span>
         </div>
         <div data-mobile-roadmap-stats className="mt-3 grid min-w-0 grid-cols-3 gap-2 text-center">
           <div className="min-w-0 rounded-2xl bg-surface-container-low px-2 py-2">
-            <p className="text-base font-bold tabular-nums text-on-surface">{stats.total}</p>
-            <p className="truncate text-[9px] font-bold uppercase tracking-tight text-on-surface-variant">{t('roadmapDetail.mobile.totalLabel')}</p>
+            <p className="text-base font-medium tabular-nums text-on-surface">{stats.total}</p>
+            <p className="truncate text-[9px] font-medium uppercase tracking-tight text-on-surface-variant">{t('roadmapDetail.mobile.totalLabel')}</p>
           </div>
           <div className="min-w-0 rounded-2xl bg-secondary-container px-2 py-2 text-on-secondary-container">
-            <p className="text-base font-bold tabular-nums">{stats.learned}</p>
-            <p className="truncate text-[9px] font-bold uppercase tracking-tight">{t('roadmapDetail.mobile.learnedLabel')}</p>
+            <p className="text-base font-medium tabular-nums">{stats.learned}</p>
+            <p className="truncate text-[9px] font-medium uppercase tracking-tight">{t('roadmapDetail.mobile.learnedLabel')}</p>
           </div>
           <div className="min-w-0 rounded-2xl bg-primary-container px-2 py-2 text-on-primary-container">
-            <p className="text-base font-bold tabular-nums">{stats.mastered}</p>
-            <p className="truncate text-[9px] font-bold uppercase tracking-tight">{t('roadmapDetail.mobile.masteredLabel')}</p>
+            <p className="text-base font-medium tabular-nums">{stats.mastered}</p>
+            <p className="truncate text-[9px] font-medium uppercase tracking-tight">{t('roadmapDetail.mobile.masteredLabel')}</p>
           </div>
         </div>
         <div className="mt-4 space-y-2">
@@ -119,47 +119,46 @@ export default function MobileRoadmapTopicsView({
       {heroTopic && heroStats && (
         <section
           data-mobile-topic-hero={heroTopic.id}
-          className="mt-5 overflow-hidden rounded-3xl bg-on-surface text-surface shadow-lg"
+          className="mobile-panel mt-5 overflow-hidden p-4"
         >
-          <div className="relative min-h-[188px] p-4">
+          <div className="relative min-h-[188px]">
             {heroTopic.image_url && (
               <img
                 src={heroTopic.image_url}
                 alt={heroTopic.name}
                 loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover opacity-35"
+                className="mb-4 h-32 w-full rounded-xl object-cover"
               />
             )}
-            <div className="absolute inset-0 bg-linear-to-br from-on-surface via-on-surface/85 to-primary/70" />
             <div className="relative flex min-h-[156px] flex-col justify-between">
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-3">
-                  <span className="rounded-full bg-secondary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-on-secondary">
+                  <span className="rounded-full bg-secondary px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-on-secondary">
                     {t('roadmap.card.upNext')}
                   </span>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface/10 text-surface">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface-container text-on-surface">
                     <span className="material-symbols-outlined" aria-hidden="true">{heroTopic.icon || 'auto_stories'}</span>
                   </div>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold leading-tight">{heroTopic.name}</h2>
-                  <p className="mt-2 line-clamp-2 text-sm font-medium leading-5 text-surface/75">
+                  <h2 className="text-xl font-medium leading-tight text-on-surface">{heroTopic.name}</h2>
+                  <p className="mt-2 line-clamp-2 text-sm font-medium leading-5 text-on-surface-variant">
                     {heroTopic.description || t('roadmap.card.defaultTopicDesc')}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-surface/70">
+                <div className="flex items-center justify-between text-[11px] font-medium uppercase text-on-surface-variant">
                   <span>{t('roadmapDetail.mobile.topicProgress')}</span>
                   <span>{heroStats.percent}%</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-surface/20">
+                <div className="h-2 overflow-hidden rounded-full bg-surface-container-high">
                   <div className="h-full rounded-full bg-secondary transition-all duration-700" style={{ width: `${clampPercent(heroStats.percent)}%` }} />
                 </div>
                 <Link
                   to={studyHref(heroTopic, roadmap.id)}
-                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary text-sm font-bold text-on-primary active:scale-95"
+                  className="mobile-primary-action flex min-h-12 w-full items-center justify-center gap-2 text-sm active:scale-95"
                 >
                   {topicActionLabel(t, heroStats, heroCompleted)}
                   <span className="material-symbols-outlined text-base" aria-hidden="true">play_circle</span>
@@ -176,7 +175,7 @@ export default function MobileRoadmapTopicsView({
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container">
               <span className="material-symbols-outlined" aria-hidden="true">search_off</span>
             </div>
-            <h2 className="mt-4 text-lg font-bold text-on-surface">{t('roadmapDetail.mobile.emptyTitle')}</h2>
+            <h2 className="mt-4 text-lg font-medium text-on-surface">{t('roadmapDetail.mobile.emptyTitle')}</h2>
             <p className="mt-2 text-sm font-medium leading-6 text-on-surface-variant">{t('roadmapDetail.mobile.emptyDesc')}</p>
           </div>
         ) : (
@@ -190,7 +189,7 @@ export default function MobileRoadmapTopicsView({
                 key={topic.id}
                 to={studyHref(topic, roadmap.id)}
                 data-mobile-topic-card={topic.id}
-                className="block rounded-3xl border border-outline-variant/30 bg-surface-container-lowest p-4 shadow-sm transition-all active:scale-[0.99]"
+                className="mobile-panel block p-4 transition-all active:scale-[0.99]"
               >
                 <div className="flex gap-3">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-on-secondary-container">
@@ -198,8 +197,8 @@ export default function MobileRoadmapTopicsView({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
-                      <h2 className="text-base font-bold leading-tight text-on-surface">{topic.name}</h2>
-                      <span className="shrink-0 text-sm font-bold tabular-nums text-primary">{progress}%</span>
+                      <h2 className="text-base font-medium leading-tight text-on-surface">{topic.name}</h2>
+                      <span className="shrink-0 text-sm font-medium tabular-nums text-primary">{progress}%</span>
                     </div>
                     <p className="mt-1 line-clamp-2 text-sm font-medium leading-6 text-on-surface-variant">
                       {topic.description || t('roadmap.card.defaultTopicDesc')}
@@ -208,14 +207,14 @@ export default function MobileRoadmapTopicsView({
                 </div>
 
                 <div className="mt-4 space-y-2">
-                  <div className="flex items-center justify-between gap-3 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">
+                  <div className="flex items-center justify-between gap-3 text-[11px] font-medium uppercase tracking-wider text-on-surface-variant">
                     <span>{t('topics.wordsCount', { count: topicStats.total })}</span>
                     <span className="truncate">{topicStats.mastered} {t('roadmapDetail.mobile.masteredLabel')}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-surface-container-high">
                     <div className="h-full rounded-full bg-secondary transition-all duration-700" style={{ width: `${progress}%` }} />
                   </div>
-                  <span className={`flex min-h-11 items-center justify-center gap-2 rounded-2xl text-sm font-bold ${
+                  <span className={`flex min-h-11 items-center justify-center gap-2 rounded-2xl text-sm font-medium ${
                     isCompleted
                       ? 'bg-secondary-container text-on-secondary-container'
                       : 'bg-primary-container text-on-primary-container'

@@ -37,7 +37,7 @@ export default function WordsToolbar({
         <select
           value={topicFilter}
           onChange={(e) => setTopicFilter(e.target.value)}
-          className="appearance-none bg-stone-50 border border-stone-200 text-stone-600 text-sm font-bold rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer min-w-[140px]"
+          className="appearance-none bg-stone-50 border border-stone-200 text-stone-600 text-sm font-medium rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer min-w-[140px]"
         >
           <option value="">{t('admin.words.allTopics')}</option>
           {topics.map(topic => (
@@ -48,7 +48,7 @@ export default function WordsToolbar({
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as 'newest' | 'az' | 'difficulty')}
-          className="appearance-none bg-stone-50 border border-stone-200 text-stone-600 text-sm font-bold rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer min-w-[130px]"
+          className="appearance-none bg-stone-50 border border-stone-200 text-stone-600 text-sm font-medium rounded-xl px-4 py-2.5 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer min-w-[130px]"
         >
           <option value="newest">{t('admin.words.newest')}</option>
           <option value="az">{t('admin.words.az')}</option>

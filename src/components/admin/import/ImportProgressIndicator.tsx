@@ -13,7 +13,7 @@ export function ImportProgressIndicator({ done, total }: ImportProgressIndicator
     <div className="space-y-4 py-8">
       <div className="flex flex-col items-center gap-4">
         <span className="material-symbols-outlined text-6xl text-primary animate-spin">progress_activity</span>
-        <p className="text-lg font-bold text-secondary">{t('admin.import.importing')}</p>
+        <p className="text-lg font-medium text-secondary">{t('admin.import.importing')}</p>
         <div className="w-full max-w-md bg-stone-200 rounded-full h-3 overflow-hidden">
           <div
             className="h-full primary-gradient transition-all duration-300"

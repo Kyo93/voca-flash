@@ -13,10 +13,10 @@ export default function DailyMissionCard({ count, target }: DailyMissionCardProp
     <div className="col-span-6 bg-white p-8 rounded-4xl sun-drenched-shadow flex flex-col justify-between group hover:bg-surface-container-lowest transition-all duration-500">
       <div className="flex items-center gap-2 mb-5">
         <span className="material-symbols-outlined text-primary text-lg">target</span>
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-300 block">{t('home.dailyMission')}</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-300 block">{t('home.dailyMission')}</span>
       </div>
 
-      <div className="text-3xl font-black text-secondary tracking-tight mb-2">
+      <div className="text-3xl font-semibold text-secondary tracking-tight mb-2">
         {count} <span className="text-stone-300 font-medium text-xl">/ {target}</span>
       </div>
 
@@ -27,7 +27,7 @@ export default function DailyMissionCard({ count, target }: DailyMissionCardProp
         />
       </div>
 
-      <p className="text-[10px] font-bold text-stone-400">{t('home.learnedToday', { count })}</p>
+      <p className="text-[10px] font-medium text-stone-400">{t('home.learnedToday', { count })}</p>
     </div>
   )
 }

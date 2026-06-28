@@ -18,7 +18,7 @@ export function TagFilterChips({ allTags, activeTagFilter, onActiveTagFilterChan
     <div className="flex items-center gap-2 overflow-x-auto mb-3 pb-1 custom-scrollbar">
       <button
         onClick={() => onActiveTagFilterChange(null)}
-        className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shrink-0 ${
+        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 ${
           activeTagFilter === null
             ? 'bg-primary text-white shadow-sm'
             : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
@@ -33,7 +33,7 @@ export function TagFilterChips({ allTags, activeTagFilter, onActiveTagFilterChan
           <button
             key={tag}
             onClick={() => onActiveTagFilterChange(isActive ? null : tag)}
-            className="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all shrink-0"
+            className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0"
             style={{
               backgroundColor: isActive
                 ? (meta?.color ?? FALLBACK_TAG_COLOR)

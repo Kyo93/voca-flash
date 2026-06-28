@@ -47,7 +47,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
                 <span className="material-symbols-outlined text-5xl">
                   {avatarError ? 'broken_image' : 'face'}
                 </span>
-                {avatarError && <span className="text-[9px] font-black uppercase text-rose-400 mt-1">{t('settings.linkError')}</span>}
+                {avatarError && <span className="text-[9px] font-semibold uppercase text-rose-400 mt-1">{t('settings.linkError')}</span>}
               </div>
             )}
           </div>
@@ -60,7 +60,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
         <div className="flex-1 space-y-6 w-full">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-bold text-stone-600 ml-1">
+              <label className="text-sm font-medium text-stone-600 ml-1">
                 {t('settings.displayName')}
               </label>
               <input
@@ -73,7 +73,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-stone-600 ml-1">
+              <label className="text-sm font-medium text-stone-600 ml-1">
                 {t('settings.email')}
               </label>
               <div className="px-5 py-4 bg-stone-100/50 border border-stone-200 rounded-2xl text-stone-400 font-medium italic opacity-70 cursor-not-allowed">
@@ -83,7 +83,7 @@ export default function ProfileSection({ userEmail, formData, onChange }: Profil
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-stone-600 ml-1">
+            <label className="text-sm font-medium text-stone-600 ml-1">
               {t('settings.avatarUrl')}
             </label>
             <div className="relative group">

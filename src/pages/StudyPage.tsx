@@ -37,6 +37,7 @@ export default function StudyPage() {
     isComplete,
     isLoading,
     isPrepScreen,
+    prepError,
     prepStats,
     initialize,
     startSession,
@@ -63,12 +64,13 @@ export default function StudyPage() {
     await updateNote(currentCard.id, note)
   }, [currentCard, updateNote])
 
-  const initializedTopicRef = useRef<string | undefined>(undefined)
+  const initializedTopicRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (initializedTopicRef.current !== topic) {
+    const initializedTopicKey = topic ?? 'all'
+    if (initializedTopicRef.current !== initializedTopicKey) {
       initialize(topic)
-      initializedTopicRef.current = topic
+      initializedTopicRef.current = initializedTopicKey
     }
   }, [initialize, topic])
 
@@ -146,6 +148,7 @@ export default function StudyPage() {
       <div className="flex flex-col flex-1">
         <StudyPrepScreen
           stats={prepStats}
+          errorKey={prepError}
           loading={isLoading}
           onStart={onStartCallback}
           onBack={() => window.history.back()}
@@ -186,7 +189,7 @@ export default function StudyPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={resign}
-            className="flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-bold text-outline transition-colors hover:text-primary"
+            className="flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-medium text-outline transition-colors hover:text-primary"
           >
             <span className="material-symbols-outlined text-lg">close</span>
             {t('study.resign')}
@@ -194,7 +197,7 @@ export default function StudyPage() {
           
           <div className="flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full border border-outline-variant/30">
             <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-            <span className="text-[10px] font-bold text-secondary uppercase tracking-tighter">{t('study.liveSession')}</span>
+            <span className="text-[10px] font-medium text-secondary uppercase tracking-tighter">{t('study.liveSession')}</span>
           </div>
         </div>
 
@@ -202,7 +205,7 @@ export default function StudyPage() {
           {/* Session Progress */}
           <div className="mb-4 flex flex-col gap-2 sm:mb-8">
           <div className="flex justify-between items-end">
-            <span className="font-label text-xs uppercase tracking-widest text-secondary font-bold">{t('study.dailyMastery')}</span>
+            <span className="font-label text-xs uppercase tracking-widest text-secondary font-medium">{t('study.dailyMastery')}</span>
             <span className="font-label text-xs text-outline">{t('study.wordsCount', { remaining, total })}</span>
           </div>
           <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
@@ -249,7 +252,7 @@ export default function StudyPage() {
             </div>
 
             {/* Aesthetic accent shadow */}
-            <div className={`absolute -z-20 bottom-0 right-0 h-full w-full bg-primary/5 sm:-bottom-4 sm:-right-4 ${DESIGN_TOKENS.RADIUS['2XL']} border border-primary/10 pointer-events-none`} />
+            <div className={`absolute -z-20 bottom-0 right-0 hidden h-full w-full bg-primary/5 sm:-bottom-4 sm:-right-4 sm:block ${DESIGN_TOKENS.RADIUS['2XL']} border border-primary/10 pointer-events-none`} />
           </div>
         )}
 

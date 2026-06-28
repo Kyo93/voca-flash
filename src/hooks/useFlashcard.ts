@@ -6,6 +6,8 @@ import { StudySessionMode } from '../lib/types'
 import { SRS_RATINGS, TIME_CONSTANTS, SRS_CONFIG } from '../lib/constants'
 import { calculateStudyReward } from '../lib/rewards'
 
+const STUDY_PREP_LOAD_TIMEOUT_MS = 8_000
+
 interface FlashcardState {
   queue: Card[]
   currentIndex: number
@@ -14,8 +16,15 @@ interface FlashcardState {
   isComplete: boolean
   isLoading: boolean
   isPrepScreen: boolean
+  prepError: string | null
   prepStats: { unlearned: Card[], learning: Card[], mastered: Card[] } | null
   cardStartTime: number
+}
+
+function rejectAfterTimeout(ms: number): Promise<never> {
+  return new Promise((_, reject) => {
+    window.setTimeout(() => reject(new Error('study prep load timed out')), ms)
+  })
 }
 
 export function useFlashcard() {
@@ -29,6 +38,7 @@ export function useFlashcard() {
     isComplete: false,
     isLoading: true,
     isPrepScreen: true,
+    prepError: null,
     prepStats: null,
     cardStartTime: 0,
   })
@@ -40,26 +50,50 @@ export function useFlashcard() {
   useEffect(() => { stateRef.current = state }, [state])
 
   const initialize = useCallback(async (topic?: string) => {
-    setState((s) => ({ ...s, isLoading: true }))
+    setState((s) => ({ ...s, isLoading: true, prepError: null }))
     rewardedWordIds.current.clear()
 
-    const prepData = await fetchStudyPrepData(user?.id, topic)
+    try {
+      const prepData = await Promise.race([
+        fetchStudyPrepData(user?.id, topic),
+        rejectAfterTimeout(STUDY_PREP_LOAD_TIMEOUT_MS),
+      ])
 
-    setState({
-      queue: [],
-      currentIndex: 0,
-      isFlipped: false,
-      progressMap: prepData.progressMap ?? new Map<string, CardProgress>(),
-      isComplete: false,
-      isLoading: false,
-      isPrepScreen: true,
-      prepStats: {
-        unlearned: prepData.unlearned,
-        learning: prepData.learning,
-        mastered: prepData.mastered,
-      },
-      cardStartTime: Date.now(),
-    })
+      setState({
+        queue: [],
+        currentIndex: 0,
+        isFlipped: false,
+        progressMap: prepData.progressMap ?? new Map<string, CardProgress>(),
+        isComplete: false,
+        isLoading: false,
+        isPrepScreen: true,
+        prepError: null,
+        prepStats: {
+          unlearned: prepData.unlearned,
+          learning: prepData.learning,
+          mastered: prepData.mastered,
+        },
+        cardStartTime: Date.now(),
+      })
+    } catch (err) {
+      console.error('[useFlashcard] study prep load failed:', err)
+      setState({
+        queue: [],
+        currentIndex: 0,
+        isFlipped: false,
+        progressMap: new Map<string, CardProgress>(),
+        isComplete: false,
+        isLoading: false,
+        isPrepScreen: true,
+        prepError: 'studyPrep.loadError',
+        prepStats: {
+          unlearned: [],
+          learning: [],
+          mastered: [],
+        },
+        cardStartTime: Date.now(),
+      })
+    }
   }, [user])
 
   const startSession = useCallback(async (roadmapId: string | undefined, topicId: string, mode: StudySessionMode) => {
@@ -141,6 +175,7 @@ export function useFlashcard() {
         currentIndex: nextIdx,
         isFlipped: false,
         isComplete: nextIdx >= newQueue.length,
+        prepError: null,
         cardStartTime: Date.now(),
       }
     })

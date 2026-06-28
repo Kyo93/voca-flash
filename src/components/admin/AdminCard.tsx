@@ -23,7 +23,7 @@ export default function AdminCard({ children, className = '', title, description
       {(title || actions) && (
         <div className="px-8 py-6 border-b border-stone-100/50 flex items-center justify-between bg-stone-50/30">
           <div>
-            {title && <h3 className="text-lg font-black text-secondary leading-tight">{title}</h3>}
+            {title && <h3 className="text-lg font-semibold text-secondary leading-tight">{title}</h3>}
             {description && <p className="text-sm text-stone-400 mt-0.5">{description}</p>}
           </div>
           {actions && <div className="flex items-center gap-2">{actions}</div>}

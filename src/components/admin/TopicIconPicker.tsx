@@ -29,7 +29,7 @@ export function TopicIconPicker({
     <div className="grid grid-cols-2 gap-5">
       {/* Icon Representation */}
       <div>
-        <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+        <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
           {t('admin.topicForm.iconLabel')}
         </label>
         <div className="flex items-center gap-3">
@@ -93,7 +93,7 @@ export function TopicIconPicker({
 
       {/* Color Palette */}
       <div>
-        <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+        <label className="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-2">
           {t('admin.topicForm.colorLabel')}
         </label>
         <div className="rounded-xl border border-stone-200 bg-white shadow-sm p-4">

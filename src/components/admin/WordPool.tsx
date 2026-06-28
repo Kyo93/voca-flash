@@ -87,7 +87,7 @@ export default function WordPool({
   return (
     <div className="flex flex-col h-full px-6 py-4">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-[10px] text-stone-500 mb-2 font-bold uppercase tracking-widest">
+      <div className="flex items-center gap-2 text-[10px] text-stone-500 mb-2 font-medium uppercase tracking-widest">
         <Link to="/admin/roadmaps" className="hover:text-primary transition-colors">{t('admin.sidebar.roadmaps')}</Link>
         <span className="material-symbols-outlined text-xs">chevron_right</span>
         <span className="text-stone-500 uppercase tracking-widest">
@@ -100,7 +100,7 @@ export default function WordPool({
       {/* Title + Import button */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-black text-secondary tracking-tight">{activeTopicName}</h2>
+          <h2 className="text-2xl font-semibold text-secondary tracking-tight">{activeTopicName}</h2>
           <p className="text-xs text-stone-400 mt-0.5">
             {t('admin.wordPool.wordCount', { count: visibleWords.length })}
           </p>

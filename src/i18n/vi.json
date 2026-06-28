@@ -1051,6 +1051,10 @@
     "mastered": "Từ đã thuộc",
     "masteredDesc": "Từ bài khác hoặc đã học xong",
     "masteredPrompt": "Bạn có muốn ôn lại {{count}} từ đã thuộc không?",
+    "loadError": {
+      "title": "Chưa tải được dữ liệu học",
+      "desc": "Kết nối dữ liệu đang gặp sự cố. Hãy quay lại lộ trình và thử mở lại bài học sau ít phút."
+    },
     "skipMastered": "Không, Bỏ qua",
     "includeMastered": "Có, Ôn tất cả",
     "learnOnlyNew": "Chỉ học từ mới",
@@ -1076,6 +1080,7 @@
   "settings": {
     "title": "Cài đặt cá nhân",
     "subtitle": "Tùy chỉnh trải nghiệm học tập theo phong cách của bạn.",
+    "profile": "Hồ sơ",
     "profileTitle": "Hồ sơ & Tài khoản",
     "profileDesc": "Chỉnh sửa thông tin cá nhân hiển thị công khai trên ứng dụng.",
     "displayName": "Tên hiển thị",
@@ -1129,9 +1134,9 @@
     "deleting": "Đang xóa...",
     "cancel": "Hủy bỏ",
     "selectTopicRequired": "Vui lòng chọn một chủ đề.",
-    "avatarAlt": "?nh ??i di?n",
+    "avatarAlt": "Ảnh đại diện",
     "avatarPlaceholder": "https://images.unsplash.com/photo...",
-    "resetAction": "??t l?i"
+    "resetAction": "Đặt lại"
   },
   "challenges": {
     "cloze": "Điền từ",
@@ -1196,6 +1201,9 @@
   },
   "admin": {
     "words": {
+      "title": "Từ vựng",
+      "count": "{{count}} từ trong kho",
+      "addWord": "Thêm từ",
       "searchPlaceholder": "Tìm kiếm từ...",
       "allTopics": "Tất cả chủ đề",
       "newest": "Mới nhất",
@@ -1316,7 +1324,7 @@
       "collapse": "Thu nhỏ menu",
       "collapseAction": "Thu nhỏ",
       "adminRole": "Quyền Admin",
-      "panelTitle": "B?ng qu?n tr?",
+      "panelTitle": "Bảng quản trị",
       "panelSubtitle": "VocaFlash CMS"
     },
     "topics": {
