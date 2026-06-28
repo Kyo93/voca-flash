@@ -266,6 +266,7 @@
     "markLearned": "Mark as Learned",
     "audioNormal": "Play Audio",
     "audioSlow": "Slow Audio",
+    "audioSlowRate": "0.75x",
     "englishWord": "English Word",
     "vietnamese": "Vietnamese",
     "contextUsage": "Contextual Usage",

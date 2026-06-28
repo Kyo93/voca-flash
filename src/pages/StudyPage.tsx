@@ -175,7 +175,7 @@ export default function StudyPage() {
   const showCardBack = isFlipped && phase !== 'CHALLENGING' && phase !== 'READY_FOR_QUIZ'
 
   return (
-    <div data-mobile-study-session className="relative flex min-h-[100dvh] flex-col items-center justify-center px-4 pb-6 sm:pb-12 pt-4 sm:pt-8 sm:min-h-[80vh]">
+    <div data-mobile-study-session className="relative flex min-h-[100dvh] flex-col items-center justify-start px-4 pt-4 sm:pt-8 pb-6 sm:min-h-[80vh] sm:pb-12">
       <CharacterReactionAvatar
         collection={characterCollection}
         animationState={mascotReaction}
@@ -184,36 +184,33 @@ export default function StudyPage() {
         className="pointer-events-none absolute right-6 top-24 hidden xl:block"
         onReactionEnd={handleMascotReactionEnd}
       />
-      <div className="w-full max-w-md space-y-5 sm:space-y-8">
+      <div className="w-full max-w-md space-y-4 sm:space-y-8">
         {/* Header with Exit */}
         <div className="flex items-center justify-between">
           <button
             onClick={resign}
-            className="flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-medium text-outline transition-colors hover:text-primary"
+            className="flex min-h-11 min-w-11 items-center justify-center text-on-surface-variant transition-colors hover:text-primary"
+            aria-label={t('study.resign')}
+            title={t('study.resign')}
           >
-            <span className="material-symbols-outlined text-lg">close</span>
-            {t('study.resign')}
+            <span className="material-symbols-outlined text-xl leading-none">close</span>
           </button>
           
-          <div className="flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full border border-outline-variant/30">
-            <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-            <span className="text-[10px] font-medium text-secondary uppercase tracking-tighter">{t('study.liveSession')}</span>
-          </div>
+          <span className="font-label text-xs font-medium text-on-surface-variant">{t('study.wordsCount', { remaining, total })}</span>
         </div>
 
-        <div className="pt-2 sm:pt-8">
+        <div className="pt-1 sm:pt-8">
           {/* Session Progress */}
-          <div className="mb-4 flex flex-col gap-2 sm:mb-8">
-          <div className="flex justify-between items-end">
-            <span className="font-label text-xs uppercase tracking-widest text-secondary font-medium">{t('study.dailyMastery')}</span>
-            <span className="font-label text-xs text-outline">{t('study.wordsCount', { remaining, total })}</span>
-          </div>
-          <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-            <div
-              className={`h-full bg-secondary-fixed-dim kinetic-pulse transition-all duration-500`}
-              style={{ width: `${((total - remaining) / total) * 100}%` }}
-            />
-          </div>
+          <div className="mb-3 flex flex-col gap-2 sm:mb-8">
+            <div className="flex items-center justify-between">
+              <span className="font-label text-[10px] font-medium uppercase tracking-wide text-secondary">{t('study.dailyMastery')}</span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-container-highest">
+              <div
+                className="h-full bg-secondary-fixed-dim kinetic-pulse transition-all duration-500"
+                style={{ width: `${((total - remaining) / total) * 100}%` }}
+              />
+            </div>
           </div>
         </div>
 
@@ -231,7 +228,7 @@ export default function StudyPage() {
           <div className="group relative">
             <div
               onClick={!isFlipped ? flip : undefined}
-              className={`perspective-1000 w-full h-[min(54dvh,32rem)] min-h-[22rem] sm:h-auto sm:aspect-3/4 ${!isFlipped ? 'cursor-pointer' : ''}`}
+              className={`perspective-1000 w-full h-[min(49dvh,30rem)] min-h-[20rem] sm:h-auto sm:aspect-3/4 ${!isFlipped ? 'cursor-pointer' : ''}`}
             >
               <div className={`preserve-3d transition-all duration-700 w-full h-full relative ${showCardBack ? 'rotate-y-180' : ''}`}>
 

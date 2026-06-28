@@ -25,7 +25,7 @@ const ChallengeTextInput = forwardRef<HTMLInputElement, ChallengeTextInputProps>
   ) {
     const { t } = useTranslation()
     return (
-      <div className="relative">
+      <div className="flex flex-col gap-2">
         <input
           ref={ref}
           type="text"
@@ -47,7 +47,7 @@ const ChallengeTextInput = forwardRef<HTMLInputElement, ChallengeTextInputProps>
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="absolute -bottom-10 left-0 right-0 text-center"
+              className="text-center"
             >
               <span className="text-[9px] font-medium uppercase tracking-widest text-outline bg-surface-container-high px-3 py-1 rounded-full">
                 {t('arena.pressEnterToConfirm')}

@@ -266,6 +266,7 @@
     "markLearned": "Đánh dấu đã học",
     "audioNormal": "Phát âm",
     "audioSlow": "Nghe chậm",
+    "audioSlowRate": "0.75x",
     "englishWord": "Từ Tiếng Anh",
     "vietnamese": "Tiếng Việt",
     "contextUsage": "Cách dùng thực tế",
@@ -1770,12 +1771,12 @@
   "study": {
     "dailyMastery": "Làm chủ hàng ngày",
     "wordsCount": "{{remaining}} / {{total}} từ",
-    "suggestedRating": "Hệ thống gợi ý",
+    "suggestedRating": "Bạn thấy từ này thế nào?",
     "showAnswer": "Hiện đáp án",
     "markLearned": "Đánh dấu đã học",
     "exit": "Thoát",
     "resign": "Thoát",
-    "liveSession": "Bu?i h?c tr?c ti?p"
+    "liveSession": "Đang học"
   },
   "editor": {
     "placeholder": "Vi?t ghi ch?...",

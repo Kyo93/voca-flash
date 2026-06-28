@@ -16,7 +16,7 @@ export default function SRSButtons({
 }: SRSButtonsProps) {
   const { t } = useTranslation()
   return (
-    <div className="w-full flex flex-col gap-3">
+    <div className="flex w-full flex-col gap-3">
       <div className="grid grid-cols-4 gap-2">
         {([1, 2, 3, 4] as SrsRating[]).map(rating => {
           const preview = intervalPreviews?.find(p => p.rating === rating)
@@ -26,10 +26,10 @@ export default function SRSButtons({
             <button
               key={rating}
               onClick={() => onRate(rating)}
-              className={`flex min-h-16 flex-col items-center gap-1 rounded-2xl border p-2.5 sm:p-4 transition-all active:scale-95 ${
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl border p-2.5 sm:p-4 transition-all active:scale-95 ${
                 isSuggested
-                  ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10 -m-0.5 ring-2 ring-primary/30'
-                  : 'border-outline-variant/20 bg-surface-container-low hover:bg-surface-container transition-shadow'
+                  ? '-m-0.5 border-primary bg-primary/5 shadow-lg shadow-primary/10 ring-2 ring-primary/30'
+                  : 'border-outline-variant/15 bg-surface-container-low/70 text-on-surface hover:bg-surface-container'
               }`}
             >
               {/* Main label */}
@@ -37,11 +37,6 @@ export default function SRSButtons({
                 isSuggested ? 'text-primary' : 'text-on-surface'
               }`}>
                 {t(`srs.${RATING_KEYS[rating]}`)}
-              </span>
-
-              {/* Sub-label */}
-              <span className="text-[9px] uppercase tracking-wider text-on-surface-variant opacity-60 sm:text-[10px]">
-                {t(`srs.subLabels.${RATING_KEYS[rating]}`)}
               </span>
 
               {/* Interval preview */}

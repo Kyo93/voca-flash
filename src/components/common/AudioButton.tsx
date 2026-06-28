@@ -62,13 +62,19 @@ export default function AudioButton({
       title={slow ? t('flashcard.audioSlow') : t('flashcard.audioNormal')}
       aria-label={`${slow ? t('flashcard.audioSlow') : t('flashcard.audioNormal')}: ${text}`}
     >
-      <span className={`
-        material-symbols-outlined 
-        ${iconSize[size]}
-        ${speaking ? 'animate-pulse scale-110 text-secondary' : ''}
-      `}>
-        {slow ? 'slow_motion_video' : 'volume_up'}
-      </span>
+      {slow ? (
+        <span className={`text-[11px] font-semibold leading-none tracking-tight ${speaking ? 'animate-pulse scale-110 text-secondary' : ''}`}>
+          {t('flashcard.audioSlowRate')}
+        </span>
+      ) : (
+        <span className={`
+          material-symbols-outlined 
+          ${iconSize[size]}
+          ${speaking ? 'animate-pulse scale-110 text-secondary' : ''}
+        `}>
+          volume_up
+        </span>
+      )}
     </button>
   )
 }

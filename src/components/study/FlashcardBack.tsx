@@ -2,6 +2,7 @@ import { memo } from 'react'
 import { Card } from '../../lib/srs'
 import AudioButton from '../common/AudioButton'
 import { useTranslation } from 'react-i18next'
+import { UI_DEFAULTS } from '../../lib/constants'
 
 interface FlashcardBackProps {
   card: Card
@@ -19,18 +20,22 @@ const FlashcardBack = memo(({
   onToggleNotebook
 }: FlashcardBackProps) => {
   const { t } = useTranslation()
-  return (
-    <div className="relative flex h-full w-full flex-col items-center overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-6 text-center transition-all sm:p-12">
-      {/* Background Texture (Subtle) */}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, var(--color-oceanic-deep) 1px, transparent 0)`,
-          backgroundSize: '24px 24px',
-        }}
-      />
+  const imageUrl = card.image_url || UI_DEFAULTS.FLASHCARD_FALLBACK_IMAGE
+  const imagePosition = card.image_position || 'center'
 
-      <div className="relative z-10 w-full h-full flex flex-col">
+  return (
+    <div className="relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-5 text-left transition-all sm:p-12">
+      <img
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full scale-105 object-cover opacity-60 blur-[1.5px]"
+        src={imageUrl}
+        style={{ objectPosition: imagePosition }}
+      />
+      <div className="pointer-events-none absolute inset-0 bg-surface-container-lowest/55" />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-surface-container-lowest/90 via-surface-container-lowest/50 to-surface-container-lowest/65" />
+
+      <div className="relative z-10 flex h-full w-full flex-col">
         {/* Notebook Toggle (Top Right) */}
         <button
           onClick={(e) => {
@@ -46,59 +51,43 @@ const FlashcardBack = memo(({
           </span>
         </button>
 
-        {/* English Word (Small, Above) */}
-        <div className="mb-3 mt-1 flex flex-col items-center sm:mb-4 sm:mt-2">
-          <span className="mb-1 font-label text-[10px] font-medium uppercase tracking-widest text-secondary">{t('flashcard.englishWord')}</span>
-          <h2 className="break-words font-headline text-2xl font-medium leading-tight tracking-tight text-primary sm:text-3xl">{card.front}</h2>
-          <div className="mt-1 text-outline text-xs">
-            <div className="flex items-center justify-center gap-3">
-              <span>/{card.front}/</span>
-              <div className="flex items-center gap-1.5 ml-1">
-                <AudioButton text={card.front} variant="ghost" size="sm" className="h-11 w-11 p-0" />
-                <AudioButton text={card.front} slow variant="ghost" size="sm" className="h-11 w-11 p-0" />
-              </div>
-            </div>
+        {/* Word Block */}
+        <div className="max-w-[78%]">
+          <span className="font-label text-[10px] font-medium uppercase tracking-widest text-secondary">{t('flashcard.englishWord')}</span>
+          <h2 className="mt-1 break-words font-headline text-2xl font-medium leading-tight tracking-tight text-primary sm:text-3xl">{card.front}</h2>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-on-surface-variant">
+            <span className="font-medium">/{card.front}/</span>
+            <AudioButton text={card.front} variant="ghost" size="sm" className="h-9 w-9 p-0" />
+            <AudioButton text={card.front} slow variant="ghost" size="sm" className="h-9 min-w-11 px-1.5 py-0" />
           </div>
         </div>
 
-        {/* Spacer Line */}
-        <div className="oceanic-pulse mx-auto mb-6 h-1 w-12 rounded-full sm:mb-10"></div>
-
         {/* Vietnamese Meaning (Prominent) */}
-        <div className="grow flex flex-col items-center">
-          <span className="text-secondary font-label font-medium tracking-widest text-[10px] uppercase mb-2">{t('flashcard.meaning')}</span>
-          <p className="mb-5 font-headline text-2xl font-extrabold leading-tight text-on-surface sm:mb-8 sm:text-[32px] sm:font-semibold">
+        <div className="mt-7 border-l-2 border-secondary/45 pl-4">
+          <span className="font-label text-[10px] font-medium uppercase tracking-widest text-secondary">{t('flashcard.meaning')}</span>
+          <p className="mt-2 font-headline text-2xl font-extrabold leading-tight text-on-surface sm:text-[32px] sm:font-semibold">
             {card.back}
           </p>
+        </div>
 
-          {/* Context Sentence */}
-          {card.example && (
-            <div className="mb-3 mt-auto w-full rounded-xl bg-surface-container-low p-4 text-left sm:mb-4 sm:p-6">
-              <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-secondary text-lg mt-0.5 opacity-40">format_quote</span>
-                <div className="space-y-2">
-                  <p className="text-on-surface-variant font-body text-sm italic leading-relaxed">
-                    &ldquo;{card.example}&rdquo;
+        {/* Context Sentence */}
+        {card.example && (
+          <div className="mt-auto rounded-xl bg-surface-container-low/90 px-4 py-3 shadow-sm backdrop-blur-sm sm:p-5">
+            <div className="flex items-start gap-2.5">
+              <span className="material-symbols-outlined mt-0.5 text-base text-secondary/45">format_quote</span>
+              <div className="min-w-0 space-y-1.5">
+                <p className="font-body text-sm italic leading-relaxed text-on-surface-variant">
+                  &ldquo;{card.example}&rdquo;
+                </p>
+                {card.example_vi && (
+                  <p className="font-body text-sm font-medium leading-relaxed text-on-surface">
+                    &ldquo;{card.example_vi}&rdquo;
                   </p>
-                  {card.example_vi && (
-                    <p className="text-on-surface-variant font-body text-xs leading-relaxed border-t border-outline-variant/10 pt-2 oceanic-pulse oceanic-glow opacity-70">
-                      &ldquo;{card.example_vi}&rdquo;
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Card Footer / Metadata */}
-        <div className="mt-auto flex items-center justify-between border-t border-outline-variant/15 pt-4 text-[10px] font-medium uppercase tracking-widest text-outline sm:pt-6">
-          <span className="text-stone-300 italic">{card.topic || t('flashcard.noTopic')}</span>
-          <span className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-            {t('flashcard.srsReady')}
-          </span>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )
