@@ -9,6 +9,8 @@
 - Working Context: user rejected glass/blur direction and wants the mobile app to feel closer to the Codex app: flat, minimal, calm, hairline borders, moderate radius, no decorative blur/shadow, clear mobile ergonomics.
 - Just Completed: added a scoped mobile minimal foundation; flattened `MobileAppLayout`; applied shared mobile primitives to dashboard/library/roadmap/mastery/progress/achievements/characters/settings; simplified Study Prep, flashcards, NoteDrawer, Review shell, Landing, and Login mobile treatments.
 - Just Completed: adjusted the mobile foundation after design review so it reuses the Desktop/Tactile Scholar palette instead of forcing primary/secondary colors to monochrome; mobile remains flat/minimal but keeps terracotta primary and sage secondary semantics for maintainability.
+- Just Completed: fixed dashboard mobile contrast regression where flattened panels retained `text-on-secondary`; compacted the dashboard by removing the duplicate greeting/mascot block so the primary review action uses the first viewport better.
+- Just Completed: restored Study Prep colors to the desktop palette: primary-gradient main CTA, primary/secondary stat rows, and no black `bg-on-surface` primary action on the prep screen.
 - Verification: focused `MobileAppLayout` test passed; `npm run test:gate` passed with 95 files / 582 tests; browser smoke at 390x850 for `/`, `/login`, `/dashboard`, `/library`, `/mastery`, `/progress`, `/settings`, `/study`, and `/review` showed no horizontal overflow, no visible blur, and minimum visible interactive target height of 44px.
 - Next Actions: optional designer pass with screenshots route-by-route for finer typography/spacing tuning, then commit the verified mobile redesign.
 

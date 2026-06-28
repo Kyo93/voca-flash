@@ -67,7 +67,7 @@ export default function StudyPrepScreen({ stats, errorKey, loading, onStart, onB
     <div data-mobile-study-prep className="flex min-h-[100dvh] flex-1 items-center justify-center p-4 sm:p-6">
       <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-outline-variant/20 bg-surface-container-lowest p-5 sm:p-8">
         <div className="relative z-10">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-container text-on-surface sm:mb-6 sm:h-16 sm:w-16">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container shadow-inner sm:mb-6 sm:h-16 sm:w-16">
             <span className="material-symbols-outlined text-2xl sm:text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
           </div>
           
@@ -87,24 +87,24 @@ export default function StudyPrepScreen({ stats, errorKey, loading, onStart, onB
             </div>
 
             {/* Learning stat */}
-            <div className="flex items-center justify-between rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-3 sm:p-4">
+            <div className="flex items-center justify-between rounded-xl border border-primary/10 bg-primary-container/40 p-3 sm:p-4">
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-on-surface">model_training</span>
-                <span className="font-medium text-on-surface">{t('studyPrep.learning')}</span>
+                <span className="material-symbols-outlined text-primary">model_training</span>
+                <span className="font-medium text-primary">{t('studyPrep.learning')}</span>
               </div>
-              <span className="text-lg font-semibold text-on-surface sm:text-xl">{learning.length}</span>
+              <span className="text-lg font-semibold text-primary sm:text-xl">{learning.length}</span>
             </div>
 
             {/* Mastered stat */}
-            <div className="flex items-center justify-between rounded-xl border border-outline-variant/20 bg-surface-container-lowest p-3 sm:p-4">
+            <div className="flex items-center justify-between rounded-xl border border-secondary/15 bg-secondary-container/45 p-3 sm:p-4">
               <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-on-surface">verified</span>
+                <span className="material-symbols-outlined text-secondary">verified</span>
                 <div>
-                  <span className="font-medium text-on-surface block">{t('studyPrep.mastered')}</span>
+                  <span className="font-medium text-secondary block">{t('studyPrep.mastered')}</span>
                   <span className="text-[9px] font-medium uppercase leading-none text-on-surface-variant sm:text-[10px]">{t('studyPrep.masteredDesc')}</span>
                 </div>
               </div>
-              <span className="text-lg font-semibold text-on-surface sm:text-xl">{mastered.length}</span>
+              <span className="text-lg font-semibold text-secondary sm:text-xl">{mastered.length}</span>
             </div>
           </div>
 
@@ -114,7 +114,7 @@ export default function StudyPrepScreen({ stats, errorKey, loading, onStart, onB
                 {hasNewWords && (
                   <button
                     onClick={() => onStart('new')}
-                    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-3 font-medium text-on-surface transition-all active:scale-95 sm:py-4"
+                    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-primary/20 bg-surface-container-lowest px-4 py-3 font-medium text-primary transition-all active:scale-95 sm:py-4"
                   >
                     <span className="material-symbols-outlined text-lg">fiber_new</span>
                     {t('studyPrep.learnOnlyNew')}
@@ -122,7 +122,7 @@ export default function StudyPrepScreen({ stats, errorKey, loading, onStart, onB
                 )}
                 <button 
                   onClick={() => onStart('combined')}
-                  className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-on-surface px-4 py-3 font-medium text-surface transition-all active:scale-95 sm:py-4"
+                  className="primary-gradient flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-medium text-on-primary transition-all active:scale-95 sm:py-4"
                 >
                   <span className="material-symbols-outlined text-lg">model_training</span>
                   {t('studyPrep.learnCombined')}
@@ -131,7 +131,7 @@ export default function StudyPrepScreen({ stats, errorKey, loading, onStart, onB
             ) : hasNewWords ? (
               <button 
                 onClick={() => onStart('combined')}
-                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-on-surface px-4 py-3 font-medium text-surface transition-all active:scale-95 sm:py-4"
+                className="primary-gradient flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-medium text-on-primary transition-all active:scale-95 sm:py-4"
               >
                 {t('studyPrep.startNow')}
                 <span className="material-symbols-outlined text-lg">play_arrow</span>
@@ -141,7 +141,7 @@ export default function StudyPrepScreen({ stats, errorKey, loading, onStart, onB
             {hasMastered && (
               <button 
                 onClick={() => onStart('all')}
-                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-4 py-2 text-sm font-medium text-on-surface-variant transition-all"
+                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-secondary/20 bg-secondary-container/35 px-4 py-2 text-sm font-medium text-secondary transition-all"
               >
                 <span className="material-symbols-outlined text-lg">verified</span>
                 {t('studyPrep.includeMastered')}
