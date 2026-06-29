@@ -183,7 +183,7 @@ export default function MobileAppLayout() {
         </header>
       )}
 
-      <main className={focusRoute ? 'min-h-dvh' : 'pb-[calc(5.75rem+env(safe-area-inset-bottom))]'}>
+      <main className={focusRoute ? 'min-h-dvh' : 'pb-[calc(4.75rem+env(safe-area-inset-bottom))]'}>
         <Suspense fallback={<PageLoader />}>
           <Outlet context={{ searchQuery, setSearchQuery, setMobileHeaderMeta }} />
         </Suspense>

@@ -110,7 +110,6 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
             {built.map((block) => (
               <motion.div 
                 key={block.id}
-                layoutId={`block-${block.id}`}
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
@@ -122,7 +121,7 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
             ))}
          </AnimatePresence>
          {built.length === 0 && (
-            <div className="flex flex-col items-center justify-center opacity-10">
+            <div className="flex min-h-14 flex-col items-center justify-center opacity-10">
               <span className="material-symbols-outlined text-4xl mb-2">construction</span>
               <span className="text-xs font-semibold uppercase tracking-[0.4em]">{t('review.construction.building')}</span>
             </div>
@@ -132,21 +131,30 @@ export default function ConstructionChallenge({ word, onSubmit }: ConstructionCh
       {/* Source Blocks */}
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-16 px-1 sm:px-4">
         <AnimatePresence>
-          {blocks.map((block) => !block.used && (
-            <motion.button
-              key={block.id}
-              layoutId={`block-${block.id}`}
-              onClick={() => handleAdd(block)}
-              disabled={isWrong}
-              whileHover={{ scale: 1.15, y: -8, backgroundColor: "rgba(255,255,255,0.12)" }}
-              whileTap={{ scale: 0.9 }}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="h-12 w-12 sm:w-16 sm:h-16 rounded-2xl glass-arena-item border-white/10 text-white text-xl sm:text-2xl font-semibold shadow-xl"
-            >
-              {block.char.toUpperCase()}
-            </motion.button>
+          {blocks.map((block) => (
+            block.used ? (
+              <div
+                key={block.id}
+                data-construction-source-slot
+                aria-hidden="true"
+                className="h-12 w-12 shrink-0 rounded-2xl opacity-0 sm:h-16 sm:w-16"
+              />
+            ) : (
+              <motion.button
+                key={block.id}
+                data-construction-source-slot
+                onClick={() => handleAdd(block)}
+                disabled={isWrong}
+                whileHover={{ scale: 1.15, y: -8, backgroundColor: "rgba(255,255,255,0.12)" }}
+                whileTap={{ scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="h-12 w-12 shrink-0 rounded-2xl glass-arena-item border-white/10 text-white text-xl sm:text-2xl font-semibold shadow-xl"
+              >
+                {block.char.toUpperCase()}
+              </motion.button>
+            )
           ))}
         </AnimatePresence>
       </div>

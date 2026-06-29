@@ -387,6 +387,18 @@ body {
     box-shadow: none !important;
   }
 
+  [data-mobile-roadmap-detail] [data-mobile-roadmap-topic-list] {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  [data-mobile-dashboard] [data-mobile-forecast-panel="true"] {
+    border-color: color-mix(in srgb, var(--color-secondary) 24%, var(--mobile-border)) !important;
+    background: color-mix(in srgb, var(--color-secondary-container) 42%, var(--mobile-surface)) !important;
+  }
+
   .mobile-row {
     display: flex;
     min-height: 56px;

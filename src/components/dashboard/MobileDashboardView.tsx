@@ -82,27 +82,27 @@ export default function MobileDashboardView({
 
   return (
     <section
-      className="mobile-page flex flex-col gap-4"
+      className="mobile-page flex flex-col gap-3"
       data-mobile-dashboard="true"
       data-mobile-today-dashboard="true"
     >
       <article
-        className={`mobile-panel relative overflow-hidden ${heroMode === 'review' ? 'flex items-center gap-3 p-3' : 'p-4'}`}
+        className={`mobile-panel relative overflow-hidden ${heroMode === 'review' ? 'flex items-center gap-3 px-4 py-3' : 'p-4'}`}
         data-mobile-today-hero={heroMode}
       >
         {heroMode === 'review' ? (
           <>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[10px] font-medium uppercase tracking-widest text-secondary">
-                {t('home.activeRecall')}
+              <p className="truncate text-xs font-medium text-secondary">
+                {t('home.mobile.activeRecallLabel')}
               </p>
-              <h3 className="mt-1 text-[15px] font-medium leading-tight text-on-surface">
+              <h3 className="mt-1 text-lg font-semibold leading-tight tracking-tight text-on-surface">
                 {t('home.mobile.reviewDueToday', { count: reviewCount })}
               </h3>
             </div>
             <Link
               to={heroHref}
-              className="mobile-primary-action flex min-h-11 shrink-0 items-center justify-center gap-1.5 px-3 text-xs transition-transform active:scale-95"
+              className="mobile-primary-action flex min-h-12 shrink-0 items-center justify-center gap-1.5 px-4 text-sm transition-transform active:scale-95"
             >
               {t('home.mobile.reviewShortCta')}
               <span aria-hidden="true" className="material-symbols-outlined text-base">arrow_forward</span>
@@ -112,8 +112,8 @@ export default function MobileDashboardView({
           <>
             <div className="relative flex items-center justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[10px] font-medium uppercase tracking-widest text-secondary">
-                  {isResume ? t('home.tracking') : t('home.suggestion')}
+                <p className="text-xs font-medium text-secondary">
+                  {isResume ? t('home.mobile.trackingLabel') : t('home.mobile.suggestionLabel')}
                 </p>
                 <h3 className="mt-1.5 text-lg font-medium leading-tight text-on-surface">
                   {t(heroTitleKey)}
@@ -147,7 +147,7 @@ export default function MobileDashboardView({
       </article>
 
       <figure
-        className="mobile-panel flex min-h-24 items-center justify-between gap-3 overflow-hidden bg-primary-container/25 px-4 py-3"
+        className="mobile-panel flex min-h-20 items-center justify-between gap-3 overflow-hidden px-4 py-3"
         data-mobile-motivation-strip="true"
       >
         <div className="min-w-0 flex-1">
@@ -156,12 +156,12 @@ export default function MobileDashboardView({
               ? t('home.mobile.greetingName', { name: displayName })
               : t('home.readyToday')}
           </figcaption>
-          <blockquote className="mt-1 line-clamp-2 font-serif text-[15px] italic leading-6 text-on-surface-variant">
+          <blockquote className="mt-1 line-clamp-2 text-sm font-medium leading-5 text-on-surface">
             “{currentQuote}”
           </blockquote>
           <Link
             to={nextHref}
-            className="mt-2 inline-flex min-h-8 items-center rounded-full bg-surface-container-lowest px-3 text-[11px] font-medium text-primary"
+            className="mt-2 inline-flex min-h-7 items-center rounded-full bg-primary-container px-3 text-[11px] font-medium text-on-primary-container"
           >
             {t('home.mobile.quickStudy')}
           </Link>
@@ -171,7 +171,7 @@ export default function MobileDashboardView({
           animationState="idle"
           animated
           size="sm"
-          className="flex h-20 w-20 shrink-0 items-center justify-center"
+          className="flex h-16 w-16 shrink-0 items-center justify-center"
         />
       </figure>
 
@@ -181,13 +181,13 @@ export default function MobileDashboardView({
           data-mobile-daily-progress={progressPct}
         >
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/70">
+            <p className="text-xs font-medium text-on-surface-variant">
               {t('home.dailyMission')}
             </p>
             <span aria-hidden="true" className="material-symbols-outlined text-base text-primary">target</span>
           </div>
           <div className="mt-2 flex items-end justify-between gap-2">
-            <p className="text-lg font-medium leading-none text-secondary">
+            <p className="text-lg font-medium leading-none text-primary">
               {newTodayTotal}
               <span className="text-xs font-medium text-on-surface-variant/45"> / {dailyGoal}</span>
             </p>
@@ -205,7 +205,7 @@ export default function MobileDashboardView({
 
         <div className="mobile-panel p-3">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/70">
+            <p className="text-xs font-medium text-on-surface-variant">
               {t('home.retention')}
             </p>
             <span aria-hidden="true" className="material-symbols-outlined text-base text-secondary">psychology</span>
@@ -234,17 +234,17 @@ export default function MobileDashboardView({
         </div>
       </div>
 
-      <div className="mobile-panel p-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="mobile-panel p-3" data-mobile-forecast-panel="true">
+        <div className="mb-2.5 flex items-center justify-between gap-3">
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/60">
+            <p className="text-xs font-medium text-on-surface-variant">
               {t('home.forecast')}
             </p>
-            <p className="text-sm font-medium text-on-surface">
+            <p className="mt-0.5 text-base font-semibold leading-tight text-on-surface">
               {t('home.mobile.forecastHint', { count: dueSoon })}
             </p>
           </div>
-          <span className="rounded-full bg-surface-container-lowest px-3 py-1 text-xs font-medium text-secondary">
+          <span className="rounded-full bg-surface-container-lowest/80 px-3 py-0.5 text-xs font-medium text-secondary">
             {dueSoon}
           </span>
         </div>
@@ -254,16 +254,16 @@ export default function MobileDashboardView({
             return (
               <div
                 key={index}
-                className="rounded-xl bg-surface-container-lowest/45 px-2 py-2"
+                className="rounded-xl bg-surface-container-lowest/55 px-2 py-1.5"
               >
                 <div className="flex h-6 items-center justify-center">
-                  <span className={`text-xs font-medium ${count > 0 ? 'text-primary' : 'text-on-surface-variant/35'}`}>
+                  <span className={`text-xs font-medium ${count > 0 ? 'text-on-surface' : 'text-on-surface-variant/35'}`}>
                     {count > 0 ? count : '—'}
                   </span>
                 </div>
                 <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-outline-variant/25">
                   <div
-                    className="h-full rounded-full bg-primary transition-all"
+                    className="h-full rounded-full bg-secondary transition-all"
                     style={{ width: `${width}%` }}
                   />
                 </div>
@@ -281,26 +281,84 @@ export default function MobileDashboardView({
       </div>
 
       <article
-        className="mobile-panel flex items-center justify-between gap-3 p-3"
+        className={`mobile-panel relative overflow-hidden ${
+          hasResumeTopic ? 'min-h-32 p-0' : 'flex items-center justify-between gap-3 p-3'
+        }`}
         data-mobile-next-step="true"
       >
-        <div className="min-w-0">
-          <p className="text-[10px] font-medium uppercase tracking-widest text-on-surface-variant/60">
-            {t('home.mobile.nextStep')}
-          </p>
-          <h3 className="mt-1 truncate text-sm font-medium text-on-surface">
-            {nextTitle}
-          </h3>
-          <p className="mt-0.5 truncate text-[11px] font-medium text-on-surface-variant/60">
-            {t('home.mobile.nextStepHint')}
-          </p>
-        </div>
-        <Link
-          to={nextHref}
-          className="flex min-h-11 shrink-0 items-center justify-center rounded-full border border-primary/20 px-4 text-xs font-medium text-primary transition-transform active:scale-95"
-        >
-          {hasResumeTopic ? t('home.mobile.quickStudyCta') : t('home.mobile.startCta')}
-        </Link>
+        {hasResumeTopic && primaryTopic ? (
+          <>
+            {primaryTopic.image_url && (
+              <>
+                <img
+                  src={primaryTopic.image_url}
+                  alt=""
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className="absolute inset-0 bg-on-surface/45" aria-hidden="true" />
+                <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-on-surface/75 to-transparent" aria-hidden="true" />
+              </>
+            )}
+
+            <div className={`relative flex min-h-32 flex-col justify-between p-4 ${
+              primaryTopic.image_url ? 'text-surface' : 'text-on-surface'
+            }`}>
+              <div className="max-w-[76%]">
+                <p className={`text-xs font-medium ${
+                  primaryTopic.image_url ? 'text-surface/80' : 'text-primary'
+                }`}>
+                  {t('home.mobile.nextStep')}
+                </p>
+                <h3 className="mt-1 text-xl font-semibold leading-tight tracking-tight">
+                  {nextTitle}
+                </h3>
+                <p className={`mt-1 line-clamp-2 text-sm font-medium leading-5 ${
+                  primaryTopic.image_url ? 'text-surface/80' : 'text-on-surface-variant'
+                }`}>
+                  {primaryTopic.description || t('home.mobile.nextStepHint')}
+                </p>
+              </div>
+
+              <div className="flex items-end justify-between gap-3">
+                <span className={`rounded-full px-3 py-1 text-xs font-medium ${
+                  primaryTopic.image_url
+                    ? 'bg-surface/20 text-surface'
+                    : 'bg-primary-container text-on-primary-container'
+                }`}>
+                  {t('home.mobile.quickStudyCta')}
+                </span>
+                <Link
+                  to={nextHref}
+                  aria-label={t('home.mobile.quickStudyCta')}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary transition-transform active:scale-95"
+                >
+                  <span aria-hidden="true" className="material-symbols-outlined text-xl">arrow_forward</span>
+                </Link>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-on-surface-variant">
+                {t('home.mobile.nextStep')}
+              </p>
+              <h3 className="mt-1 truncate text-sm font-medium text-on-surface">
+                {nextTitle}
+              </h3>
+              <p className="mt-0.5 truncate text-[11px] font-medium text-on-surface-variant/60">
+                {t('home.mobile.nextStepHint')}
+              </p>
+            </div>
+            <Link
+              to={nextHref}
+              className="flex min-h-11 shrink-0 items-center justify-center rounded-full border border-primary/20 px-4 text-xs font-medium text-primary transition-transform active:scale-95"
+            >
+              {t('home.mobile.startCta')}
+            </Link>
+          </>
+        )}
       </article>
 
     </section>

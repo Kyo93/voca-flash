@@ -79,4 +79,16 @@ describe('ConstructionChallenge', () => {
     
     expect(mockOnSubmit).toHaveBeenCalledWith(false, true)
   })
+
+  it('keeps source letter slots stable after a letter is selected', () => {
+    const { container } = render(<ConstructionChallenge word={mockWord} onSubmit={mockOnSubmit} />)
+
+    const initialSlots = container.querySelectorAll('[data-construction-source-slot]')
+    expect(initialSlots).toHaveLength(mockWord.word.length)
+
+    fireEvent.click(screen.getByText('C'))
+
+    const slotsAfterSelection = container.querySelectorAll('[data-construction-source-slot]')
+    expect(slotsAfterSelection).toHaveLength(mockWord.word.length)
+  })
 })
