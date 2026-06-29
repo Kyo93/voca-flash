@@ -60,6 +60,9 @@
     "name": "VocaFlash",
     "tagline": "Học từ vựng hiệu quả"
   },
+  "android": {
+    "backPressAgainToExit": "Nhấn Back lần nữa để thoát"
+  },
   "nav": {
     "dashboard": "Tổng Quan",
     "library": "Thư viện",

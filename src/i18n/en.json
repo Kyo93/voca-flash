@@ -60,6 +60,9 @@
     "name": "VocaFlash",
     "tagline": "Smart vocabulary learning"
   },
+  "android": {
+    "backPressAgainToExit": "Press Back again to exit"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "library": "Library",

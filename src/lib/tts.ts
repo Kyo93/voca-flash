@@ -1,8 +1,17 @@
 
+import { Capacitor, registerPlugin } from '@capacitor/core'
+
 let ttsConfig = {
   voiceURI: null as string | null,
   rate: 0.85
 }
+
+interface NativeTtsPlugin {
+  speak(options: { text: string; rate: number; lang: string }): Promise<void>
+  stop(): Promise<void>
+}
+
+const NativeTts = registerPlugin<NativeTtsPlugin>('NativeTts')
 
 export function setTtsConfig(voiceURI: string | null, rate: number) {
   ttsConfig.voiceURI = voiceURI
@@ -10,6 +19,21 @@ export function setTtsConfig(voiceURI: string | null, rate: number) {
 }
 
 export function speak(text: string, slow = false): void {
+  const rawRate = slow ? (ttsConfig.rate * 0.7) : ttsConfig.rate
+  const rate = isNaN(rawRate) || rawRate <= 0 ? 0.85 : rawRate
+
+  if (Capacitor.getPlatform() === 'android') {
+    NativeTts.speak({ text, rate, lang: 'en-US' }).catch((error) => {
+      console.warn('Native Android TTS failed, falling back to Web Speech:', error)
+      speakWithWebSpeech(text, rate)
+    })
+    return
+  }
+
+  speakWithWebSpeech(text, rate)
+}
+
+function speakWithWebSpeech(text: string, rate: number): void {
   if (!window.speechSynthesis) {
     console.warn('SpeechSynthesis not supported in this browser')
     return
@@ -20,10 +44,7 @@ export function speak(text: string, slow = false): void {
 
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'en-US'
-  
-  // Defensive check for rate
-  const rawRate = slow ? (ttsConfig.rate * 0.7) : ttsConfig.rate
-  utterance.rate = isNaN(rawRate) || rawRate <= 0 ? 0.85 : rawRate
+  utterance.rate = rate
   
   utterance.pitch = 1
   utterance.volume = 1
@@ -51,6 +72,12 @@ export function speak(text: string, slow = false): void {
 }
 
 export function stop(): void {
+  if (Capacitor.getPlatform() === 'android') {
+    NativeTts.stop().catch((error) => {
+      console.warn('Native Android TTS stop failed:', error)
+    })
+  }
+
   if (window.speechSynthesis) {
     window.speechSynthesis.cancel()
   }

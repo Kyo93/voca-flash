@@ -7,6 +7,7 @@ import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import AppLayout from './components/AppLayout'
 import AdminLayout from './components/admin/AdminLayout'
+import AndroidBackHandler from './components/mobile/AndroidBackHandler'
 import { lazy } from 'react'
 const DashboardPage = lazy(() => import('./pages/DashboardPage'))
 const StudyPage = lazy(() => import('./pages/StudyPage'))
@@ -59,6 +60,7 @@ function App() {
     <AuthProvider>
       <SidebarProvider>
       <BrowserRouter>
+        <AndroidBackHandler />
         <Routes>
           {/* Public */}
           <Route path="/" element={<LandingPage />} />
