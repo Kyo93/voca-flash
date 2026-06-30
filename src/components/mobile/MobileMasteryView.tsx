@@ -297,7 +297,7 @@ export default function MobileMasteryView({
         </section>
       ) : (
         <>
-          <section data-mobile-mastery-archive-controls className="sticky top-[4.75rem] z-20 mt-4 bg-surface py-2">
+          <section data-mobile-mastery-archive-controls className="fixed inset-x-0 top-[100px] z-30 mx-auto max-w-[430px] bg-surface px-4 py-2">
             <div className="flex items-center gap-2">
               <label className="relative min-w-0 flex-1">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/45" aria-hidden="true">
@@ -370,7 +370,7 @@ export default function MobileMasteryView({
           </section>
 
       {filtersOpen && (
-        <section className="mt-2 space-y-3 rounded-[8px] bg-surface-container-lowest p-3 shadow-sm ring-1 ring-outline-variant/30">
+        <section className="fixed inset-x-4 top-[235px] z-30 mx-auto max-w-[398px] space-y-3 rounded-[8px] bg-surface-container-lowest p-3 shadow-sm ring-1 ring-outline-variant/30">
           <div className="grid grid-cols-1 gap-3">
             <select
               aria-label={t('mastery.filters.allRoadmaps')}
@@ -450,6 +450,8 @@ export default function MobileMasteryView({
           </span>
         </button>
       )}
+
+      <div aria-hidden="true" className={filtersOpen ? 'h-[334px]' : 'h-[137px]'} />
 
       <section data-mobile-mastery-archive-list className="mt-2">
         {loading && words.length === 0 ? (
