@@ -3,6 +3,24 @@
 > Auto-updated by CM skills. Read at session start.
 
 ## Current Session Override
+- Active Goal: Mobile Mastery/Sổ tay Memory Inbox redesign for S25 Ultra.
+- Current Plan: `openspec/changes/mobile-mastery-memory-inbox-2026-06-30/design.md` and `tasks.md`.
+- Current Phase: Archive cleanup complete and verified.
+- Working Context: user clarified to follow the recommended direction from brainstorming: Option B Memory Inbox, but with Option C's rich Word Dossier detail. This supersedes the earlier compact archive-only redesign plan.
+- Key Decisions: default mobile mode becomes Inbox with actionable queues; Archive remains a secondary search/browse mode; Dossier is a rich tabbed detail sheet; detail fields are enriched on demand by `word_id`; desktop Mastery remains unchanged.
+- Just Completed: execution batch 1 finished tasks 1.1, 1.2, and 1.3; added mobile Inbox/Archive i18n keys, RED/GREEN tests for Inbox default + Archive secondary, and replaced the mobile Mastery header with a compact Memory Inbox header plus mode switch.
+- Just Completed: execution batch 2 finished tasks 2.1, 2.2, and 2.3; added pure `getMobileMasteryQueues()` grouping for due/weak/saved, covered overlap/empty queues in tests, and rendered mobile Inbox queues with counts, preview words, empty states, and `Xem tất cả` archive actions.
+- Just Completed: execution batch 3 finished tasks 2.4, 3.1, and 3.2; queue `Ôn ngay` now navigates to `/free-study` with that queue's words, Archive search/filter remains behind Archive mode, and focused tests cover both flows.
+- Just Completed: execution batch 4 finished task 3.3; Archive word cards are now dense lookup rows with compact metadata, no progress bar, 44px checkbox/save targets, and a cleaner mode focus style.
+- Just Completed: execution batch 5 finished tasks 4.1, 4.2, and 4.3; added `MasteryWordDetail`, `getMasteryWordDetail(wordId)`, array normalization for dossier fields, and storage tests for mapping plus failure fallback.
+- Just Completed: execution batch 6 finished tasks 4.4, 5.1, and 5.2; mobile detail now caches by `word_id`, the old small sheet is replaced with a taller `MobileWordDossier`, and the Overview tab shows definition, example, Vietnamese example, FSRS summary, and notes.
+- Just Completed: final execution finished tasks 5.3, 5.4, and 5.5; Dossier now has functional Linguistic, Notes, and Stats tabs with POS/difficulty, word family, synonyms/antonyms, existing note save flow, and FSRS/next-review details.
+- Just Completed: fixed mobile Dossier note saving; the save contract now passes `word_id` from the mobile-selected word instead of relying on the desktop parent `selectedWord` state, which was null/stale on mobile.
+- Just Completed: mobile Archive/Kho từ cleanup finished under `openspec/changes/mobile-mastery-archive-cleanup-2026-06-30/`; Archive now uses a compact lookup shelf, removes the old 4-card stat grid, uses horizontal filter chips, hides checkboxes until selection mode, and keeps dense lookup rows.
+- Verification: focused mobile/detail tests passed, focused mobile note-save and Archive cleanup regression passed with 10 tests, `npm run build` passed, `npm run test:gate` passed with 96 files / 597 tests, and browser QA at `390x850` confirmed Archive has no horizontal overflow, no stats grid, hidden default checkboxes, 44px controls, and visible dense rows.
+- Next Actions: optional APK build/install only if explicitly requested; otherwise the mobile Mastery refresh is complete.
+
+## Current Session Override
 - Active Goal: Mobile Codex-like minimal redesign for S25 Ultra 390x850.
 - Current Plan: `openspec/changes/mobile-codex-minimal-redesign-2026-06-28/design.md` and `tasks.md`.
 - Current Phase: verified.

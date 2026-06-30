@@ -1665,7 +1665,51 @@
     "mobile": {
       "title": "Vocabulary Notebook",
       "subtitle": "{{count}} words are being tracked in your learning vault.",
+      "summaryInbox": "{{due}} due · {{total}} words",
+      "modes": {
+        "inbox": "Inbox",
+        "archive": "Archive"
+      },
+      "queues": {
+        "due": "Due now",
+        "weak": "Weak words",
+        "saved": "Recently saved"
+      },
+      "emptyQueue": {
+        "due": "No words are due.",
+        "weak": "No weak words need attention.",
+        "saved": "No recently saved words yet."
+      },
+      "queueActions": {
+        "study": "Review now",
+        "viewAll": "View all"
+      },
+      "dossier": {
+        "tabs": {
+          "overview": "Overview",
+          "linguistic": "Language",
+          "notes": "Notes",
+          "stats": "Stats"
+        },
+        "wordFamily": "Word family",
+        "synonyms": "Synonyms",
+        "antonyms": "Antonyms",
+        "partOfSpeech": "Part of speech",
+        "difficulty": "Difficulty",
+        "exampleVi": "Vietnamese example",
+        "noLinguisticData": "No extended language data yet."
+      },
       "searchPlaceholder": "Search words, meanings, or topics...",
+      "archiveSummary": "{{total}} words · {{due}} due · {{weak}} weak",
+      "archiveResults": "{{count}} results",
+      "selectionOn": "Select",
+      "selectionDone": "Done",
+      "filterShorts": {
+        "all": "All",
+        "due": "Due",
+        "weak": "Weak",
+        "mastered": "Known"
+      },
       "openNotebook": "Open notebook",
       "selectedCount": "{{count}} words",
       "studySelected": "Review selected words",

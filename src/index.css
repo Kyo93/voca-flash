@@ -399,6 +399,25 @@ body {
     background: color-mix(in srgb, var(--color-secondary-container) 42%, var(--mobile-surface)) !important;
   }
 
+  [data-mobile-mastery] [data-mobile-mastery-archive-controls],
+  [data-mobile-mastery] [data-mobile-mastery-archive-list] {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  [data-mobile-mastery] [data-mobile-mastery-row] {
+    border: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--mobile-border) 35%, transparent) !important;
+    border-radius: 0 !important;
+    background: var(--mobile-surface) !important;
+    box-shadow: none !important;
+  }
+
+  [data-mobile-mastery] [data-mobile-mastery-row]:last-child {
+    border-bottom: 0 !important;
+  }
+
   .mobile-row {
     display: flex;
     min-height: 56px;

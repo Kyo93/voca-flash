@@ -46,7 +46,7 @@ export default function MobileSettingsView({
   }, [populateVoices])
 
   return (
-    <main data-mobile-settings className="mobile-page min-h-full pb-32">
+    <main data-mobile-settings className="mobile-page min-h-full pb-28">
       <section className="mobile-panel p-4">
         <p className="text-[11px] font-medium uppercase tracking-wider text-primary">
           {t('mobileNav.profile')}
@@ -250,28 +250,26 @@ export default function MobileSettingsView({
             {t('settings.logout')}
           </button>
         </section>
-      </div>
 
-      <div
-        data-mobile-settings-savebar
-        className="fixed inset-x-0 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-40 px-4"
-      >
-        <div className="mobile-panel mx-auto flex max-w-md items-center justify-between gap-3 p-3">
-          <p className="min-w-0 text-xs font-medium leading-5 text-on-surface-variant">
+        <section
+          data-mobile-settings-savebar
+          className="mobile-panel flex flex-col items-stretch gap-2 p-3"
+        >
+          <p className="text-xs font-medium leading-5 text-on-surface-variant sm:min-w-0">
             {t('profileMobile.settingsHint')}
           </p>
           <button
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-sm font-medium text-on-primary disabled:opacity-60"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 text-sm font-medium text-on-primary disabled:opacity-60 sm:w-auto sm:shrink-0"
           >
             <span className="material-symbols-outlined text-lg" aria-hidden="true">
               {saving ? 'sync' : 'save'}
             </span>
             {saving ? t('settings.saving') : t('profileMobile.saveSettings')}
           </button>
-        </div>
+        </section>
       </div>
     </main>
   )

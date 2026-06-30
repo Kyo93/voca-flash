@@ -1,5 +1,5 @@
 import { supabase } from '../supabase'
-import type { MasteryWord, MasteryStats, Word } from '../types'
+import type { MasteryWord, MasteryStats, MasteryWordDetail, Word } from '../types'
 import { isMastered, type Card, type CardProgress } from '../srs'
 import { fetchPaginated } from './base'
 import { MASTERY_CONFIG } from '../constants'
@@ -55,6 +55,37 @@ interface StudyPrepRow {
   fsrs_scheduled_days: number | null
   repetitions: number | null
   lapse_count: number | null
+}
+
+type MasteryWordDetailRow = Pick<
+  Word,
+  | 'id'
+  | 'pos'
+  | 'difficulty'
+  | 'example_vi'
+  | 'image_position'
+  | 'synonyms'
+  | 'antonyms'
+  | 'word_family'
+  | 'tags'
+>
+
+function normalizeStringArray(value: string[] | null | undefined): string[] {
+  return Array.isArray(value) ? value.filter(item => typeof item === 'string' && item.trim().length > 0) : []
+}
+
+function mapMasteryWordDetail(row: MasteryWordDetailRow): MasteryWordDetail {
+  return {
+    word_id: row.id,
+    pos: row.pos ?? null,
+    difficulty: row.difficulty ?? null,
+    example_vi: row.example_vi ?? null,
+    image_position: row.image_position ?? null,
+    synonyms: normalizeStringArray(row.synonyms),
+    antonyms: normalizeStringArray(row.antonyms),
+    word_family: normalizeStringArray(row.word_family),
+    tags: normalizeStringArray(row.tags),
+  }
 }
 
 function mapStudyPrepRowToCard(row: StudyPrepRow, topicSlug?: string): Card {
@@ -193,6 +224,31 @@ export async function getUserVocabulary(
   }))
 
   return { data: mappedData, total }
+}
+
+export async function getMasteryWordDetail(wordId: string): Promise<MasteryWordDetail | null> {
+  const { data, error } = await supabase
+    .from('words')
+    .select(`
+      id,
+      pos,
+      difficulty,
+      example_vi,
+      image_position,
+      synonyms,
+      antonyms,
+      word_family,
+      tags
+    `)
+    .eq('id', wordId)
+    .maybeSingle()
+
+  if (error || !data) {
+    console.error('[Storage] getMasteryWordDetail error:', error)
+    return null
+  }
+
+  return mapMasteryWordDetail(data as MasteryWordDetailRow)
 }
 
 export async function fetchTopicWordCounts(): Promise<Record<string, number>> {

@@ -156,6 +156,18 @@ export interface MasteryWord {
   personal_note: string | null
 }
 
+export interface MasteryWordDetail {
+  word_id: string
+  pos: Word['pos']
+  difficulty: number | null
+  example_vi: string | null
+  image_position: string | null
+  synonyms: string[]
+  antonyms: string[]
+  word_family: string[]
+  tags: string[]
+}
+
 // ── Data Transfer Objects (DTOs) ──────────────────────────
 
 export interface InitialAppData {

@@ -1,0 +1,26 @@
+# Implementation Checklist
+
+- [x] 1.1 Add/adjust i18n keys for Inbox, Archive, queues, dossier tabs, and empty states.
+- [x] 1.2 Add tests for the new mobile mode switch: Inbox default, Archive secondary.
+- [x] 1.3 Replace the current mobile header with compact Memory Inbox header and summary.
+- [x] 2.1 Add pure helper functions for grouping words into due, weak, and saved queues.
+- [x] 2.2 Add unit tests for grouping helpers, including empty queues and overlapping categories.
+- [x] 2.3 Implement Inbox queues with count, preview words, empty states, and queue actions.
+- [x] 2.4 Wire queue study actions to existing free-study flow using selected/group words.
+- [x] 3.1 Add tests for Archive mode preserving search and advanced filters.
+- [x] 3.2 Move search/filter/list behavior into Archive mode.
+- [x] 3.3 Redesign Archive rows as dense lookup rows with 44px select/save targets.
+- [x] 4.1 Define `MasteryWordDetail` type.
+- [x] 4.2 Add `getMasteryWordDetail(wordId)` storage helper in `src/lib/storage/mastery.ts`.
+- [x] 4.3 Add tests for detail helper mapping/fallback where practical.
+- [x] 4.4 Add mobile detail cache keyed by `word_id`.
+- [x] 5.1 Replace current detail sheet with `MobileWordDossier`.
+- [x] 5.2 Implement Dossier Overview tab.
+- [x] 5.3 Implement Dossier Linguistic tab with POS, word family, synonyms, antonyms, and empty state.
+- [x] 5.4 Implement Dossier Notes tab using existing note save contract.
+- [x] 5.5 Implement Dossier Stats tab using FSRS fields and next review.
+- [x] 6.1 Run focused `MobileMasteryView` tests.
+- [x] 6.2 Run `npm run build`.
+- [x] 6.3 Run `npm run test:gate`.
+- [x] 6.4 Run browser visual QA at `390x850` on `/mastery`.
+- [ ] 6.5 If user requests APK, run Capacitor sync, Gradle assembleDebug, then install/share.

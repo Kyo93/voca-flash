@@ -80,6 +80,10 @@ export default function MasteryPage() {
     navigate('/free-study', { state: { words: selectedWords } })
   }
 
+  const handleStartWordSetStudy = (studyWords: MasteryWord[]) => {
+    navigate('/free-study', { state: { words: studyWords } })
+  }
+
   const handleOpenNoteDetail = (word: MasteryWord, e: React.MouseEvent) => {
     e.stopPropagation()
     setSelectedWord(word)
@@ -123,6 +127,7 @@ export default function MasteryPage() {
           selectedIds={selectedIds}
           onToggleSelect={toggleSelect}
           onStartFreeStudy={handleStartFreeStudy}
+          onStartWordSetStudy={handleStartWordSetStudy}
           notebookCount={notebookEntries.size}
           onOpenNotebook={() => {
             setHasOpenedNotebook(true)
@@ -131,7 +136,7 @@ export default function MasteryPage() {
           isNotebookSaved={isSaved}
           onToggleNotebook={handleToggleNotebook}
           getNote={getNote}
-          onSaveNote={handleSaveNote}
+          onSaveNote={updateNote}
           roadmaps={mobileRoadmaps}
           advancedFilters={advancedFilters}
           onAdvancedFilterChange={handleFilterChange}
@@ -296,4 +301,3 @@ export default function MasteryPage() {
     </div>
   )
 }
-

@@ -1,0 +1,25 @@
+# Implementation Checklist
+
+- [ ] 1.1 Add mobile Mastery copy keys to `src/i18n/vi.json` and `src/i18n/en.json`.
+- [ ] 1.2 Add tests that reject the old mobile header eyebrow and long subtitle.
+- [ ] 1.3 Replace the mobile header with compact title, summary, search, and notebook action.
+- [ ] 2.1 Add tests for compact stats/filter layout.
+- [ ] 2.2 Replace four large stat cards with compact metric chips.
+- [ ] 2.3 Replace the two-row filter grid with a horizontal segmented filter row and a compact advanced-filter trigger.
+- [ ] 2.4 Preserve advanced roadmap/stability/sort/A-Z filters inside a denser expandable panel or sheet.
+- [ ] 3.1 Add tests for denser word cards and 44px action targets.
+- [ ] 3.2 Redesign mobile word cards as compact archive rows with word, IPA, definition, topic, due date, stability, select, and notebook action.
+- [ ] 3.3 Ensure bottom padding prevents the last card from being hidden behind bottom navigation.
+- [ ] 4.1 Add a typed detail enrichment helper for optional word fields not present in `MasteryWord`.
+- [ ] 4.2 Add loading/error/fallback behavior for detail enrichment when opening a word.
+- [ ] 4.3 Add tests for enriched detail fallback and available linguistic fields.
+- [ ] 5.1 Replace the current detail sheet with a tabbed mobile word dossier.
+- [ ] 5.2 Implement Overview tab: definition, example, Vietnamese example, and image when available.
+- [ ] 5.3 Implement Linguistic tab: POS, word family, synonyms, antonyms, and empty state.
+- [ ] 5.4 Implement Notes tab using the existing `onSaveNote` contract.
+- [ ] 5.5 Implement Stats tab: stability, difficulty, reps, lapses, next review, due/mastered state.
+- [ ] 6.1 Run focused tests for `MobileMasteryView`.
+- [ ] 6.2 Run `npm run build`.
+- [ ] 6.3 Run `npm run test:gate`.
+- [ ] 6.4 Visual QA `/mastery` at `390x850`: no horizontal overflow, no bottom-nav coverage, readable Vietnamese text, and detail tabs usable.
+- [ ] 6.5 Update APK only after the UI preview is approved and implementation is verified.

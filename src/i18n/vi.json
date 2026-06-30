@@ -1665,7 +1665,51 @@
     "mobile": {
       "title": "Sổ tay từ vựng",
       "subtitle": "{{count}} từ đang được theo dõi trong kho học của bạn.",
+      "summaryInbox": "{{due}} cần ôn · {{total}} từ",
+      "modes": {
+        "inbox": "Hộp nhớ",
+        "archive": "Kho từ"
+      },
+      "queues": {
+        "due": "Cần ôn",
+        "weak": "Đang yếu",
+        "saved": "Mới lưu"
+      },
+      "emptyQueue": {
+        "due": "Không có từ đến hạn.",
+        "weak": "Chưa có từ yếu cần xử lý.",
+        "saved": "Chưa có từ mới lưu."
+      },
+      "queueActions": {
+        "study": "Ôn ngay",
+        "viewAll": "Xem tất cả"
+      },
+      "dossier": {
+        "tabs": {
+          "overview": "Tổng quan",
+          "linguistic": "Ngôn ngữ",
+          "notes": "Ghi chú",
+          "stats": "Dữ liệu"
+        },
+        "wordFamily": "Họ từ",
+        "synonyms": "Đồng nghĩa",
+        "antonyms": "Trái nghĩa",
+        "partOfSpeech": "Từ loại",
+        "difficulty": "Độ khó",
+        "exampleVi": "Ví dụ tiếng Việt",
+        "noLinguisticData": "Chưa có dữ liệu ngôn ngữ mở rộng."
+      },
       "searchPlaceholder": "Tìm từ, nghĩa hoặc chủ đề...",
+      "archiveSummary": "{{total}} từ · {{due}} đến hạn · {{weak}} yếu",
+      "archiveResults": "{{count}} kết quả",
+      "selectionOn": "Chọn",
+      "selectionDone": "Xong",
+      "filterShorts": {
+        "all": "Tất cả",
+        "due": "Đến hạn",
+        "weak": "Yếu",
+        "mastered": "Thuộc"
+      },
       "openNotebook": "Mở sổ tay",
       "selectedCount": "{{count}} từ",
       "studySelected": "Ôn các từ đã chọn",

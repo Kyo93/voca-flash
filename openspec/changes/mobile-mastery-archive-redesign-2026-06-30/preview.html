@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VocaFlash Mobile Mastery Preview</title>
+  <style>
+    :root {
+      --bg: #fbf4ef;
+      --surface: #fffdfb;
+      --surface-soft: #fff0e8;
+      --ink: #2b211d;
+      --muted: #75645c;
+      --line: #ead8ce;
+      --primary: #e8791a;
+      --primary-soft: #ffd7bd;
+      --sage: #536b32;
+      --sage-soft: #d7ed9f;
+      --bar: #f4e4db;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #efe4dc;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(2, 390px);
+      gap: 28px;
+      align-items: start;
+      padding: 24px;
+    }
+    .phone {
+      position: relative;
+      width: 390px;
+      height: 850px;
+      overflow: hidden;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 60px rgba(43, 33, 29, .12);
+    }
+    .topbar {
+      height: 74px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 244, 239, .96);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+    }
+    .topbar h1 { margin: 0; font-size: 20px; line-height: 1.05; }
+    .topbar small { display: block; margin-top: 4px; color: var(--muted); font-weight: 600; }
+    .status { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--primary); }
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      background: var(--sage-soft);
+      color: var(--sage);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+    .content {
+      height: calc(100% - 74px - 70px);
+      overflow: hidden;
+      padding: 16px;
+    }
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .hero h2 { margin: 0; font-size: 24px; letter-spacing: -.01em; }
+    .summary { margin-top: 4px; color: var(--muted); font-weight: 650; font-size: 14px; }
+    .book-chip {
+      min-width: 70px;
+      height: 44px;
+      border: 0;
+      border-radius: 16px;
+      background: var(--primary-soft);
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .search {
+      height: 50px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: #9b8e87;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      font-weight: 650;
+      margin-bottom: 10px;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .metric {
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      padding: 6px 4px;
+      text-align: center;
+    }
+    .metric strong { display: block; font-size: 16px; }
+    .metric span { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 44px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .segments {
+      height: 44px;
+      border-radius: 16px;
+      background: var(--surface-soft);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 4px;
+      gap: 2px;
+    }
+    .segments button, .filter-icon {
+      border: 0;
+      border-radius: 13px;
+      font: inherit;
+      font-weight: 750;
+      color: var(--muted);
+      background: transparent;
+    }
+    .segments .active {
+      color: #fff;
+      background: var(--sage);
+    }
+    .filter-icon {
+      height: 44px;
+      background: var(--surface-soft);
+      color: var(--ink);
+      font-size: 22px;
+    }
+    .card {
+      position: relative;
+      min-height: 122px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--surface);
+      padding: 13px 12px;
+      margin-bottom: 10px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 36px 1fr 44px;
+      gap: 10px;
+      align-items: start;
+    }
+    .check {
+      width: 24px;
+      height: 24px;
+      margin-top: 4px;
+      border: 1.5px solid #8f8179;
+      border-radius: 5px;
+    }
+    .word h3 { margin: 0; font-size: 20px; }
+    .word code {
+      display: block;
+      margin-top: 3px;
+      color: #8c7d75;
+      font-size: 13px;
+    }
+    .def {
+      margin: 7px 0 0;
+      color: #5b4b44;
+      font-weight: 650;
+      font-size: 15px;
+    }
+    .heart {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 15px;
+      background: var(--surface-soft);
+      color: #9b8e87;
+      font-size: 24px;
+    }
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: var(--sage-soft);
+      color: var(--sage);
+    }
+    .bar {
+      height: 6px;
+      border-radius: 999px;
+      margin-top: 9px;
+      background: var(--bar);
+      overflow: hidden;
+    }
+    .bar div { height: 100%; width: 42%; border-radius: inherit; background: var(--sage); }
+    .bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 70px;
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      text-align: center;
+      color: #604d45;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .bottom div { display: grid; gap: 3px; }
+    .bottom b { font-size: 22px; line-height: 1; }
+    .bottom .active {
+      color: var(--primary);
+      background: var(--primary-soft);
+      border-radius: 999px;
+      padding: 8px 0;
+      margin: 0 4px;
+    }
+    .sheet {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 70px;
+      height: 610px;
+      border-radius: 28px 28px 0 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: 0 -20px 45px rgba(43, 33, 29, .18);
+      padding: 10px 16px 18px;
+    }
+    .grab {
+      width: 48px;
+      height: 4px;
+      border-radius: 999px;
+      background: #b8aaa3;
+      margin: 0 auto 16px;
+    }
+    .sheet-head {
+      display: grid;
+      grid-template-columns: 1fr 44px;
+      gap: 10px;
+      align-items: start;
+    }
+    .sheet h2 { margin: 0; font-size: 28px; }
+    .sheet code { color: #8c7d75; font-size: 15px; }
+    .close {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 16px;
+      background: var(--surface-soft);
+      color: var(--ink);
+      font-size: 26px;
+    }
+    .tabs {
+      height: 42px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 4px;
+      gap: 2px;
+      margin: 14px 0;
+    }
+    .tabs button {
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .tabs .active { background: var(--sage); color: #fff; }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 10px;
+      background: #fffaf7;
+    }
+    .label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .panel p { margin: 0; font-size: 16px; font-weight: 650; line-height: 1.45; }
+    .quote {
+      border-left: 3px solid var(--sage);
+      padding-left: 10px;
+      margin-top: 12px !important;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .chip {
+      border-radius: 999px;
+      padding: 6px 9px;
+      background: var(--surface-soft);
+      color: #6b5145;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+    .tiny-stat {
+      border-radius: 15px;
+      background: var(--surface-soft);
+      padding: 9px 4px;
+      text-align: center;
+    }
+    .tiny-stat strong { display: block; font-size: 17px; }
+    .tiny-stat span { color: var(--muted); font-size: 10px; font-weight: 800; }
+    @media (max-width: 860px) {
+      .board { grid-template-columns: 390px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <section>
+      <div class="phone">
+        <div class="topbar">
+          <div>
+            <h1>Sổ tay</h1>
+            <small>VocaFlash</small>
+          </div>
+          <div class="status"><span>⚡ 9</span><div class="avatar">N</div></div>
+        </div>
+        <div class="content">
+          <div class="hero">
+            <div>
+              <h2>Sổ tay</h2>
+              <div class="summary">57 từ · 7 đến hạn · 22 đã thuộc</div>
+            </div>
+            <button class="book-chip">📖 11</button>
+          </div>
+          <div class="search">⌕ Tìm từ, nghĩa, chủ đề...</div>
+          <div class="metrics">
+            <div class="metric"><strong>35</strong><span>Đang học</span></div>
+            <div class="metric"><strong>7</strong><span>Đến hạn</span></div>
+            <div class="metric"><strong>57</strong><span>Yếu</span></div>
+            <div class="metric"><strong>22</strong><span>Đã thuộc</span></div>
+          </div>
+          <div class="filters">
+            <div class="segments">
+              <button class="active">Tất cả</button>
+              <button>Đến hạn</button>
+              <button>Yếu</button>
+              <button>Thuộc</button>
+            </div>
+            <button class="filter-icon">☷</button>
+          </div>
+          <article class="card">
+            <div class="row">
+              <div class="check"></div>
+              <div class="word">
+                <h3>Believe</h3>
+                <code>/bɪˈliːv/</code>
+                <p class="def">tin tưởng</p>
+              </div>
+              <button class="heart">♡</button>
+            </div>
+            <div class="meta"><span class="pill">Cảm xúc</span><span>Jul 7</span><span>·</span><span>8D ổn định</span></div>
+            <div class="bar"><div></div></div>
+          </article>
+          <article class="card">
+            <div class="row">
+              <div class="check"></div>
+              <div class="word">
+                <h3>Update</h3>
+                <code>/ˌʌpˈdeɪt/</code>
+                <p class="def">cập nhật</p>
+              </div>
+              <button class="heart">♡</button>
+            </div>
+            <div class="meta"><span class="pill">Công nghệ</span><span>Hôm nay</span><span>·</span><span>4D ổn định</span></div>
+            <div class="bar"><div style="width:28%"></div></div>
+          </article>
+          <article class="card">
+            <div class="row">
+              <div class="check"></div>
+              <div class="word">
+                <h3>Anchor</h3>
+                <code>/ˈæŋ.kər/</code>
+                <p class="def">làm vững, neo lại</p>
+              </div>
+              <button class="heart">♥</button>
+            </div>
+            <div class="meta"><span class="pill">Học thuật</span><span>Jun 30</span><span>·</span><span>12D ổn định</span></div>
+            <div class="bar"><div style="width:57%"></div></div>
+          </article>
+        </div>
+        <nav class="bottom">
+          <div><b>⌂</b>Hôm nay</div>
+          <div><b>▰</b>Học</div>
+          <div><b>ϟ</b>Ôn tập</div>
+          <div class="active"><b>▣</b>Sổ tay</div>
+          <div><b>♙</b>Hồ sơ</div>
+        </nav>
+      </div>
+    </section>
+
+    <section>
+      <div class="phone">
+        <div class="topbar">
+          <div>
+            <h1>Sổ tay</h1>
+            <small>VocaFlash</small>
+          </div>
+          <div class="status"><span>⚡ 9</span><div class="avatar">N</div></div>
+        </div>
+        <div class="content" style="filter: saturate(.9); opacity:.75;">
+          <div class="hero">
+            <div><h2>Sổ tay</h2><div class="summary">57 từ · 7 đến hạn · 22 đã thuộc</div></div>
+            <button class="book-chip">📖 11</button>
+          </div>
+          <div class="search">⌕ Tìm từ, nghĩa, chủ đề...</div>
+          <article class="card">
+            <div class="row">
+              <div class="check"></div>
+              <div class="word"><h3>Believe</h3><code>/bɪˈliːv/</code><p class="def">tin tưởng</p></div>
+              <button class="heart">♡</button>
+            </div>
+            <div class="meta"><span class="pill">Cảm xúc</span><span>Jul 7</span><span>·</span><span>8D ổn định</span></div>
+            <div class="bar"><div></div></div>
+          </article>
+        </div>
+        <section class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-head">
+            <div>
+              <h2>Believe</h2>
+              <code>/bɪˈliːv/</code>
+              <div class="meta"><span class="pill">Cảm xúc</span><span>8D ổn định</span></div>
+            </div>
+            <button class="close">×</button>
+          </div>
+          <div class="tabs">
+            <button class="active">Tổng quan</button>
+            <button>Ngôn ngữ</button>
+            <button>Ghi chú</button>
+            <button>Thống kê</button>
+          </div>
+          <div class="panel">
+            <div class="label">Định nghĩa & ví dụ</div>
+            <p>tin tưởng</p>
+            <p class="quote">I believe this method will help me remember the word.</p>
+          </div>
+          <div class="panel">
+            <div class="label">Ngôn ngữ</div>
+            <div class="chips">
+              <span class="chip">verb</span>
+              <span class="chip">believe</span>
+              <span class="chip">believed</span>
+              <span class="chip">belief</span>
+              <span class="chip">trust</span>
+              <span class="chip">doubt</span>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label">Thống kê ghi nhớ</div>
+            <div class="stat-grid">
+              <div class="tiny-stat"><strong>8.0d</strong><span>Độ bền</span></div>
+              <div class="tiny-stat"><strong>4.0</strong><span>Độ khó</span></div>
+              <div class="tiny-stat"><strong>1</strong><span>Lượt</span></div>
+              <div class="tiny-stat"><strong>0</strong><span>Quên</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="label">Ghi chú</div>
+            <p>Chưa có ghi chú</p>
+          </div>
+        </section>
+        <nav class="bottom">
+          <div><b>⌂</b>Hôm nay</div>
+          <div><b>▰</b>Học</div>
+          <div><b>ϟ</b>Ôn tập</div>
+          <div class="active"><b>▣</b>Sổ tay</div>
+          <div><b>♙</b>Hồ sơ</div>
+        </nav>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
